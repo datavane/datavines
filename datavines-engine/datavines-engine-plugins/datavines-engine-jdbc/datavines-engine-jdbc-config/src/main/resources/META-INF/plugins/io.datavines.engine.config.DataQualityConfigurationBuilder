@@ -1,0 +1,1 @@
+jdbc_single_table=io.datavines.engine.jdbc.config.JdbcSingleTableMetricBuilder

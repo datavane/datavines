@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+    <!-- 可自定义，这里指定的是项目环境 -->
+    <!-- spring-boot-assembly-local-1.0.RELEASE.tar.gz  -->
+    <id>bin</id>
+
+    <!-- 打包的类型，如果有N个，将会打N个类型的包 -->
+    <formats>
+        <format>tar.gz</format>
+        <format>zip</format>
+    </formats>
+
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <baseDirectory>${project.build.finalName}-bin</baseDirectory>
+
+    <fileSets>
+
+        <fileSet>
+            <directory>${basedir}/../datavines-server/src/main/resources</directory>
+            <includes>
+                <include>**/*.properties</include>
+                <include>**/server-logback.xml</include>
+                <include>**/*.json</include>
+                <include>**/*.yaml</include>
+            </includes>
+            <outputDirectory>./conf</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/../datavines-common/src/main/resources</directory>
+            <includes>
+                <include>**/*.properties</include>
+            </includes>
+            <outputDirectory>./conf</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/../datavines-server/target/datavines-server-${project.version}</directory>
+            <includes>
+                <include>**/*.*</include>
+            </includes>
+            <outputDirectory>.</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/../bin</directory>
+            <includes>
+                <include>start-all.sh</include>
+                <include>stop-all.sh</include>
+                <include>datavines-daemon.sh</include>
+            </includes>
+            <outputDirectory>./bin</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/../env</directory>
+            <includes>
+                <include>*.*</include>
+            </includes>
+            <outputDirectory>./conf</outputDirectory>
+        </fileSet>
+    </fileSets>
+
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>libs</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <excludes>
+                <exclude>javax.servlet:servlet-api</exclude>
+                <exclude>org.eclipse.jetty.aggregate:jetty-all</exclude>
+                <exclude>org.slf4j:slf4j-log4j12</exclude>
+            </excludes>
+        </dependencySet>
+
+        <dependencySet>
+            <outputDirectory>plugins</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <includes>
+                <include>io.datavines:datavines-common</include>
+                <include>io.datavines:datavines-spi</include>
+                <include>io.datavines:datavines-engine-spark-api</include>
+                <include>io.datavines:datavines-engine-spark-mysql</include>
+                <include>io.datavines:datavines-engine-core</include>
+                <include>io.datavines:datavines-engine-spark-sql</include>
+            </includes>
+        </dependencySet>
+    </dependencySets>
+
+</assembly>

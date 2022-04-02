@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>datavines-engine-plugins</artifactId>
+        <groupId>io.datavines</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>datavines-engine-jdbc</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>datavines-engine-jdbc-api</module>
+        <module>datavines-engine-jdbc-config</module>
+        <module>datavines-engine-jdbc-executor</module>
+        <module>datavines-engine-jdbc-core</module>
+        <module>datavines-engine-jdbc-mysql</module>
+        <module>datavines-engine-jdbc-base</module>
+        <module>datavines-engine-jdbc-sql</module>
+    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.16</version>
+        </dependency>
+    </dependencies>
+
+</project>
