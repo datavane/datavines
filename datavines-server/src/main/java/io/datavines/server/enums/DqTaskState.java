@@ -27,11 +27,11 @@ import java.util.Map;
  */
 public enum DqTaskState {
     /**
-     * 0-default
+     * 0-none
      * 1-success
      * 2-failure
      */
-    DEFAULT(0,"default"),
+    NONE(0,"none"),
     SUCCESS(1,"success"),
     FAILURE(2,"failure");
 
@@ -43,11 +43,11 @@ public enum DqTaskState {
     private final int code;
     private final String description;
 
-    @JsonValue
     public int getCode() {
         return code;
     }
 
+    @JsonValue
     public String getDescription() {
         return description;
     }

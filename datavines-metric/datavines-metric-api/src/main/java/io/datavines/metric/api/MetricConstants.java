@@ -23,7 +23,7 @@ public class MetricConstants {
                     + "${actual_value} as actual_value,"
                     + "${expected_value} as expected_value,"
                     + "${expected_type} as expected_type,"
-                    + "${check_type} as check_type,"
+                    + "${result_formula} as result_formula,"
                     + "${operator} as operator,"
                     + "${threshold} as threshold,"
                     + "${failure_strategy} as failure_strategy,"
@@ -65,10 +65,10 @@ public class MetricConstants {
         RESULT_COLUMN_LIST.add(new ColumnInfo("actual_value",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("expected_value",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("expected_type",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("check_type",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("operator",false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("result_formula",true));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("operator",true));
         RESULT_COLUMN_LIST.add(new ColumnInfo("threshold",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("failure_strategy",false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("failure_strategy",true));
         RESULT_COLUMN_LIST.add(new ColumnInfo("create_time",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("update_time",false));
 

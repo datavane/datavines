@@ -19,6 +19,9 @@ public class TaskResult implements Serializable {
     @TableField(value = "metric_name")
     private String metricName;
 
+    @TableField(value = "metric_dimension")
+    private String metricDimension;
+
     @TableField(value = "metric_type")
     private String metricType;
 
@@ -34,20 +37,20 @@ public class TaskResult implements Serializable {
     @TableField(value = "expected_type")
     private String expectedType;
 
-    @TableField(value = "check_type")
-    private Integer checkType;
+    @TableField(value = "result_formula")
+    private String resultFormula;
 
     @TableField(value = "operator")
-    private Integer operator;
+    private String operator;
 
     @TableField(value = "threshold")
     private Double threshold;
 
     @TableField(value = "failure_strategy")
-    private Integer failureStrategy;
+    private String failureStrategy;
 
     @TableField(value = "state")
-    private Integer state;
+    private String state;
 
     @TableField(value = "create_time")
     private LocalDateTime createTime;
@@ -69,6 +72,14 @@ public class TaskResult implements Serializable {
 
     public void setMetricName(String metricName) {
         this.metricName = metricName;
+    }
+
+    public String getMetricDimension() {
+        return metricDimension;
+    }
+
+    public void setMetricDimension(String metricDimension) {
+        this.metricDimension = metricDimension;
     }
 
     public String getMetricType() {
@@ -111,19 +122,19 @@ public class TaskResult implements Serializable {
         this.expectedType = expectedType;
     }
 
-    public Integer getCheckType() {
-        return checkType;
+    public String getResultFormula() {
+        return resultFormula;
     }
 
-    public void setCheckType(Integer checkType) {
-        this.checkType = checkType;
+    public void setResultFormula(String resultFormula) {
+        this.resultFormula = resultFormula;
     }
 
-    public Integer getOperator() {
+    public String getOperator() {
         return operator;
     }
 
-    public void setOperator(Integer operator) {
+    public void setOperator(String operator) {
         this.operator = operator;
     }
 
@@ -135,19 +146,19 @@ public class TaskResult implements Serializable {
         this.threshold = threshold;
     }
 
-    public Integer getFailureStrategy() {
+    public String getFailureStrategy() {
         return failureStrategy;
     }
 
-    public void setFailureStrategy(Integer failureStrategy) {
+    public void setFailureStrategy(String failureStrategy) {
         this.failureStrategy = failureStrategy;
     }
 
-    public Integer getState() {
+    public String getState() {
         return state;
     }
 
-    public void setState(Integer state) {
+    public void setState(String state) {
         this.state = state;
     }
 

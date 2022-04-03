@@ -22,7 +22,7 @@ public class ConfigConstants {
     public static final String MAPPING_COLUMNS = "mapping_columns";
     public static final String ON_CLAUSE = "on_clause";
     public static final String WHERE_CLAUSE = "where_clause";
-    public static final String CHECK_TYPE = "check_type";
+    public static final String RESULT_FORMULA = "result_formula";
     public static final String THRESHOLD = "threshold";
     public static final String OPERATOR = "operator";
     public static final String FAILURE_STRATEGY = "failure_strategy";

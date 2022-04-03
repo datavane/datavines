@@ -5,9 +5,6 @@ import java.util.Map;
 
 import io.datavines.connector.api.ConnectorParameterConverter;
 
-/**
- * 
- */
 public class JdbcConnectorParameterConverter implements ConnectorParameterConverter {
 
     @Override

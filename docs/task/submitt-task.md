@@ -37,7 +37,7 @@
             "expected_name":10
         },
         "checkParameter":{
-            "check_type":"1",
+            "result_formula":"1",
             "operator":"1",
             "threshold":"0",
             "failure_strategy":1

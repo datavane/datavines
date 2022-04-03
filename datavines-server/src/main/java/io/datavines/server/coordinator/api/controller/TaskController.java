@@ -37,7 +37,7 @@ public class TaskController {
         return new ResultMap().success().payload(result);
     }
 
-    @ApiOperation(value = "submit task")
+    @ApiOperation(value = "kill task")
     @DeleteMapping(value = "/kill/{id}")
     public Object killTask(@PathVariable("id") Long taskId) {
         Map<String,Object> result = new HashMap<>();
@@ -53,20 +53,11 @@ public class TaskController {
         return new ResultMap().success().payload(result);
     }
 
-    @ApiOperation(value = "get task status")
+    @ApiOperation(value = "get task result")
     @GetMapping(value = "result/{id}")
     public Object getTaskResultInfo(@PathVariable("id") Long taskId) {
         Map<String,Object> result = new HashMap<>();
         result.put("taskResult", taskResultService.getByTaskId(taskId));
         return new ResultMap().success().payload(result);
     }
-
-    @ApiOperation(value = "get task status")
-    @DeleteMapping(value = "result/{id}")
-    public Object deleteTaskResultInfo(@PathVariable("id") Long taskId) {
-        Map<String,Object> result = new HashMap<>();
-        result.put("result", taskResultService.deleteByTaskId(taskId));
-        return new ResultMap().success().payload(result);
-    }
-
 }

@@ -2,9 +2,6 @@ package io.datavines.metric.api;
 
 import io.datavines.spi.SPI;
 
-/**
- * 
- */
 @SPI
 public interface ExpectedValue {
 

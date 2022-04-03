@@ -37,6 +37,12 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-jdbc-hive</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-jdbc-sql</artifactId>
             <version>${project.version}</version>
         </dependency>

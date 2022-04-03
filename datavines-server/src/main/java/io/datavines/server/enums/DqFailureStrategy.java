@@ -17,6 +17,8 @@
 
 package io.datavines.server.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,8 +30,8 @@ public enum DqFailureStrategy {
      * 0-alert and continue when dqc tasks failed.
      * 1-alert and block when dqc tasks failed.
      **/
-    ALERT(0, "alert"),
-    BLOCK(1, "block");
+    NONE(0, "none"),
+    ALERT(1, "alert");
 
     DqFailureStrategy(int code, String description) {
         this.code = code;
@@ -43,6 +45,7 @@ public enum DqFailureStrategy {
         return code;
     }
 
+    @JsonValue
     public String getDescription() {
         return description;
     }
@@ -60,5 +63,14 @@ public enum DqFailureStrategy {
             return VALUES_MAP.get(status);
         }
         throw new IllegalArgumentException("invalid code : " + status);
+    }
+
+    public static DqFailureStrategy of(String strategy) {
+        for (DqFailureStrategy type : DqFailureStrategy.values()) {
+            if (type.getDescription().equals(strategy)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("invalid code : " + strategy);
     }
 }

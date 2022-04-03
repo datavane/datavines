@@ -20,6 +20,7 @@
         <module>datavines-engine-jdbc-mysql</module>
         <module>datavines-engine-jdbc-base</module>
         <module>datavines-engine-jdbc-sql</module>
+        <module>datavines-engine-jdbc-hive</module>
     </modules>
 
     <dependencies>

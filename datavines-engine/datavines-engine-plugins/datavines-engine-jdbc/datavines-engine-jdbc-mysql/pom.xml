@@ -17,7 +17,6 @@
             <artifactId>datavines-engine-jdbc-base</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 
 </project>

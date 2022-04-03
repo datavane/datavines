@@ -15,5 +15,6 @@
         <module>datavines-metric-api</module>
         <module>datavines-metric-plugins</module>
         <module>datavines-metric-expected-plugins</module>
+        <module>datavines-metric-result-formula-plugins</module>
     </modules>
 </project>

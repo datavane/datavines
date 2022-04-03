@@ -1,0 +1,1 @@
+jdbc-hive-source=io.datavines.engine.jdbc.mysql.source.HiveSource

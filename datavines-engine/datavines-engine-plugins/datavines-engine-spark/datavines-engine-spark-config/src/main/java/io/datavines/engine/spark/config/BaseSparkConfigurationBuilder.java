@@ -52,7 +52,7 @@ public abstract class BaseSparkConfigurationBuilder implements DataQualityConfig
             });
         }
 
-        inputParameter.put("check_type", String.valueOf(taskParameter.getCheckType()));
+        inputParameter.put("result_formula", String.valueOf(taskParameter.getResultFormula()));
         inputParameter.put("operator", String.valueOf(taskParameter.getOperator()));
         inputParameter.put("threshold", String.valueOf(taskParameter.getThreshold()));
         inputParameter.put("failure_strategy", String.valueOf(taskParameter.getFailureStrategy()));

@@ -19,13 +19,13 @@ public class TaskParameter {
 
     private Map<String, Object> expectedParameter;
 
-    private int checkType = 2;
+    private String resultFormula = "percentage";
 
-    private int operator = 1;
+    private String operator = "gt";
 
-    private int threshold = 0;
+    private double threshold = 0;
 
-    private int failureStrategy = 1;
+    private String failureStrategy = "none";
 
     public ConnectorParameter getSrcConnectorParameter() {
         return srcConnectorParameter;
@@ -75,35 +75,35 @@ public class TaskParameter {
         this.expectedParameter = expectedParameter;
     }
 
-    public int getCheckType() {
-        return checkType;
+    public String getResultFormula() {
+        return resultFormula;
     }
 
-    public void setCheckType(int checkType) {
-        this.checkType = checkType;
+    public void setResultFormula(String resultFormula) {
+        this.resultFormula = resultFormula;
     }
 
-    public int getOperator() {
+    public String getOperator() {
         return operator;
     }
 
-    public void setOperator(int operator) {
+    public void setOperator(String operator) {
         this.operator = operator;
     }
 
-    public int getThreshold() {
+    public double getThreshold() {
         return threshold;
     }
 
-    public void setThreshold(int threshold) {
+    public void setThreshold(double threshold) {
         this.threshold = threshold;
     }
 
-    public int getFailureStrategy() {
+    public String getFailureStrategy() {
         return failureStrategy;
     }
 
-    public void setFailureStrategy(int failureStrategy) {
+    public void setFailureStrategy(String failureStrategy) {
         this.failureStrategy = failureStrategy;
     }
 }

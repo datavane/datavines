@@ -34,12 +34,12 @@ public enum OperatorType {
      * 4-great and equal
      * 5-not equal
      */
-    EQ(0,"equal"),
-    LT(1,"little than"),
-    LE(2,"little and equal"),
-    GT(3,"great than"),
-    GE(4,"great and equal"),
-    NE(5,"not equal");
+    EQ(0,"eq"),
+    LT(1,"lt"),
+    LTE(2,"lte"),
+    GT(3,"gt"),
+    GTE(4,"gte"),
+    NE(5,"neq");
 
     OperatorType(int code, String description) {
         this.code = code;
@@ -49,11 +49,11 @@ public enum OperatorType {
     private final int code;
     private final String description;
 
-    @JsonValue
     public int getCode() {
         return code;
     }
 
+    @JsonValue
     public String getDescription() {
         return description;
     }
@@ -71,5 +71,14 @@ public enum OperatorType {
             return VALUES_MAP.get(status);
         }
         throw new IllegalArgumentException("invalid code : " + status);
+    }
+
+    public static OperatorType of(String operator) {
+        for (OperatorType type : OperatorType.values()) {
+            if (type.getDescription().equals(operator)){
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("invalid code : " + operator);
     }
 }

@@ -126,7 +126,7 @@ public class MetricParserUtils {
         newInputParameterValue.remove(ConfigConstants.CREATE_TIME);
         newInputParameterValue.remove(ConfigConstants.UPDATE_TIME);
         newInputParameterValue.remove(ConfigConstants.TASK_ID);
-        newInputParameterValue.remove(ConfigConstants.CHECK_TYPE);
+        newInputParameterValue.remove(ConfigConstants.RESULT_FORMULA);
         newInputParameterValue.remove(ConfigConstants.OPERATOR);
         newInputParameterValue.remove(ConfigConstants.THRESHOLD);
         newInputParameterValue.remove(ConfigConstants.FAILURE_STRATEGY);

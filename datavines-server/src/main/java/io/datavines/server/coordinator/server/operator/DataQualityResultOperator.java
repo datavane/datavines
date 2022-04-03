@@ -19,13 +19,13 @@ package io.datavines.server.coordinator.server.operator;
 
 
 import io.datavines.common.entity.TaskRequest;
-import io.datavines.common.enums.ExecutionStatus;
+import io.datavines.metric.api.ResultFormula;
 import io.datavines.server.coordinator.repository.entity.TaskResult;
 import io.datavines.server.coordinator.repository.service.impl.JobExternalService;
-import io.datavines.server.enums.CheckType;
 import io.datavines.server.enums.DqFailureStrategy;
 import io.datavines.server.enums.DqTaskState;
 import io.datavines.server.enums.OperatorType;
+import io.datavines.spi.PluginLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,21 +71,20 @@ public class DataQualityResultOperator {
         if (isFailure(taskResult)) {
             DqFailureStrategy dqFailureStrategy = DqFailureStrategy.of(taskResult.getFailureStrategy());
             if (dqFailureStrategy != null) {
-                taskResult.setState(DqTaskState.FAILURE.getCode());
+                taskResult.setState(DqTaskState.FAILURE.getDescription());
                 switch (dqFailureStrategy) {
+                    case NONE:
+                        logger.info("task is failure, do nothing");
+                        break;
                     case ALERT:
                         logger.info("task is failure, continue and alert");
-                        break;
-                    case BLOCK:
-                        taskRequest.setStatus(ExecutionStatus.FAILURE.getCode());
-                        logger.info("task is failure, end and alert");
                         break;
                     default:
                         break;
                 }
             }
         } else {
-            taskResult.setState(DqTaskState.SUCCESS.getCode());
+            taskResult.setState(DqTaskState.SUCCESS.getDescription());
         }
 
         jobExternalService.updateTaskResult(taskResult);
@@ -97,7 +96,6 @@ public class DataQualityResultOperator {
      * @return
      */
     private boolean isFailure(TaskResult taskResult) {
-        CheckType checkType = CheckType.of(taskResult.getCheckType());
 
         double actualValue = taskResult.getActualValue();
         double expectedValue = taskResult.getExpectedValue();
@@ -105,36 +103,9 @@ public class DataQualityResultOperator {
 
         OperatorType operatorType = OperatorType.of(taskResult.getOperator());
 
-        boolean isFailure = false;
-        if (operatorType != null) {
-            double srcValue = 0;
-            switch (checkType) {
-                case EXPECTED_MINUS_ACTUAL:
-                    srcValue = expectedValue - actualValue;
-                    isFailure = getCompareResult(operatorType,srcValue,threshold);
-                    break;
-                case ACTUAL_MINUS_EXPECTED:
-                    srcValue = actualValue - expectedValue;
-                    isFailure = getCompareResult(operatorType,srcValue,threshold);
-                    break;
-                case ACTUAL_EXPECTED_PERCENTAGE:
-                    if (expectedValue > 0) {
-                        srcValue = actualValue / expectedValue * 100;
-                    }
-                    isFailure = getCompareResult(operatorType,srcValue,threshold);
-                    break;
-                case ACTUAL_EXPECTED_DIFFERENCE_EXPECTED_PERCENTAGE:
-                    if (expectedValue > 0) {
-                        srcValue = Math.abs(expectedValue - actualValue) / expectedValue * 100;
-                    }
-                    isFailure = getCompareResult(operatorType,srcValue,threshold);
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        return isFailure;
+        ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class)
+                            .getOrCreatePlugin(taskResult.getResultFormula());
+        return getCompareResult(operatorType, resultFormula.getResult(actualValue, expectedValue), threshold);
     }
 
     private boolean getCompareResult(OperatorType operatorType, double srcValue, double targetValue) {
@@ -145,11 +116,11 @@ public class DataQualityResultOperator {
                 return src.compareTo(target) == 0;
             case LT:
                 return src.compareTo(target) <= -1;
-            case LE:
+            case LTE:
                 return src.compareTo(target) == 0 || src.compareTo(target) <= -1;
             case GT:
                 return src.compareTo(target) >= 1;
-            case GE:
+            case GTE:
                 return src.compareTo(target) == 0 || src.compareTo(target) >= 1;
             case NE:
                 return src.compareTo(target) != 0;
