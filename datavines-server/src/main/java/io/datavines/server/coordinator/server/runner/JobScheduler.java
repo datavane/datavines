@@ -20,7 +20,6 @@ package io.datavines.server.coordinator.server.runner;
 import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.server.coordinator.registry.Register;
 import io.datavines.server.enums.CommandType;
-import org.eclipse.jetty.util.ajax.JSON;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
