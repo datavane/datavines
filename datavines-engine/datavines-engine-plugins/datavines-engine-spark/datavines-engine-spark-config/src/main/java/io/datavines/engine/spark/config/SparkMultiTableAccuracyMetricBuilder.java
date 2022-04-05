@@ -71,9 +71,9 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
         List<MappingColumn> list = new ArrayList<>();
         mappingColumnList.forEach(item -> {
             MappingColumn column = new MappingColumn(
-                    String.valueOf(item.get(SRC_FIELD)).replace("\"",""),
+                    String.valueOf(item.get(SRC_COLUMN)).replace("\"",""),
                     String.valueOf(item.get(OPERATOR)).replace("\""," "),
-                    String.valueOf(item.get(TARGET_FIELD)).replace("\"",""));
+                    String.valueOf(item.get(TARGET_COLUMN)).replace("\"",""));
             list.add(column);
         });
 

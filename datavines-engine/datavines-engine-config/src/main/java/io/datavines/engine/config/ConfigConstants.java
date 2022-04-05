@@ -6,12 +6,12 @@ public class ConfigConstants {
     public static final String SRC_DATASOURCE_ID = "src_datasource_id";
     public static final String SRC_TABLE = "src_table";
     public static final String SRC_FILTER = "src_filter";
-    public static final String SRC_FIELD = "src_field";
+    public static final String SRC_COLUMN = "src_column";
     public static final String TARGET_CONNECTOR_TYPE = "target_connector_type";
     public static final String TARGET_DATASOURCE_ID = "target_datasource_id";
     public static final String TARGET_TABLE = "target_table";
     public static final String TARGET_FILTER = "target_filter";
-    public static final String TARGET_FIELD = "target_field";
+    public static final String TARGET_COLUMN = "target_column";
     public static final String STATISTICS_NAME = "actual_name";
     public static final String STATISTICS_EXECUTE_SQL = "actual_execute_sql";
     public static final String EXPECTED_NAME = "expected_name";

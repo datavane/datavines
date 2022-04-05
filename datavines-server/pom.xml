@@ -239,7 +239,13 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-metric-null-count</artifactId>
+            <artifactId>datavines-metric-null</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-value-between</artifactId>
             <version>${project.version}</version>
         </dependency>
 

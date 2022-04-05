@@ -2,6 +2,8 @@ package io.datavines.metric.api;
 
 import io.datavines.spi.SPI;
 
+import java.util.Map;
+
 @SPI
 public interface ExpectedValue {
 
@@ -34,5 +36,7 @@ public interface ExpectedValue {
      * @return
      */
     boolean isNeedDefaultDatasource();
+
+    void prepare(Map<String,String> config);
 
 }

@@ -2,9 +2,8 @@ package io.datavines.metric.expected;
 
 import io.datavines.metric.api.ExpectedValue;
 
-/**
- * 
- */
+import java.util.Map;
+
 public class DailyAvg implements ExpectedValue {
 
     @Override
@@ -30,5 +29,10 @@ public class DailyAvg implements ExpectedValue {
     @Override
     public boolean isNeedDefaultDatasource() {
         return true;
+    }
+
+    @Override
+    public void prepare(Map<String, String> config) {
+
     }
 }

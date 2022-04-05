@@ -1,6 +1,5 @@
 package io.datavines.server.coordinator.api.dto.task;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
@@ -19,13 +18,10 @@ public class SubmitTask {
 
     private Map<String,Object> executePlatformParameter;
 
-    private String engineType = "spark";
+    private String engineType = "jdbc";
 
     private Map<String,Object> engineParameter;
 
-    /**
-     * {@link TaskParameter}
-     */
     private TaskParameter parameter;
 
     private Integer retryTimes = 1;

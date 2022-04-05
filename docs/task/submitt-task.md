@@ -19,7 +19,7 @@
         "metricType":"null_count",
         "metricParameter":{
             "src_table":"person",
-            "src_field":"age"
+            "src_column":"age"
         },
         "srcConnectorParameter":{
             "type":"mysql",

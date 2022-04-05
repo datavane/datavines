@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.datavines.common.config.CheckResult;
+import io.datavines.common.entity.ExecuteSql;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.api.SqlMetric;
@@ -27,18 +28,8 @@ public class CustomSql implements SqlMetric {
     }
 
     @Override
-    public String getInvalidateItemsSql() {
-        return null;
-    }
-
-    @Override
     public boolean isInvalidateItemsCanOutput() {
         return false;
-    }
-
-    @Override
-    public String getActualValueSql() {
-        return null;
     }
 
     @Override
@@ -54,5 +45,15 @@ public class CustomSql implements SqlMetric {
     @Override
     public List<String> getConfigList() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public ExecuteSql getInvalidateItems() {
+        return null;
+    }
+
+    @Override
+    public ExecuteSql getActualValue() {
+        return null;
     }
 }

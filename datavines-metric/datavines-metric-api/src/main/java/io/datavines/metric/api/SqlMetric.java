@@ -33,39 +33,19 @@ public interface SqlMetric {
 
     MetricType getType();
 
-    /**
-     * the middle sql thar calculate invalidate items
-     * @return string
-     */
-    String getInvalidateItemsSql();
-
     boolean isInvalidateItemsCanOutput();
-
-    String getActualValueSql();
 
     /**
      * get invalidate items execute sql
      * @return ExecuteSql
      */
-    default ExecuteSql getInvalidateItems() {
-        ExecuteSql executeSql = new ExecuteSql();
-        executeSql.setResultTable("invalidate_items");
-        executeSql.setSql(getInvalidateItemsSql());
-        executeSql.setErrorOutput(isInvalidateItemsCanOutput());
-        return executeSql;
-    }
+    ExecuteSql getInvalidateItems();
 
     /**
      * get actual value execute sql
      * @return ExecuteSql
      */
-    default ExecuteSql getActualValue() {
-        ExecuteSql executeSql = new ExecuteSql();
-        executeSql.setResultTable("invalidate_count");
-        executeSql.setSql(getActualValueSql());
-        executeSql.setErrorOutput(false);
-        return executeSql;
-    }
+    ExecuteSql getActualValue();
 
     /**
      * get actual name

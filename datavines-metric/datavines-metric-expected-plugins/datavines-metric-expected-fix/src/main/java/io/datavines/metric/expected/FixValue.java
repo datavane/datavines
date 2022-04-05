@@ -2,9 +2,8 @@ package io.datavines.metric.expected;
 
 import io.datavines.metric.api.ExpectedValue;
 
-/**
- * 
- */
+import java.util.Map;
+
 public class FixValue implements ExpectedValue {
 
     @Override
@@ -30,5 +29,10 @@ public class FixValue implements ExpectedValue {
     @Override
     public boolean isNeedDefaultDatasource() {
         return false;
+    }
+
+    @Override
+    public void prepare(Map<String, String> config) {
+
     }
 }
