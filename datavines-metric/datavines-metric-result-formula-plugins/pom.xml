@@ -15,6 +15,7 @@
         <module>datavines-metric-result-formula-diff</module>
         <module>datavines-metric-result-formula-percentage</module>
         <module>datavines-metric-result-formula-diff-percentage</module>
+        <module>datavines-metric-result-formula-count</module>
     </modules>
 
     <dependencies>
