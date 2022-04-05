@@ -50,6 +50,8 @@ public abstract class BaseSingleTable implements SqlMetric {
         if (config.containsKey("src_filter")) {
             filters.add(config.get("src_filter"));
         }
+
+        addFiltersIntoInvalidateItemsSql();
     }
 
     protected void addFiltersIntoInvalidateItemsSql() {

@@ -53,7 +53,6 @@ public class ValueBetween extends BaseSingleTable {
 
     @Override
     public void prepare(Map<String, String> config) {
-        super.prepare(config);
 
         if (config.containsKey("src_min")) {
             filters.add("${src_column} >= ${src_min}");
@@ -63,6 +62,6 @@ public class ValueBetween extends BaseSingleTable {
             filters.add("${src_column} <= ${src_max}");
         }
 
-        addFiltersIntoInvalidateItemsSql();
+        super.prepare(config);
     }
 }
