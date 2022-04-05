@@ -4,19 +4,19 @@ import io.datavines.common.config.Config;
 import io.datavines.common.config.ConfigRuntimeException;
 import io.datavines.common.config.DataVinesQualityConfig;
 import io.datavines.common.config.EnvConfig;
-import io.datavines.common.utils.JSONUtils;
 import io.datavines.engine.api.component.Component;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.core.utils.JsonUtils;
 import io.datavines.spi.PluginLoader;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigParser {
 
-    private static final Logger logger = Logger.getLogger(ConfigParser.class);
+    private static final Logger logger = LoggerFactory.getLogger(ConfigParser.class);
 
     private final String configFile;
 

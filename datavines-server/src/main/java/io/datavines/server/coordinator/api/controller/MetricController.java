@@ -32,7 +32,7 @@ public class MetricController {
     }
 
     @ApiOperation(value = "get metric info")
-    @GetMapping(value = "/{name}")
+    @GetMapping(value = "/info/{name}")
     public Object getMetricInfo(@PathVariable("name") String name) {
         Map<String,Object> result = new HashMap<>();
         result.put("metricInfo", PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name));

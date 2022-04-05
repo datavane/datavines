@@ -53,10 +53,9 @@ public class Null extends BaseSingleTable {
 
     @Override
     public void prepare(Map<String, String> config) {
-        super.prepare(config);
         if (config.containsKey("src_column")) {
             filters.add("(${src_column} is null or ${src_column} = '')");
         }
-        addFiltersIntoInvalidateItemsSql();
+        super.prepare(config);
     }
 }

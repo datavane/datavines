@@ -49,7 +49,7 @@ public class TaskController {
     @GetMapping(value = "/status/{id}")
     public Object getTaskStatus(@PathVariable("id") Long taskId) {
         Map<String,Object> result = new HashMap<>();
-        result.put("taskStatus",taskService.getById(taskId).getStatus());
+        result.put("taskStatus",taskService.getById(taskId).getStatus().getDescription());
         return new ResultMap().success().payload(result);
     }
 

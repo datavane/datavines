@@ -45,11 +45,11 @@ public enum MetricType {
     private final int code;
     private final String description;
 
-    @JsonValue
     public int getCode() {
         return code;
     }
 
+    @JsonValue
     public String getDescription() {
         return description;
     }

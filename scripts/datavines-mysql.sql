@@ -342,7 +342,7 @@ CREATE TABLE `task_result` (
     `operator` varchar(255) DEFAULT NULL,
     `threshold` double DEFAULT NULL,
     `failure_strategy` varchar(255) DEFAULT NULL,
-    `state` varchar(255) DEFAULT NOT NULL DEFAULT 'none',
+    `state` varchar(255) NOT NULL DEFAULT 'none',
     `create_time` datetime DEFAULT NULL,
     `update_time` datetime DEFAULT NULL,
     PRIMARY KEY (`id`)

@@ -56,7 +56,6 @@ public abstract class BaseSingleTable implements SqlMetric {
 
     protected void addFiltersIntoInvalidateItemsSql() {
         if (filters.size() > 0) {
-            System.out.println(JSONUtils.toJsonString(filters));
             invalidateItemsSql.append(" where ").append(String.join(" and ", filters));
         }
     }
