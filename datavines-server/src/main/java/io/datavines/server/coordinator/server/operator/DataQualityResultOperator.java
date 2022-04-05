@@ -17,7 +17,6 @@
 
 package io.datavines.server.coordinator.server.operator;
 
-
 import io.datavines.common.entity.TaskRequest;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.server.coordinator.repository.entity.TaskResult;

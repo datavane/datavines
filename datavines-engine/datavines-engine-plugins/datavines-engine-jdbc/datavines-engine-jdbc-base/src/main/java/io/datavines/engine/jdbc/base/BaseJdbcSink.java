@@ -19,6 +19,8 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
+
 public abstract class BaseJdbcSink implements JdbcSink {
 
     private static final Logger logger = LoggerFactory.getLogger(BaseJdbcSink.class);
@@ -84,7 +86,7 @@ public abstract class BaseJdbcSink implements JdbcSink {
         }
 
         try {
-            switch (SinkType.of(config.getString("plugin_type"))){
+            switch (SinkType.of(config.getString(PLUGIN_TYPE))){
                 case ACTUAL_VALUE:
                 case TASK_RESULT:
                     String sql = config.getString("sql");
@@ -106,27 +108,8 @@ public abstract class BaseJdbcSink implements JdbcSink {
         statement.close();
     }
 
-    public Connection getConnection() {
-        String className = getDriver();
-        String url = config.getString("url");
-        String username = config.getString("user");
-        String password = config.getString("password");
-        try {
-            Class.forName(className);
-        } catch (ClassNotFoundException exception) {
-            logger.error("load driver error: " + exception.getLocalizedMessage());
-        }
-
-        Connection connection;
-        try {
-            connection = DriverManager.getConnection(url, username, password);
-        } catch (SQLException exception) {
-            logger.error("get connection error: " + exception.getLocalizedMessage());
-            return null;
-        }
-
-        return connection;
-
+    private Connection getConnection() {
+        return ConnectionUtils.getConnection(getDriver(), config);
     }
 
     protected abstract String getDriver();

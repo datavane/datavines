@@ -122,7 +122,7 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
 
         if (expectedValue.isNeedDefaultDatasource()) {
             MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_DEFAULT_SOURCE.getDescription());
+                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());
         } else {
             MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
                     expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SRC_SOURCE.getDescription());

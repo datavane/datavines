@@ -7,14 +7,17 @@ import java.util.HashMap;
 public enum TransformType {
 
     /**
-     * 0 normal
-     * 1 invalidate items
-     * 2 actual value
+     * 0 invalidate items
+     * 1 actual value
+     * 2 expected value from default source
+     * 3 expected value from src source
+     * 4 expected value from target source
      **/
     INVALIDATE_ITEMS(0, "invalidate_items"),
     ACTUAL_VALUE(1, "actual_value"),
-    EXPECTED_VALUE_FROM_DEFAULT_SOURCE(2, "expected_value_from_default_source"),
-    EXPECTED_VALUE_FROM_SRC_SOURCE(2, "expected_value_from_src_source");
+    EXPECTED_VALUE_FROM_METADATA_SOURCE(2, "expected_value_from_metadata_source"),
+    EXPECTED_VALUE_FROM_SRC_SOURCE(3, "expected_value_from_src_source"),
+    EXPECTED_VALUE_FROM_TARGET_SOURCE(4, "expected_value_from_target_source");
 
     TransformType(int code, String description){
         this.code = code;

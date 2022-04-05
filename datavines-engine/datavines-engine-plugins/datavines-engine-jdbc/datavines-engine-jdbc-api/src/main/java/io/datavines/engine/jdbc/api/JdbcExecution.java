@@ -11,7 +11,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JdbcExecution implements Execution<JdbcSource,JdbcTransform,JdbcSink> {
+import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
+
+public class JdbcExecution implements Execution<JdbcSource, JdbcTransform, JdbcSink> {
 
     private final JdbcRuntimeEnvironment jdbcRuntimeEnvironment;
 
@@ -21,12 +23,12 @@ public class JdbcExecution implements Execution<JdbcSource,JdbcTransform,JdbcSin
 
     @Override
     public void execute(List<JdbcSource> sources, List<JdbcTransform> transforms, List<JdbcSink> sinks) throws SQLException {
-        if(CollectionUtils.isEmpty(sources)) {
+        if (CollectionUtils.isEmpty(sources)) {
             return;
         }
 
         sources.forEach(jdbcSource -> {
-            switch (SourceType.of(jdbcSource.getConfig().getString("plugin_type"))){
+            switch (SourceType.of(jdbcSource.getConfig().getString(PLUGIN_TYPE))){
                 case NORMAL:
                     jdbcRuntimeEnvironment.setSourceConnection(jdbcSource.getConnection(jdbcRuntimeEnvironment));
                     break;
@@ -41,7 +43,7 @@ public class JdbcExecution implements Execution<JdbcSource,JdbcTransform,JdbcSin
         List<ResultList> taskResult = new ArrayList<>();
         List<ResultList> actualValue = new ArrayList<>();
         transforms.forEach(jdbcTransform -> {
-            switch (TransformType.of(jdbcTransform.getConfig().getString("plugin_type"))){
+            switch (TransformType.of(jdbcTransform.getConfig().getString(PLUGIN_TYPE))){
                 case INVALIDATE_ITEMS:
                     jdbcTransform.process(jdbcRuntimeEnvironment);
                     break;
@@ -50,17 +52,19 @@ public class JdbcExecution implements Execution<JdbcSource,JdbcTransform,JdbcSin
                     actualValue.add(actualValueResult);
                     taskResult.add(actualValueResult);
                     break;
-                case EXPECTED_VALUE_FROM_DEFAULT_SOURCE:
+                case EXPECTED_VALUE_FROM_METADATA_SOURCE:
                 case EXPECTED_VALUE_FROM_SRC_SOURCE:
+                case EXPECTED_VALUE_FROM_TARGET_SOURCE:
                     ResultList expectedResult = jdbcTransform.process(jdbcRuntimeEnvironment);
                     taskResult.add(expectedResult);
+                    break;
                 default:
                     break;
             }
         });
 
         sinks.forEach(jdbcSink -> {
-            switch (SinkType.of(jdbcSink.getConfig().getString("plugin_type"))){
+            switch (SinkType.of(jdbcSink.getConfig().getString(PLUGIN_TYPE))){
                 case ACTUAL_VALUE:
                     jdbcSink.output(actualValue, jdbcRuntimeEnvironment);
                     break;

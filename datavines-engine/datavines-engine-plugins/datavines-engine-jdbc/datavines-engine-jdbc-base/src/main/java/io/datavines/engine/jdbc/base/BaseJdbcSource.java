@@ -62,26 +62,7 @@ public abstract class BaseJdbcSource implements JdbcSource {
 
     @Override
     public Connection getConnection(JdbcRuntimeEnvironment env) {
-        String className = getDriver();
-        String url = config.getString("url");
-        String username = config.getString("user");
-        String password = config.getString("password");
-        try {
-            Class.forName(className);
-        } catch (ClassNotFoundException exception) {
-            logger.error("load driver error: " + exception.getLocalizedMessage());
-        }
-
-        Connection connection;
-        try {
-            connection = DriverManager.getConnection(url, username, password);
-        } catch (SQLException exception) {
-            logger.error("get connection error: " + exception.getLocalizedMessage());
-            return null;
-        }
-
-        return connection;
-
+        return ConnectionUtils.getConnection(getDriver(), config);
     }
 
     protected abstract String getDriver();

@@ -1,6 +1,5 @@
 package io.datavines.common.utils;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
@@ -228,34 +227,6 @@ public class YarnUtils {
             default:
                 return ExecutionStatus.RUNNING_EXECUTION;
         }
-    }
-
-    public static boolean isSuccessOfYarnState(List<String> appIds) {
-        boolean result = true;
-        try {
-            for (String appId : appIds) {
-                while(Stopper.isRunning()){
-                    ExecutionStatus applicationStatus = YarnUtils.getApplicationStatus(appId);
-                    if (applicationStatus != null) {
-                        logger.info("appId:{}, final state:{}",appId,applicationStatus.name());
-                        if (applicationStatus.equals(ExecutionStatus.FAILURE) ||
-                                applicationStatus.equals(ExecutionStatus.KILL)) {
-                            return false;
-                        }
-
-                        if (applicationStatus.equals(ExecutionStatus.SUCCESS)){
-                            break;
-                        }
-                    }
-
-                    Thread.sleep(CommonConstants.SLEEP_TIME_MILLIS);
-                }
-            }
-        } catch (Exception e) {
-            logger.error(String.format("yarn applications: %s  status failed ", appIds.toString()),e);
-            result = false;
-        }
-        return result;
     }
 
     public static boolean isSuccessOfYarnState(String appId) {

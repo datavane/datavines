@@ -8,12 +8,11 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-/**
- * 
- */
 public class JdbcRuntimeEnvironment implements RuntimeEnvironment {
 
     private Connection sourceConnection;
+
+    private Connection targetConnection;
 
     private Connection metadataConnection;
 
@@ -56,6 +55,14 @@ public class JdbcRuntimeEnvironment implements RuntimeEnvironment {
 
     public void setMetadataConnection(Connection metadataConnection) {
         this.metadataConnection = metadataConnection;
+    }
+
+    public Connection getTargetConnection() {
+        return targetConnection;
+    }
+
+    public void setTargetConnection(Connection targetConnection) {
+        this.targetConnection = targetConnection;
     }
 
     public void close() throws SQLException {
