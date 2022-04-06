@@ -1,6 +1,5 @@
 package io.datavines.registry.plugin;
 
-import io.datavines.common.exception.DataVinesException;
 import io.datavines.registry.api.ConnectionListener;
 import io.datavines.registry.api.Registry;
 import io.datavines.registry.api.ServerInfo;
@@ -13,13 +12,13 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
-public class MysqlRegistry implements Registry {
+public class PostgreSqlRegistry implements Registry {
 
-    private static final Logger logger = LoggerFactory.getLogger(MysqlRegistry.class);
+    private static final Logger logger = LoggerFactory.getLogger(PostgreSqlRegistry.class);
 
-    private MysqlMutex mysqlMutex;
+    private PostgreSqlMutex postgreSqlMutex;
 
-    private MysqlServerStateManager mysqlServerStateManager;
+    private PostgreSqlServerStateManager postgreSqlServerStateManager;
 
     @Override
     public void init(Properties properties) throws Exception {
@@ -31,8 +30,8 @@ public class MysqlRegistry implements Registry {
         }
 
         try {
-            mysqlMutex = new MysqlMutex(connection, properties);
-            mysqlServerStateManager = new MysqlServerStateManager(connection, properties);
+            postgreSqlMutex = new PostgreSqlMutex(connection, properties);
+            postgreSqlServerStateManager = new PostgreSqlServerStateManager(connection, properties);
         } catch (SQLException exception) {
             logger.error("init mysql mutex error: " + exception.getLocalizedMessage());
         }
@@ -41,7 +40,7 @@ public class MysqlRegistry implements Registry {
     @Override
     public boolean acquire(String key, long timeout){
         try {
-            return mysqlMutex.acquire(key, timeout);
+            return postgreSqlMutex.acquire(key, timeout);
         } catch (Exception e) {
             logger.warn("acquire lock error: ", e);
             return false;
@@ -51,7 +50,7 @@ public class MysqlRegistry implements Registry {
     @Override
     public boolean release(String key){
         try {
-            return mysqlMutex.release();
+            return postgreSqlMutex.release();
         } catch (Exception e) {
             logger.warn("acquire lock error: ", e);
             return false;
@@ -61,7 +60,7 @@ public class MysqlRegistry implements Registry {
     @Override
     public void subscribe(String key, SubscribeListener subscribeListener) {
         try {
-            mysqlServerStateManager.registry(subscribeListener);
+            postgreSqlServerStateManager.registry(subscribeListener);
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -71,7 +70,7 @@ public class MysqlRegistry implements Registry {
     @Override
     public void unSubscribe(String key) {
         try {
-            mysqlServerStateManager.unRegistry();
+            postgreSqlServerStateManager.unRegistry();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -84,6 +83,6 @@ public class MysqlRegistry implements Registry {
 
     @Override
     public List<ServerInfo> getActiveServerList() {
-        return mysqlServerStateManager.getActiveServerList();
+        return postgreSqlServerStateManager.getActiveServerList();
     }
 }

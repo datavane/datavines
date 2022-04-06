@@ -1,1 +1,1 @@
-mysql=io.datavines.registry.plugin.MysqlRegistry
+mysql=io.datavines.registry.plugin.PostgreSqlRegistry
