@@ -1,2 +1,0 @@
-jdbc-mysql-sink=io.datavines.engine.jdbc.mysql.sink.MysqlSink
-jdbc-mysql-source=io.datavines.engine.jdbc.mysql.source.MysqlSource

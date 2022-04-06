@@ -1,1 +1,1 @@
-mysql=io.datavines.connector.mysql.MysqlConnectorFactory
+mysql=io.datavines.connector.plugin.MysqlConnectorFactory

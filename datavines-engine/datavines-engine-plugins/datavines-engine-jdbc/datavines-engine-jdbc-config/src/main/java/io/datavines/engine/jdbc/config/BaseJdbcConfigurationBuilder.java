@@ -148,7 +148,6 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
         if (taskParameter.getSrcConnectorParameter() != null) {
             ConnectorParameter srcConnectorParameter = taskParameter.getSrcConnectorParameter();
             SourceConfig sourceConfig = new SourceConfig();
-            sourceConfig.setPlugin(srcConnectorParameter.getType());
 
             Map<String, Object> connectorParameterMap = new HashMap<>(srcConnectorParameter.getParameters());
             connectorParameterMap.putAll(inputParameter);
@@ -161,7 +160,9 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
 
             String outputTable = inputParameter.get(SRC_TABLE);
             connectorParameterMap.put(OUTPUT_TABLE, outputTable);
+            connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
 
+            sourceConfig.setPlugin(connectorFactory.getCategory());
             sourceConfig.setConfig(connectorParameterMap);
             sourceConfig.setType(SourceType.NORMAL.getDescription());
             sourceConfigs.add(sourceConfig);
@@ -170,7 +171,6 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
         if (taskParameter.getTargetConnectorParameter() != null && taskParameter.getTargetConnectorParameter().getParameters() !=null) {
             ConnectorParameter targetConnectorParameter = taskParameter.getTargetConnectorParameter();
             SourceConfig sourceConfig = new SourceConfig();
-            sourceConfig.setPlugin(targetConnectorParameter.getType());
 
             Map<String, Object> connectorParameterMap = new HashMap<>(targetConnectorParameter.getParameters());
             connectorParameterMap.putAll(inputParameter);
@@ -183,6 +183,9 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
 
             String outputTable = inputParameter.get(TARGET_TABLE);
             connectorParameterMap.put(OUTPUT_TABLE, outputTable);
+            connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
+
+            sourceConfig.setPlugin(connectorFactory.getCategory());
             sourceConfig.setConfig(connectorParameterMap);
             sourceConfig.setType(SourceType.NORMAL.getDescription());
             sourceConfigs.add(sourceConfig);
@@ -210,7 +213,7 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
         if (connectionInfo == null) {
             throw new DataVinesException("can not get the default datasource info");
         }
-        actualValueSinkConfig.setPlugin(connectionInfo.getDriverName());
+        actualValueSinkConfig.setPlugin("jdbc");
         actualValueSinkConfig.setConfig(
                 getDefaultSourceConfigMap(
                         PlaceholderUtils.replacePlaceholders(
@@ -224,7 +227,7 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
         if (connectionInfo == null) {
             throw new DataVinesException("can not get the default datasource info");
         }
-        actualValueSourceConfig.setPlugin(connectionInfo.getDriverName());
+        actualValueSourceConfig.setPlugin("jdbc");
         actualValueSourceConfig.setType(SourceType.METADATA.getDescription());
         actualValueSourceConfig.setConfig(getDefaultSourceConfigMap(null,null));
         return actualValueSourceConfig;
@@ -232,10 +235,11 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
 
     protected Map<String,Object> getDefaultSourceConfigMap(String sql, String dbTable) {
         Map<String,Object> actualValueConfigMap = new HashMap<>();
-        actualValueConfigMap.put("url", connectionInfo.getUrl());
-        actualValueConfigMap.put("dbtable", dbTable);
-        actualValueConfigMap.put("user", connectionInfo.getUsername());
-        actualValueConfigMap.put("password", connectionInfo.getPassword());
+        actualValueConfigMap.put(URL, connectionInfo.getUrl());
+        actualValueConfigMap.put(DB_TABLE, dbTable);
+        actualValueConfigMap.put(USER, connectionInfo.getUsername());
+        actualValueConfigMap.put(PASSWORD, connectionInfo.getPassword());
+        actualValueConfigMap.put(DRIVER, connectionInfo.getDriverName());
         if (StringUtils.isNotEmpty(sql)) {
             actualValueConfigMap.put(SQL, sql);
         }

@@ -19,6 +19,8 @@ package io.datavines.connector.api;
 
 public interface Dialect {
 
+    String getDriver();
+
     String getColumnPrefix();
 
     String getColumnSuffix();

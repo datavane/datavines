@@ -18,9 +18,11 @@
 package io.datavines.common.entity;
 
 /**
- * JdbcInfo
+ * ConnectionInfo
  */
 public class ConnectionInfo {
+
+    private String type;
 
     private String url;
 
@@ -39,6 +41,14 @@ public class ConnectionInfo {
     private String username;
 
     private String password;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getUrl() {
         return url;

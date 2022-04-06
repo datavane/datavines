@@ -22,6 +22,8 @@ import io.datavines.spi.SPI;;
 @SPI
 public interface ConnectorFactory {
 
+    String getCategory();
+
     Connector getConnector();
 
     ResponseConverter getResponseConvert();

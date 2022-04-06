@@ -11,7 +11,13 @@ public class DefaultDataSourceInfoUtils {
                 SpringApplicationContext.getBean(javax.sql.DataSource.class);
         HikariDataSource hikariDataSource = (HikariDataSource)defaultDataSource;
 
-        return JdbcUrlParser.getConnectionInfo(hikariDataSource.getJdbcUrl(),
+        ConnectionInfo connectionInfo = JdbcUrlParser.getConnectionInfo(hikariDataSource.getJdbcUrl(),
                 hikariDataSource.getUsername(),hikariDataSource.getPassword());
+
+        if(connectionInfo != null) {
+            connectionInfo.setDriverName(hikariDataSource.getDriverClassName());
+        }
+
+        return connectionInfo;
     }
 }

@@ -48,7 +48,7 @@ public class JdbcUrlParser {
             return null;
         }
 
-        String driverName = jdbcUrl.substring(5, pos1);
+        String type = jdbcUrl.substring(5, pos1);
         String params = "";
         String host = "";
         String database = "";
@@ -86,13 +86,13 @@ public class JdbcUrlParser {
             database = database.substring(0, database.indexOf(SEMICOLON));
         }
 
+        connectionInfo.setType(type);
         connectionInfo.setUrl(jdbcUrl);
-        connectionInfo.setDriverName(driverName);
         connectionInfo.setHost(host);
         connectionInfo.setPort(port);
         connectionInfo.setDatabase(database);
         connectionInfo.setParams(params);
-        connectionInfo.setAddress("jdbc:" + driverName + "://" + host + COLON + port);
+        connectionInfo.setAddress("jdbc:" + type + "://" + host + COLON + port);
         connectionInfo.setUsername(username);
         connectionInfo.setPassword(password);
 
