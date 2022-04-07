@@ -36,7 +36,7 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.spark.api.SparkRuntimeEnvironment;
 import io.datavines.engine.spark.api.batch.SparkBatchSink;
 
-public abstract class BaseJdbcSink implements SparkBatchSink {
+public class JdbcSink implements SparkBatchSink {
 
     private Config config = new Config();
 
@@ -90,13 +90,11 @@ public abstract class BaseJdbcSink implements SparkBatchSink {
         String saveMode = config.getString("save_mode");
 
         Properties prop = new Properties();
-        prop.setProperty("driver", getDriver());
+        prop.setProperty("driver", config.getString("driver"));
         prop.setProperty("user", config.getString("user"));
         prop.setProperty("password", config.getString("password"));
         data.write().mode(saveMode).jdbc(config.getString("url"), config.getString("dbtable"), prop);
 
         return null;
     }
-
-    protected abstract String getDriver();
 }

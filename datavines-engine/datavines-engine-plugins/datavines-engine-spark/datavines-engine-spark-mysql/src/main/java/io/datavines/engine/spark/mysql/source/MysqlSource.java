@@ -17,9 +17,9 @@
 
 package io.datavines.engine.spark.mysql.source;
 
-import io.datavines.engine.spark.jdbc.source.BaseJdbcSource;
+import io.datavines.engine.spark.jdbc.source.JdbcSource;
 
-public class MysqlSource extends BaseJdbcSource {
+public class MysqlSource extends JdbcSource {
 
     @Override
     protected String getDriver() {

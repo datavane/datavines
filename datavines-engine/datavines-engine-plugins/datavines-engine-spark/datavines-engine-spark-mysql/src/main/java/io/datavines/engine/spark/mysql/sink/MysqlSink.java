@@ -17,9 +17,9 @@
 
 package io.datavines.engine.spark.mysql.sink;
 
-import io.datavines.engine.spark.jdbc.sink.BaseJdbcSink;
+import io.datavines.engine.spark.jdbc.sink.JdbcSink;
 
-public class MysqlSink extends BaseJdbcSink {
+public class MysqlSink extends JdbcSink {
 
     @Override
     protected String getDriver() {

@@ -36,7 +36,7 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.spark.api.SparkRuntimeEnvironment;
 import io.datavines.engine.spark.api.batch.SparkBatchSource;
 
-public abstract class BaseJdbcSource implements SparkBatchSource {
+public class JdbcSource implements SparkBatchSource {
 
     private Config config = new Config();
 
@@ -80,10 +80,10 @@ public abstract class BaseJdbcSource implements SparkBatchSource {
 
     @Override
     public Dataset<Row> getData(SparkRuntimeEnvironment env) {
-        return jdbcReader(env.sparkSession(), getDriver()).load();
+        return jdbcReader(env.sparkSession()).load();
     }
 
-    private DataFrameReader jdbcReader(SparkSession sparkSession , String driver) {
+    private DataFrameReader jdbcReader(SparkSession sparkSession) {
 
         DataFrameReader reader = sparkSession.read()
                 .format("jdbc")
@@ -91,7 +91,7 @@ public abstract class BaseJdbcSource implements SparkBatchSource {
                 .option("dbtable", config.getString("table"))
                 .option("user", config.getString("user"))
                 .option("password", config.getString("password"))
-                .option("driver", driver);
+                .option("driver", config.getString("driver"));
 
 
         Config jdbcConfig = TypesafeConfigUtils.extractSubConfigThrowable(config, "jdbc.", false);
@@ -106,6 +106,4 @@ public abstract class BaseJdbcSource implements SparkBatchSource {
 
         return reader;
     }
-
-    protected abstract String getDriver();
 }

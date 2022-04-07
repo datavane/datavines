@@ -121,7 +121,7 @@ public abstract class BaseSparkConfigurationBuilder implements DataQualityConfig
         }
 
         if (StringUtils.isNotEmpty(expectedValue.getName())) {
-            inputParameter.put(EXPECTED_NAME, expectedValue.getName());
+            inputParameter.put(EXPECTED_VALUE, expectedValue.getName());
         }
 
         MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs, transformExecuteSqlList);

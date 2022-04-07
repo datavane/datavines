@@ -134,7 +134,7 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
         }
 
         if (StringUtils.isNotEmpty(expectedValue.getName())) {
-            inputParameter.put(EXPECTED_NAME, expectedValue.getName());
+            inputParameter.put(EXPECTED_VALUE, expectedValue.getName());
         }
 
         if (expectedValue.isNeedDefaultDatasource()) {
