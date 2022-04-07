@@ -77,9 +77,10 @@ public class JobScheduler extends Thread {
                         jobExternalService.deleteCommandById(command.getId());
                         logger.info(String.format("kill task : %s", command.getTaskId()) );
                     }
-
+                    register.release(TASK_LOCK_KEY);
                     ThreadUtils.sleep(1000);
                 } else {
+                    register.release(TASK_LOCK_KEY);
                     ThreadUtils.sleep(2000);
                 }
             } catch (Exception e){

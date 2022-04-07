@@ -34,10 +34,6 @@ import io.datavines.common.entity.ExecuteSql;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.metric.api.SqlMetric;
 
-
-/**
- * 
- */
 public class MetricParserUtils {
 
     public static void operateInputParameter(Map<String, String> inputParameter,

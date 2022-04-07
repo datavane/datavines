@@ -17,9 +17,6 @@
 
 package io.datavines.engine.api;
 
-/**
- * Constants
- */
 public class EngineConstants {
 
     public static final String OUTPUT_TABLE = "output_table";

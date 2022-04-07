@@ -14,34 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.parameter;
+package io.datavines.connector.plugin;
 
-/**
- * resource info
- */
-public class ResourceInfo {
-  /**
-   * res the name of the resource that was uploaded
-   */
-  private int id;
+public class PostgreSqlDialect extends JdbcDialect {
 
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  private String res;
-
-  public String getRes() {
-    return res;
-  }
-
-  public void setRes(String res) {
-    this.res = res;
-  }
-
-
+    @Override
+    public String getDriver() {
+        return "com.mysql.jdbc.Driver";
+    }
 }

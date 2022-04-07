@@ -18,16 +18,12 @@
 package io.datavines.engine.spark.executor.parameter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-
-import io.datavines.common.parameter.AbstractParameters;
-import io.datavines.common.parameter.ResourceInfo;
 
 /**
  * spark parameters
  */
-public class SparkParameters extends AbstractParameters {
+public class SparkParameters {
 
     /**
      * main jar
@@ -102,11 +98,6 @@ public class SparkParameters extends AbstractParameters {
     private String sparkVersion;
 
     private String jars;
-
-    /**
-     * resource list
-     */
-    private List<ResourceInfo> resourceList = new ArrayList<>();
 
     public String getMainJar() {
         return mainJar;
@@ -204,14 +195,6 @@ public class SparkParameters extends AbstractParameters {
         this.others = others;
     }
 
-    public List<ResourceInfo> getResourceList() {
-        return resourceList;
-    }
-
-    public void setResourceList(List<ResourceInfo> resourceList) {
-        this.resourceList = resourceList;
-    }
-
     public ProgramType getProgramType() {
         return programType;
     }
@@ -236,13 +219,8 @@ public class SparkParameters extends AbstractParameters {
         this.jars = jars;
     }
 
-    @Override
     public boolean checkParameters() {
         return mainJar != null && programType != null;
     }
 
-    @Override
-    public List<ResourceInfo> getResourceFiles() {
-        return Collections.emptyList();
-    }
 }
