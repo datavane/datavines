@@ -25,6 +25,7 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.engine.config.BaseDataQualityConfigurationBuilder;
 import io.datavines.engine.config.ConfigConstants;
 import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.engine.config.MetricParserUtils;
@@ -39,61 +40,7 @@ import java.util.Map;
 
 import static io.datavines.engine.config.ConfigConstants.*;
 
-public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigurationBuilder {
-
-    protected final DataVinesQualityConfig configuration = new DataVinesQualityConfig();
-
-    protected Map<String, String> inputParameter;
-
-    protected TaskParameter taskParameter;
-
-    protected TaskInfo taskInfo;
-
-    protected ExpectedValue expectedValue;
-
-    private ConnectionInfo connectionInfo;
-
-    @Override
-    public void init(Map<String, String> inputParameter, TaskInfo taskInfo, ConnectionInfo connectionInfo) {
-        this.inputParameter = inputParameter;
-        this.taskInfo = taskInfo;
-        this.taskParameter = taskInfo.getTaskParameter();
-        this.connectionInfo = connectionInfo;
-
-        if (taskParameter.getMetricParameter() != null) {
-            taskParameter.getMetricParameter().forEach((k, v) -> {
-                inputParameter.put(k, String.valueOf(v));
-            });
-        }
-
-        if (taskParameter.getExpectedParameter() != null) {
-            taskParameter.getExpectedParameter().forEach((k, v) -> {
-                inputParameter.put(k, String.valueOf(v));
-            });
-        }
-
-        inputParameter.put("result_formula", String.valueOf(taskParameter.getResultFormula()));
-        inputParameter.put("operator", String.valueOf(taskParameter.getOperator()));
-        inputParameter.put("threshold", String.valueOf(taskParameter.getThreshold()));
-        inputParameter.put("failure_strategy", String.valueOf(taskParameter.getFailureStrategy()));
-
-        inputParameter.put(EXPECTED_TYPE, StringUtils.wrapperSingleQuotes(taskParameter.getExpectedType()));
-    }
-
-    @Override
-    public void buildName() {
-        configuration.setName(taskInfo.getName());
-    }
-
-    @Override
-    public void buildEnvConfig() {
-        configuration.setEnvConfig(getEnvConfig());
-    }
-
-    @Override
-    public void buildSourceConfigs() throws DataVinesException {
-        configuration.setSourceParameters(getSourceConfigs());
-    }
+public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfigurationBuilder {
 
     @Override
     public void buildTransformConfigs() {
@@ -133,9 +80,7 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
             inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
         }
 
-        if (StringUtils.isNotEmpty(expectedValue.getName())) {
-            inputParameter.put(EXPECTED_VALUE, expectedValue.getName());
-        }
+//       8
 
         if (expectedValue.isNeedDefaultDatasource()) {
             MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
@@ -149,16 +94,13 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
     }
 
     @Override
-    public DataVinesQualityConfig build() {
-        return configuration;
-    }
-
-    private EnvConfig getEnvConfig() {
+    protected EnvConfig getEnvConfig() {
         EnvConfig envConfig = new EnvConfig();
         envConfig.setEngine(taskInfo.getEngineType());
         return envConfig;
     }
 
+    @Override
     protected List<SourceConfig> getSourceConfigs() throws DataVinesException {
         List<SourceConfig> sourceConfigs = new ArrayList<>();
 
@@ -223,45 +165,4 @@ public abstract class BaseJdbcConfigurationBuilder implements DataQualityConfigu
 
         return sourceConfigs;
     }
-
-    protected SinkConfig getDefaultSinkConfig(String sql, String dbTable) throws DataVinesException {
-
-        SinkConfig actualValueSinkConfig = new SinkConfig();
-        if (connectionInfo == null) {
-            throw new DataVinesException("can not get the default datasource info");
-        }
-        actualValueSinkConfig.setPlugin("jdbc");
-        actualValueSinkConfig.setConfig(
-                getDefaultSourceConfigMap(
-                        PlaceholderUtils.replacePlaceholders(
-                                sql, inputParameter,true),dbTable));
-        return actualValueSinkConfig;
-    }
-
-    protected SourceConfig getDefaultSourceConfig() throws DataVinesException {
-
-        SourceConfig actualValueSourceConfig = new SourceConfig();
-        if (connectionInfo == null) {
-            throw new DataVinesException("can not get the default datasource info");
-        }
-        actualValueSourceConfig.setPlugin("jdbc");
-        actualValueSourceConfig.setType(SourceType.METADATA.getDescription());
-        actualValueSourceConfig.setConfig(getDefaultSourceConfigMap(null,null));
-        return actualValueSourceConfig;
-    }
-
-    protected Map<String,Object> getDefaultSourceConfigMap(String sql, String dbTable) {
-        Map<String,Object> actualValueConfigMap = new HashMap<>();
-        actualValueConfigMap.put(URL, connectionInfo.getUrl());
-        actualValueConfigMap.put(DB_TABLE, dbTable);
-        actualValueConfigMap.put(USER, connectionInfo.getUsername());
-        actualValueConfigMap.put(PASSWORD, connectionInfo.getPassword());
-        actualValueConfigMap.put(DRIVER, connectionInfo.getDriverName());
-        if (StringUtils.isNotEmpty(sql)) {
-            actualValueConfigMap.put(SQL, sql);
-        }
-
-        return actualValueConfigMap;
-    }
-
 }

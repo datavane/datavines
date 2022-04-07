@@ -28,5 +28,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>datavines-metric-null</artifactId>
-    
+
+    <dependencies>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 </project>

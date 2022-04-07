@@ -32,7 +32,6 @@
     <modules>
         <module>datavines-engine-spark-core</module>
         <module>datavines-engine-spark-jdbc</module>
-        <module>datavines-engine-spark-mysql</module>
         <module>datavines-engine-spark-executor</module>
         <module>datavines-engine-spark-api</module>
         <module>datavines-engine-spark-sql</module>

@@ -1,2 +1,0 @@
-spark-mysql-sink=io.datavines.engine.spark.mysql.sink.MysqlSink
-spark-mysql-source=io.datavines.engine.spark.mysql.source.MysqlSource

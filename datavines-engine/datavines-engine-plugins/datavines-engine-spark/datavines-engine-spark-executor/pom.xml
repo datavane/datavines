@@ -49,7 +49,7 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-spark-mysql</artifactId>
+            <artifactId>datavines-engine-spark-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
 
