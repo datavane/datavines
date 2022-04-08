@@ -48,8 +48,6 @@ public class MetricParserUtils {
         inputParameter.put(ConfigConstants.METRIC_DIMENSION, StringUtils.wrapperSingleQuotes(sqlMetric.getDimension().getDescription()));
         inputParameter.put(ConfigConstants.CREATE_TIME, StringUtils.wrapperSingleQuotes(now));
         inputParameter.put(ConfigConstants.UPDATE_TIME, StringUtils.wrapperSingleQuotes(now));
-        inputParameter.put(ConfigConstants.ACTUAL_NAME,sqlMetric.getActualName());
-
         inputParameter.put(ConfigConstants.TASK_ID, String.valueOf(task.getId()));
 
         if (StringUtils.isEmpty(inputParameter.get(ConfigConstants.DATA_TIME))) {
@@ -60,6 +58,7 @@ public class MetricParserUtils {
             inputParameter.put(ConfigConstants.REGEXP_PATTERN, StringUtils.escapeJava(
                     StringUtils.escapeJava(inputParameter.get(ConfigConstants.REGEXP_PATTERN))));
         }
+
         sqlMetric.prepare(inputParameter);
     }
 
@@ -74,7 +73,7 @@ public class MetricParserUtils {
             }
             Map<String,Object> config = new HashMap<>();
             config.put(ConfigConstants.INDEX,index++);
-            config.put(ConfigConstants.SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(),inputParameterValueResult,true));
+            config.put(ConfigConstants.SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult, true));
             config.put(ConfigConstants.OUTPUT_TABLE,executeSql.getResultTable());
 
             TransformConfig transformerConfig = new TransformConfig(ConfigConstants.SQL,config);
@@ -95,7 +94,7 @@ public class MetricParserUtils {
 
         Map<String,Object> config = new HashMap<>();
         config.put(ConfigConstants.INDEX, index++);
-        config.put(ConfigConstants.SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(),inputParameterValueResult,true));
+        config.put(ConfigConstants.SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult,true));
         config.put(ConfigConstants.OUTPUT_TABLE, executeSql.getResultTable());
         config.put(ConfigConstants.INVALIDATE_ITEMS_TABLE, inputParameterValueResult.get(ConfigConstants.INVALIDATE_ITEMS_TABLE));
 

@@ -398,20 +398,21 @@ public class OSUtils {
 
   /**
    * check memory and cpu usage
-   * @param systemCpuLoad systemCpuLoad
-   * @param systemReservedMemory systemReservedMemory
+   *
+   * @param maxCpuLoadAvg maxCpuLoadAvg
+   * @param reservedMemory reservedMemory
    * @return check memory and cpu usage
    */
-  public static Boolean checkResource(double systemCpuLoad, double systemReservedMemory){
+  public static Boolean checkResource(double maxCpuLoadAvg, double reservedMemory) {
     // system load average
-    double loadAverage = OSUtils.loadAverage();
+    double loadAverage = loadAverage();
     // system available physical memory
-    double availablePhysicalMemorySize = OSUtils.availablePhysicalMemorySize();
-
-    if(loadAverage > systemCpuLoad || availablePhysicalMemorySize < systemReservedMemory){
-      logger.warn("load is too high or availablePhysicalMemorySize(G) is too low, it's availablePhysicalMemorySize(G):{},loadAvg:{}", availablePhysicalMemorySize , loadAverage);
+    double availablePhysicalMemorySize = availablePhysicalMemorySize();
+    if (loadAverage > maxCpuLoadAvg || availablePhysicalMemorySize < reservedMemory) {
+      logger.warn("current cpu load average {} is too high or available memory {}G is too low, under max.cpu.load.avg={} and reserved.memory={}G",
+              loadAverage, availablePhysicalMemorySize, maxCpuLoadAvg, reservedMemory);
       return false;
-    }else{
+    } else {
       return true;
     }
   }

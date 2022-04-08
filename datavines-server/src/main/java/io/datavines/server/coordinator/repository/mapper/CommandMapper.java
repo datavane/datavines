@@ -30,6 +30,6 @@ public interface CommandMapper extends BaseMapper<Command> {
      * SELECT BY ID
      * @return
      */
-    @Select("SELECT * from command order by update_time limit 1 ")
+    @Select("SELECT * from command where type in (0,1) order by update_time limit 1 ")
     Command getOne();
 }

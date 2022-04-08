@@ -80,8 +80,6 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
             inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
         }
 
-//       8
-
         if (expectedValue.isNeedDefaultDatasource()) {
             MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
                     expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());

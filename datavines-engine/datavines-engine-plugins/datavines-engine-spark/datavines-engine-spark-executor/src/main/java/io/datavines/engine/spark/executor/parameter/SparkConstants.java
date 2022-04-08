@@ -38,6 +38,9 @@ public class SparkConstants {
      */
     public static final String SPARK_QUEUE = "--queue";
 
+    /**
+     * --deploy-mode cluster/client
+     */
     public static final String DEPLOY_MODE = "--deploy-mode";
 
     /**
@@ -51,7 +54,7 @@ public class SparkConstants {
     public static final String DRIVER_MEMORY = "--driver-memory";
 
     /**
-     * master
+     * --master
      */
     public static final String MASTER = "--master";
 

@@ -44,7 +44,7 @@ public class ConfigConstants {
     public static final String OPERATOR = "operator";
     public static final String FAILURE_STRATEGY = "failure_strategy";
     public static final String ACTUAL_TABLE = "actual_table";
-    public static final String ACTUAL_NAME = "actual_name";
+    public static final String ACTUAL_VALUE = "actual_value";
     public static final String AND = " AND ";
     public static final String WRITER_CONNECTOR_TYPE = "writer_connector_type";
     public static final String WRITER_DATASOURCE_ID = "writer_datasource_id";

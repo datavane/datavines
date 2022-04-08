@@ -17,7 +17,7 @@
 
 package io.datavines.server.coordinator.server.runner;
 
-import io.datavines.common.utils.CommonPropertyUtils;
+import io.datavines.common.utils.*;
 import io.datavines.server.coordinator.registry.Register;
 import io.datavines.server.enums.CommandType;
 import org.slf4j.Logger;
@@ -27,11 +27,11 @@ import io.datavines.server.coordinator.repository.service.impl.JobExternalServic
 import io.datavines.server.coordinator.server.cache.TaskExecuteManager;
 import io.datavines.server.utils.SpringApplicationContext;
 import io.datavines.common.entity.TaskRequest;
-import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.utils.Stopper;
-import io.datavines.common.utils.ThreadUtils;
 import io.datavines.server.coordinator.repository.entity.Command;
 import io.datavines.server.coordinator.repository.entity.Task;
+
+import static io.datavines.common.CommonConstants.SLEEP_TIME_MILLIS;
+import static io.datavines.common.utils.CommonPropertyUtils.*;
 
 public class JobScheduler extends Thread {
 
@@ -39,6 +39,8 @@ public class JobScheduler extends Thread {
 
     private final String TASK_LOCK_KEY =
             CommonPropertyUtils.getString(CommonPropertyUtils.TASK_LOCK_KEY, CommonPropertyUtils.TASK_LOCK_KEY_DEFAULT);
+
+    private static final int[] RETRY_BACKOFF = {1, 2, 3, 5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
 
     private final JobExternalService jobExternalService;
 
@@ -56,11 +58,22 @@ public class JobScheduler extends Thread {
     public void run() {
         logger.info("job scheduler started");
 
+        int retryNum = 0;
         while (Stopper.isRunning()) {
-
-            register.blockUtilAcquireLock(TASK_LOCK_KEY);
+            Command command = null;
             try {
-                Command command = jobExternalService.getCommand();
+                boolean runCheckFlag = OSUtils.checkResource(
+                        CommonPropertyUtils.getDouble(MAX_CPU_LOAD_AVG, MAX_CPU_LOAD_AVG_DEFAULT),
+                        CommonPropertyUtils.getDouble(RESERVED_MEMORY, RESERVED_MEMORY_DEFAULT));
+
+                if (!runCheckFlag) {
+                    Thread.sleep(SLEEP_TIME_MILLIS);
+                    continue;
+                }
+
+                register.blockUtilAcquireLock(TASK_LOCK_KEY);
+
+                command = jobExternalService.getCommand();
                 if (command != null) {
                     if (CommandType.START == command.getType()) {
                         Task task = jobExternalService.executeCommand(command);
@@ -78,13 +91,22 @@ public class JobScheduler extends Thread {
                         logger.info(String.format("kill task : %s", command.getTaskId()) );
                     }
                     register.release(TASK_LOCK_KEY);
-                    ThreadUtils.sleep(1000);
+                    ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                 } else {
                     register.release(TASK_LOCK_KEY);
-                    ThreadUtils.sleep(2000);
+                    ThreadUtils.sleep(SLEEP_TIME_MILLIS * 2);
                 }
+
+                retryNum = 0;
             } catch (Exception e){
-                logger.error("schedule job error ",e);
+                retryNum++;
+                if (command != null) {
+                    command.setType(CommandType.ERROR);
+                    jobExternalService.updateCommand(command);
+                }
+
+                logger.error("schedule job error ", e);
+                ThreadUtils.sleep(SLEEP_TIME_MILLIS * RETRY_BACKOFF[retryNum % RETRY_BACKOFF.length]);
             } finally {
                 register.release(TASK_LOCK_KEY);
             }

@@ -17,8 +17,10 @@
 
 package io.datavines.metric.plugin;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ExecuteSql;
@@ -69,8 +71,8 @@ public class MultiTableAccuracy implements SqlMetric {
     }
 
     @Override
-    public List<String> getConfigList() {
-        return null;
+    public Set<String> getConfigSet() {
+        return Collections.emptySet();
     }
 
     @Override

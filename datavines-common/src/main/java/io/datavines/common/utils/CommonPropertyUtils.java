@@ -34,10 +34,10 @@ public class CommonPropertyUtils {
     public static final Integer EXEC_THREADS_DEFAULT = 100;
 
     public static final String MAX_CPU_LOAD_AVG = "max.cpu.load.avg";
-    public static final Integer MAX_CPU_LOAD_AVG_DEFAULT = -1;
+    public static final Double MAX_CPU_LOAD_AVG_DEFAULT = 0.5;
 
     public static final String RESERVED_MEMORY = "reserved.memory";
-    public static final Float RESERVED_MEMORY_DEFAULT = 0.3f;
+    public static final Double RESERVED_MEMORY_DEFAULT = 0.3;
 
     public static final String SERVER_PORT = "server.port";
     public static final Integer SERVER_PORT_DEFAULT = 5600;

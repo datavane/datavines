@@ -23,6 +23,7 @@ import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTable;
 
 import java.util.Map;
+import java.util.Set;
 
 public class ValueBetween extends BaseSingleTable {
 
@@ -63,5 +64,12 @@ public class ValueBetween extends BaseSingleTable {
         }
 
         super.prepare(config);
+    }
+
+    @Override
+    public Set<String> getConfigSet() {
+        configSet.add("src_min");
+        configSet.add("src_max");
+        return configSet;
     }
 }

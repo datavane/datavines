@@ -22,7 +22,10 @@ import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTable;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class Null extends BaseSingleTable {
 
@@ -57,5 +60,10 @@ public class Null extends BaseSingleTable {
             filters.add("(${src_column} is null or ${src_column} = '')");
         }
         super.prepare(config);
+    }
+
+    @Override
+    public Set<String> getConfigSet() {
+        return configSet;
     }
 }

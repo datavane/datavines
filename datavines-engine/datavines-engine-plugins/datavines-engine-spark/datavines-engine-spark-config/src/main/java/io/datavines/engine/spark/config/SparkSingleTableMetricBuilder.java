@@ -35,10 +35,10 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
         inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
         List<SinkConfig> sinkConfigs = new ArrayList<>();
         //get the actual value storage parameter
-        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(MetricConstants.TASK_ACTUAL_VALUE_SINK_SQL,"actual_values");
+        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SparkSinkSqlBuilder.getActualValueSql(),"actual_values");
         sinkConfigs.add(actualValueSinkConfig);
 
-        String taskSinkSql = MetricConstants.DEFAULT_SINK_SQL;
+        String taskSinkSql = SparkSinkSqlBuilder.getDefaultSinkSql();
         if (StringUtils.isEmpty(expectedValue.getOutputTable())) {
             taskSinkSql = taskSinkSql.replaceAll("full join \\$\\{expected_table}","");
         }
@@ -47,6 +47,7 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
         SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "task_result");
         sinkConfigs.add(taskResultSinkConfig);
 
+        //todo
         //get the error data storage parameter
         //support file(hdfs/minio/s3)/es
 

@@ -62,10 +62,10 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
     public void buildSinkConfigs() throws DataVinesException {
         List<SinkConfig> sinkConfigs = new ArrayList<>();
         //get the actual value storage parameter
-        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(MetricConstants.TASK_ACTUAL_VALUE_SINK_SQL, "actual_values");
+        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SparkSinkSqlBuilder.getActualValueSql(), "actual_values");
         sinkConfigs.add(actualValueSinkConfig);
 
-        String taskSinkSql = MetricConstants.SINGLE_TABLE_CUSTOM_SQL_SINK_SQL;
+        String taskSinkSql = SparkSinkSqlBuilder.getSingleTableCustomSqlSinkSql();
         if (StringUtils.isEmpty(expectedValue.getOutputTable())) {
             taskSinkSql = taskSinkSql.replaceAll("join \\$\\{expected_table}","");
         }
@@ -73,6 +73,7 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
         SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql,"task_result");
         sinkConfigs.add(taskResultSinkConfig);
 
+        //todo
         //get the error data storage parameter
         //support file(hdfs/minio/s3)/es
 
@@ -81,6 +82,6 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
 
     private ExecuteSql getCustomExecuteSql(Map<String, String> inputParameterValueResult) {
         inputParameterValueResult.put(ACTUAL_TABLE, inputParameterValueResult.get(SRC_TABLE));
-        return new ExecuteSql(inputParameterValueResult.get(EXPECTED_EXECUTE_SQL),inputParameterValueResult.get(SRC_TABLE));
+        return new ExecuteSql(inputParameterValueResult.get(EXPECTED_EXECUTE_SQL), inputParameterValueResult.get(SRC_TABLE));
     }
 }

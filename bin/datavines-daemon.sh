@@ -58,7 +58,7 @@ pid=$DATAVINES_PID_DIR/datavines-$command.pid
 cd $DATAVINES_HOME
 
 if [ "$command" = "server" ]; then
-  LOG_FILE="-Dlogging.config=classpath:server-logback.xml -Dspring.profiles.active=master"
+  LOG_FILE="-Dlogging.config=classpath:server-logback.xml -Dspring.profiles.active=server"
   CLASS=io.datavines.server.DataVinesServer
 else
   echo "Error: No command named \`$command' was found."

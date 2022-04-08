@@ -19,6 +19,7 @@ package io.datavines.metric.api;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ExecuteSql;
@@ -52,12 +53,12 @@ public interface SqlMetric {
      * @return
      */
     default String getActualName() {
-        return "actual_name";
+        return "actual_value";
     }
 
     CheckResult validateConfig(Map<String,String> config);
 
-    List<String> getConfigList();
+    Set<String> getConfigSet();
 
     void prepare(Map<String,String> config);
 }

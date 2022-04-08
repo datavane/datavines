@@ -22,9 +22,7 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.metric.api.SqlMetric;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class BaseSingleTable implements SqlMetric {
 
@@ -33,6 +31,14 @@ public abstract class BaseSingleTable implements SqlMetric {
     private final StringBuilder actualValueSql = new StringBuilder("select count(*) as actual_value from ${invalidate_items_table}");
 
     protected List<String> filters = new ArrayList<>();
+
+    protected static Set<String> configSet = new HashSet<>();
+
+    static {
+        configSet.add("src_table");
+        configSet.add("src_filter");
+        configSet.add("src_column");
+    }
 
     @Override
     public ExecuteSql getInvalidateItems() {
@@ -50,16 +56,6 @@ public abstract class BaseSingleTable implements SqlMetric {
         executeSql.setSql(actualValueSql.toString());
         executeSql.setErrorOutput(false);
         return executeSql;
-    }
-
-    @Override
-    public List<String> getConfigList() {
-
-        List<String> list = new ArrayList<>();
-        list.add("src_table");
-        list.add("src_filter");
-        list.add("src_column");
-        return list;
     }
 
     @Override

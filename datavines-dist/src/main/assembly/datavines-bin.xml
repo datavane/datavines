@@ -83,7 +83,6 @@
             <excludes>
                 <exclude>javax.servlet:servlet-api</exclude>
                 <exclude>org.eclipse.jetty.aggregate:jetty-all</exclude>
-                <exclude>org.slf4j:slf4j-log4j12</exclude>
             </excludes>
         </dependencySet>
 
@@ -94,9 +93,10 @@
                 <include>io.datavines:datavines-common</include>
                 <include>io.datavines:datavines-spi</include>
                 <include>io.datavines:datavines-engine-spark-api</include>
-                <include>io.datavines:datavines-engine-spark-mysql</include>
+                <include>io.datavines:datavines-engine-spark-jdbc</include>
                 <include>io.datavines:datavines-engine-core</include>
                 <include>io.datavines:datavines-engine-spark-sql</include>
+                <include>io.datavines:datavines-engine-api</include>
             </includes>
         </dependencySet>
     </dependencySets>

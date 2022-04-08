@@ -27,15 +27,17 @@ public enum CommandType {
     /**
      * 0-start
      * 1-stop
-     * 2-recover-tolerances-fault-task
-     * 3-recover-waiting-thread
-     * 4-scheduler
+     * 2-error
+     * 3-recover-tolerances-fault-task
+     * 4-recover-waiting-thread
+     * 5-scheduler
      */
     START(0, "start a task"),
     STOP(1, "stop a task"),
-    RECOVER_TOLERANCE_FAULT(2, "recover tolerance fault task"),
-    RECOVER_WAITING_THREAD(3, "recover waiting thread"),
-    SCHEDULER(4,"scheduler");
+    ERROR(2, "task has error"),
+    RECOVER_TOLERANCE_FAULT(3, "recover tolerance fault task"),
+    RECOVER_WAITING_THREAD(4, "recover waiting thread"),
+    SCHEDULER(5,"scheduler");
 
     CommandType(int code, String description){
         this.code = code;

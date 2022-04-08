@@ -69,6 +69,7 @@ public class SparkRuntimeEnvironment implements RuntimeEnvironment {
                 .forEach(entry -> {
                     conf.set(entry.getKey(), String.valueOf(entry.getValue()));
         });
+        conf.set("spark.sql.crossJoin.enabled","true");
 
         return conf;
     }

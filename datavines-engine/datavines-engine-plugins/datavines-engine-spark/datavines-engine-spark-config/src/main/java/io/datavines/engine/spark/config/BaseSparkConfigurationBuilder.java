@@ -25,6 +25,7 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.config.BaseDataQualityConfigurationBuilder;
+import io.datavines.engine.config.ConfigConstants;
 import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
@@ -54,14 +55,15 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
         transformExecuteSqlList.add(sqlMetric.getInvalidateItems());
         transformExecuteSqlList.add(sqlMetric.getActualValue());
         inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
-
+        inputParameter.put(ACTUAL_VALUE, sqlMetric.getActualName());
+        inputParameter.put(INVALIDATE_ITEMS_TABLE, sqlMetric.getInvalidateItems().getResultTable());
         // get expected value transform sql
         String expectedType = taskParameter.getExpectedType();
         expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);
         ExecuteSql expectedValueExecuteSql =
-                new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
+                new ExecuteSql(expectedValue.getExecuteSql(), expectedValue.getOutputTable());
         transformExecuteSqlList.add(expectedValueExecuteSql);
 
         if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {

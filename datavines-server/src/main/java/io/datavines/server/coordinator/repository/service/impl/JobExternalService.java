@@ -92,6 +92,10 @@ public class JobExternalService {
         return commandService.insert(command);
     }
 
+    public int updateCommand(Command command){
+        return commandService.update(command);
+    }
+
     public void updateTaskStatus(Long taskId, ExecutionStatus status){
         Task task = getTaskById(taskId);
         task.setStatus(status);
