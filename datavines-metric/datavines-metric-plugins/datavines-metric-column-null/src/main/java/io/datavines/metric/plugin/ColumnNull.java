@@ -24,16 +24,11 @@ import io.datavines.metric.plugin.base.BaseSingleTable;
 import java.util.Map;
 import java.util.Set;
 
-public class ValueBetween extends BaseSingleTable {
-
-    public ValueBetween(){
-        configSet.add("min");
-        configSet.add("max");
-    }
+public class ColumnNull extends BaseSingleTable {
 
     @Override
     public String getName() {
-        return "value_between";
+        return "null";
     }
 
     @Override
@@ -53,15 +48,9 @@ public class ValueBetween extends BaseSingleTable {
 
     @Override
     public void prepare(Map<String, String> config) {
-
-        if (config.containsKey("min")) {
-            filters.add("${column} >= ${min}");
+        if (config.containsKey("column")) {
+            filters.add("(${column} is null or ${column} = '')");
         }
-
-        if (config.containsKey("max")) {
-            filters.add("${column} <= ${max}");
-        }
-
         super.prepare(config);
     }
 

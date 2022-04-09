@@ -1,1 +1,1 @@
-value_between=io.datavines.metric.plugin.ValueBetween
+column_value_between=io.datavines.metric.plugin.ColumnValueBetween

@@ -1,1 +1,1 @@
-null=io.datavines.metric.plugin.Null
+column_null=io.datavines.metric.plugin.ColumnNull
