@@ -20,6 +20,7 @@ package io.datavines.connector.plugin;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorParameterConverter;
 
 public class JdbcConnectorParameterConverter implements ConnectorParameterConverter {
@@ -27,15 +28,25 @@ public class JdbcConnectorParameterConverter implements ConnectorParameterConver
     @Override
     public Map<String, Object> converter(Map<String, Object> parameter) {
         Map<String,Object> config = new HashMap<>();
-        config.put("table",parameter.get("src_table"));
+        config.put("table",parameter.get("table"));
         config.put("user",parameter.get("user"));
         config.put("password", parameter.get("password"));
-        config.put("url",String.format("jdbc:%s://%s:%s/%s?%s",
+        config.put("url", getUrl(parameter));
+        return config;
+    }
+
+    protected String getUrl(Map<String, Object> parameter) {
+        String url = String.format("jdbc:%s://%s:%s/%s",
                 parameter.get("type"),
                 parameter.get("host"),
                 parameter.get("port"),
-                parameter.get("database"),
-                parameter.get("properties")));
-        return config;
+                parameter.get("database"));
+        String properties = (String)parameter.get("properties");
+        if (StringUtils.isNotEmpty(properties)) {
+            url += "?" + properties;
+        }
+
+        return url;
     }
+
 }

@@ -1,1 +1,1 @@
-src_table_total_rows=io.datavines.metric.expected.SrcTableTotalRows
+table_total_rows=io.datavines.metric.expected.SrcTableTotalRows

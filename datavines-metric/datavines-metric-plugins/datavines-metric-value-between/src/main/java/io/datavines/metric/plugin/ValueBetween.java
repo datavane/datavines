@@ -17,7 +17,6 @@
 
 package io.datavines.metric.plugin;
 
-import io.datavines.common.config.CheckResult;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTable;
@@ -26,6 +25,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class ValueBetween extends BaseSingleTable {
+
+    public ValueBetween(){
+        configSet.add("min");
+        configSet.add("max");
+    }
 
     @Override
     public String getName() {
@@ -48,19 +52,14 @@ public class ValueBetween extends BaseSingleTable {
     }
 
     @Override
-    public CheckResult validateConfig(Map<String, String> config) {
-        return null;
-    }
-
-    @Override
     public void prepare(Map<String, String> config) {
 
-        if (config.containsKey("src_min")) {
-            filters.add("${src_column} >= ${src_min}");
+        if (config.containsKey("min")) {
+            filters.add("${column} >= ${min}");
         }
 
-        if (config.containsKey("src_max")) {
-            filters.add("${src_column} <= ${src_max}");
+        if (config.containsKey("max")) {
+            filters.add("${column} <= ${max}");
         }
 
         super.prepare(config);
@@ -68,8 +67,6 @@ public class ValueBetween extends BaseSingleTable {
 
     @Override
     public Set<String> getConfigSet() {
-        configSet.add("src_min");
-        configSet.add("src_max");
         return configSet;
     }
 }

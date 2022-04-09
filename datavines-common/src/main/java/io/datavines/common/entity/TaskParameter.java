@@ -32,7 +32,7 @@ public class TaskParameter {
 
     private ConnectorParameter targetConnectorParameter;
 
-    private String expectedType = "src_table_total_rows";
+    private String expectedType = "table_total_rows";
 
     private Map<String, Object> expectedParameter;
 

@@ -19,11 +19,11 @@ package io.datavines.engine.config;
 
 public class ConfigConstants {
 
-    public static final String SRC_CONNECTOR_TYPE = "src_connector_type";
-    public static final String SRC_DATASOURCE_ID = "src_datasource_id";
-    public static final String SRC_TABLE = "src_table";
-    public static final String SRC_FILTER = "src_filter";
-    public static final String SRC_COLUMN = "src_column";
+    public static final String CONNECTOR_TYPE = "connector_type";
+    public static final String DATASOURCE_ID = "datasource_id";
+    public static final String TABLE = "table";
+    public static final String FILTER = "filter";
+    public static final String COLUMN = "column";
     public static final String TARGET_CONNECTOR_TYPE = "target_connector_type";
     public static final String TARGET_DATASOURCE_ID = "target_datasource_id";
     public static final String TARGET_TABLE = "target_table";
@@ -67,7 +67,6 @@ public class ConfigConstants {
     public static final String USER = "user";
     public static final String PASSWORD = "password";
     public static final String DB_TABLE = "dbtable";
-    public static final String TABLE = "table";
     public static final String URL = "url";
     public static final String DRIVER = "driver";
     public static final String SQL = "sql";

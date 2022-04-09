@@ -17,6 +17,8 @@
 
 package io.datavines.metric.plugin.base;
 
+import io.datavines.common.config.CheckResult;
+import io.datavines.common.config.ConfigChecker;
 import io.datavines.common.entity.ExecuteSql;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.metric.api.SqlMetric;
@@ -26,7 +28,7 @@ import java.util.*;
 
 public abstract class BaseSingleTable implements SqlMetric {
 
-    private final StringBuilder invalidateItemsSql = new StringBuilder("select * from ${src_table}");
+    private final StringBuilder invalidateItemsSql = new StringBuilder("select * from ${table}");
 
     private final StringBuilder actualValueSql = new StringBuilder("select count(*) as actual_value from ${invalidate_items_table}");
 
@@ -35,9 +37,12 @@ public abstract class BaseSingleTable implements SqlMetric {
     protected static Set<String> configSet = new HashSet<>();
 
     static {
-        configSet.add("src_table");
-        configSet.add("src_filter");
-        configSet.add("src_column");
+        configSet.add("table");
+        configSet.add("filter");
+        configSet.add("column");
+
+        REQUIRED_OPTIONS.add("table");
+        REQUIRED_OPTIONS.add("column");
     }
 
     @Override
@@ -59,15 +64,20 @@ public abstract class BaseSingleTable implements SqlMetric {
     }
 
     @Override
+    public CheckResult validateConfig(Map<String, Object> config) {
+        return ConfigChecker.checkConfig(config, REQUIRED_OPTIONS);
+    }
+
+    @Override
     public void prepare(Map<String, String> config) {
-        if (config.containsKey("src_filter")) {
-            filters.add(config.get("src_filter"));
+        if (config.containsKey("filter")) {
+            filters.add(config.get("filter"));
         }
 
         addFiltersIntoInvalidateItemsSql();
     }
 
-    protected void addFiltersIntoInvalidateItemsSql() {
+    private void addFiltersIntoInvalidateItemsSql() {
         if (filters.size() > 0) {
             invalidateItemsSql.append(" where ").append(String.join(" and ", filters));
         }

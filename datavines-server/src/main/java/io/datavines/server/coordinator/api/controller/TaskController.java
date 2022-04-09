@@ -19,6 +19,7 @@ package io.datavines.server.coordinator.api.controller;
 
 import javax.validation.Valid;
 
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.TaskResultService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +49,14 @@ public class TaskController {
 
     @ApiOperation(value = "submit task")
     @PostMapping(value = "/submit", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object submitTask(@Valid @RequestBody SubmitTask submitTask) {
+    public Object submitTask(@Valid @RequestBody SubmitTask submitTask)  {
         Map<String,Object> result = new HashMap<>();
-        result.put("taskId",taskService.submitTask(submitTask));
+        try {
+            result.put("taskId",taskService.submitTask(submitTask));
+        } catch (DataVinesException e) {
+            return new ResultMap().fail().payload(e.getMessage());
+        }
+
         return new ResultMap().success().payload(result);
     }
 

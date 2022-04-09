@@ -27,7 +27,7 @@ public class ImpalaConnectorParameterConverter implements ConnectorParameterConv
     @Override
     public Map<String, Object> converter(Map<String, Object> parameter) {
         Map<String,Object> config = new HashMap<>();
-        config.put("table",parameter.get("src_table"));
+        config.put("table",parameter.get("table"));
         config.put("user",parameter.get("user"));
         config.put("password", parameter.get("password"));
         config.put("url",String.format("jdbc:impala://%s:%s/%s;UseSasl=0;AuthMech=3;UID=impala;PWD=;",

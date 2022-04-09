@@ -18,15 +18,11 @@
 package io.datavines.engine.spark.config;
 
 import io.datavines.common.config.*;
-import io.datavines.common.config.enums.SourceType;
 import io.datavines.common.entity.*;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
-import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.config.BaseDataQualityConfigurationBuilder;
-import io.datavines.engine.config.ConfigConstants;
-import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
@@ -57,6 +53,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
         inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
         inputParameter.put(ACTUAL_VALUE, sqlMetric.getActualName());
         inputParameter.put(INVALIDATE_ITEMS_TABLE, sqlMetric.getInvalidateItems().getResultTable());
+
         // get expected value transform sql
         String expectedType = taskParameter.getExpectedType();
         expectedValue = PluginLoader
@@ -93,7 +90,6 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
             ConnectorParameter srcConnectorParameter = taskParameter.getSrcConnectorParameter();
             SourceConfig sourceConfig = new SourceConfig();
 
-
             Map<String, Object> connectorParameterMap = new HashMap<>(srcConnectorParameter.getParameters());
             connectorParameterMap.putAll(inputParameter);
 
@@ -103,10 +99,10 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
 
             connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
 
-            String outputTable = srcConnectorParameter.getParameters().get(DATABASE) + "_" + inputParameter.get(SRC_TABLE);
+            String outputTable = srcConnectorParameter.getParameters().get(DATABASE) + "_" + inputParameter.get(TABLE);
             connectorParameterMap.put(OUTPUT_TABLE, outputTable);
             connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
-            inputParameter.put(SRC_TABLE, outputTable);
+            inputParameter.put(TABLE, outputTable);
 
             sourceConfig.setPlugin(connectorFactory.getCategory());
             sourceConfig.setConfig(connectorParameterMap);

@@ -81,7 +81,7 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
     }
 
     private ExecuteSql getCustomExecuteSql(Map<String, String> inputParameterValueResult) {
-        inputParameterValueResult.put(ACTUAL_TABLE, inputParameterValueResult.get(SRC_TABLE));
-        return new ExecuteSql(inputParameterValueResult.get(EXPECTED_EXECUTE_SQL), inputParameterValueResult.get(SRC_TABLE));
+        inputParameterValueResult.put(ACTUAL_TABLE, inputParameterValueResult.get(TABLE));
+        return new ExecuteSql(inputParameterValueResult.get(EXPECTED_EXECUTE_SQL), inputParameterValueResult.get(TABLE));
     }
 }

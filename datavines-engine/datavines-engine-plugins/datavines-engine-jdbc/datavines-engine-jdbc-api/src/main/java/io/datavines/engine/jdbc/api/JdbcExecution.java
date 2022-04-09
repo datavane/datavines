@@ -70,7 +70,7 @@ public class JdbcExecution implements Execution<JdbcSource, JdbcTransform, JdbcS
                     taskResult.add(actualValueResult);
                     break;
                 case EXPECTED_VALUE_FROM_METADATA_SOURCE:
-                case EXPECTED_VALUE_FROM_SRC_SOURCE:
+                case EXPECTED_VALUE_FROM_SOURCE:
                 case EXPECTED_VALUE_FROM_TARGET_SOURCE:
                     ResultList expectedResult = jdbcTransform.process(jdbcRuntimeEnvironment);
                     taskResult.add(expectedResult);

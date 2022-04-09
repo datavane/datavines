@@ -21,8 +21,16 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.datavines.common.config.CheckResult;
+import io.datavines.common.entity.ConnectorParameter;
+import io.datavines.common.entity.TaskParameter;
+import io.datavines.common.exception.DataVinesException;
+import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.metric.api.SqlMetric;
+import io.datavines.spi.PluginLoader;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,7 +76,10 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
     }
 
     @Override
-    public Long submitTask(SubmitTask submitTask) {
+    public Long submitTask(SubmitTask submitTask) throws DataVinesException{
+
+        checkTaskParameter(submitTask);
+
         Task task = new Task();
         BeanUtils.copyProperties(submitTask,task);
         task.setParameter(JSONUtils.toJsonString(submitTask.getParameter()));
@@ -128,5 +139,40 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
         return baseMapper.selectList(new QueryWrapper<Task>()
                 .in("execute_host", hostList)
                 .eq("status",ExecutionStatus.RUNNING_EXECUTION.getCode()));
+    }
+
+    private void checkTaskParameter(SubmitTask submitTask) throws DataVinesException {
+        String engineType = submitTask.getEngineType();
+        TaskParameter taskParameter = submitTask.getParameter();
+        ConnectorParameter srcConnectorParameter = taskParameter.getSrcConnectorParameter();
+        if (srcConnectorParameter != null) {
+            String srcConnectorType = srcConnectorParameter.getType();
+            Set<String> connectorFactoryPluginSet =
+                    PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
+            if (!connectorFactoryPluginSet.contains(srcConnectorType)) {
+                throw new DataVinesException(String.format("%s connector does not supported", srcConnectorType));
+            }
+
+            if ("jdbc".equals(engineType)) {
+                ConnectorFactory srcConnectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
+                if (!"jdbc".equals(srcConnectorFactory.getCategory())) {
+                    throw new DataVinesException(String.format("jdbc engine does not supported %s connector", srcConnectorType));
+                }
+            }
+        } else {
+            throw new DataVinesException("src connector parameter should not be null");
+        }
+
+        String metricType = taskParameter.getMetricType();
+        Set<String> metricPluginSet = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+        if (!metricPluginSet.contains(metricType)) {
+            throw new DataVinesException(String.format("%s metric does not supported", metricType));
+        }
+
+        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricType);
+        CheckResult checkResult = sqlMetric.validateConfig(taskParameter.getMetricParameter());
+        if (!checkResult.isSuccess()) {
+            throw new DataVinesException(checkResult.getMsg());
+        }
     }
 }

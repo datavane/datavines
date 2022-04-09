@@ -17,13 +17,10 @@
 
 package io.datavines.metric.plugin;
 
-import io.datavines.common.config.CheckResult;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTable;
 
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -50,14 +47,9 @@ public class Null extends BaseSingleTable {
     }
 
     @Override
-    public CheckResult validateConfig(Map<String, String> config) {
-        return null;
-    }
-
-    @Override
     public void prepare(Map<String, String> config) {
-        if (config.containsKey("src_column")) {
-            filters.add("(${src_column} is null or ${src_column} = '')");
+        if (config.containsKey("column")) {
+            filters.add("(${column} is null or ${column} = '')");
         }
         super.prepare(config);
     }

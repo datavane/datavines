@@ -91,7 +91,7 @@ public class SqlTransform implements JdbcTransform {
                 case EXPECTED_VALUE_FROM_METADATA_SOURCE:
                     resultList = new ExpectedValueExecutor().execute(env.getMetadataConnection(), sql, outputTable);
                     break;
-                case EXPECTED_VALUE_FROM_SRC_SOURCE:
+                case EXPECTED_VALUE_FROM_SOURCE:
                     resultList = new ExpectedValueExecutor().execute(env.getSourceConnection(), sql, outputTable);
                     break;
                 default:

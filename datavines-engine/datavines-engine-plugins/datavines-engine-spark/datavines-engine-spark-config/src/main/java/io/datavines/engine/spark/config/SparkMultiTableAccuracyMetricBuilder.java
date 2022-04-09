@@ -72,7 +72,7 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
         List<MappingColumn> list = new ArrayList<>();
         mappingColumnList.forEach(item -> {
             MappingColumn column = new MappingColumn(
-                    String.valueOf(item.get(SRC_COLUMN)).replace("\"",""),
+                    String.valueOf(item.get(COLUMN)).replace("\"",""),
                     String.valueOf(item.get(OPERATOR)).replace("\""," "),
                     String.valueOf(item.get(TARGET_COLUMN)).replace("\"",""));
             list.add(column);
@@ -104,7 +104,7 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
         String[] columnList = new String[mappingColumnList.size()];
         for (int i = 0; i < mappingColumnList.size(); i++) {
             MappingColumn column = mappingColumnList.get(i);
-            columnList[i] = getCoalesceString(inputParameterValueResult.get(SRC_TABLE),column.getSrcField())
+            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE),column.getSrcField())
                     + column.getOperator()
                     + getCoalesceString(inputParameterValueResult.get(TARGET_TABLE),column.getTargetField());
         }
@@ -113,7 +113,7 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
     }
 
     private String getWhereClause(List<MappingColumn> mappingColumnList,Map<String,String> inputParameterValueResult) {
-        String srcColumnNotNull = "( NOT (" + getSrcColumnIsNullStr(inputParameterValueResult.get(SRC_TABLE),getSrcColumnList(mappingColumnList)) + " ))";
+        String srcColumnNotNull = "( NOT (" + getSrcColumnIsNullStr(inputParameterValueResult.get(TABLE),getSrcColumnList(mappingColumnList)) + " ))";
         String targetColumnIsNull = "( " + getSrcColumnIsNullStr(inputParameterValueResult.get(TARGET_TABLE),getTargetColumnList(mappingColumnList)) + " )";
 
         return srcColumnNotNull + AND + targetColumnIsNull;

@@ -33,7 +33,7 @@ public enum TransformType {
     INVALIDATE_ITEMS(0, "invalidate_items"),
     ACTUAL_VALUE(1, "actual_value"),
     EXPECTED_VALUE_FROM_METADATA_SOURCE(2, "expected_value_from_metadata_source"),
-    EXPECTED_VALUE_FROM_SRC_SOURCE(3, "expected_value_from_src_source"),
+    EXPECTED_VALUE_FROM_SOURCE(3, "expected_value_from_source"),
     EXPECTED_VALUE_FROM_TARGET_SOURCE(4, "expected_value_from_target_source");
 
     TransformType(int code, String description){

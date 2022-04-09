@@ -24,7 +24,7 @@ import java.util.Map;
 public class SrcTableTotalRows implements ExpectedValue {
 
     private StringBuilder sql =
-            new StringBuilder("select count(*) as expected_value from ${src_table}");
+            new StringBuilder("select count(*) as expected_value from ${table}");
 
     @Override
     public String getName() {
@@ -33,7 +33,7 @@ public class SrcTableTotalRows implements ExpectedValue {
 
     @Override
     public String getType() {
-        return "src_table_total_rows";
+        return "table_total_rows";
     }
 
     @Override
@@ -53,11 +53,11 @@ public class SrcTableTotalRows implements ExpectedValue {
 
     @Override
     public void prepare(Map<String, String> config) {
-        if (config.containsKey("src_filter")) {
+        if (config.containsKey("filter")) {
             if (sql.toString().contains("where")) {
-                sql.append(" and ").append(config.get("src_filter"));
+                sql.append(" and ").append(config.get("filter"));
             } else {
-                sql.append(" where ").append(config.get("src_filter"));
+                sql.append(" where ").append(config.get("filter"));
             }
         }
     }

@@ -19,8 +19,8 @@
     "parameter":{
         "metricType":"null",
         "metricParameter":{
-            "src_table":"person",
-            "src_column":"age"
+            "table":"person",
+            "column":"age"
         },
         "srcConnectorParameter":{
             "type":"mysql",
@@ -57,10 +57,10 @@
     "parameter":{
         "metricType":"value_between",
         "metricParameter":{
-            "src_table":"person",
-            "src_column":"age",
-            "src_min":5,
-            "src_max":80
+            "table":"person",
+            "column":"age",
+            "min":5,
+            "max":80
         },
         "srcConnectorParameter":{
             "type":"mysql",
@@ -103,7 +103,7 @@
             "taskId": 1511355300065992706,
             "actualValue": 4.0,
             "expectedValue": 22.0,
-            "expectedType": "src_table_total_rows",
+            "expectedType": "table_total_rows",
             "resultFormula": "percentage",
             "operator": "gt",
             "threshold": 0.0,

@@ -29,14 +29,14 @@
             "dimension": "completeness",
             "invalidateItemsCanOutput": true,
             "invalidateItems": {
-                "sql": "select * from ${src_table}",
+                "sql": "select * from ${table}",
                 "resultTable": "invalidate_items",
                 "errorOutput": true
             },
             "configList": [
-                "src_table",
-                "src_filter",
-                "src_column"
+                "table",
+                "filter",
+                "column"
             ],
             "actualValue": {
                 "sql": "select count(*) as actual_value from ${invalidate_items_table}",

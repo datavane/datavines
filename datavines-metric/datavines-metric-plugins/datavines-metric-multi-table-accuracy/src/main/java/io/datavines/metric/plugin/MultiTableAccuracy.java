@@ -47,7 +47,7 @@ public class MultiTableAccuracy implements SqlMetric {
 
 //    @Override
 //    public String getInvalidateItemsSql() {
-//        return "SELECT ${src_table}.* FROM (SELECT * FROM ${src_table} WHERE (${src_filter})) ${src_table} LEFT JOIN (SELECT * FROM ${target_table} WHERE (${target_filter})) ${target_table} ON ${on_clause} WHERE ${where_clause}";
+//        return "SELECT ${table}.* FROM (SELECT * FROM ${table} WHERE (${filter})) ${table} LEFT JOIN (SELECT * FROM ${target_table} WHERE (${target_filter})) ${target_table} ON ${on_clause} WHERE ${where_clause}";
 //    }
 
     @Override
@@ -61,7 +61,7 @@ public class MultiTableAccuracy implements SqlMetric {
 //    }
 
     @Override
-    public CheckResult validateConfig(Map<String, String> config) {
+    public CheckResult validateConfig(Map<String, Object> config) {
         return null;
     }
 

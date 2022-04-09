@@ -17,7 +17,7 @@
 
 package io.datavines.metric.api;
 
-import java.util.List;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -27,6 +27,8 @@ import io.datavines.spi.SPI;;
 
 @SPI
 public interface SqlMetric {
+
+    Set<String> REQUIRED_OPTIONS = new HashSet<>();
 
     String getName();
 
@@ -56,7 +58,7 @@ public interface SqlMetric {
         return "actual_value";
     }
 
-    CheckResult validateConfig(Map<String,String> config);
+    CheckResult validateConfig(Map<String,Object> config);
 
     Set<String> getConfigSet();
 

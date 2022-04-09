@@ -20,6 +20,6 @@ public class PostgreSqlDialect extends JdbcDialect {
 
     @Override
     public String getDriver() {
-        return "com.mysql.jdbc.Driver";
+        return "org.postgresql.Driver";
     }
 }

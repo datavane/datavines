@@ -85,7 +85,7 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
                     expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());
         } else {
             MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SRC_SOURCE.getDescription());
+                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SOURCE.getDescription());
         }
 
         configuration.setTransformParameters(transformConfigs);
@@ -115,7 +115,7 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
 
             connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
 
-            String outputTable = inputParameter.get(SRC_TABLE);
+            String outputTable = inputParameter.get(TABLE);
             connectorParameterMap.put(OUTPUT_TABLE, outputTable);
             connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
 
