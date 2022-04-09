@@ -166,7 +166,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
             throw new DataVinesException(checkResult== null? "check error": checkResult.getMsg());
         }
 
-        String configBuilder = engineType + "_" + sqlMetric.getType();
+        String configBuilder = engineType + "_" + sqlMetric.getType().getDescription();
         Set<String> configBuilderPluginSet = PluginLoader.getPluginLoader(DataQualityConfigurationBuilder.class).getSupportedPlugins();
         if (!configBuilderPluginSet.contains(configBuilder)) {
             throw new DataVinesException(String.format("%s engine does not supported %s metric", engineType, metricType));
