@@ -162,13 +162,13 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
 
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricType);
         CheckResult checkResult = sqlMetric.validateConfig(taskParameter.getMetricParameter());
-        if (!checkResult.isSuccess()) {
-            throw new DataVinesException(checkResult.getMsg());
+        if (checkResult== null || !checkResult.isSuccess()) {
+            throw new DataVinesException(checkResult== null? "check error": checkResult.getMsg());
         }
 
         String configBuilder = engineType + "_" + sqlMetric.getType();
         Set<String> configBuilderPluginSet = PluginLoader.getPluginLoader(DataQualityConfigurationBuilder.class).getSupportedPlugins();
-        if (configBuilderPluginSet.contains(configBuilder)) {
+        if (!configBuilderPluginSet.contains(configBuilder)) {
             throw new DataVinesException(String.format("%s engine does not supported %s metric", engineType, metricType));
         }
 
@@ -190,8 +190,6 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
         } else {
             throw new DataVinesException("src connector parameter should not be null");
         }
-
-
 
         String expectedMetric = taskParameter.getExpectedType();
         Set<String> expectedValuePluginSet = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();

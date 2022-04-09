@@ -52,7 +52,7 @@ public class CustomSql implements SqlMetric {
 
     @Override
     public CheckResult validateConfig(Map<String, Object> config) {
-        return null;
+        return new CheckResult(true,"");
     }
 
     @Override
