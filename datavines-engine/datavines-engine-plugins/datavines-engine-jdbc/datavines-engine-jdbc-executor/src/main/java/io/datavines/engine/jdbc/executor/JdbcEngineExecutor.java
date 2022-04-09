@@ -22,14 +22,14 @@ import io.datavines.common.entity.ProcessResult;
 import io.datavines.common.entity.TaskRequest;
 import io.datavines.common.utils.LoggerUtils;
 import io.datavines.engine.executor.core.base.AbstractEngineExecutor;
-import io.datavines.engine.jdbc.core.JdbcDataVinesBootstrap;
+import io.datavines.engine.jdbc.core.JdbcBaseDataVinesBootstrap;
 import org.slf4j.Logger;
 
 public class JdbcEngineExecutor extends AbstractEngineExecutor {
 
     private Configurations configurations;
 
-    private JdbcDataVinesBootstrap bootstrap;
+    private JdbcBaseDataVinesBootstrap bootstrap;
 
     @Override
     public void init(TaskRequest taskRequest, Logger logger, Configurations configurations) throws Exception {
@@ -45,7 +45,7 @@ public class JdbcEngineExecutor extends AbstractEngineExecutor {
     public void execute() throws Exception {
         String[] args = new String[1];
         args[0] = taskRequest.getApplicationParameter();
-        bootstrap = new JdbcDataVinesBootstrap();
+        bootstrap = new JdbcBaseDataVinesBootstrap();
         this.processResult = bootstrap.execute(args);
     }
 

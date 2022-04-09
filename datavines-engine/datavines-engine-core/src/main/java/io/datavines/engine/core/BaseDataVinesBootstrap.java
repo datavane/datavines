@@ -31,9 +31,9 @@ import io.datavines.engine.core.config.ConfigParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class DataVinesBootstrap {
+public abstract class BaseDataVinesBootstrap {
 
-    private static final Logger logger = LoggerFactory.getLogger(DataVinesBootstrap.class);
+    private static final Logger logger = LoggerFactory.getLogger(BaseDataVinesBootstrap.class);
 
     private Execution execution;
 

@@ -17,7 +17,7 @@
 
 package io.datavines.engine.jdbc.core;
 
-import io.datavines.engine.core.DataVinesBootstrap;
+import io.datavines.engine.core.BaseDataVinesBootstrap;
 
-public class JdbcDataVinesBootstrap extends DataVinesBootstrap {
+public class JdbcBaseDataVinesBootstrap extends BaseDataVinesBootstrap {
 }

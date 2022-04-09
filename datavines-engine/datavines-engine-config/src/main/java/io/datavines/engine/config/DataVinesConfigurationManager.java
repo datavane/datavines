@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class DataVinesConfigurationManager {
 
-    private static DataVinesQualityConfig buildConfiguration(DataQualityConfigurationBuilder builder) throws DataVinesException {
+    private static DataVinesQualityConfig buildDataQualityConfiguration(DataQualityConfigurationBuilder builder) throws DataVinesException {
         builder.buildName();
         builder.buildEnvConfig();
         builder.buildSourceConfigs();
@@ -73,7 +73,7 @@ public class DataVinesConfigurationManager {
                 .getOrCreatePlugin(taskInfo.getEngineType() + "_" + sqlMetric.getType().getDescription());
         builder.init(inputParameter, taskInfo, connectionInfo);
 
-        return buildConfiguration(builder);
+        return buildDataQualityConfiguration(builder);
     }
 
 }

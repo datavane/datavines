@@ -49,7 +49,7 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
 
     protected ExpectedValue expectedValue;
 
-    protected ConnectionInfo connectionInfo;
+    private ConnectionInfo connectionInfo;
 
     @Override
     public void init(Map<String, String> inputParameter, TaskInfo taskInfo, ConnectionInfo connectionInfo) {

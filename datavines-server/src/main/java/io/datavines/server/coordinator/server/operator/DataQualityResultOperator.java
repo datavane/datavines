@@ -46,7 +46,7 @@ public class DataQualityResultOperator {
     /**
      * When the task type is data quality, it will get the statistics value、comparison value、
      * threshold、check type、operator and failure strategy，use the formula that
-     * {check type} {operator} {threshold} to get dqc result . If result is failure, it will alert or block
+     * {result formula} {operator} {threshold} to get dqc result . If result is failure, it will alert
      * @param taskRequest taskRequest
      */
     public void operateDqExecuteResult(TaskRequest taskRequest) {

@@ -28,7 +28,11 @@ import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.engine.config.DataQualityConfigurationBuilder;
+import io.datavines.metric.api.ExpectedValue;
+import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
 import org.springframework.beans.BeanUtils;
@@ -47,6 +51,9 @@ import io.datavines.server.coordinator.repository.mapper.CommandMapper;
 import io.datavines.server.coordinator.repository.mapper.TaskMapper;
 import io.datavines.server.coordinator.repository.service.TaskService;
 import io.datavines.server.coordinator.repository.entity.Task;
+
+import static io.datavines.server.DataVinesConstants.JDBC;
+import static io.datavines.server.DataVinesConstants.SPARK;
 
 @Service("taskService")
 public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements TaskService {
@@ -83,9 +90,11 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
         Task task = new Task();
         BeanUtils.copyProperties(submitTask,task);
         task.setParameter(JSONUtils.toJsonString(submitTask.getParameter()));
-        task.setExecutePlatformParameter(JSONUtils.toJsonString(submitTask.getExecutePlatformParameter()));
+        if (submitTask.getExecutePlatformParameter() != null) {
+            task.setExecutePlatformParameter(JSONUtils.toJsonString(submitTask.getExecutePlatformParameter()));
+        }
 
-        if("spark".equals(task.getEngineType())) {
+        if(SPARK.equals(task.getEngineType())) {
             Map<String,Object> defaultEngineParameter = new HashMap<>();
             defaultEngineParameter.put("programType", "JAVA");
             defaultEngineParameter.put("deployMode", "cluster");
@@ -142,26 +151,8 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
     }
 
     private void checkTaskParameter(SubmitTask submitTask) throws DataVinesException {
-        String engineType = submitTask.getEngineType();
         TaskParameter taskParameter = submitTask.getParameter();
-        ConnectorParameter srcConnectorParameter = taskParameter.getSrcConnectorParameter();
-        if (srcConnectorParameter != null) {
-            String srcConnectorType = srcConnectorParameter.getType();
-            Set<String> connectorFactoryPluginSet =
-                    PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
-            if (!connectorFactoryPluginSet.contains(srcConnectorType)) {
-                throw new DataVinesException(String.format("%s connector does not supported", srcConnectorType));
-            }
-
-            if ("jdbc".equals(engineType)) {
-                ConnectorFactory srcConnectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
-                if (!"jdbc".equals(srcConnectorFactory.getCategory())) {
-                    throw new DataVinesException(String.format("jdbc engine does not supported %s connector", srcConnectorType));
-                }
-            }
-        } else {
-            throw new DataVinesException("src connector parameter should not be null");
-        }
+        String engineType = submitTask.getEngineType();
 
         String metricType = taskParameter.getMetricType();
         Set<String> metricPluginSet = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
@@ -173,6 +164,45 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
         CheckResult checkResult = sqlMetric.validateConfig(taskParameter.getMetricParameter());
         if (!checkResult.isSuccess()) {
             throw new DataVinesException(checkResult.getMsg());
+        }
+
+        String configBuilder = engineType + "_" + sqlMetric.getType();
+        Set<String> configBuilderPluginSet = PluginLoader.getPluginLoader(DataQualityConfigurationBuilder.class).getSupportedPlugins();
+        if (configBuilderPluginSet.contains(configBuilder)) {
+            throw new DataVinesException(String.format("%s engine does not supported %s metric", engineType, metricType));
+        }
+
+        ConnectorParameter srcConnectorParameter = taskParameter.getSrcConnectorParameter();
+        if (srcConnectorParameter != null) {
+            String srcConnectorType = srcConnectorParameter.getType();
+            Set<String> connectorFactoryPluginSet =
+                    PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
+            if (!connectorFactoryPluginSet.contains(srcConnectorType)) {
+                throw new DataVinesException(String.format("%s connector does not supported", srcConnectorType));
+            }
+
+            if (JDBC.equals(engineType)) {
+                ConnectorFactory srcConnectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
+                if (!JDBC.equals(srcConnectorFactory.getCategory())) {
+                    throw new DataVinesException(String.format("jdbc engine does not supported %s connector", srcConnectorType));
+                }
+            }
+        } else {
+            throw new DataVinesException("src connector parameter should not be null");
+        }
+
+
+
+        String expectedMetric = taskParameter.getExpectedType();
+        Set<String> expectedValuePluginSet = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
+        if (!expectedValuePluginSet.contains(expectedMetric)) {
+            throw new DataVinesException(String.format("%s expected value does not supported", metricType));
+        }
+
+        String resultFormula = taskParameter.getResultFormula();
+        Set<String> resultFormulaPluginSet = PluginLoader.getPluginLoader(ResultFormula.class).getSupportedPlugins();
+        if (!resultFormulaPluginSet.contains(resultFormula)) {
+            throw new DataVinesException(String.format("%s result formula does not supported", metricType));
         }
     }
 }

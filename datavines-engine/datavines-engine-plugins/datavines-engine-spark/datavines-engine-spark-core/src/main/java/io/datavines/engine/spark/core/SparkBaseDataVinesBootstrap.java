@@ -17,12 +17,12 @@
 
 package io.datavines.engine.spark.core;
 
-import io.datavines.engine.core.DataVinesBootstrap;
+import io.datavines.engine.core.BaseDataVinesBootstrap;
 
-public class SparkDataVinesBootstrap extends DataVinesBootstrap {
+public class SparkBaseDataVinesBootstrap extends BaseDataVinesBootstrap {
 
     public static void main(String[] args) {
-        SparkDataVinesBootstrap bootstrap = new SparkDataVinesBootstrap();
+        SparkBaseDataVinesBootstrap bootstrap = new SparkBaseDataVinesBootstrap();
         bootstrap.execute(args);
     }
 }
