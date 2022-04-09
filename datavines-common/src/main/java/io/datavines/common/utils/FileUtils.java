@@ -104,7 +104,8 @@ public class FileUtils {
     }
 
     public static String getTaskExecDir(String jobType, long taskId) {
-        String fileName = String.format("%s/exec/job/%s/%s", "/datavines", jobType, taskId);
+        String taskLocalTmpDir = CommonPropertyUtils.getString(CommonPropertyUtils.LOCAL_TMP_WORKDIR, CommonPropertyUtils.LOCAL_TMP_WORKDIR_DEFAULT);
+        String fileName = String.format("%s/exec/job/%s/%s", taskLocalTmpDir, jobType, taskId);
         File file = new File(fileName);
         if (!file.getParentFile().exists()){
             file.getParentFile().mkdirs();

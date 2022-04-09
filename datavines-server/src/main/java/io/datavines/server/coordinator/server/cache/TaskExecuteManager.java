@@ -19,6 +19,8 @@ package io.datavines.server.coordinator.server.cache;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.sift.SiftingAppender;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.Appender;
 import io.datavines.common.CommonConstants;
 import io.datavines.common.config.Configurations;
 import io.datavines.common.config.DataVinesQualityConfig;
@@ -45,6 +47,7 @@ import io.datavines.server.utils.SpringApplicationContext;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

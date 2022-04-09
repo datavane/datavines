@@ -17,6 +17,7 @@
         <module>datavines-metric-base</module>
         <module>datavines-metric-null</module>
         <module>datavines-metric-value-between</module>
+        <module>datavines-metric-column-length</module>
     </modules>
 
     <dependencies>
