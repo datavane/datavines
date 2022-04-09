@@ -268,13 +268,13 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-metric-null</artifactId>
+            <artifactId>datavines-metric-column-null</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-metric-value-between</artifactId>
+            <artifactId>datavines-metric-column-value-between</artifactId>
             <version>${project.version}</version>
         </dependency>
 

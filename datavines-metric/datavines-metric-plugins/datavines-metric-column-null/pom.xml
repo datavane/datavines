@@ -27,7 +27,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>datavines-metric-null</artifactId>
+    <artifactId>datavines-metric-column-null</artifactId>
 
     <dependencies>
         <dependency>

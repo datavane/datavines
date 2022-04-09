@@ -12,12 +12,12 @@
     <artifactId>datavines-metric-plugins</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>datavines-metric-base</module>
         <module>datavines-metric-custom-sql</module>
         <module>datavines-metric-multi-table-accuracy</module>
-        <module>datavines-metric-base</module>
-        <module>datavines-metric-null</module>
-        <module>datavines-metric-value-between</module>
         <module>datavines-metric-column-length</module>
+        <module>datavines-metric-column-null</module>
+        <module>datavines-metric-column-value-between</module>
     </modules>
 
     <dependencies>

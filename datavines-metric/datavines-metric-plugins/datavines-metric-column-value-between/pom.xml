@@ -27,7 +27,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>datavines-metric-value-between</artifactId>
+    <artifactId>datavines-metric-column-value-between</artifactId>
     <dependencies>
         <dependency>
             <groupId>io.datavines</groupId>
