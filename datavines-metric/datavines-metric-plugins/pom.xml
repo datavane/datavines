@@ -23,6 +23,7 @@
         <module>datavines-metric-table-row-count</module>
         <module>datavines-metric-column-unique</module>
         <module>datavines-metric-column-enums</module>
+        <module>datavines-metric-freshness</module>
     </modules>
 
     <dependencies>
