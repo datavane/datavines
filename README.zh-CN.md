@@ -20,20 +20,18 @@ $ mvn clean package -Prelease
 * 简单易用
 * 内置多种 Metric、Expected Type
 * 模块化和插件化，易于扩展
-* 支持 Spark 2.x
+* 支持 Spark 2.x、JDBC 执行引擎
 
 ## 环境依赖
 
-1. java 运行环境，java >= 8
-
-2. 如果您要在集群环境中运行 DataVines，那么需要以下 Spark 集群环境的任意一种：
-
-* Spark on Yarn
-* Spark Standalone
-
-如果您的数据量较小或者只是做功能验证，也可以仅使用 `local` 模式启动，无需集群环境，DataVines 支持单机运行。
+1. Java 运行环境，Java >= 8
+3. DataVines 支持 JDBC 引擎，如果你的数据量较小或者只是想做功能验证，可以使用 JDBC 引擎
+2. 如果您要想要基于 Spark 来运行 DataVines ，那么需要保证你的服务器具有运行 Spark 应用程序的条件
 
 ## 快速入门
+
+## 开发指南
+请参考官方文档： [开发指南](docs/development/zh-CN/development-environment-setup.md)
 
 ## 行为准则
 
