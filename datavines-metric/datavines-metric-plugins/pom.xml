@@ -19,6 +19,7 @@
         <module>datavines-metric-column-null</module>
         <module>datavines-metric-column-value-between</module>
         <module>datavines-metric-column-unique</module>
+        <module>datavines-metric-column-enums</module>
     </modules>
 
     <dependencies>
