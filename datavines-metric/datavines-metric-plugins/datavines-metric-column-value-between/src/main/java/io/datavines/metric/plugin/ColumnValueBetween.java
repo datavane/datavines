@@ -33,7 +33,7 @@ public class ColumnValueBetween extends BaseSingleTable {
 
     @Override
     public String getName() {
-        return "value_between";
+        return "column_value_between";
     }
 
     @Override

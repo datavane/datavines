@@ -28,7 +28,7 @@ public class ColumnNull extends BaseSingleTable {
 
     @Override
     public String getName() {
-        return "null";
+        return "column_null";
     }
 
     @Override

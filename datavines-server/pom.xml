@@ -286,6 +286,12 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-column-unique</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-metric-custom-sql</artifactId>
             <version>${project.version}</version>
         </dependency>
