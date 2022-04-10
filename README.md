@@ -39,7 +39,6 @@ a cluster environment, because DataVines supports standalone operation.
 
 ## Development
 
-
 ## Code of conduct
 
 ## Contact Us
