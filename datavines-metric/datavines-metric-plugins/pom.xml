@@ -18,6 +18,9 @@
         <module>datavines-metric-column-length</module>
         <module>datavines-metric-column-null</module>
         <module>datavines-metric-column-value-between</module>
+        <module>datavines-metric-column-regex</module>
+        <module>datavines-metric-column-not-null</module>
+        <module>datavines-metric-table-row-count</module>
         <module>datavines-metric-column-unique</module>
         <module>datavines-metric-column-enums</module>
     </modules>

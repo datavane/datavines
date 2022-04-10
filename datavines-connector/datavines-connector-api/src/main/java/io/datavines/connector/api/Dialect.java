@@ -24,4 +24,6 @@ public interface Dialect {
     String getColumnPrefix();
 
     String getColumnSuffix();
+
+    String getRegexKey();
 }

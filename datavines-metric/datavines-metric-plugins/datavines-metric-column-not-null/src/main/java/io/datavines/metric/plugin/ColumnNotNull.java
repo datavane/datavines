@@ -24,24 +24,21 @@ import io.datavines.metric.plugin.base.BaseSingleTable;
 import java.util.Map;
 import java.util.Set;
 
-public class ColumnValueBetween extends BaseSingleTable {
+public class ColumnNotNull extends BaseSingleTable {
 
-    public ColumnValueBetween(){
-        configSet.add("min");
-        configSet.add("max");
+    public ColumnNotNull(){
         configSet.add("column");
-
         REQUIRED_OPTIONS.add("column");
     }
 
     @Override
     public String getName() {
-        return "column_value_between";
+        return "table_row_count";
     }
 
     @Override
     public MetricDimension getDimension() {
-        return MetricDimension.COMPLETENESS;
+        return MetricDimension.EFFECTIVENESS;
     }
 
     @Override
@@ -57,14 +54,9 @@ public class ColumnValueBetween extends BaseSingleTable {
     @Override
     public void prepare(Map<String, String> config) {
 
-        if (config.containsKey("min")) {
-            filters.add("${column} >= ${min}");
+        if (config.containsKey("column")) {
+            filters.add(" ${column} is not null ");
         }
-
-        if (config.containsKey("max")) {
-            filters.add("${column} <= ${max}");
-        }
-
         super.prepare(config);
     }
 
@@ -72,4 +64,5 @@ public class ColumnValueBetween extends BaseSingleTable {
     public Set<String> getConfigSet() {
         return configSet;
     }
+
 }

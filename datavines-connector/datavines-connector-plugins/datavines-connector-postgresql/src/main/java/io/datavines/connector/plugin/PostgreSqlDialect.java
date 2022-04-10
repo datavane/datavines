@@ -22,4 +22,9 @@ public class PostgreSqlDialect extends JdbcDialect {
     public String getDriver() {
         return "org.postgresql.Driver";
     }
+
+    @Override
+    public String getRegexKey(){
+        return "~";
+    }
 }

@@ -298,6 +298,24 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-column-regex</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-table-row-count</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-column-not-null</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-metric-custom-sql</artifactId>
             <version>${project.version}</version>
         </dependency>

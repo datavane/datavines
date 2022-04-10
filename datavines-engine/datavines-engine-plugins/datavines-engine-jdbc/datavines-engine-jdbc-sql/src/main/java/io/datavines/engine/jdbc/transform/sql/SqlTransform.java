@@ -81,6 +81,7 @@ public class SqlTransform implements JdbcTransform {
         try {
             String outputTable = config.getString("invalidate_items_table");
             String sql = config.getString("sql");
+            logger.info("transform sql is: {}", sql);
             switch (TransformType.of(config.getString("plugin_type"))){
                 case INVALIDATE_ITEMS:
                     resultList = new InvalidateItemsExecutor().execute(env.getSourceConnection(), sql, outputTable);
@@ -99,7 +100,7 @@ public class SqlTransform implements JdbcTransform {
             }
 
         } catch (Exception e) {
-            logger.error("transform execute error: {0}", e);
+            logger.error("transform execute error: ", e);
         }
 
         return resultList;

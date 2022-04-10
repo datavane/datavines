@@ -24,19 +24,19 @@ import io.datavines.metric.plugin.base.BaseSingleTable;
 import java.util.Map;
 import java.util.Set;
 
-public class ColumnValueBetween extends BaseSingleTable {
+public class ColumnRegex extends BaseSingleTable {
 
-    public ColumnValueBetween(){
-        configSet.add("min");
-        configSet.add("max");
+    public ColumnRegex(){
+        configSet.add("regexp");
         configSet.add("column");
 
+        REQUIRED_OPTIONS.add("regexp");
         REQUIRED_OPTIONS.add("column");
     }
 
     @Override
     public String getName() {
-        return "column_value_between";
+        return "column_regex";
     }
 
     @Override
@@ -57,14 +57,10 @@ public class ColumnValueBetween extends BaseSingleTable {
     @Override
     public void prepare(Map<String, String> config) {
 
-        if (config.containsKey("min")) {
-            filters.add("${column} >= ${min}");
-        }
 
-        if (config.containsKey("max")) {
-            filters.add("${column} <= ${max}");
+        if (config.containsKey("table") &&  config.containsKey("column") && config.containsKey("regexp") ) {
+            filters.add(" ${column} ${regex_key} '${regexp}'");
         }
-
         super.prepare(config);
     }
 

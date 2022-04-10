@@ -25,6 +25,10 @@ import java.util.Map;
 import java.util.Set;
 
 public class ColumnNull extends BaseSingleTable {
+    public ColumnNull(){
+        configSet.add("column");
+        REQUIRED_OPTIONS.add("column");
+    }
 
     @Override
     public String getName() {

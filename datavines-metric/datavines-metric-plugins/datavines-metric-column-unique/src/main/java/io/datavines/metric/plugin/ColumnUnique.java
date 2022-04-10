@@ -9,6 +9,12 @@ import java.util.Set;
 
 public class ColumnUnique extends BaseSingleTable {
 
+    public ColumnUnique(){
+        configSet.add("column");
+
+        REQUIRED_OPTIONS.add("column");
+    }
+
     @Override
     public String getName() {
         return "column_unique";

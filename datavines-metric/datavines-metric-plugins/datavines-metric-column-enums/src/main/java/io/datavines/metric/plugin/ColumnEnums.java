@@ -11,7 +11,9 @@ public class ColumnEnums extends BaseSingleTable {
 
     public ColumnEnums(){
         configSet.add("enum_list");
+        configSet.add("column");
         REQUIRED_OPTIONS.add("enum_list");
+        REQUIRED_OPTIONS.add("column");
     }
 
     @Override

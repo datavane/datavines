@@ -27,7 +27,13 @@ import java.util.Set;
 public class ColumnLength extends BaseSingleTable {
 
     public ColumnLength(){
+        configSet.add("length");
+        configSet.add("column");
+        configSet.add("comparator");
 
+        REQUIRED_OPTIONS.add("length");
+        REQUIRED_OPTIONS.add("column");
+        REQUIRED_OPTIONS.add("comparator");
     }
 
     @Override
@@ -47,7 +53,7 @@ public class ColumnLength extends BaseSingleTable {
 
     @Override
     public boolean isInvalidateItemsCanOutput() {
-        return false;
+        return true;
     }
 
     @Override

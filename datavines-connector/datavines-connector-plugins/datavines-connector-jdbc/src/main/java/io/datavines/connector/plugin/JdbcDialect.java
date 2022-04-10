@@ -30,4 +30,10 @@ public abstract class JdbcDialect implements Dialect {
     public String getColumnSuffix() {
         return "`";
     }
+
+    @Override
+    public String getRegexKey(){
+        return "regexp";
+    }
+
 }

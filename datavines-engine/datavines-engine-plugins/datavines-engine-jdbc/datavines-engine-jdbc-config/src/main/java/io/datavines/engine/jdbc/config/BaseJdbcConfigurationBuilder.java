@@ -118,6 +118,7 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
             String outputTable = inputParameter.get(TABLE);
             connectorParameterMap.put(OUTPUT_TABLE, outputTable);
             connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
+            inputParameter.put(REGEX_KEY, connectorFactory.getDialect().getRegexKey());
 
             sourceConfig.setPlugin(connectorFactory.getCategory());
             sourceConfig.setConfig(connectorParameterMap);

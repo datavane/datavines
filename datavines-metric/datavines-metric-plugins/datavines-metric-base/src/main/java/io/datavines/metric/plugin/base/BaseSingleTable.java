@@ -39,10 +39,8 @@ public abstract class BaseSingleTable implements SqlMetric {
     static {
         configSet.add("table");
         configSet.add("filter");
-        configSet.add("column");
 
         REQUIRED_OPTIONS.add("table");
-        REQUIRED_OPTIONS.add("column");
     }
 
     @Override

@@ -74,6 +74,9 @@ public class ConfigConstants {
     public static final String OUTPUT_TABLE = "output_table";
     public static final String TMP_TABLE = "tmp_table";
 
+    //sql dialect on regex key
+    public static final String REGEX_KEY = "regex_key";
+
     public static final String INVALIDATE_ITEMS_TABLE = "invalidate_items_table";
 
     /**
