@@ -34,29 +34,31 @@ import io.datavines.common.entity.ExecuteSql;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.metric.api.SqlMetric;
 
+import static io.datavines.engine.config.ConfigConstants.*;
+
 public class MetricParserUtils {
 
     public static void operateInputParameter(Map<String, String> inputParameter,
                                              SqlMetric sqlMetric,
                                              TaskInfo task) {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern(ConfigConstants.YYYY_MM_DD_HH_MM_SS);
+        DateTimeFormatter df = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
         LocalDateTime time = LocalDateTime.now();
         String now = df.format(time);
 
-        inputParameter.put(ConfigConstants.METRIC_TYPE, StringUtils.wrapperSingleQuotes(sqlMetric.getType().getDescription()));
-        inputParameter.put(ConfigConstants.METRIC_NAME, StringUtils.wrapperSingleQuotes(sqlMetric.getName()));
-        inputParameter.put(ConfigConstants.METRIC_DIMENSION, StringUtils.wrapperSingleQuotes(sqlMetric.getDimension().getDescription()));
-        inputParameter.put(ConfigConstants.CREATE_TIME, StringUtils.wrapperSingleQuotes(now));
-        inputParameter.put(ConfigConstants.UPDATE_TIME, StringUtils.wrapperSingleQuotes(now));
-        inputParameter.put(ConfigConstants.TASK_ID, String.valueOf(task.getId()));
+        inputParameter.put(METRIC_TYPE, StringUtils.wrapperSingleQuotes(sqlMetric.getType().getDescription()));
+        inputParameter.put(METRIC_NAME, StringUtils.wrapperSingleQuotes(sqlMetric.getName()));
+        inputParameter.put(METRIC_DIMENSION, StringUtils.wrapperSingleQuotes(sqlMetric.getDimension().getDescription()));
+        inputParameter.put(CREATE_TIME, StringUtils.wrapperSingleQuotes(now));
+        inputParameter.put(UPDATE_TIME, StringUtils.wrapperSingleQuotes(now));
+        inputParameter.put(TASK_ID, String.valueOf(task.getId()));
 
-        if (StringUtils.isEmpty(inputParameter.get(ConfigConstants.DATA_TIME))) {
-            inputParameter.put(ConfigConstants.DATA_TIME, StringUtils.wrapperSingleQuotes(now));
+        if (StringUtils.isEmpty(inputParameter.get(DATA_TIME))) {
+            inputParameter.put(DATA_TIME, StringUtils.wrapperSingleQuotes(now));
         }
 
-        if (StringUtils.isNotEmpty(inputParameter.get(ConfigConstants.REGEXP_PATTERN))) {
-            inputParameter.put(ConfigConstants.REGEXP_PATTERN, StringUtils.escapeJava(
-                    StringUtils.escapeJava(inputParameter.get(ConfigConstants.REGEXP_PATTERN))));
+        if (StringUtils.isNotEmpty(inputParameter.get(REGEXP_PATTERN))) {
+            inputParameter.put(REGEXP_PATTERN, StringUtils.escapeJava(
+                    StringUtils.escapeJava(inputParameter.get(REGEXP_PATTERN))));
         }
 
         sqlMetric.prepare(inputParameter);
@@ -72,11 +74,11 @@ public class MetricParserUtils {
                 continue;
             }
             Map<String,Object> config = new HashMap<>();
-            config.put(ConfigConstants.INDEX,index++);
-            config.put(ConfigConstants.SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult, true));
-            config.put(ConfigConstants.OUTPUT_TABLE,executeSql.getResultTable());
+            config.put(INDEX,index++);
+            config.put(SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult, true));
+            config.put(OUTPUT_TABLE,executeSql.getResultTable());
 
-            TransformConfig transformerConfig = new TransformConfig(ConfigConstants.SQL,config);
+            TransformConfig transformerConfig = new TransformConfig(SQL,config);
             transformerConfigList.add(transformerConfig);
         }
     }
@@ -93,12 +95,12 @@ public class MetricParserUtils {
         }
 
         Map<String,Object> config = new HashMap<>();
-        config.put(ConfigConstants.INDEX, index++);
-        config.put(ConfigConstants.SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult,true));
-        config.put(ConfigConstants.OUTPUT_TABLE, executeSql.getResultTable());
-        config.put(ConfigConstants.INVALIDATE_ITEMS_TABLE, inputParameterValueResult.get(ConfigConstants.INVALIDATE_ITEMS_TABLE));
+        config.put(INDEX, index++);
+        config.put(SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult,true));
+        config.put(OUTPUT_TABLE, executeSql.getResultTable());
+        config.put(INVALIDATE_ITEMS_TABLE, inputParameterValueResult.get(INVALIDATE_ITEMS_TABLE));
 
-        TransformConfig transformerConfig = new TransformConfig(ConfigConstants.SQL, config);
+        TransformConfig transformerConfig = new TransformConfig(SQL, config);
         transformerConfig.setType(type);
         transformerConfigList.add(transformerConfig);
     }
@@ -116,20 +118,21 @@ public class MetricParserUtils {
 
         Map<String,String> newInputParameterValue = new HashMap<>(inputParameterValue);
 
-        newInputParameterValue.remove(ConfigConstants.METRIC_TYPE);
-        newInputParameterValue.remove(ConfigConstants.METRIC_NAME);
-        newInputParameterValue.remove(ConfigConstants.CREATE_TIME);
-        newInputParameterValue.remove(ConfigConstants.UPDATE_TIME);
-        newInputParameterValue.remove(ConfigConstants.TASK_ID);
-        newInputParameterValue.remove(ConfigConstants.RESULT_FORMULA);
-        newInputParameterValue.remove(ConfigConstants.OPERATOR);
-        newInputParameterValue.remove(ConfigConstants.THRESHOLD);
-        newInputParameterValue.remove(ConfigConstants.FAILURE_STRATEGY);
-        newInputParameterValue.remove(ConfigConstants.DATA_TIME);
-        newInputParameterValue.remove(ConfigConstants.ERROR_OUTPUT_PATH);
-        newInputParameterValue.remove(ConfigConstants.EXPECTED_TYPE);
-        newInputParameterValue.remove(ConfigConstants.EXPECTED_NAME);
-        newInputParameterValue.remove(ConfigConstants.EXPECTED_TABLE);
+        newInputParameterValue.remove(METRIC_TYPE);
+        newInputParameterValue.remove(METRIC_NAME);
+        newInputParameterValue.remove(CREATE_TIME);
+        newInputParameterValue.remove(UPDATE_TIME);
+        newInputParameterValue.remove(TASK_ID);
+        newInputParameterValue.remove(RESULT_FORMULA);
+        newInputParameterValue.remove(OPERATOR);
+        newInputParameterValue.remove(THRESHOLD);
+        newInputParameterValue.remove(FAILURE_STRATEGY);
+        newInputParameterValue.remove(DATA_TIME);
+        newInputParameterValue.remove(ERROR_OUTPUT_PATH);
+        newInputParameterValue.remove(EXPECTED_TYPE);
+        newInputParameterValue.remove(EXPECTED_NAME);
+        newInputParameterValue.remove(EXPECTED_TABLE);
+        newInputParameterValue.remove(INVALIDATE_ITEMS_TABLE);
 
         StringBuilder sb = new StringBuilder();
         for (String value : newInputParameterValue.values()) {
