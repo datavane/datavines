@@ -1,6 +1,5 @@
 # column_length metric
 
-
 ## example
 
 localhost:5600/api/v1/task/submit
