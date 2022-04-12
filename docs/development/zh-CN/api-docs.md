@@ -3,7 +3,7 @@
 > POST /api/v1/task/submit
 
 - spark engine request parameter
-```
+```json
 {
     "name":"test",
     "executePlatformType":"local",
@@ -41,8 +41,8 @@
         },
         "result_formula":"percentage",
         "operator":"eq",
-        "threshold":"0",
-        "failure_strategy":none
+        "threshold":0,
+        "failure_strategy":"none"
         
     },
     "retryTimes":0,

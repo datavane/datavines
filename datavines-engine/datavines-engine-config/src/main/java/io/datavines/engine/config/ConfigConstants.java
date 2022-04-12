@@ -76,6 +76,7 @@ public class ConfigConstants {
 
     //sql dialect on regex key
     public static final String REGEX_KEY = "regex_key";
+    public static final String NOT_REGEX_KEY = "not_regex_key";
 
     public static final String INVALIDATE_ITEMS_TABLE = "invalidate_items_table";
 

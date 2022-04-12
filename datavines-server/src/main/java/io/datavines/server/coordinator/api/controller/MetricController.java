@@ -35,9 +35,9 @@ import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(value = "/metric", tags = "metric", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@Api(value = "/metric", tags = "metric", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
-@RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/metric", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+@RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/metric", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MetricController {
 
     @ApiOperation(value = "get metric list")

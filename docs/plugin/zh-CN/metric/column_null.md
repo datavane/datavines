@@ -1,6 +1,32 @@
-# column_length metric
+# Metric Plugin : column_length
 
-## example
+## Description
+
+This metric is to metric the column length
+
+## Options
+
+
+|               name               |  type  |  required  | default value |
+|:--------------------------------:|:------:|:----------:|:-------------:|
+|      [table](#table-string)      | string |    yes     |       -       |
+|     [column](#column-string)     | string |    yes     |       -       |
+| [comparator](#comparator-string) | string |     no     |       -       |
+|      [length](#length-int)       |  int   |     no     |       -       |
+
+### table [string]
+need metric table
+
+### column [string]
+table column need to metric length
+
+### comparator [string]
+comparator in sql like [ > >= < <= = <>]
+
+### length [int]
+table column length
+
+## Example
 
 localhost:5600/api/v1/task/submit
 ```json
@@ -29,15 +55,3 @@ localhost:5600/api/v1/task/submit
     }
 }
 ```
-
-## table
-need metric table
-
-## column
-table column need to metric length
-
-## comparator
-comparator in sql like [ > >= < <= = <>]
-
-## length
-table column length

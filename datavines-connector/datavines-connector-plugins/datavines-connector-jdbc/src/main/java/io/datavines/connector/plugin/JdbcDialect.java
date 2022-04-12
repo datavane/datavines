@@ -36,4 +36,8 @@ public abstract class JdbcDialect implements Dialect {
         return "regexp";
     }
 
+    @Override
+    public String getNotRegexKey() {
+        return "not regex";
+    }
 }

@@ -1,4 +1,4 @@
-# DataVines 开发手册
+# DataVines 环境搭建指南
 
 ## 前置条件
 

@@ -123,6 +123,13 @@ public class DataVinesServer {
         CommonPropertyUtils.setValue("username", hikariDataSource.getUsername());
         CommonPropertyUtils.setValue("password", hikariDataSource.getPassword());
         CommonPropertyUtils.setValue("server.port", environment.getProperty("server.port"));
+
+        String registryType = CommonPropertyUtils
+                .getString(CommonPropertyUtils.REGISTRY_TYPE, CommonPropertyUtils.REGISTRY_TYPE_DEFAULT);
+        if ("default".equals(registryType)) {
+            CommonPropertyUtils.setValue(CommonPropertyUtils.REGISTRY_TYPE,
+                    hikariDataSource.getJdbcUrl().contains("mysql") ? "mysql" : "postgresql");
+        }
     }
 
 }

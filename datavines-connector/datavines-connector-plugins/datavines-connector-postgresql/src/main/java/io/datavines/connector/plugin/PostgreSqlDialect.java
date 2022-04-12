@@ -27,4 +27,9 @@ public class PostgreSqlDialect extends JdbcDialect {
     public String getRegexKey(){
         return "~";
     }
+
+    @Override
+    public String getNotRegexKey() {
+        return "!~";
+    }
 }

@@ -31,7 +31,7 @@ $ mvn clean package -Prelease
 ## 快速入门
 
 ## 开发指南
-请参考官方文档： [开发指南](docs/development/zh-CN/development-environment-setup.md)
+请参考官方文档： [开发指南](docs/development/zh-CN/index.md)
 
 ## 行为准则
 

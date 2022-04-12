@@ -26,4 +26,6 @@ public interface Dialect {
     String getColumnSuffix();
 
     String getRegexKey();
+
+    String getNotRegexKey();
 }
