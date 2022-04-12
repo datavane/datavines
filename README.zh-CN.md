@@ -18,8 +18,15 @@ $ mvn clean package -Prelease
 ## DataVines 的特性
 
 * 简单易用
-* 内置多种 Metric、Expected Type
+* 内置多种 Metric、ExpectedType、ResultFormula
+    * [Metric 插件列表](docs/plugin/zh-CN/metric/index.md)
+    * [ExcpectedType 插件列表](docs/plugin/zh-CN/expected-value/index.md)
+    * [ResultFormula 插件列表](docs/plugin/zh-CN/result-formula/index.md)
 * 模块化和插件化，易于扩展
+    * [Engine 插件列表](docs/plugin/zh-CN/engine/index.md)
+    * [Connector 插件列表](docs/plugin/zh-CN/connector/index.md)
+    * [Register 插件列表](docs/plugin/zh-CN/register/index.md)
+    * [Notification 插件列表](docs/plugin/zh-CN/notification/index.md)
 * 支持 Spark 2.x、JDBC 执行引擎
 
 ## 环境依赖
@@ -30,12 +37,14 @@ $ mvn clean package -Prelease
 
 ## 快速入门
 
-## 开发指南
-请参考官方文档： [开发指南](docs/development/zh-CN/index.md)
+请参考官方文档：[快速入门指南](docs/document/zh-CN/quick-start.md)
 
-## 行为准则
+## 开发指南
+请参考官方文档：[开发指南](docs/development/zh-CN/index.md)
+
+## 如何贡献
 
 ## 欢迎联系
-
+datavines@gmail.com
 ## License
 [Apache 2.0 License.](LICENSE)

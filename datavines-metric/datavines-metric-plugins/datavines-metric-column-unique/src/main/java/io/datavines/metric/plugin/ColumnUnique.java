@@ -2,17 +2,14 @@ package io.datavines.metric.plugin;
 
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
-import io.datavines.metric.plugin.base.BaseSingleTable;
+import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
 import java.util.Map;
 import java.util.Set;
 
-public class ColumnUnique extends BaseSingleTable {
+public class ColumnUnique extends BaseSingleTableColumn {
 
     public ColumnUnique(){
-        configSet.add("column");
-
-        REQUIRED_OPTIONS.add("column");
     }
 
     @Override

@@ -19,21 +19,19 @@ package io.datavines.metric.plugin;
 
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
-import io.datavines.metric.plugin.base.BaseSingleTable;
+import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
 import java.util.Map;
 import java.util.Set;
 
-public class Freshness extends BaseSingleTable {
+public class Freshness extends BaseSingleTableColumn {
 
     public Freshness(){
-        configSet.add("column");
         configSet.add("date");
         configSet.add("comparator");
 
         REQUIRED_OPTIONS.add("date");
         REQUIRED_OPTIONS.add("comparator");
-        REQUIRED_OPTIONS.add("column");
     }
 
     @Override

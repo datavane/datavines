@@ -19,12 +19,12 @@ package io.datavines.metric.plugin;
 
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
-import io.datavines.metric.plugin.base.BaseSingleTable;
+import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
 import java.util.Map;
 import java.util.Set;
 
-public class ColumnMatchRegex extends BaseSingleTable {
+public class ColumnMatchRegex extends BaseSingleTableColumn {
 
     public ColumnMatchRegex(){
         configSet.add("regexp");
@@ -36,7 +36,7 @@ public class ColumnMatchRegex extends BaseSingleTable {
 
     @Override
     public String getName() {
-        return "column_regex";
+        return "column_match_regex";
     }
 
     @Override

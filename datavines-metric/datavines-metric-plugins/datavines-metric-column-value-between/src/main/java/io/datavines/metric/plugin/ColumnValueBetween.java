@@ -19,19 +19,16 @@ package io.datavines.metric.plugin;
 
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
-import io.datavines.metric.plugin.base.BaseSingleTable;
+import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
 import java.util.Map;
 import java.util.Set;
 
-public class ColumnValueBetween extends BaseSingleTable {
+public class ColumnValueBetween extends BaseSingleTableColumn {
 
     public ColumnValueBetween(){
         configSet.add("min");
         configSet.add("max");
-        configSet.add("column");
-
-        REQUIRED_OPTIONS.add("column");
     }
 
     @Override

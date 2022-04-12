@@ -2,10 +2,9 @@
 
 ## Description
 
-This metric is to metric the column length
+This metric checks the count of that the column's value match length
 
 ## Options
-
 
 |               name               |  type  |  required  | default value |
 |:--------------------------------:|:------:|:----------:|:-------------:|
@@ -18,7 +17,7 @@ This metric is to metric the column length
 need metric table
 
 ### column [string]
-table column need to metric length
+table column need to check
 
 ### comparator [string]
 comparator in sql like [ > >= < <= = <>]
@@ -28,7 +27,7 @@ table column length
 
 ## Example
 
-localhost:5600/api/v1/task/submit
+> POST localhost:5600/api/v1/task/submit
 ```json
 
 {

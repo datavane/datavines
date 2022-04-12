@@ -1,11 +1,10 @@
-# Metric Plugin : column_length
+# Metric Plugin : column_custom_sql
 
 ## Description
 
 This metric is to metric the column length
 
 ## Options
-
 
 |               name               |  type  |  required  | default value |
 |:--------------------------------:|:------:|:----------:|:-------------:|

@@ -19,24 +19,22 @@ package io.datavines.metric.plugin;
 
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
-import io.datavines.metric.plugin.base.BaseSingleTable;
+import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
 import java.util.Map;
 import java.util.Set;
 
-public class ColumnMatchNotRegex extends BaseSingleTable {
+public class ColumnMatchNotRegex extends BaseSingleTableColumn {
 
     public ColumnMatchNotRegex(){
         configSet.add("regexp");
-        configSet.add("column");
 
         REQUIRED_OPTIONS.add("regexp");
-        REQUIRED_OPTIONS.add("column");
     }
 
     @Override
     public String getName() {
-        return "column_regex";
+        return "column_match_not_regex";
     }
 
     @Override

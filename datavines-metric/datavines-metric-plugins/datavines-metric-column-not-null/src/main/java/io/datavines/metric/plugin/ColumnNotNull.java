@@ -19,21 +19,19 @@ package io.datavines.metric.plugin;
 
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
-import io.datavines.metric.plugin.base.BaseSingleTable;
+import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
 import java.util.Map;
 import java.util.Set;
 
-public class ColumnNotNull extends BaseSingleTable {
+public class ColumnNotNull extends BaseSingleTableColumn {
 
     public ColumnNotNull(){
-        configSet.add("column");
-        REQUIRED_OPTIONS.add("column");
     }
 
     @Override
     public String getName() {
-        return "table_row_count";
+        return "column_not_null";
     }
 
     @Override

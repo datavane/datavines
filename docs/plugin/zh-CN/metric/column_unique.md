@@ -1,40 +1,31 @@
-# Metric Plugin : column_length
+# Metric Plugin : column_unique
 
 ## Description
 
-This metric is to metric the column length
+This metric checks the count of unique rows in a column
 
 ## Options
-
 
 |               name               |  type  |  required  | default value |
 |:--------------------------------:|:------:|:----------:|:-------------:|
 |      [table](#table-string)      | string |    yes     |       -       |
 |     [column](#column-string)     | string |    yes     |       -       |
-| [comparator](#comparator-string) | string |     no     |       -       |
-|      [length](#length-int)       |  int   |     no     |       -       |
 
 ### table [string]
-need metric table
+table name
 
 ### column [string]
-table column need to metric length
-
-### comparator [string]
-comparator in sql like [ > >= < <= = <>]
-
-### length [int]
-table column length
+table column need to check
 
 ## Example
 
-localhost:5600/api/v1/task/submit
+> POST localhost:5600/api/v1/task/submit
 ```json
 
 {
     "name":"test",
     "parameter":{
-        "metricType":"column_length",
+        "metricType":"column_unique",
         "metricParameter":{
             "table":"task",
             "column":"parameter",

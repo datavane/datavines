@@ -1,45 +1,38 @@
-# Metric Plugin : column_length
+# Metric Plugin : column_match_regex
 
 ## Description
 
-This metric is to metric the column length
+This metric checks the count of that the column's value match regex pattern
 
 ## Options
-
 
 |               name               |  type  |  required  | default value |
 |:--------------------------------:|:------:|:----------:|:-------------:|
 |      [table](#table-string)      | string |    yes     |       -       |
 |     [column](#column-string)     | string |    yes     |       -       |
-| [comparator](#comparator-string) | string |     no     |       -       |
-|      [length](#length-int)       |  int   |     no     |       -       |
+|     [regexp](#regexp-string)     | string |     no     |       -       |
 
 ### table [string]
 need metric table
 
 ### column [string]
-table column need to metric length
+table column need to check
 
-### comparator [string]
-comparator in sql like [ > >= < <= = <>]
-
-### length [int]
-table column length
+### regexp [string]
+regexp is regex pattern
 
 ## Example
 
-localhost:5600/api/v1/task/submit
+> POST localhost:5600/api/v1/task/submit
 ```json
 
 {
     "name":"test",
     "parameter":{
-        "metricType":"column_length",
+        "metricType":"column_match_regex",
         "metricParameter":{
             "table":"task",
-            "column":"parameter",
-            "comparator": ">",
-            "length": 50
+            "column":"parameter"
         },
         "srcConnectorParameter":{
             "type":"postgresql",

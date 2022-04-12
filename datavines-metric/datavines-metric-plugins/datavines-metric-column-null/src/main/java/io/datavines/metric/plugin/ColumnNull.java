@@ -19,12 +19,12 @@ package io.datavines.metric.plugin;
 
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
-import io.datavines.metric.plugin.base.BaseSingleTable;
+import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
 import java.util.Map;
 import java.util.Set;
 
-public class ColumnNull extends BaseSingleTable {
+public class ColumnNull extends BaseSingleTableColumn {
     public ColumnNull(){
     }
 
