@@ -3,7 +3,7 @@
 
 |         插件名称          |             详细信息            | 
 |:-------------------------:|:-------------------------------:|
-|      count                |        [点击查看](count.md)     |
-|      diff                 |        [点击查看](diff.md)      |
-|    percentage             |       [点击查看](percentage.md) |
-|    diff-percentage        |        [点击查看](diff-percentage.md) |
+|      count                |        [文档](count.md)     |
+|      diff                 |        [文档](diff.md)      |
+|    percentage             |       [文档](percentage.md) |
+|    diff-percentage        |        [文档](diff-percentage.md) |

@@ -3,6 +3,6 @@
 
 |         插件名称          |             详细信息            | 
 |:-------------------------:|:-------------------------------:|
-|      MySQL                |        [点击查看](mysql.md)     |
-|    PostgreSQL             |     [点击查看](postgresql.md)   |
-|    ZooKeeper              |      [点击查看](zookeeper.md)   |
+|      MySQL                |        [文档](mysql.md)     |
+|    PostgreSQL             |     [文档](postgresql.md)   |
+|    ZooKeeper              |      [文档](zookeeper.md)   |

@@ -18,9 +18,9 @@ $ mvn clean package -Prelease
 ## DataVines 的特性
 
 * 简单易用
-* 内置多种 Metric、ExpectedType、ResultFormula
+* 内置多种类型如Metric、ExpectedType、ResultFormula插件
     * [Metric 插件列表](docs/plugin/zh-CN/metric/index.md)
-    * [ExcpectedType 插件列表](docs/plugin/zh-CN/expected-value/index.md)
+    * [ExpectedType 插件列表](docs/plugin/zh-CN/expected-value/index.md)
     * [ResultFormula 插件列表](docs/plugin/zh-CN/result-formula/index.md)
 * 模块化和插件化，易于扩展
     * [Engine 插件列表](docs/plugin/zh-CN/engine/index.md)

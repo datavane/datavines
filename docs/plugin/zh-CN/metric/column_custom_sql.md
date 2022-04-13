@@ -10,8 +10,6 @@ This metric is to metric the column length
 |:--------------------------------:|:------:|:----------:|:-------------:|
 |      [table](#table-string)      | string |    yes     |       -       |
 |     [column](#column-string)     | string |    yes     |       -       |
-| [comparator](#comparator-string) | string |     no     |       -       |
-|      [length](#length-int)       |  int   |     no     |       -       |
 
 ### table [string]
 need metric table

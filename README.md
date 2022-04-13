@@ -19,9 +19,17 @@ $ mvn clean package -Prelease
 ## Features of DataVines
 
 * Easy to use
-* Built in multiple metric、expected type
+* Built in multiple Metric、ExpectedType、ResultFormula
+  * [Metric Plugins](docs/plugin/en/metric/index.md)
+  * [ExpectedType Plugins](docs/plugin/en/expected-value/index.md)
+  * [ResultFormula Plugins](docs/plugin/en/result-formula/index.md)
+
 * Modular and plug-in mechanism, easy to extend
-* Support Spark 2.x
+  * [Engine Plugins](docs/plugin/en/engine/index.md)
+  * [Connector Plugins](docs/plugin/en/connector/index.md)
+  * [Register Plugins](docs/plugin/en/register/index.md)
+  * [Notification Plugins](docs/plugin/en/notification/index.md)
+* Support Spark 2.x、JDBC Engine
 
 ## Environmental dependency
 
@@ -36,10 +44,12 @@ If the data volume is small, or the goal is merely for functional verification, 
 a cluster environment, because DataVines supports standalone operation. 
 
 ## Quick start
+[QuickStart](docs/document/en/quick-start.md)
 
 ## Development
+[DeveloperGuide](docs/development/en/index.md)
 
-## Code of conduct
+## How to Contribute
 
 ## Contact Us
 

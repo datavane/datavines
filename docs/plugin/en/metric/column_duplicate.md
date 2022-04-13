@@ -1,17 +1,21 @@
-# Metric Plugin : table_row_count
+# Metric Plugin : column_duplicate
 
 ## Description
 
-This metric checks the row count of table
+This metric checks the count of that the column's value is duplicated
 
 ## Options
 
 |               name               |  type  |  required  | default value |
 |:--------------------------------:|:------:|:----------:|:-------------:|
 |      [table](#table-string)      | string |    yes     |       -       |
+|     [column](#column-string)     | string |    yes     |       -       |
 
 ### table [string]
 need metric table
+
+### column [string]
+table column need to check
 
 ## Example
 
@@ -21,9 +25,10 @@ need metric table
 {
     "name":"test",
     "parameter":{
-        "metricType":"table_row_count",
+        "metricType":"column_duplicate",
         "metricParameter":{
-            "table":"task"
+            "table":"task",
+            "column":"parameter"
         },
         "srcConnectorParameter":{
             "type":"postgresql",

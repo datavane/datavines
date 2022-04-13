@@ -6,12 +6,12 @@ This metric checks the count of value between min and max rows in a column
 
 ## Options
 
-|               name               |  type  |  required  | default value |
-|:--------------------------------:|:------:|:----------:|:-------------:|
-|      [table](#table-string)      | string |    yes     |       -       |
-|     [column](#column-string)     | string |    yes     |       -       |
-|     [min](#min-int)       | string |     no     |       -       |
-|      [max](#max-int)       |  int   |     no     |       -       |
+|           name           |  type  | required | default value |
+|:------------------------:|:------:|:--------:|:-------------:|
+|  [table](#table-string)  | string |   yes    |       -       |
+| [column](#column-string) | string |   yes    |       -       |
+|     [min](#min-int)      | string |    no    |       -       |
+|     [max](#max-int)      |  int   |    no    |       -       |
 
 ### table [string]
 need metric table

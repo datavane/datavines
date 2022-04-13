@@ -1,4 +1,4 @@
-# Metric Plugin : column_freshness
+# Metric Plugin : table_freshness
 
 ## Description
 
@@ -6,12 +6,12 @@ This metric checks data freshness
 
 ## Options
 
-|               name               |  type  |  required  | default value |
-|:--------------------------------:|:------:|:----------:|:-------------:|
-|      [table](#table-string)      | string |    yes     |       -       |
-|     [column](#column-string)     | string |    yes     |       -       |
-| [comparator](#comparator-string) | string |     no     |       -       |
-|       [date](#length-string)     | string |     no     |       -       |
+|               name               |  type  | required | default value |
+|:--------------------------------:|:------:|:--------:|:-------------:|
+|      [table](#table-string)      | string |   yes    |       -       |
+|     [column](#column-string)     | string |   yes    |       -       |
+| [comparator](#comparator-string) | string |   yes    |       -       |
+|      [date](#length-string)      | string |   yes    |       -       |
 
 ### table [string]
 need metric table
@@ -27,7 +27,7 @@ table column need to check
 {
     "name":"test",
     "parameter":{
-        "metricType":"column_length",
+        "metricType":"table_freshness",
         "metricParameter":{
             "table":"task",
             "column":"parameter",
