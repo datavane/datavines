@@ -7,14 +7,14 @@ import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 import java.util.Map;
 import java.util.Set;
 
-public class ColumnUnique extends BaseSingleTableColumn {
+public class ColumnDuplicate extends BaseSingleTableColumn {
 
-    public ColumnUnique(){
+    public ColumnDuplicate(){
     }
 
     @Override
     public String getName() {
-        return "column_unique";
+        return "column_duplicate";
     }
 
     @Override
@@ -40,7 +40,7 @@ public class ColumnUnique extends BaseSingleTableColumn {
         }
 
         if (config.containsKey("column")) {
-            invalidateItemsSql.append(" group by ${column} having count(*) = 1");
+            invalidateItemsSql.append(" group by ${column} having count(*) > 1");
         }
 
     }

@@ -292,6 +292,12 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-column-duplicate</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-metric-column-in-enums</artifactId>
             <version>${project.version}</version>
         </dependency>

@@ -26,6 +26,7 @@
 
         <module>datavines-metric-table-row-count</module>
         <module>datavines-metric-column-match-not-regex</module>
+        <module>datavines-metric-column-duplicate</module>
     </modules>
 
     <dependencies>
