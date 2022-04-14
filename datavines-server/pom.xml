@@ -304,6 +304,12 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-column-not-in-enums</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-metric-column-match-regex</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -322,7 +328,7 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-metric-freshness</artifactId>
+            <artifactId>datavines-metric-table-freshness</artifactId>
             <version>${project.version}</version>
         </dependency>
 

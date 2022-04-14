@@ -6,6 +6,7 @@
 |       column_null       | yes  |  yes  |      [doc](column_null.md)       |
 |     column_not_null     | yes  |  yes  |    [doc](column_not_null.md)     |
 |     column_in_enums     | yes  |  yes  |    [doc](column_in_enums.md)     |
+|   column_not_in_enums   | yes  |  yes  |  [doc](column_not_in_enums.md)   |
 |      column_length      | yes  |  yes  |     [doc](column_length.md)      | 
 |   column_match_regex	   | yes  |  yes  |   [doc](column_match_regex.md)   | 
 | column_match_not_regex	 | yes  |  yes  | [doc](column_match_not_regex.md) | 

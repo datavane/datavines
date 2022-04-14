@@ -1,10 +1,10 @@
 # Connector Plugins
 
-|    name    |         doc          | supported |
+|    name    |         doc          |  status   |
 |:----------:|:--------------------:|:---------:|
-|   MySQL    |   [doc](mysql.md)    |    yes    |
-| PostgreSQL | [doc](postgresql.md) |    yes    |
-|    Hive    |    [doc](hive.md)    |    yes    |
-| ClickHouse | [doc](clickhouse.md) |    no     |
-|   Impala   |   [doc](impala.md)   |    no     |
-|   Presto   |   [doc](presto.md)   |    no     |
+|   MySQL    |   [doc](mysql.md)    | supported |
+| PostgreSQL | [doc](postgresql.md) | supported |
+|    Hive    |    [doc](hive.md)    | supported |
+| ClickHouse | [doc](clickhouse.md) | supported |
+|   Impala   |   [doc](impala.md)   | supported |
+|   Presto   |   [doc](presto.md)   | supported |

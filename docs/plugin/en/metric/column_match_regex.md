@@ -6,11 +6,11 @@ This metric checks the count of that the column's value match regex pattern
 
 ## Options
 
-|               name               |  type  |  required  | default value |
-|:--------------------------------:|:------:|:----------:|:-------------:|
-|      [table](#table-string)      | string |    yes     |       -       |
-|     [column](#column-string)     | string |    yes     |       -       |
-|     [regexp](#regexp-string)     | string |     no     |       -       |
+|           name           |  type  | required | default value |
+|:------------------------:|:------:|:--------:|:-------------:|
+|  [table](#table-string)  | string |   yes    |       -       |
+| [column](#column-string) | string |   yes    |       -       |
+| [regexp](#regexp-string) | string |   yes    |       -       |
 
 ### table [string]
 need metric table

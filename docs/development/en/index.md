@@ -1,9 +1,10 @@
-# 开发者指南
-## 环境准备
-### [本地环境搭建指南](development-environment-setup.md)
-## 插件开发
-### [Metric 插件开发指南](metric-plugin-development.md)
-### [Expected Value 插件开发](expected-value-plugin-development.md)
-### [Result Formula 插件开发](result-formula-plugin-development.md)
-### [Connector 插件开发](connector-plugin-development.md)
-### [Engine 插件开发](engine-plugin-development.md)
+# Developer Guide
+## Development Environment Setup
+### [Development Environment Setup](development-environment-setup.md)
+## Plugin Develop Guide
+### [Metric Plugin Develop Guide](metric-plugin-development.md)
+### [ExpectedValue Plugin Develop Guide](expected-value-plugin-development.md)
+### [ResultFormula Plugin Develop Guide](result-formula-plugin-development.md)
+### [Connector Plugin Develop Guide](connector-plugin-development.md)
+### [Engine Plugin Develop Guide](engine-plugin-development.md)
+### [Register Plugin Develop Guide](register-plugin-development.md)

@@ -107,8 +107,6 @@ public class MetricParserUtils {
 
     /**
      * the unique code use to get the same type and condition task statistics value
-     * @param inputParameterValue
-     * @return
      */
     public static String generateUniqueCode(Map<String, String> inputParameterValue) {
 

@@ -6,12 +6,12 @@ This metric checks the count of that the column's value match length
 
 ## Options
 
-|               name               |  type  |  required  | default value |
-|:--------------------------------:|:------:|:----------:|:-------------:|
-|      [table](#table-string)      | string |    yes     |       -       |
-|     [column](#column-string)     | string |    yes     |       -       |
-| [comparator](#comparator-string) | string |     no     |       -       |
-|      [length](#length-int)       |  int   |     no     |       -       |
+|               name               |  type  | required | default value |
+|:--------------------------------:|:------:|:--------:|:-------------:|
+|      [table](#table-string)      | string |   yes    |       -       |
+|     [column](#column-string)     | string |   yes    |       -       |
+| [comparator](#comparator-string) | string |   yes    |       -       |
+|      [length](#length-int)       |  int   |   yes    |       -       |
 
 ### table [string]
 need metric table

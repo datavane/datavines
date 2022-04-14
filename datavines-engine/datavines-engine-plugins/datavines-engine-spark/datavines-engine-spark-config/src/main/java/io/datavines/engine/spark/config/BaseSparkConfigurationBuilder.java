@@ -38,44 +38,6 @@ import static io.datavines.engine.config.ConfigConstants.*;
 public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfigurationBuilder {
 
     @Override
-    public void buildTransformConfigs() {
-        String metricType = taskParameter.getMetricType();
-        SqlMetric sqlMetric = PluginLoader
-                .getPluginLoader(SqlMetric.class)
-                .getNewPlugin(metricType);
-
-        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
-
-        List<TransformConfig> transformConfigs = new ArrayList<>();
-        List<ExecuteSql> transformExecuteSqlList = new ArrayList<>();
-        transformExecuteSqlList.add(sqlMetric.getInvalidateItems());
-        transformExecuteSqlList.add(sqlMetric.getActualValue());
-        inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
-        inputParameter.put(ACTUAL_VALUE, sqlMetric.getActualName());
-        inputParameter.put(INVALIDATE_ITEMS_TABLE, sqlMetric.getInvalidateItems().getResultTable());
-
-        // get expected value transform sql
-        String expectedType = taskParameter.getExpectedType();
-        expectedValue = PluginLoader
-                .getPluginLoader(ExpectedValue.class)
-                .getNewPlugin(expectedType);
-        ExecuteSql expectedValueExecuteSql =
-                new ExecuteSql(expectedValue.getExecuteSql(), expectedValue.getOutputTable());
-        transformExecuteSqlList.add(expectedValueExecuteSql);
-
-        if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
-            inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
-        }
-
-        if (StringUtils.isNotEmpty(expectedValue.getName())) {
-            inputParameter.put(EXPECTED_VALUE, expectedValue.getName());
-        }
-
-        MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs, transformExecuteSqlList);
-        configuration.setTransformParameters(transformConfigs);
-    }
-
-    @Override
     protected EnvConfig getEnvConfig() {
         EnvConfig envConfig = new EnvConfig();
         envConfig.setEngine(taskInfo.getEngineType());
@@ -145,5 +107,43 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
         }
 
         return sourceConfigs;
+    }
+
+    @Override
+    public void buildTransformConfigs() {
+        String metricType = taskParameter.getMetricType();
+        SqlMetric sqlMetric = PluginLoader
+                .getPluginLoader(SqlMetric.class)
+                .getNewPlugin(metricType);
+
+        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
+
+        List<TransformConfig> transformConfigs = new ArrayList<>();
+        List<ExecuteSql> transformExecuteSqlList = new ArrayList<>();
+        transformExecuteSqlList.add(sqlMetric.getInvalidateItems());
+        transformExecuteSqlList.add(sqlMetric.getActualValue());
+        inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
+        inputParameter.put(ACTUAL_VALUE, sqlMetric.getActualName());
+        inputParameter.put(INVALIDATE_ITEMS_TABLE, sqlMetric.getInvalidateItems().getResultTable());
+
+        // get expected value transform sql
+        String expectedType = taskParameter.getExpectedType();
+        expectedValue = PluginLoader
+                .getPluginLoader(ExpectedValue.class)
+                .getNewPlugin(expectedType);
+        ExecuteSql expectedValueExecuteSql =
+                new ExecuteSql(expectedValue.getExecuteSql(), expectedValue.getOutputTable());
+        transformExecuteSqlList.add(expectedValueExecuteSql);
+
+        if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
+            inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
+        }
+
+        if (StringUtils.isNotEmpty(expectedValue.getName())) {
+            inputParameter.put(EXPECTED_VALUE, expectedValue.getName());
+        }
+
+        MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs, transformExecuteSqlList);
+        configuration.setTransformParameters(transformConfigs);
     }
 }

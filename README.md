@@ -34,15 +34,8 @@ $ mvn clean package -Prelease
 ## Environmental dependency
 
 1. java runtime environment, java >= 8
-
-2. If you want to run DataVines in a cluster environment, any of the following Spark cluster environments is usable:
-
-- Spark on Yarn
-- Spark Standalone
-
-If the data volume is small, or the goal is merely for functional verification, you can also start in local mode without
-a cluster environment, because DataVines supports standalone operation. 
-
+2. If the data volume is small, or the goal is merely for functional verification, you can use JDBC engine
+3. If you want to run DataVines based on Spark, you need to ensure that your server has spark installed
 ## Quick start
 [QuickStart](docs/document/en/quick-start.md)
 
@@ -52,6 +45,7 @@ a cluster environment, because DataVines supports standalone operation.
 ## How to Contribute
 
 ## Contact Us
+datavines@gmail.com
 
 ## License
 [Apache 2.0 License.](LICENSE)

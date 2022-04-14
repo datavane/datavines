@@ -1,6 +1,6 @@
 # Engine Plugins
 
-| name  |        doc        | supported |
+| name  |        doc        |  status   |
 |:-----:|:-----------------:|:---------:|
-| Spark | [Spark](spark.md) |    yes    |
-| JDBC  |  [JDBC](jdbc.md)  |    yes    |
+| Spark | [Spark](spark.md) | supported |
+| JDBC  |  [JDBC](jdbc.md)  | supported |

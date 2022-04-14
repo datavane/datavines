@@ -105,6 +105,4 @@ public class Register {
     public void close() throws SQLException {
         registry.close();
     }
-
-
 }

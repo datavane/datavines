@@ -35,6 +35,5 @@
             <artifactId>datavines-connector-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 </project>

@@ -17,7 +17,7 @@ public class ColumnInEnums extends BaseSingleTableColumn {
 
     @Override
     public String getName() {
-        return "column_enums";
+        return "column_in_enums";
     }
 
     @Override
@@ -38,7 +38,7 @@ public class ColumnInEnums extends BaseSingleTableColumn {
     @Override
     public void prepare(Map<String, String> config) {
         if (config.containsKey("enum_list") && config.containsKey("column")) {
-            filters.add(" (${column} not in ( ${enum_list} ) or ${column} is null) ");
+            filters.add(" (${column} in ( ${enum_list} ) ");
         }
         super.prepare(config);
     }

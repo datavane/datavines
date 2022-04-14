@@ -43,55 +43,6 @@ import static io.datavines.engine.config.ConfigConstants.*;
 public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfigurationBuilder {
 
     @Override
-    public void buildTransformConfigs() {
-
-        String metricType = taskParameter.getMetricType();
-        SqlMetric sqlMetric = PluginLoader
-                .getPluginLoader(SqlMetric.class)
-                .getNewPlugin(metricType);
-
-        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
-
-        List<TransformConfig> transformConfigs = new ArrayList<>();
-
-        inputParameter.put(INVALIDATE_ITEMS_TABLE,
-                sqlMetric.getInvalidateItems().getResultTable()
-                        + "_" + inputParameter.get(ConfigConstants.TASK_ID));
-
-        MetricParserUtils.setTransformerConfig(
-                inputParameter, transformConfigs,
-                sqlMetric.getInvalidateItems(), TransformType.INVALIDATE_ITEMS.getDescription());
-
-        MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                sqlMetric.getActualValue(), TransformType.ACTUAL_VALUE.getDescription());
-
-        inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
-
-        // get expected value transform sql
-        String expectedType = taskParameter.getExpectedType();
-        expectedValue = PluginLoader
-                .getPluginLoader(ExpectedValue.class)
-                .getNewPlugin(expectedType);
-
-        ExecuteSql expectedValueExecuteSql =
-                new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
-
-        if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
-            inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
-        }
-
-        if (expectedValue.isNeedDefaultDatasource()) {
-            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());
-        } else {
-            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SOURCE.getDescription());
-        }
-
-        configuration.setTransformParameters(transformConfigs);
-    }
-
-    @Override
     protected EnvConfig getEnvConfig() {
         EnvConfig envConfig = new EnvConfig();
         envConfig.setEngine(taskInfo.getEngineType());
@@ -164,5 +115,54 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
         }
 
         return sourceConfigs;
+    }
+
+    @Override
+    public void buildTransformConfigs() {
+
+        String metricType = taskParameter.getMetricType();
+        SqlMetric sqlMetric = PluginLoader
+                .getPluginLoader(SqlMetric.class)
+                .getNewPlugin(metricType);
+
+        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
+
+        List<TransformConfig> transformConfigs = new ArrayList<>();
+
+        inputParameter.put(INVALIDATE_ITEMS_TABLE,
+                sqlMetric.getInvalidateItems().getResultTable()
+                        + "_" + inputParameter.get(ConfigConstants.TASK_ID));
+
+        MetricParserUtils.setTransformerConfig(
+                inputParameter, transformConfigs,
+                sqlMetric.getInvalidateItems(), TransformType.INVALIDATE_ITEMS.getDescription());
+
+        MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
+                sqlMetric.getActualValue(), TransformType.ACTUAL_VALUE.getDescription());
+
+        inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
+
+        // get expected value transform sql
+        String expectedType = taskParameter.getExpectedType();
+        expectedValue = PluginLoader
+                .getPluginLoader(ExpectedValue.class)
+                .getNewPlugin(expectedType);
+
+        ExecuteSql expectedValueExecuteSql =
+                new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
+
+        if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
+            inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
+        }
+
+        if (expectedValue.isNeedDefaultDatasource()) {
+            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
+                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());
+        } else {
+            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
+                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SOURCE.getDescription());
+        }
+
+        configuration.setTransformParameters(transformConfigs);
     }
 }

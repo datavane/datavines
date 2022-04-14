@@ -30,7 +30,7 @@ public class ImpalaConnectorParameterConverter implements ConnectorParameterConv
         config.put("table",parameter.get("table"));
         config.put("user",parameter.get("user"));
         config.put("password", parameter.get("password"));
-        config.put("url",String.format("jdbc:impala://%s:%s/%s;UseSasl=0;AuthMech=3;UID=impala;PWD=;",
+        config.put("url",String.format("jdbc:hive2://%s:%s/%s;auth=noSasl",
                 parameter.get("host"),
                 parameter.get("port"),
                 parameter.get("database")));

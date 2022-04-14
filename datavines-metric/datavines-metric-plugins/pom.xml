@@ -15,6 +15,9 @@
         <module>datavines-metric-base</module>
         <module>datavines-metric-custom-sql</module>
         <module>datavines-metric-multi-table-accuracy</module>
+        <module>datavines-metric-table-freshness</module>
+        <module>datavines-metric-table-row-count</module>
+
         <module>datavines-metric-column-length</module>
         <module>datavines-metric-column-null</module>
         <module>datavines-metric-column-value-between</module>
@@ -22,11 +25,9 @@
         <module>datavines-metric-column-not-null</module>
         <module>datavines-metric-column-unique</module>
         <module>datavines-metric-column-in-enums</module>
-        <module>datavines-metric-freshness</module>
-
-        <module>datavines-metric-table-row-count</module>
         <module>datavines-metric-column-match-not-regex</module>
         <module>datavines-metric-column-duplicate</module>
+        <module>datavines-metric-column-not-in-enums</module>
     </modules>
 
     <dependencies>
@@ -35,7 +36,6 @@
             <artifactId>datavines-metric-api</artifactId>
             <version>${project.version}</version>
         </dependency>
-
     </dependencies>
 
 

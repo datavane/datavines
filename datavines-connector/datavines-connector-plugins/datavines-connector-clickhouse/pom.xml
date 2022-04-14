@@ -29,4 +29,12 @@
 
     <artifactId>datavines-connector-clickhouse</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-connector-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
 </project>

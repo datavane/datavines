@@ -32,8 +32,8 @@ $ mvn clean package -Prelease
 ## 环境依赖
 
 1. Java 运行环境，Java >= 8
-3. DataVines 支持 JDBC 引擎，如果你的数据量较小或者只是想做功能验证，可以使用 JDBC 引擎
-2. 如果您要想要基于 Spark 来运行 DataVines ，那么需要保证你的服务器具有运行 Spark 应用程序的条件
+2. DataVines 支持 JDBC 引擎，如果你的数据量较小或者只是想做功能验证，可以使用 JDBC 引擎
+3. 如果您要想要基于 Spark 来运行 DataVines ，那么需要保证你的服务器具有运行 Spark 应用程序的条件
 
 ## 快速入门
 

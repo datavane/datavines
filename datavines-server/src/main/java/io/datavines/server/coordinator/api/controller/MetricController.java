@@ -19,19 +19,13 @@ package io.datavines.server.coordinator.api.controller;
 
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.DataVinesConstants;
-import io.datavines.server.coordinator.api.dto.task.SubmitTask;
 import io.datavines.server.coordinator.api.entity.ResultMap;
-import io.datavines.server.coordinator.repository.service.TaskResultService;
-import io.datavines.server.coordinator.repository.service.TaskService;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 

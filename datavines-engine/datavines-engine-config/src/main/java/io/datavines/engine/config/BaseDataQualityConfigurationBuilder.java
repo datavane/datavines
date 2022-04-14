@@ -19,17 +19,11 @@ package io.datavines.engine.config;
 
 import io.datavines.common.config.*;
 import io.datavines.common.config.enums.SourceType;
-import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.*;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
-import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.metric.api.ExpectedValue;
-import io.datavines.metric.api.SqlMetric;
-import io.datavines.spi.PluginLoader;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,7 +68,6 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
         inputParameter.put("operator", String.valueOf(taskParameter.getOperator()));
         inputParameter.put("threshold", String.valueOf(taskParameter.getThreshold()));
         inputParameter.put("failure_strategy", String.valueOf(taskParameter.getFailureStrategy()));
-
         inputParameter.put(EXPECTED_TYPE, StringUtils.wrapperSingleQuotes(taskParameter.getExpectedType()));
     }
 
@@ -114,20 +107,6 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
         return actualValueSourceConfig;
     }
 
-    protected Map<String,Object> getDefaultSourceConfigMap(String sql, String dbTable) {
-        Map<String,Object> actualValueConfigMap = new HashMap<>();
-        actualValueConfigMap.put(URL, connectionInfo.getUrl());
-        actualValueConfigMap.put(DB_TABLE, dbTable);
-        actualValueConfigMap.put(USER, connectionInfo.getUsername());
-        actualValueConfigMap.put(PASSWORD, connectionInfo.getPassword());
-        actualValueConfigMap.put(DRIVER, connectionInfo.getDriverName());
-        if (StringUtils.isNotEmpty(sql)) {
-            actualValueConfigMap.put(SQL, sql);
-        }
-
-        return actualValueConfigMap;
-    }
-
     protected SinkConfig getDefaultSinkConfig(String sql, String dbTable) throws DataVinesException {
 
         SinkConfig actualValueSinkConfig = new SinkConfig();
@@ -141,5 +120,19 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
                         PlaceholderUtils.replacePlaceholders(
                                 sql, inputParameter,true),dbTable));
         return actualValueSinkConfig;
+    }
+
+    protected Map<String,Object> getDefaultSourceConfigMap(String sql, String dbTable) {
+        Map<String,Object> actualValueConfigMap = new HashMap<>();
+        actualValueConfigMap.put(URL, connectionInfo.getUrl());
+        actualValueConfigMap.put(DB_TABLE, dbTable);
+        actualValueConfigMap.put(USER, connectionInfo.getUsername());
+        actualValueConfigMap.put(PASSWORD, connectionInfo.getPassword());
+        actualValueConfigMap.put(DRIVER, connectionInfo.getDriverName());
+        if (StringUtils.isNotEmpty(sql)) {
+            actualValueConfigMap.put(SQL, sql);
+        }
+
+        return actualValueConfigMap;
     }
 }

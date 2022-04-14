@@ -22,7 +22,7 @@ import org.slf4j.Logger;
 import io.datavines.common.config.Configurations;
 import io.datavines.common.entity.TaskRequest;
 import io.datavines.common.entity.ProcessResult;
-import io.datavines.spi.SPI;;
+import io.datavines.spi.SPI;
 
 @SPI
 public interface EngineExecutor {

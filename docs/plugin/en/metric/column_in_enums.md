@@ -6,11 +6,11 @@ This metric checks the count of that column's value in the enumerated list
 
 ## Options
 
-|               name               |  type  |  required  | default value |
-|:--------------------------------:|:------:|:----------:|:-------------:|
-|      [table](#table-string)      | string |    yes     |       -       |
-|     [column](#column-string)     | string |    yes     |       -       |
-| [enum_list](#enum_list-string)   | string |     no     |       -       |
+|              name              |  type  | required | default value |
+|:------------------------------:|:------:|:--------:|:-------------:|
+|     [table](#table-string)     | string |   yes    |       -       |
+|    [column](#column-string)    | string |   yes    |       -       |
+| [enum_list](#enum_list-string) | string |   yes    |       -       |
 ### table [string]
 need metric table
 
