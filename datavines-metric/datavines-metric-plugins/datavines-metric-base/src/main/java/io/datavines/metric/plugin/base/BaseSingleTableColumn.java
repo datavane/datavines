@@ -2,9 +2,10 @@ package io.datavines.metric.plugin.base;
 
 public abstract class BaseSingleTableColumn extends BaseSingleTable {
 
-    static {
+    public BaseSingleTableColumn() {
+        super();
         configSet.add("column");
-
-        REQUIRED_OPTIONS.add("column");
+        requiredOptions.add("column");
     }
+
 }

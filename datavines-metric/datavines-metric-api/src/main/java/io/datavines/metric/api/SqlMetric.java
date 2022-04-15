@@ -28,8 +28,6 @@ import io.datavines.spi.SPI;;
 @SPI
 public interface SqlMetric {
 
-    Set<String> REQUIRED_OPTIONS = new HashSet<>();
-
     String getName();
 
     MetricDimension getDimension();

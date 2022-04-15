@@ -27,11 +27,12 @@ import java.util.Set;
 public class ColumnMatchRegex extends BaseSingleTableColumn {
 
     public ColumnMatchRegex(){
+        super();
         configSet.add("regexp");
         configSet.add("column");
 
-        REQUIRED_OPTIONS.add("regexp");
-        REQUIRED_OPTIONS.add("column");
+        requiredOptions.add("regexp");
+        requiredOptions.add("column");
     }
 
     @Override

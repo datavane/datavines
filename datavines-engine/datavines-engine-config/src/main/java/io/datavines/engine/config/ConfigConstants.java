@@ -29,8 +29,8 @@ public class ConfigConstants {
     public static final String TARGET_TABLE = "target_table";
     public static final String TARGET_FILTER = "target_filter";
     public static final String TARGET_COLUMN = "target_column";
-    public static final String STATISTICS_NAME = "actual_name";
-    public static final String STATISTICS_EXECUTE_SQL = "actual_execute_sql";
+    public static final String ACTUAL_NAME = "actual_name";
+    public static final String ACTUAL_EXECUTE_SQL = "actual_execute_sql";
     public static final String EXPECTED_NAME = "expected_name";
     public static final String EXPECTED_TYPE = "expected_type";
     public static final String EXPECTED_TABLE = "expected_table";
@@ -77,6 +77,7 @@ public class ConfigConstants {
     //sql dialect on regex key
     public static final String REGEX_KEY = "regex_key";
     public static final String NOT_REGEX_KEY = "not_regex_key";
+    public static final String UNIX_TIMESTAMP = "unix_timestamp";
 
     public static final String INVALIDATE_ITEMS_TABLE = "invalidate_items_table";
 

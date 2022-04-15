@@ -26,6 +26,10 @@ import java.util.Set;
 
 public class TableRowCount extends BaseSingleTable {
 
+    public TableRowCount() {
+        super();
+    }
+
     @Override
     public String getName() {
         return "table_row_count";

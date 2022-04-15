@@ -6,18 +6,29 @@ This metric checks data freshness
 
 ## Options
 
-|               name               |  type  | required | default value |
-|:--------------------------------:|:------:|:--------:|:-------------:|
-|      [table](#table-string)      | string |   yes    |       -       |
-|     [column](#column-string)     | string |   yes    |       -       |
-| [comparator](#comparator-string) | string |   yes    |       -       |
-|      [date](#length-string)      | string |   yes    |       -       |
+|                    name                    |  type  | required | default value |
+|:------------------------------------------:|:------:|:--------:|:-------------:|
+|           [table](#table-string)           | string |   yes    |       -       |
+|          [column](#column-string)          | string |   yes    |       -       |
+|      [begin_time](#begin_time-string)      | string |   yes    |       -       |
+|   [deadline_time](#deadline_time-string)   | string |   yes    |       -       |
+| [datetime_format](#datetime_format-string) | string |   yes    |       -       |
+
 
 ### table [string]
 need metric table
 
 ### column [string]
 table column need to check
+
+### begin_time [string]
+data begin time
+
+### deadline_time [string]
+data deadline time
+
+### datetime_format [string]
+column value datetime format
 
 ## Example
 
@@ -31,8 +42,9 @@ table column need to check
         "metricParameter":{
             "table":"task",
             "column":"parameter",
-            "comparator": ">",
-            "length": 50
+            "begin_time": "2021-02-22",
+            "deadline_time": "2021-02-22",
+            "datetime_format":"yyyy-MM-dd"
         },
         "srcConnectorParameter":{
             "type":"postgresql",

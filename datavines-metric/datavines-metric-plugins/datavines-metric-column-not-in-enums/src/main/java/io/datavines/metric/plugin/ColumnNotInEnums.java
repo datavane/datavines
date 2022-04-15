@@ -10,9 +10,10 @@ import java.util.Set;
 public class ColumnNotInEnums extends BaseSingleTableColumn {
 
     public ColumnNotInEnums(){
+        super();
         configSet.add("enum_list");
 
-        REQUIRED_OPTIONS.add("enum_list");
+        requiredOptions.add("enum_list");
     }
 
     @Override

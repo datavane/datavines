@@ -24,19 +24,21 @@ import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 import java.util.Map;
 import java.util.Set;
 
-public class Freshness extends BaseSingleTableColumn {
+public class TableFreshness extends BaseSingleTableColumn {
 
-    public Freshness(){
-        configSet.add("date");
-        configSet.add("comparator");
+    public TableFreshness(){
+        configSet.add("begin_time");
+        configSet.add("deadline_time");
+        configSet.add("datetime_format");
 
-        REQUIRED_OPTIONS.add("date");
-        REQUIRED_OPTIONS.add("comparator");
+        requiredOptions.add("begin_time");
+        requiredOptions.add("deadline_time");
+        requiredOptions.add("datetime_format");
     }
 
     @Override
     public String getName() {
-        return "freshness";
+        return "table_freshness";
     }
 
     @Override
@@ -57,8 +59,8 @@ public class Freshness extends BaseSingleTableColumn {
     @Override
     public void prepare(Map<String, String> config) {
 
-        if (config.containsKey("column") && config.containsKey("date") && config.containsKey("comparator")) {
-            filters.add(" ${column} ${comparator} '${date}' ");
+        if (config.containsKey("column") && config.containsKey("datetime_format") && config.containsKey("deadline_time") && config.containsKey("begin_time")) {
+            filters.add("  (DATE_FORMAT(${column}, '${datetime_format}') <= DATE_FORMAT('${deadline_time}', '${datetime_format}') ) AND (DATE_FORMAT(${column}, '${datetime_format}') >= DATE_FORMAT('${begin_time}', '${datetime_format}')) ");
         }
         super.prepare(config);
     }

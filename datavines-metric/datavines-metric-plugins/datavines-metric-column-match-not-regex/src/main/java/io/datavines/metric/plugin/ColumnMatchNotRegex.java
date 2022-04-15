@@ -27,9 +27,10 @@ import java.util.Set;
 public class ColumnMatchNotRegex extends BaseSingleTableColumn {
 
     public ColumnMatchNotRegex(){
+        super();
         configSet.add("regexp");
 
-        REQUIRED_OPTIONS.add("regexp");
+        requiredOptions.add("regexp");
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.util.Set;
 public class ColumnDuplicate extends BaseSingleTableColumn {
 
     public ColumnDuplicate(){
+        super();
     }
 
     @Override

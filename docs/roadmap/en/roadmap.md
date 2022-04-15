@@ -1,0 +1,73 @@
+# DataVines v1.0.0 RoadMap
+## Architecture Design
+- [X] Decentralized distributed cluster architecture design
+- [X] Modular design
+- [X] Plug-In design
+## Features
+- [ ] Easy-to-use Client
+- [X] Plug-in design of various core components
+- [X] Server node online and offline notification
+- [ ] DataSource management
+- [ ] Metric management
+- [ ] Job management
+- [ ] Notification management
+- [X] Task execution
+- [X] Task retry
+- [X] Task timeout alarm
+- [X] Task fault tolerance after the server node down
+## Plug-in Component
+- Register
+    - [X] MySQL
+    - [X] PostgreSQL
+    - [ ] ZooKeeper
+- Engine
+    - JDBC
+        - Connector
+            - [X] PostgreSQL
+            - [X] MySQL
+            - [X] Hive
+            - [X] Impala
+            - [X] ClickHouse
+            - [ ] Presto
+    - Spark
+        - Connector
+            - [X] JDBC
+- Metric
+    - [X] column_null
+    - [X] column_not_null
+    - [X] column_value_between
+    - [X] column_match_regex
+    - [X] column_match_not_regex
+    - [X] column_length
+    - [X] column_not_in_enums
+    - [X] column_in_enums
+    - [X] column_unique
+    - [X] column_duplicate
+    - [X] custom_sql
+    - [X] table_row_count
+    - [X] table_freshness
+- Connector
+    - JDBC
+        - [X] PostgreSQL
+        - [X] MySQL
+        - [X] Hive
+        - [X] Impala
+        - [X] ClickHouse
+        - [ ] Presto
+    - [ ] File
+- ExpectedValue
+    - [X] fix_value
+    - [X] table_total_rows
+    - [X] target_table_total_rows
+    - [X] daily_avg
+    - [X] weekly_avg
+    - [X] monthly_avg
+    - [X] last_7_day_avg
+    - [X] last_30_day_avg
+- ResultFormula
+    - [X] count
+    - [X] percentage
+    - [X] diff
+    - [X] diff_percentage
+- Notification Channel
+    - [ ] email

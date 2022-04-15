@@ -27,11 +27,12 @@ import java.util.Set;
 public class ColumnLength extends BaseSingleTableColumn {
 
     public ColumnLength(){
+        super();
         configSet.add("length");
         configSet.add("comparator");
 
-        REQUIRED_OPTIONS.add("length");
-        REQUIRED_OPTIONS.add("comparator");
+        requiredOptions.add("length");
+        requiredOptions.add("comparator");
     }
 
     @Override

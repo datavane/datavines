@@ -27,6 +27,7 @@ import java.util.Set;
 public class ColumnNotNull extends BaseSingleTableColumn {
 
     public ColumnNotNull(){
+        super();
     }
 
     @Override

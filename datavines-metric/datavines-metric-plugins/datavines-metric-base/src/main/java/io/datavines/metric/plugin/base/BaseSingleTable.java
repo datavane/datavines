@@ -34,13 +34,15 @@ public abstract class BaseSingleTable implements SqlMetric {
 
     protected List<String> filters = new ArrayList<>();
 
-    protected static Set<String> configSet = new HashSet<>();
+    protected Set<String> configSet = new HashSet<>();
 
-    static {
+    protected Set<String> requiredOptions = new HashSet<>();
+
+    public BaseSingleTable() {
         configSet.add("table");
         configSet.add("filter");
 
-        REQUIRED_OPTIONS.add("table");
+        requiredOptions.add("table");
     }
 
     @Override
@@ -63,7 +65,7 @@ public abstract class BaseSingleTable implements SqlMetric {
 
     @Override
     public CheckResult validateConfig(Map<String, Object> config) {
-        return ConfigChecker.checkConfig(config, REQUIRED_OPTIONS);
+        return ConfigChecker.checkConfig(config, requiredOptions);
     }
 
     @Override

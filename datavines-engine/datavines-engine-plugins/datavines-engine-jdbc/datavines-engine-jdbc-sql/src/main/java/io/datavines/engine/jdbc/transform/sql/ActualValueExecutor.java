@@ -17,6 +17,7 @@
 
 package io.datavines.engine.jdbc.transform.sql;
 
+import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.jdbc.api.entity.ResultList;
 
 import java.sql.Connection;
@@ -31,7 +32,9 @@ public class ActualValueExecutor implements ITransformExecutor {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);
         ResultList resultList = SqlUtils.getListFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
-        statement.execute("drop view " + outputTable);
+        if(StringUtils.isNotEmpty(outputTable) && !"null".equals(outputTable)) {
+            statement.execute("drop view " + outputTable);
+        }
         statement.close();
         resultSet.close();
         return resultList;

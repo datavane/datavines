@@ -25,7 +25,9 @@ import java.util.Map;
 import java.util.Set;
 
 public class ColumnNull extends BaseSingleTableColumn {
+
     public ColumnNull(){
+        super();
     }
 
     @Override
@@ -51,7 +53,7 @@ public class ColumnNull extends BaseSingleTableColumn {
     @Override
     public void prepare(Map<String, String> config) {
         if (config.containsKey("column")) {
-            filters.add("(${column} is null or ${column} = '')");
+            filters.add("(${column} is null )");
         }
         super.prepare(config);
     }

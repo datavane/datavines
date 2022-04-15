@@ -10,9 +10,10 @@ import java.util.Set;
 public class ColumnInEnums extends BaseSingleTableColumn {
 
     public ColumnInEnums(){
+        super();
         configSet.add("enum_list");
 
-        REQUIRED_OPTIONS.add("enum_list");
+        requiredOptions.add("enum_list");
     }
 
     @Override
@@ -38,7 +39,7 @@ public class ColumnInEnums extends BaseSingleTableColumn {
     @Override
     public void prepare(Map<String, String> config) {
         if (config.containsKey("enum_list") && config.containsKey("column")) {
-            filters.add(" (${column} in ( ${enum_list} ) ");
+            filters.add(" (${column} in ( ${enum_list} )) ");
         }
         super.prepare(config);
     }

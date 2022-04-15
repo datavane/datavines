@@ -36,6 +36,7 @@
         <module>datavines-connector-impala</module>
         <module>datavines-connector-clickhouse</module>
         <module>datavines-connector-postgresql</module>
+        <module>datavines-connector-presto</module>
     </modules>
 
 

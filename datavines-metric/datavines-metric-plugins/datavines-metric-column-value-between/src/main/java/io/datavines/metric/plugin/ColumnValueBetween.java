@@ -27,6 +27,7 @@ import java.util.Set;
 public class ColumnValueBetween extends BaseSingleTableColumn {
 
     public ColumnValueBetween(){
+        super();
         configSet.add("min");
         configSet.add("max");
     }
