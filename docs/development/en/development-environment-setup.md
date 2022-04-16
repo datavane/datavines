@@ -121,7 +121,7 @@ if the task status is success，you can get the task result
     "data": {
         "taskResult": {
             "id": 15,
-            "metricName": "value_between",
+            "metricName": "column_null",
             "metricDimension": "completeness",
             "metricType": "single_table",
             "taskId": 1511355300065992706,

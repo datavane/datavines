@@ -122,7 +122,7 @@ DataVines 的元数据存储在关系型数据库中，目前支持的关系型�
     "data": {
         "taskResult": {
             "id": 15,
-            "metricName": "value_between",
+            "metricName": "column_null",
             "metricDimension": "completeness",
             "metricType": "single_table",
             "taskId": 1511355300065992706,

@@ -47,7 +47,7 @@ $ mvn clean package -Prelease
 如果你想要参与贡献, 请参考官方文档: [贡献指南](docs/community/zh-CN/index.md)
 
 ## 项目计划
-[V1.0.0 RoadMap](docs/roadmap/en/roadmap-1.0.0.md)
+[V1.0.0 RoadMap](docs/roadmap/zh-CN/roadmap-1.0.0.md)
 
 ## 欢迎联系
 datavines@gmail.com
