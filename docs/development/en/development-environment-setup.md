@@ -18,7 +18,7 @@ git clone https://github.com/datavines-ops/datavines.git
 ### Compile source code  
 
 * If you use MySQL as your metadata database, you need to modify datavines/pom.xml and change the scope of the mysql-connector-java dependency to compile. This step is not necessary to use PostgreSQL
-* 运行 ` mvn clean install -Prelease -Dmaven.test.skip=true ` 
+* Run ` mvn clean install -Prelease -Dmaven.test.skip=true ` 
 
 ### Database
 

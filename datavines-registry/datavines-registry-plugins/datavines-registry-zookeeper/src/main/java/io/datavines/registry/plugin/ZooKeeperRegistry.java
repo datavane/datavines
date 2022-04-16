@@ -17,7 +17,9 @@
 
 package io.datavines.registry.plugin;
 
+import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.zookeeper.ZooKeeperClient;
+import io.datavines.common.zookeeper.ZooKeeperConfig;
 import io.datavines.registry.api.ConnectionListener;
 import io.datavines.registry.api.Registry;
 import io.datavines.registry.api.ServerInfo;
@@ -42,11 +44,24 @@ public class ZooKeeperRegistry implements Registry {
 
     @Override
     public void init(Properties properties) {
-        client = ZooKeeperClient.getInstance().getClient();
+        ZooKeeperClient zooKeeperClient = null;
+        try {
+            ZooKeeperConfig zooKeeperConfig = new ZooKeeperConfig();
+            zooKeeperConfig.setServerList(properties.getProperty(CommonPropertyUtils.REGISTRY_ZOOKEEPER_SERVER_LIST,
+                    CommonPropertyUtils.REGISTRY_ZOOKEEPER_SERVER_LIST_DEFAULT));
+            zooKeeperClient = ZooKeeperClient.getInstance().buildClient(zooKeeperConfig);
+            client = zooKeeperClient.getClient();
+        } catch (Exception exception) {
+            logger.error("build zookeeper client error: {} ", exception);
+        }
     }
 
     @Override
     public boolean acquire(String key, long timeout){
+
+        if (client == null) {
+            return false;
+        }
 
         if (mutex == null) {
             mutex = new InterProcessMutex(client,key);
@@ -62,6 +77,10 @@ public class ZooKeeperRegistry implements Registry {
 
     @Override
     public boolean release(String key){
+
+        if (client == null) {
+            return false;
+        }
 
         try {
             if (mutex != null && mutex.isAcquiredInThisProcess()) {

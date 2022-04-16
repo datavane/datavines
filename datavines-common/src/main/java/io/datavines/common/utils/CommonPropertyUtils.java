@@ -51,9 +51,11 @@ public class CommonPropertyUtils {
     public static final String REGISTRY_TYPE = "registry.type";
     public static final String REGISTRY_TYPE_DEFAULT = "default";
 
+    public static final String REGISTRY_ZOOKEEPER_SERVER_LIST = "registry.zookeeper.server.list";
+    public static final String REGISTRY_ZOOKEEPER_SERVER_LIST_DEFAULT = "localhost:2181";
+
     public static final String LOCAL_TMP_WORKDIR = "local.tmp.workdir";
     public static final String LOCAL_TMP_WORKDIR_DEFAULT = "/tmp/datavines";
-
 
     private static final Logger logger = LoggerFactory.getLogger(CommonPropertyUtils.class);
 
