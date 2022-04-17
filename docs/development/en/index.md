@@ -1,6 +1,6 @@
 # Developer Guide
-## Development Environment Setup
-### [Development Environment Setup](development-environment-setup.md)
+## [Development Environment Setup](development-environment-setup.md)
+## [Architecture Design](architecture-design.md)
 ## Plugin Develop Guide
 ### [Metric Plugin Develop Guide](metric-plugin-development.md)
 ### [ExpectedValue Plugin Develop Guide](expected-value-plugin-development.md)

@@ -21,7 +21,7 @@
 - 注册中心
     - [X] MySQL
     - [X] PostgreSQL
-    - [X] ZooKeeper
+    - [ ] ZooKeeper
 - 执行引擎
     - [X] jdbc
         - Connector
