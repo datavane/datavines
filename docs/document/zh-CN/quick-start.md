@@ -56,17 +56,17 @@ spring:
    username: root
    password: 123456
 ```
-如果你是使用Spark做为执行引擎，并且是提交到Yarn上面去执行的，那么需要common.properties中yarn相关的配置信息
+如果你是使用Spark做为执行引擎，并且是提交到Yarn上面去执行的，那么需要在common.properties中配置yarn相关的信息
 - standalone 模式
 ```
 yarn.mode=standalone
-yarn.application.status.address=http://%s:%s/ws/v1/cluster/apps/%s #第一个%s需要填上yarn的ip地址
+yarn.application.status.address=http://%s:%s/ws/v1/cluster/apps/%s #第一个%s需要被替换成yarn的ip地址
 yarn.resource.manager.http.address.port=8088
 ```
 - ha 模式
 ```
 yarn.mode=ha
-yarn.application.status.address=http://%s:%s/ws/v1/cluster/apps/%s #第一个%s需要填上yarn的ip地址
+yarn.application.status.address=http://%s:%s/ws/v1/cluster/apps/%s
 yarn.resource.manager.http.address.port=8088
 yarn.resource.manager.ha.ids=192.168.0.1,192.168.0.2
 ```

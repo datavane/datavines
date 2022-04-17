@@ -66,7 +66,7 @@ yarn.resource.manager.http.address.port=8088
 - ha mode
 ````
 yarn.mode=ha
-yarn.application.status.address=http://%s:%s/ws/v1/cluster/apps/%s #The first %s needs to be filled with the ip address of yarn
+yarn.application.status.address=http://%s:%s/ws/v1/cluster/apps/%s
 yarn.resource.manager.http.address.port=8088
 yarn.resource.manager.ha.ids=192.168.0.1,192.168.0.2
 ````
