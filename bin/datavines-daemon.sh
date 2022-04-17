@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-usage="Usage: datavines-daemon.sh (start|stop) <command> "
+usage="Usage: datavines-daemon.sh (start|stop) <command> <''|mysql>"
 
 # if no args specified, show usage
 if [ $# -le 1 ]; then
@@ -28,8 +28,21 @@ startStop=$1
 shift
 command=$1
 shift
+profile=$1
+shift
 
-echo "Begin $startStop $command......"
+springProfleActive=
+
+if [ -n "$profile" ]; then
+	if [ "$profile" = "mysql" ]; then
+	  springProfleActive="-Dspring.profiles.active=mysql"
+	else
+	  echo "Error: No profile named \`$profile' was found."
+	  exit 1
+	fi
+fi
+
+echo "Begin $startStop $command $profile......"
 
 BIN_DIR=`dirname $0`
 BIN_DIR=`cd "$BIN_DIR"; pwd`
@@ -58,7 +71,7 @@ pid=$DATAVINES_PID_DIR/datavines-$command.pid
 cd $DATAVINES_HOME
 
 if [ "$command" = "server" ]; then
-  LOG_FILE="-Dlogging.config=classpath:server-logback.xml -Dspring.profiles.active=server"
+  LOG_FILE="-Dlogging.config=classpath:server-logback.xml $springProfleActive"
   CLASS=io.datavines.server.DataVinesServer
 else
   echo "Error: No command named \`$command' was found."
@@ -113,4 +126,4 @@ case $startStop in
 
 esac
 
-echo "End $startStop $command."
+echo "End $startStop $command $profile."

@@ -58,7 +58,7 @@ DataVines 的元数据存储在关系型数据库中，目前支持的关系型�
  - `-Dspring.profiles.active=mysql` 中 `mysql` 表示指定的配置文件
  - `-Dlogging.config=classpath:server-logback.xml` 
  
-当你在Console里面看到 `[INFO] 2022-04-10 12:29:05.447 io.datavines.server.DataVinesServer:[61] - Started DataVinesServer in 3.97 seconds (JVM running for 4.69)` 这样的日志的时候，证明服务已经启动成功了
+当你在Console里面看到 `[INFO] 2022-04-10 12:29:05.447 io.datavines.server.DataVinesServer:[61] - Started DataVinesServer in 3.97 seconds (JVM running for 4.69)` 日志的时候，证明服务已经启动成功了
 
 ### 提交任务
 目前只支持`API`提交任务

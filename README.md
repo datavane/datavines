@@ -40,7 +40,7 @@ $ mvn clean package -Prelease
 [QuickStart](docs/document/en/quick-start.md)
 
 ## Development
-[DeveloperGuide](docs/development/en/index.md)
+[Developer Guide](docs/development/en/index.md)
 
 ## Contribution
 
@@ -54,4 +54,4 @@ datavines@gmail.com
 
 ## License
 
-DataVines is licensed under the Apache License 2.0. DataVines relies on some third-party components, and their open source protocols are also Apache License 2.0 or compatible with Apache License 2.0. In addition, DataVines also directly references or modifies some codes in Apache DolphinScheduler, SeaTunnel and Dubbo, all of which are Apache License 2.0. Thanks for contributions to these projects.
+DataVines is licensed under the [Apache License 2.0](LICENSE). DataVines relies on some third-party components, and their open source protocols are also Apache License 2.0 or compatible with Apache License 2.0. In addition, DataVines also directly references or modifies some codes in Apache DolphinScheduler, SeaTunnel and Dubbo, all of which are Apache License 2.0. Thanks for contributions to these projects.
