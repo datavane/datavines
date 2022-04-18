@@ -22,7 +22,7 @@ import io.datavines.connector.api.ConnectorParameterConverter;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClickhouseConnectorParameterConverter implements ConnectorParameterConverter {
+public class ClickHouseConnectorParameterConverter implements ConnectorParameterConverter {
 
     @Override
     public Map<String, Object> converter(Map<String, Object> parameter) {

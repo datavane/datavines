@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package io.datavines.connector.plugin;
+package io.datavines.connector.plugin.datasource;
 
-import io.datavines.connector.api.Connector;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Dialect;
+/**
+ * IDataSourceInfo
+ */
+public interface IDataSourceInfo {
 
-public class ImpalaConnectorFactory extends JdbcConnectorFactory {
-
-    @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new ImpalaConnectorParameterConverter();
-    }
-
-    @Override
-    public Dialect getDialect() {
-        return new ImpalaDialect();
-    }
-
-    @Override
-    public Connector getConnector() {
-        return new ImpalaConnector();
-    }
+    BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo);
 }

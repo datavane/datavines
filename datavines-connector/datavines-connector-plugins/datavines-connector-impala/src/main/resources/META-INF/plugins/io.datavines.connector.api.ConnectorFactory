@@ -1,1 +1,1 @@
-impala=io.datavines.connector.plugin.ClickhouseConnectorFactory
+impala=io.datavines.connector.plugin.ImpalaConnectorFactory

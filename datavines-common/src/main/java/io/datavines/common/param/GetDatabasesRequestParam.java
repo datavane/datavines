@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package io.datavines.connector.plugin;
+package io.datavines.common.param;
 
-import io.datavines.connector.api.Connector;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Dialect;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public class ImpalaConnectorFactory extends JdbcConnectorFactory {
-
-    @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new ImpalaConnectorParameterConverter();
-    }
-
-    @Override
-    public Dialect getDialect() {
-        return new ImpalaDialect();
-    }
-
-    @Override
-    public Connector getConnector() {
-        return new ImpalaConnector();
-    }
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class GetDatabasesRequestParam extends ConnectorRequestParam {
 }

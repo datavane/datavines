@@ -17,12 +17,12 @@
 
 package io.datavines.common.param;
 
-/**
- * OperatorResponse
- */
+import lombok.Builder;
+
+@Builder
 public class ConnectorResponse {
 
-    private boolean isAsync = false;
+    private Status status;
 
     private Object result;
 
@@ -30,12 +30,12 @@ public class ConnectorResponse {
 
     private String errorMsg;
 
-    public boolean isAsync() {
-        return isAsync;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setAsync(boolean async) {
-        isAsync = async;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 
     public Object getResult() {
@@ -60,5 +60,39 @@ public class ConnectorResponse {
 
     public void setErrorMsg(String errorMsg) {
         this.errorMsg = errorMsg;
+    }
+
+    public static enum Status {
+        IN_PROGRESS(0),
+        SUCCESS(1),
+        ERROR(-1);
+
+        private final int status;
+
+        private Status(int status) {
+            this.status = status;
+        }
+
+        static Status getStatus(int status) {
+            switch(status) {
+                case -1:
+                    return ERROR;
+                case 0:
+                    return IN_PROGRESS;
+                case 1:
+                    return SUCCESS;
+                default:
+                    assert false : "Unknown status!";
+                    return ERROR;
+            }
+        }
+
+        int status() {
+            return this.status;
+        }
+
+        public boolean isSuccess() {
+            return this.status == SUCCESS.status();
+        }
     }
 }

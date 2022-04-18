@@ -17,11 +17,10 @@
 
 package io.datavines.connector.api;
 
-import io.datavines.common.param.ConnectorRequestParam;
-import io.datavines.common.param.ConnectorResponse;
-import io.datavines.spi.SPI;
+import io.datavines.common.param.*;
 
-@SPI
+import java.sql.SQLException;
+
 public interface Connector {
 
     /**
@@ -29,7 +28,7 @@ public interface Connector {
      * @param param
      * @return
      */
-    default ConnectorResponse getDatabases(ConnectorRequestParam param) {
+    default ConnectorResponse getDatabases(GetDatabasesRequestParam param) throws SQLException {
         return null;
     }
 
@@ -38,7 +37,7 @@ public interface Connector {
      * @param param
      * @return
      */
-    default ConnectorResponse getTables(ConnectorRequestParam param) {
+    default ConnectorResponse getTables(GetTablesRequestParam param) throws SQLException {
         return null;
     }
 
@@ -47,7 +46,7 @@ public interface Connector {
      * @param param
      * @return
      */
-    default ConnectorResponse getColumns(ConnectorRequestParam param) {
+    default ConnectorResponse getColumns(GetColumnsRequestParam param) throws SQLException {
         return null;
     }
 
@@ -73,7 +72,7 @@ public interface Connector {
      * @param param
      * @return
      */
-    default ConnectorResponse testConnect(ConnectorRequestParam param) {
+    default ConnectorResponse testConnect(TestConnectionRequestParam param) {
         return null;
     }
 }

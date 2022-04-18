@@ -17,18 +17,24 @@
 
 package io.datavines.connector.plugin;
 
+import io.datavines.connector.api.Connector;
 import io.datavines.connector.api.ConnectorParameterConverter;
 import io.datavines.connector.api.Dialect;
 
-public class ClickhouseConnectorFactory extends JdbcConnectorFactory {
+public class ClickHouseConnectorFactory extends JdbcConnectorFactory {
 
     @Override
     public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new ClickhouseConnectorParameterConverter();
+        return new ClickHouseConnectorParameterConverter();
     }
 
     @Override
     public Dialect getDialect() {
-        return new ClickhouseDialect();
+        return new ClickHouseDialect();
+    }
+
+    @Override
+    public Connector getConnector() {
+        return new ClickHouseConnector();
     }
 }

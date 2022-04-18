@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package io.datavines.connector.plugin;
+package io.datavines.common.param;
 
-public class ClickhouseDialect extends JdbcDialect {
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-    @Override
-    public String getDriver() {
-        return "ru.yandex.clickhouse.ClickHouseDriver";
-    }
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class TestConnectionRequestParam extends ConnectorRequestParam {
 }

@@ -17,6 +17,7 @@
 
 package io.datavines.connector.plugin;
 
+import io.datavines.connector.api.Connector;
 import io.datavines.connector.api.ConnectorParameterConverter;
 import io.datavines.connector.api.Dialect;
 
@@ -30,5 +31,10 @@ public class PostgreSqlConnectorFactory extends JdbcConnectorFactory {
     @Override
     public Dialect getDialect() {
         return new PostgreSqlDialect();
+    }
+
+    @Override
+    public Connector getConnector() {
+        return new PostgreSqlConnector();
     }
 }

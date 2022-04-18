@@ -15,26 +15,27 @@
  * limitations under the License.
  */
 
-package io.datavines.connector.plugin;
+package io.datavines.connector.plugin.datasource;
 
-import io.datavines.connector.api.Connector;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Dialect;
+import io.datavines.common.utils.Md5Utils;
 
-public class ImpalaConnectorFactory extends JdbcConnectorFactory {
+import java.util.concurrent.ConcurrentHashMap;
 
-    @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new ImpalaConnectorParameterConverter();
+public class DataSourceInfoManager {
+
+    private static final ConcurrentHashMap<String, BaseDataSourceInfo> DATA_SOURCE_INFO_MAP =
+            new ConcurrentHashMap<>();
+
+    public static BaseDataSourceInfo getDatasourceInfo(String param) {
+        BaseDataSourceInfo dataSourceInfo = null;
+
+        String key = Md5Utils.getMd5(param, false);
+        dataSourceInfo = DATA_SOURCE_INFO_MAP.get(key);
+
+        return dataSourceInfo;
     }
 
-    @Override
-    public Dialect getDialect() {
-        return new ImpalaDialect();
-    }
-
-    @Override
-    public Connector getConnector() {
-        return new ImpalaConnector();
+    public static void putDataSourceInfo(BaseDataSourceInfo dataSourceInfo, String key) {
+        DATA_SOURCE_INFO_MAP.put(key,dataSourceInfo);
     }
 }

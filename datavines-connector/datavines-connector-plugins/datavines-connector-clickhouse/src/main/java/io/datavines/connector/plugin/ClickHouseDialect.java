@@ -17,24 +17,10 @@
 
 package io.datavines.connector.plugin;
 
-import io.datavines.connector.api.Connector;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Dialect;
-
-public class ImpalaConnectorFactory extends JdbcConnectorFactory {
+public class ClickHouseDialect extends JdbcDialect {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new ImpalaConnectorParameterConverter();
-    }
-
-    @Override
-    public Dialect getDialect() {
-        return new ImpalaDialect();
-    }
-
-    @Override
-    public Connector getConnector() {
-        return new ImpalaConnector();
+    public String getDriver() {
+        return "ru.yandex.clickhouse.ClickHouseDriver";
     }
 }
