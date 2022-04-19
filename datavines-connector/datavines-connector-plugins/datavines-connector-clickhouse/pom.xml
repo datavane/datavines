@@ -35,6 +35,12 @@
             <artifactId>datavines-connector-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>ru.yandex.clickhouse</groupId>
+            <artifactId>clickhouse-jdbc</artifactId>
+            <version>0.1.53</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -155,6 +155,7 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
     @Override
     public ConnectorResponse testConnect(TestConnectionRequestParam param) {
         BaseDataSourceInfo dataSourceInfo = getDatasourceInfo(param.getDataSourceParam());
+        dataSourceInfo.loadClass();
 
         try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(), dataSourceInfo.getUser(), dataSourceInfo.getPassword())) {
             boolean result = con!=null;

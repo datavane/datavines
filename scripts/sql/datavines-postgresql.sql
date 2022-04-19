@@ -258,3 +258,15 @@ CREATE TABLE task_result (
     update_time timestamp(0) DEFAULT NULL,
     CONSTRAINT task_result_pk PRIMARY KEY (id)
 );
+
+CREATE TABLE datasource (
+    id bigserial NOT NULL ,
+    name varchar(255) NOT NULL,
+    type varchar(255) NOT NULL,
+    param text NOT NULL,
+    create_by int8 DEFAULT NULL,
+    create_time timestamp(0) DEFAULT NULL,
+    update_by int8 DEFAULT NULL,
+    update_time timestamp(0) DEFAULT NULL,
+    CONSTRAINT datasource_pk PRIMARY KEY (id)
+);

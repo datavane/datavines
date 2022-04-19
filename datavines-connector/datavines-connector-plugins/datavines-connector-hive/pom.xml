@@ -35,5 +35,10 @@
             <artifactId>datavines-connector-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.hive</groupId>
+            <artifactId>hive-jdbc</artifactId>
+        </dependency>
     </dependencies>
 </project>

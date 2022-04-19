@@ -36,6 +36,9 @@ public class DataSource implements Serializable {
     @TableField(value = "name")
     private String name;
 
+    @TableField(value = "type")
+    private String type;
+
     @TableField(value = "param")
     private String param;
 
@@ -65,6 +68,14 @@ public class DataSource implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getParam() {

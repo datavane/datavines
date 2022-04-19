@@ -36,7 +36,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 @SpringBootApplication
 public class DataVinesServer {
@@ -46,7 +45,7 @@ public class DataVinesServer {
     @Autowired
     private SpringApplicationContext springApplicationContext;
 
-    @Resource
+    @Autowired
     private Environment environment;
 
     private Register register;

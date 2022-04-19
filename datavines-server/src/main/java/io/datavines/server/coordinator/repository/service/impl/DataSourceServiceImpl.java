@@ -40,7 +40,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     public boolean testConnect(TestConnectionRequestParam param) {
         ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
         ConnectorResponse response = connectorFactory.getConnector().testConnect(param);
-        return response.getStatus().isSuccess();
+        return (boolean)response.getResult();
     }
 
     @Override

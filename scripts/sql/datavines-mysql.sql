@@ -347,3 +347,15 @@ CREATE TABLE `task_result` (
     `update_time` datetime DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `datasource` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `name` varchar(255) NOT NULL,
+    `type` varchar(255) NOT NULL,
+    `param` text NOT NULL,
+    `create_by` bigint(20) DEFAULT NULL,
+    `create_time` datetime DEFAULT NULL,
+    `update_by` bigint(20) DEFAULT NULL,
+    `update_time` datetime DEFAULT NULL,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

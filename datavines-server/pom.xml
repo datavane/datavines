@@ -492,6 +492,18 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-connector-impala</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-connector-clickhouse</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-registry-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -499,12 +511,6 @@
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-registry-postgresql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-connector-impala</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

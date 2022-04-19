@@ -19,15 +19,20 @@ package io.datavines.server.coordinator.api.controller;
 
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.server.DataVinesConstants;
+import io.datavines.server.coordinator.api.dto.datasource.DataSourceCreate;
+import io.datavines.server.coordinator.api.dto.datasource.DataSourceUpdate;
 import io.datavines.server.coordinator.api.entity.ResultMap;
+import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.server.coordinator.repository.service.DataSourceService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,9 +46,21 @@ public class DataSourceController {
 
     @ApiOperation(value = "test connection")
     @PostMapping(value = "/test", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object submitTask(@RequestBody TestConnectionRequestParam param)  {
+    public Object testConnection(@RequestBody TestConnectionRequestParam param)  {
         Map<String,Object> result = new HashMap<>();
         result.put("result", dataSourceService.testConnect(param));
+        return new ResultMap().success().payload(result);
+    }
+
+    @ApiOperation(value = "test connection")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object createDataSource(@RequestBody DataSourceCreate dataSourceCreate)  {
+        Map<String,Object> result = new HashMap<>();
+        DataSource dataSource = new DataSource();
+        BeanUtils.copyProperties(dataSourceCreate, dataSource);
+        dataSource.setCreateTime(LocalDateTime.now());
+        dataSource.setUpdateTime(LocalDateTime.now());
+        result.put("taskId", dataSourceService.insert(dataSource));
         return new ResultMap().success().payload(result);
     }
 }
