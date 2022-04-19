@@ -17,6 +17,7 @@
 
 package io.datavines.server.coordinator.api.controller;
 
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.dto.datasource.DataSourceCreate;
@@ -52,15 +53,27 @@ public class DataSourceController {
         return new ResultMap().success().payload(result);
     }
 
-    @ApiOperation(value = "test connection")
+    @ApiOperation(value = "create datasource")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createDataSource(@RequestBody DataSourceCreate dataSourceCreate)  {
         Map<String,Object> result = new HashMap<>();
-        DataSource dataSource = new DataSource();
-        BeanUtils.copyProperties(dataSourceCreate, dataSource);
-        dataSource.setCreateTime(LocalDateTime.now());
-        dataSource.setUpdateTime(LocalDateTime.now());
-        result.put("taskId", dataSourceService.insert(dataSource));
+        result.put("taskId", dataSourceService.insert(dataSourceCreate));
+        return new ResultMap().success().payload(result);
+    }
+
+    @ApiOperation(value = "update datasource")
+    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object updateDataSource(@RequestBody DataSourceUpdate dataSourceUpdate) throws DataVinesException {
+        Map<String,Object> result = new HashMap<>();
+        result.put("result", dataSourceService.update(dataSourceUpdate)>0);
+        return new ResultMap().success().payload(result);
+    }
+
+    @ApiOperation(value = "get databases")
+    @GetMapping(value = "/{id}")
+    public Object getDatabaseList(@PathVariable Long id)  {
+        Map<String,Object> result = new HashMap<>();
+        result.put("taskId", dataSourceService.getDatabaseList(id));
         return new ResultMap().success().payload(result);
     }
 }

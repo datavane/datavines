@@ -20,17 +20,24 @@ package io.datavines.server.coordinator.repository.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.ConnectorResponse;
+import io.datavines.common.param.GetDatabasesRequestParam;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.core.utils.JsonUtils;
+import io.datavines.server.coordinator.api.dto.datasource.DataSourceCreate;
+import io.datavines.server.coordinator.api.dto.datasource.DataSourceUpdate;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.server.coordinator.repository.mapper.DataSourceMapper;
 import io.datavines.server.coordinator.repository.service.DataSourceService;
 
 import io.datavines.spi.PluginLoader;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service("dataSourceService")
@@ -44,13 +51,25 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     }
 
     @Override
-    public long insert(DataSource dataSource) {
+    public long insert(DataSourceCreate dataSourceCreate) {
+        DataSource dataSource = new DataSource();
+        BeanUtils.copyProperties(dataSourceCreate, dataSource);
+        dataSource.setCreateTime(LocalDateTime.now());
+        dataSource.setUpdateTime(LocalDateTime.now());
         baseMapper.insert(dataSource);
         return dataSource.getId();
     }
 
     @Override
-    public int update(DataSource dataSource) {
+    public int update(DataSourceUpdate dataSourceUpdate) throws DataVinesException {
+        DataSource dataSource = baseMapper.selectById(dataSourceUpdate.getId());
+        if (dataSource == null){
+            throw new DataVinesException("can not find the datasource");
+        }
+
+        BeanUtils.copyProperties(dataSourceUpdate, dataSource);
+        dataSource.setUpdateTime(LocalDateTime.now());
+
         return baseMapper.updateById(dataSource);
     }
 
@@ -62,5 +81,25 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     @Override
     public List<DataSource> listByWorkSpaceId(long workspaceId) {
         return baseMapper.selectList(new QueryWrapper<DataSource>().eq("workspace_id", workspaceId));
+    }
+
+    @Override
+    public Object getDatabaseList(Long id)  {
+
+        DataSource dataSource = getById(id);
+        GetDatabasesRequestParam param = new GetDatabasesRequestParam();
+        param.setType(dataSource.getType());
+        param.setDataSourceParam(dataSource.getParam());
+
+        Object result = null;
+        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
+        try {
+            ConnectorResponse response = connectorFactory.getConnector().getDatabases(param);
+            result = response.getResult();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
     }
 }

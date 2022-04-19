@@ -42,10 +42,10 @@ public class CommonPropertyUtils {
     public static final String SERVER_PORT = "server.port";
     public static final Integer SERVER_PORT_DEFAULT = 5600;
 
-    public static final String FAILOVER_KEY = "failover.key";
+    public static final String FAILOVER_KEY = "registry.failover.key";
     public static final String FAILOVER_KEY_DEFAULT = "/datavines/failover";
 
-    public static final String TASK_LOCK_KEY = "task.lock.key";
+    public static final String TASK_LOCK_KEY = "registry.task.lock.key";
     public static final String TASK_LOCK_KEY_DEFAULT = "/datavines/taskLock";
 
     public static final String REGISTRY_TYPE = "registry.type";
