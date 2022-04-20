@@ -15,23 +15,21 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.api.dto.datasource;
+package io.datavines.server.coordinator.api.dto.user;
 
+import io.datavines.common.CommonConstants;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Data
-@NotNull(message = "DataSource Create cannot be null")
-public class DataSourceCreate {
+public class UserLogin {
 
-    @NotBlank(message = "DataSource name cannot be empty")
-    private String name;
+    @NotBlank(message = "Username cannot be empty")
+    private String username;
 
-    @NotBlank(message = "DataSource type cannot be empty")
-    private String type;
-
-    @NotBlank(message = "DataSource param cannot be empty")
-    private String param;
+    @NotBlank(message = "Password cannot be empty")
+    @Pattern(regexp = CommonConstants.REG_USER_PASSWORD, message = "password length must between 6-20")
+    private String password;
 }

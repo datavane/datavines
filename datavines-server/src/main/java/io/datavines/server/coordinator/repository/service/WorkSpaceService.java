@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.api.dto.datasource;
+package io.datavines.server.coordinator.repository.service;
 
-import lombok.Data;
+import io.datavines.server.coordinator.api.dto.workspace.WorkSpaceCreate;
+import io.datavines.server.coordinator.api.dto.workspace.WorkSpaceUpdate;
+import io.datavines.server.coordinator.repository.entity.WorkSpace;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
-@Data
-@NotNull(message = "DataSource Create cannot be null")
-public class DataSourceCreate {
+public interface WorkSpaceService {
 
-    @NotBlank(message = "DataSource name cannot be empty")
-    private String name;
+    long insert(WorkSpaceCreate workSpaceCreate);
 
-    @NotBlank(message = "DataSource type cannot be empty")
-    private String type;
+    int update(WorkSpaceUpdate workSpaceUpdate);
 
-    @NotBlank(message = "DataSource param cannot be empty")
-    private String param;
+    WorkSpace getById(long id);
+
+    List<WorkSpace> listByUserId(Long userId);
+
+    int deleteById(long id);
 }

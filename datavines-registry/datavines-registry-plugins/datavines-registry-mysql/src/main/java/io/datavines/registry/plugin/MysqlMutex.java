@@ -54,14 +54,11 @@ public class MysqlMutex {
 
     private boolean executeSql(String sql) throws SQLException {
 
-        if(connection == null || connection.isClosed()) {
+        if (connection == null || connection.isClosed() || !connection.isValid(10)) {
             connection = ConnectionUtils.getConnection(properties);
         }
 
-        if(statement == null || statement.isClosed()){
-            statement = connection.createStatement();
-        }
-
+        statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);
 
         if (resultSet == null) {
@@ -71,9 +68,11 @@ public class MysqlMutex {
         if (resultSet.first()) {
             int result = resultSet.getInt(1);
             resultSet.close();
+            statement.close();
             return result >= 1;
         } else {
             resultSet.close();
+            statement.close();
             return false;
         }
     }

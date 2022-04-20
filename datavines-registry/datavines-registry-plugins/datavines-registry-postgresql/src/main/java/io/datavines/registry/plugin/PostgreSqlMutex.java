@@ -54,18 +54,16 @@ public class PostgreSqlMutex {
 
     private boolean executeSql(String sql) throws SQLException {
 
-        if(connection == null || connection.isClosed()) {
+        if(connection == null || connection.isClosed() || !connection.isValid(10)) {
             connection = ConnectionUtils.getConnection(properties);
         }
 
-        if(statement == null || statement.isClosed()){
-            statement = connection.createStatement();
-        }
+        statement = connection.createStatement();
 
         ResultSet resultSet = statement.executeQuery(sql);
+        statement.close();
 
         return resultSet != null;
-
     }
 
     public void close() throws SQLException {

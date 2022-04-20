@@ -18,7 +18,13 @@ public interface DataSourceService {
 
     DataSource getById(long id);
 
+    int delete(long id);
+
     List<DataSource> listByWorkSpaceId(long workspaceId);
 
     Object getDatabaseList(Long id);
+
+    Object getTableList(Long id, String database);
+
+    Object getColumnList(Long id, String database, String table);
 }

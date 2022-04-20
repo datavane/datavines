@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.api.dto.datasource;
+package io.datavines.server.coordinator.api.dto.workspace;
 
 import lombok.Data;
 
@@ -23,15 +23,9 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
-@NotNull(message = "DataSource Create cannot be null")
-public class DataSourceCreate {
+@NotNull(message = "WorkSpace Create cannot be null")
+public class WorkSpaceCreate {
 
-    @NotBlank(message = "DataSource name cannot be empty")
+    @NotBlank(message = "WorkSpace name cannot be empty")
     private String name;
-
-    @NotBlank(message = "DataSource type cannot be empty")
-    private String type;
-
-    @NotBlank(message = "DataSource param cannot be empty")
-    private String param;
 }

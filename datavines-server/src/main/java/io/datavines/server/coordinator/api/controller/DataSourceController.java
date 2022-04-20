@@ -23,17 +23,15 @@ import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.dto.datasource.DataSourceCreate;
 import io.datavines.server.coordinator.api.dto.datasource.DataSourceUpdate;
 import io.datavines.server.coordinator.api.entity.ResultMap;
-import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.server.coordinator.repository.service.DataSourceService;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.beans.BeanUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -57,7 +55,7 @@ public class DataSourceController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createDataSource(@RequestBody DataSourceCreate dataSourceCreate)  {
         Map<String,Object> result = new HashMap<>();
-        result.put("taskId", dataSourceService.insert(dataSourceCreate));
+        result.put("id", dataSourceService.insert(dataSourceCreate));
         return new ResultMap().success().payload(result);
     }
 
@@ -69,11 +67,35 @@ public class DataSourceController {
         return new ResultMap().success().payload(result);
     }
 
+    @ApiOperation(value = "delete databases")
+    @DeleteMapping(value = "/{id}")
+    public Object deleteDataSource(@PathVariable Long id)  {
+        Map<String,Object> result = new HashMap<>();
+        result.put("result", dataSourceService.delete(id));
+        return new ResultMap().success().payload(result);
+    }
+
     @ApiOperation(value = "get databases")
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/{id}/databases")
     public Object getDatabaseList(@PathVariable Long id)  {
         Map<String,Object> result = new HashMap<>();
-        result.put("taskId", dataSourceService.getDatabaseList(id));
+        result.put("databases", dataSourceService.getDatabaseList(id));
+        return new ResultMap().success().payload(result);
+    }
+
+    @ApiOperation(value = "get databases")
+    @GetMapping(value = "/{id}/{database}/tables")
+    public Object getTableList(@PathVariable Long id, @PathVariable String database)  {
+        Map<String,Object> result = new HashMap<>();
+        result.put("tables", dataSourceService.getTableList(id, database));
+        return new ResultMap().success().payload(result);
+    }
+
+    @ApiOperation(value = "get databases")
+    @GetMapping(value = "/{id}/{database}/{table}/columns")
+    public Object getColumnList(@PathVariable Long id, @PathVariable String database, @PathVariable String table)  {
+        Map<String,Object> result = new HashMap<>();
+        result.put("columns", dataSourceService.getColumnList(id, database, table));
         return new ResultMap().success().payload(result);
     }
 }

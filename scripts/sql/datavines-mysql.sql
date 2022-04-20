@@ -353,9 +353,35 @@ CREATE TABLE `datasource` (
     `name` varchar(255) NOT NULL,
     `type` varchar(255) NOT NULL,
     `param` text NOT NULL,
+    `workspace_id` bigint(20) NOT NULL,
     `create_by` bigint(20) DEFAULT NULL,
     `create_time` datetime DEFAULT NULL,
     `update_by` bigint(20) DEFAULT NULL,
     `update_time` datetime DEFAULT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `datasource_un` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `workspace` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `name` varchar(255) NOT NULL,
+    `create_by` bigint(20) DEFAULT NULL,
+    `create_time` datetime DEFAULT NULL,
+    `update_by` bigint(20) DEFAULT NULL,
+    `update_time` datetime DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `workspace_un` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `user` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `username` varchar(255) NOT NULL,
+    `password` varchar(255) NOT NULL,
+    `email` varchar(255) NOT NULL,
+    `phone` varchar(127) DEFAULT NULL,
+    `admin` tinyint(1) NOT NULL DEFAULT '0',
+    `create_time` datetime DEFAULT NULL,
+    `update_time` datetime DEFAULT NULL,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `user_un` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -246,13 +246,13 @@ public class PostgreSqlServerStateManager {
     }
 
     private void checkConnection() throws SQLException {
-        if(connection == null || connection.isClosed()) {
+        if (connection == null || connection.isClosed()) {
             connection = ConnectionUtils.getConnection(properties);
         }
     }
 
     public void close() throws SQLException {
-        if(connection != null && !connection.isClosed()) {
+        if (connection != null && !connection.isClosed()) {
             connection.close();
         }
     }

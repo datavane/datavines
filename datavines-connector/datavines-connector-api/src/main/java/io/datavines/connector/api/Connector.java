@@ -75,4 +75,13 @@ public interface Connector {
     default ConnectorResponse testConnect(TestConnectionRequestParam param) {
         return null;
     }
+
+    /**
+     * test connect
+     * @param param
+     * @return
+     */
+    default ConnectorResponse executeQuery(TestConnectionRequestParam param) {
+        return null;
+    }
 }

@@ -21,9 +21,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.param.ConnectorResponse;
-import io.datavines.common.param.GetDatabasesRequestParam;
-import io.datavines.common.param.TestConnectionRequestParam;
+import io.datavines.common.param.*;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.core.utils.JsonUtils;
 import io.datavines.server.coordinator.api.dto.datasource.DataSourceCreate;
@@ -79,6 +77,11 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     }
 
     @Override
+    public int delete(long id) {
+        return baseMapper.deleteById(id);
+    }
+
+    @Override
     public List<DataSource> listByWorkSpaceId(long workspaceId) {
         return baseMapper.selectList(new QueryWrapper<DataSource>().eq("workspace_id", workspaceId));
     }
@@ -95,6 +98,47 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
         try {
             ConnectorResponse response = connectorFactory.getConnector().getDatabases(param);
+            result = response.getResult();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    @Override
+    public Object getTableList(Long id, String database) {
+        DataSource dataSource = getById(id);
+        GetTablesRequestParam param = new GetTablesRequestParam();
+        param.setType(dataSource.getType());
+        param.setDataSourceParam(dataSource.getParam());
+        param.setDataBase(database);
+
+        Object result = null;
+        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
+        try {
+            ConnectorResponse response = connectorFactory.getConnector().getTables(param);
+            result = response.getResult();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    @Override
+    public Object getColumnList(Long id, String database, String table) {
+        DataSource dataSource = getById(id);
+        GetColumnsRequestParam param = new GetColumnsRequestParam();
+        param.setType(dataSource.getType());
+        param.setDataSourceParam(dataSource.getParam());
+        param.setDataBase(database);
+        param.setTable(table);
+
+        Object result = null;
+        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
+        try {
+            ConnectorResponse response = connectorFactory.getConnector().getColumns(param);
             result = response.getResult();
         } catch (SQLException e) {
             e.printStackTrace();
