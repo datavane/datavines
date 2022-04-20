@@ -2,8 +2,8 @@ package io.datavines.server.coordinator.repository.service;
 
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.TestConnectionRequestParam;
-import io.datavines.server.coordinator.api.dto.datasource.DataSourceCreate;
-import io.datavines.server.coordinator.api.dto.datasource.DataSourceUpdate;
+import io.datavines.common.dto.datasource.DataSourceCreate;
+import io.datavines.common.dto.datasource.DataSourceUpdate;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 
 import java.util.List;

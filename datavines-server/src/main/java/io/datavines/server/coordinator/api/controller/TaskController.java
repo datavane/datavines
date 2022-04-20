@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.*;
 
 import io.datavines.server.DataVinesConstants;
 
-import io.datavines.server.coordinator.api.dto.task.SubmitTask;
+import io.datavines.common.dto.task.SubmitTask;
 import io.datavines.server.coordinator.repository.service.TaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

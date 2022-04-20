@@ -19,9 +19,8 @@ package io.datavines.server.coordinator.repository.service;
 
 import java.util.List;
 
-import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.server.coordinator.api.dto.task.SubmitTask;
+import io.datavines.common.dto.task.SubmitTask;
 import io.datavines.server.coordinator.repository.entity.Task;
 
 public interface TaskService {

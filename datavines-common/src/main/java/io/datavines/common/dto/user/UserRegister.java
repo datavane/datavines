@@ -15,28 +15,37 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.api.dto.user;
+package io.datavines.common.dto.user;
 
-import io.datavines.server.coordinator.repository.entity.User;
+import io.datavines.common.CommonConstants;
 import lombok.Data;
 
-import java.io.Serializable;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 @Data
-public class UserBaseInfo implements Serializable {
+@NotNull(message = "User info cannot be null")
+public class UserRegister {
 
-    private Long id;
-
+    @NotBlank(message = "Username cannot be empty")
     private String username;
 
+    @NotBlank(message = "Email cannot be empty")
+    @Pattern(regexp = CommonConstants.REG_EMAIL_FORMAT, message = "Invalid email format")
     private String email;
 
-    public UserBaseInfo() {
-    }
+    @NotBlank(message = "Password cannot be empty")
+    @Pattern(regexp = CommonConstants.REG_USER_PASSWORD, message = "password length must between 6-20")
+    private String password;
 
-    public UserBaseInfo(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.email = user.getEmail();
+    private String phone;
+
+    @Override
+    public String toString() {
+        return "UserRegister{" +
+                "username='" + username + '\'' +
+                ", email='" + email + '\'' +
+                '}';
     }
 }

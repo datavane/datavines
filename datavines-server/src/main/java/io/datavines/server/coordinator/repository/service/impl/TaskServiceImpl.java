@@ -28,7 +28,6 @@ import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
@@ -43,7 +42,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
-import io.datavines.server.coordinator.api.dto.task.SubmitTask;
+import io.datavines.common.dto.task.SubmitTask;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.coordinator.repository.entity.Command;

@@ -64,9 +64,6 @@ public abstract class DatavinesBaseClient {
         return client;
     }
 
-
-
-
     protected <T> T callAPI(DataVinesAPI dataVinesApi, WebResource service, Object requestObject) throws DatavinesApiException {
         ClientResponse clientResponse = null;
         int i = 0;

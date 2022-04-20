@@ -17,6 +17,7 @@
 package io.datavines.http.client.base;
 
 public class DataVinesClientConfig {
+
     public static final String CLIENT_READ_TIMEOUT_MSECS = "datavines.client.readTimeoutMSecs";
     public static final String CLIENT_CONNECT_TIMEOUT_MESCS = "datavines.client.connectTimeoutMSecs";
     public static final String CLIENT_RETRY_TIMES = "datavines.client.retryTimes";

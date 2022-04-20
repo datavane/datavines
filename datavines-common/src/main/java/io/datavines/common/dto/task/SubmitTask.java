@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.api.dto.task;
+package io.datavines.common.dto.task;
 
 import java.util.Map;
 

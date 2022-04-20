@@ -17,8 +17,8 @@
 
 package io.datavines.server.coordinator.repository.service;
 
-import io.datavines.server.coordinator.api.dto.workspace.WorkSpaceCreate;
-import io.datavines.server.coordinator.api.dto.workspace.WorkSpaceUpdate;
+import io.datavines.common.dto.workspace.WorkSpaceCreate;
+import io.datavines.common.dto.workspace.WorkSpaceUpdate;
 import io.datavines.server.coordinator.repository.entity.WorkSpace;
 
 import java.util.List;

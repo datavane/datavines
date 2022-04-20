@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.api.dto.user;
+package io.datavines.server.coordinator.repository.bo;
 
 import io.datavines.server.coordinator.repository.entity.User;
 import lombok.Data;

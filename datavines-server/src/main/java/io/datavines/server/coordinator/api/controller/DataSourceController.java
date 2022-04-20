@@ -20,8 +20,8 @@ package io.datavines.server.coordinator.api.controller;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.server.DataVinesConstants;
-import io.datavines.server.coordinator.api.dto.datasource.DataSourceCreate;
-import io.datavines.server.coordinator.api.dto.datasource.DataSourceUpdate;
+import io.datavines.common.dto.datasource.DataSourceCreate;
+import io.datavines.common.dto.datasource.DataSourceUpdate;
 import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.DataSourceService;
 

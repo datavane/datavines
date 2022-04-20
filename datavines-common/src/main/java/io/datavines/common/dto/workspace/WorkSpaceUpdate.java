@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.api.dto.workspace;
+package io.datavines.common.dto.workspace;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

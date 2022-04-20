@@ -15,17 +15,27 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.api.dto.workspace;
+package io.datavines.common.dto.user;
 
+import io.datavines.common.CommonConstants;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
 @Data
-@NotNull(message = "WorkSpace Create cannot be null")
-public class WorkSpaceCreate {
+@NotNull
+public class UserResetPassword implements Serializable {
 
-    @NotBlank(message = "WorkSpace name cannot be empty")
-    private String name;
+    @NotNull(message = "user id cannot be null")
+    private Long id;
+
+    @NotBlank(message = "old password must not be null")
+    private String oldPassword;
+
+    @NotBlank(message = "new password must not be null")
+    @Pattern(regexp = CommonConstants.REG_USER_PASSWORD, message = "password length must between 6-20")
+    private String newPassword;
 }

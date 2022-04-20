@@ -1,10 +1,10 @@
 package io.datavines.server.coordinator.repository.service;
 
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.server.coordinator.api.dto.user.UserLogin;
-import io.datavines.server.coordinator.api.dto.user.UserRegister;
-import io.datavines.server.coordinator.api.dto.user.UserResetPassword;
-import io.datavines.server.coordinator.api.dto.user.UserUpdate;
+import io.datavines.common.dto.user.UserLogin;
+import io.datavines.common.dto.user.UserRegister;
+import io.datavines.common.dto.user.UserResetPassword;
+import io.datavines.common.dto.user.UserUpdate;
 import io.datavines.server.coordinator.repository.entity.User;
 
 public interface UserService {

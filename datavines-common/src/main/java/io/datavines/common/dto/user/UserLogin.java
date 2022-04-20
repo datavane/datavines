@@ -15,16 +15,21 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.api.dto.user;
+package io.datavines.common.dto.user;
 
+import io.datavines.common.CommonConstants;
 import lombok.Data;
 
-@Data
-public class UserUpdate {
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 
+@Data
+public class UserLogin {
+
+    @NotBlank(message = "Username cannot be empty")
     private String username;
 
-    private String email;
-
-    private String phone;
+    @NotBlank(message = "Password cannot be empty")
+    @Pattern(regexp = CommonConstants.REG_USER_PASSWORD, message = "password length must between 6-20")
+    private String password;
 }

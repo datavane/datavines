@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.api.dto.datasource;
+package io.datavines.common.dto.datasource;
 
 import lombok.Data;
 
