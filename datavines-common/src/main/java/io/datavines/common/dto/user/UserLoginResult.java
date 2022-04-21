@@ -15,28 +15,14 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.repository.bo;
+package io.datavines.common.dto.user;
 
-import io.datavines.server.coordinator.repository.entity.User;
 import lombok.Data;
-
-import java.io.Serializable;
+import lombok.EqualsAndHashCode;
 
 @Data
-public class UserBaseInfo implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+public class UserLoginResult extends UserBaseInfo {
 
-    private Long id;
-
-    private String username;
-
-    private String email;
-
-    public UserBaseInfo() {
-    }
-
-    public UserBaseInfo(User user) {
-        this.id = user.getId();
-        this.username = user.getUsername();
-        this.email = user.getEmail();
-    }
+    private Boolean admin;
 }

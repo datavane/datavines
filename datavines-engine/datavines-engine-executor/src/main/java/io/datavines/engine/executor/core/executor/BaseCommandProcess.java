@@ -88,22 +88,15 @@ public abstract class BaseCommandProcess {
                 return result;
             }
 
-            //构建命令行执行文件路径
             String commandFilePath = buildCommandFilePath();
-            //创建命令行文件
             createCommandFileIfNotExists(executeCommand, commandFilePath);
-            //构建Process实例，用于执行命令行
             buildProcess(commandFilePath);
-            //进程日志写入文件
             parseProcessOutput(process);
-            //通过process实例拿到pid
             int pid = getProcessId(process);
-
             result.setProcessId(pid);
-            //设置超时时间
+
             int exitValue = process.waitFor();
 
-            // set appIds
             String appId = YarnUtils.getYarnAppId(taskRequest.getTenantCode(), taskRequest.getTaskUniqueId());
             result.setApplicationId(appId);
 

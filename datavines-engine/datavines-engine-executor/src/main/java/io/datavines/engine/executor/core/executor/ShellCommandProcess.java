@@ -32,9 +32,6 @@ import java.util.function.Consumer;
 
 public class ShellCommandProcess extends BaseCommandProcess {
 
-    /**
-     * For Unix-like, using sh
-     */
     public static final String SH = "sh";
 
     public ShellCommandProcess(Consumer<List<String>> logHandler,

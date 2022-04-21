@@ -513,6 +513,12 @@
             <artifactId>datavines-registry-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.jodd</groupId>
+            <artifactId>jodd-core</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
