@@ -75,6 +75,14 @@ public class DataSourceController {
         return new ResultMap().success().payload(result);
     }
 
+    @ApiOperation(value = "list datasource by workspace id")
+    @GetMapping(value = "list/{id}")
+    public Object listByWorkSpaceId(@PathVariable Long id)  {
+        Map<String,Object> result = new HashMap<>();
+        result.put("result", dataSourceService.listByWorkSpaceId(id));
+        return new ResultMap().success().payload(result);
+    }
+
     @ApiOperation(value = "get databases")
     @GetMapping(value = "/{id}/databases")
     public Object getDatabaseList(@PathVariable Long id)  {
@@ -83,7 +91,7 @@ public class DataSourceController {
         return new ResultMap().success().payload(result);
     }
 
-    @ApiOperation(value = "get databases")
+    @ApiOperation(value = "get tables")
     @GetMapping(value = "/{id}/{database}/tables")
     public Object getTableList(@PathVariable Long id, @PathVariable String database)  {
         Map<String,Object> result = new HashMap<>();
@@ -91,7 +99,7 @@ public class DataSourceController {
         return new ResultMap().success().payload(result);
     }
 
-    @ApiOperation(value = "get databases")
+    @ApiOperation(value = "get columns")
     @GetMapping(value = "/{id}/{database}/{table}/columns")
     public Object getColumnList(@PathVariable Long id, @PathVariable String database, @PathVariable String table)  {
         Map<String,Object> result = new HashMap<>();

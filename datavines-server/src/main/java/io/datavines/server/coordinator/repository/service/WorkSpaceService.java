@@ -20,14 +20,15 @@ package io.datavines.server.coordinator.repository.service;
 import io.datavines.common.dto.workspace.WorkSpaceCreate;
 import io.datavines.common.dto.workspace.WorkSpaceUpdate;
 import io.datavines.server.coordinator.repository.entity.WorkSpace;
+import io.datavines.server.exception.DataVinesServerException;
 
 import java.util.List;
 
 public interface WorkSpaceService {
 
-    long insert(WorkSpaceCreate workSpaceCreate);
+    long insert(WorkSpaceCreate workSpaceCreate) throws DataVinesServerException;
 
-    int update(WorkSpaceUpdate workSpaceUpdate);
+    int update(WorkSpaceUpdate workSpaceUpdate) throws DataVinesServerException;
 
     WorkSpace getById(long id);
 
