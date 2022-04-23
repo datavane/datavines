@@ -28,7 +28,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 
-@TableName("command")
+@TableName("dv_command")
 public class Command implements Serializable {
 
     private static final long serialVersionUID = -1L;

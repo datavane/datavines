@@ -35,7 +35,7 @@ public class WeeklyAvg implements ExpectedValue {
 
     @Override
     public String getExecuteSql() {
-        return "select round(avg(actual_value),2) as weekly_avg from actual_values where  data_time >= date_trunc('WEEK', ${data_time}) and data_time <date_trunc('day', ${data_time}) and unique_code = ${unique_code}";
+        return "select round(avg(actual_value),2) as weekly_avg from dv_actual_values where  data_time >= date_trunc('WEEK', ${data_time}) and data_time <date_trunc('day', ${data_time}) and unique_code = ${unique_code}";
     }
 
     @Override

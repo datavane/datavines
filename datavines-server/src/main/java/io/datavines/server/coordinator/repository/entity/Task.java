@@ -29,7 +29,7 @@ import io.datavines.server.enums.JobType;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@TableName("task")
+@TableName("dv_task")
 public class Task implements Serializable {
 
     private static final long serialVersionUID = -1L;

@@ -28,7 +28,7 @@ import io.datavines.server.coordinator.repository.entity.Job;
 @Mapper
 public interface JobMapper extends BaseMapper<Job> {
 
-    @Select("SELECT * from job WHERE datasource_id = #{datasourceId} ")
+    @Select("SELECT * from dv_job WHERE datasource_id = #{datasourceId} ")
     List<Job> listByDataSourceId(long dataSourceId);
 
 }

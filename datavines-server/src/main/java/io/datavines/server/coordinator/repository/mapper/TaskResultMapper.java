@@ -25,6 +25,6 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface TaskResultMapper extends BaseMapper<TaskResult>  {
 
-    @Select("SELECT * from task_result where task_id = #{taskId} limit 1 ")
+    @Select("SELECT * from dv_task_result where task_id = #{taskId} limit 1 ")
     TaskResult getOne(Long taskId);
 }

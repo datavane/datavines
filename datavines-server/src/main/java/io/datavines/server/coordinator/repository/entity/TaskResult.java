@@ -25,7 +25,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@TableName("task_result")
+@TableName("dv_task_result")
 public class TaskResult implements Serializable {
 
     private static final long serialVersionUID = -1L;

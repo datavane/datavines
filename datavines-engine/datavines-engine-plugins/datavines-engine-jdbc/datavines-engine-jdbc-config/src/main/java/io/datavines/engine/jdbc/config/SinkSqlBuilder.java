@@ -42,7 +42,7 @@ public class SinkSqlBuilder {
 
         }
 
-        return "INSERT INTO task_result ("
+        return "INSERT INTO dv_task_result ("
                 + String.join(", ", columnList)+") VALUES ("
                 + String.join(", ", columnValueList)+ ")";
     }
@@ -63,7 +63,7 @@ public class SinkSqlBuilder {
 
         }
 
-        return "INSERT INTO actual_values ("
+        return "INSERT INTO dv_actual_values ("
                 + String.join(", ", columnList)+") VALUES ("
                 + String.join(", ", columnValueList)+ ")";
     }

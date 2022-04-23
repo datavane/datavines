@@ -233,9 +233,7 @@ CREATE TABLE `QRTZ_TRIGGERS` (
      CONSTRAINT `QRTZ_TRIGGERS_ibfk_1` FOREIGN KEY (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`) REFERENCES `QRTZ_JOB_DETAILS` (`SCHED_NAME`, `JOB_NAME`, `JOB_GROUP`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
--- datavines.actual_values definition
-
-CREATE TABLE `actual_values` (
+CREATE TABLE `dv_actual_values` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `task_id` bigint(20) DEFAULT NULL,
     `metric_name` varchar(255) DEFAULT NULL,
@@ -247,9 +245,7 @@ CREATE TABLE `actual_values` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- datavines.command definition
-
-CREATE TABLE `command` (
+CREATE TABLE `dv_command` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `type` tinyint(4) DEFAULT '0' COMMENT 'Command type: 0 start task, 1 stop task, 2 recover fault-tolerant task, 3 resume waiting thread',
     `parameter` text COMMENT 'json command parameters',
@@ -260,9 +256,7 @@ CREATE TABLE `command` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- datavines.job definition
-
-CREATE TABLE `job` (
+CREATE TABLE `dv_job` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) DEFAULT NULL COMMENT '任务名称',
     `type` int(11) NOT NULL DEFAULT '0',
@@ -281,9 +275,7 @@ CREATE TABLE `job` (
     UNIQUE KEY `unique_name` (`name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- datavines.server definition
-
-CREATE TABLE `server` (
+CREATE TABLE `dv_server` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `host` varchar(255) NOT NULL,
     `port` int(11) NOT NULL,
@@ -293,9 +285,7 @@ CREATE TABLE `server` (
     UNIQUE KEY `server_un` (`host`,`port`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- datavines.task definition
-
-CREATE TABLE `task` (
+CREATE TABLE `dv_task` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
     `job_id` bigint(20) NOT NULL DEFAULT '-1',
@@ -327,9 +317,7 @@ CREATE TABLE `task` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- datavines.task_result definition
-
-CREATE TABLE `task_result` (
+CREATE TABLE `dv_task_result` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `metric_type` varchar(255) DEFAULT NULL,
     `metric_dimension` varchar(255) DEFAULT NULL,
@@ -348,7 +336,7 @@ CREATE TABLE `task_result` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `datasource` (
+CREATE TABLE `dv_datasource` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
     `type` varchar(255) NOT NULL,
@@ -362,7 +350,7 @@ CREATE TABLE `datasource` (
     UNIQUE KEY `datasource_un` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `workspace` (
+CREATE TABLE `dv_workspace` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
     `create_by` bigint(20) DEFAULT NULL,
@@ -373,7 +361,7 @@ CREATE TABLE `workspace` (
     UNIQUE KEY `workspace_un` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `user` (
+CREATE TABLE `dv_user` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `username` varchar(255) NOT NULL,
     `password` varchar(255) NOT NULL,

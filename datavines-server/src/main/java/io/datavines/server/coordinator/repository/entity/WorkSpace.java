@@ -25,7 +25,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@TableName("workspace")
+@TableName("dv_workspace")
 public class WorkSpace implements Serializable {
 
     private static final long serialVersionUID = -1L;

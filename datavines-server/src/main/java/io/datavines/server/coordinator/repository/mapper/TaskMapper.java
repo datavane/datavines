@@ -28,6 +28,6 @@ import io.datavines.server.coordinator.repository.entity.Task;
 @Mapper
 public interface TaskMapper extends BaseMapper<Task>  {
 
-    @Select("SELECT * from task WHERE datasource_id = #{dataSourceId} ")
+    @Select("SELECT * from dv_task WHERE datasource_id = #{dataSourceId} ")
     List<Task> listByDataSourceId(long dataSourceId);
 }

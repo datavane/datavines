@@ -25,7 +25,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@TableName("actual_values")
+@TableName("dv_actual_values")
 public class ActualValues implements Serializable {
 
     private static final long serialVersionUID = -1L;

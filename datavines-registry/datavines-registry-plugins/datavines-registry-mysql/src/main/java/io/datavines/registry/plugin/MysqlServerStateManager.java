@@ -138,7 +138,7 @@ public class MysqlServerStateManager {
 
     private void executeInsert(ServerInfo serverInfo) throws SQLException {
         checkConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("insert into server (host,port) values (?,?)");
+        PreparedStatement preparedStatement = connection.prepareStatement("insert into dv_server (host,port) values (?,?)");
         preparedStatement.setString(1, serverInfo.getHost());
         preparedStatement.setInt(2, serverInfo.getServerPort());
         preparedStatement.executeUpdate();
@@ -146,7 +146,7 @@ public class MysqlServerStateManager {
 
     private void executeUpdate(ServerInfo serverInfo) throws SQLException {
         checkConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("update server set update_time = ? where host = ? and port = ?");
+        PreparedStatement preparedStatement = connection.prepareStatement("update dv_server set update_time = ? where host = ? and port = ?");
         preparedStatement.setTimestamp(1, new Timestamp(System.currentTimeMillis()));
         preparedStatement.setString(2, serverInfo.getHost());
         preparedStatement.setInt(3, serverInfo.getServerPort());
@@ -155,7 +155,7 @@ public class MysqlServerStateManager {
 
     private void executeDelete(ServerInfo serverInfo) throws SQLException {
         checkConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("delete from server where host = ? and port = ?");
+        PreparedStatement preparedStatement = connection.prepareStatement("delete from dv_server where host = ? and port = ?");
         preparedStatement.setString(1, serverInfo.getHost());
         preparedStatement.setInt(2, serverInfo.getServerPort());
         preparedStatement.executeUpdate();
@@ -163,7 +163,7 @@ public class MysqlServerStateManager {
 
     private boolean isExists(ServerInfo serverInfo) throws SQLException {
         checkConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("select * from server where host=? and port=?");
+        PreparedStatement preparedStatement = connection.prepareStatement("select * from dv_server where host=? and port=?");
         preparedStatement.setString(1, serverInfo.getHost());
         preparedStatement.setInt(2, serverInfo.getServerPort());
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -178,7 +178,7 @@ public class MysqlServerStateManager {
 
     private ConcurrentHashMap<String, Timestamp> fetchServers() throws SQLException {
         checkConnection();
-        PreparedStatement preparedStatement = connection.prepareStatement("select * from server");
+        PreparedStatement preparedStatement = connection.prepareStatement("select * from dv_server");
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet == null) {

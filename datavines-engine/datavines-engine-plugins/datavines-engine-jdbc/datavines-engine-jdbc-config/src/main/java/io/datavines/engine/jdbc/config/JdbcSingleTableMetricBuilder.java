@@ -36,12 +36,12 @@ public class JdbcSingleTableMetricBuilder extends BaseJdbcConfigurationBuilder {
         inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
         List<SinkConfig> sinkConfigs = new ArrayList<>();
         //get the actual value storage parameter
-        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SinkSqlBuilder.getActualValueSql(),"actual_values");
+        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SinkSqlBuilder.getActualValueSql(), "dv_actual_values");
         actualValueSinkConfig.setType(SinkType.ACTUAL_VALUE.getDescription());
         sinkConfigs.add(actualValueSinkConfig);
 
         //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(SinkSqlBuilder.getTaskResultSql(), "task_result");
+        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(SinkSqlBuilder.getTaskResultSql(),  "dv_task_result");
         taskResultSinkConfig.setType(SinkType.TASK_RESULT.getDescription());
         sinkConfigs.add(taskResultSinkConfig);
 

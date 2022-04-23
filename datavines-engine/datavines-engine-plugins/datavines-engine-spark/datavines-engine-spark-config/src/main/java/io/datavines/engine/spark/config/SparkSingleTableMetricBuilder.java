@@ -35,7 +35,7 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
         inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
         List<SinkConfig> sinkConfigs = new ArrayList<>();
         //get the actual value storage parameter
-        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SparkSinkSqlBuilder.getActualValueSql(),"actual_values");
+        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SparkSinkSqlBuilder.getActualValueSql(),  "dv_actual_values");
         sinkConfigs.add(actualValueSinkConfig);
 
         String taskSinkSql = SparkSinkSqlBuilder.getDefaultSinkSql();
@@ -44,7 +44,7 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
         }
 
         //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "task_result");
+        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "dv_task_result");
         sinkConfigs.add(taskResultSinkConfig);
 
         //todo

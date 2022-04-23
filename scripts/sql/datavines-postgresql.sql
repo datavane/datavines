@@ -144,9 +144,8 @@ CREATE TABLE QRTZ_LOCKS (
 
 alter table QRTZ_LOCKS add primary key(SCHED_NAME,LOCK_NAME);
 
--- datavines.actual_values definition
-
-CREATE TABLE actual_values (
+DROP TABLE IF EXISTS dv_actual_values;
+CREATE TABLE dv_actual_values (
     id bigserial NOT NULL,
     task_id int8 DEFAULT NULL,
     metric_name varchar(255) DEFAULT NULL,
@@ -158,9 +157,8 @@ CREATE TABLE actual_values (
     CONSTRAINT actual_values_pk PRIMARY KEY (id)
 ) ;
 
--- datavines.command definition
-
-CREATE TABLE command (
+DROP TABLE IF EXISTS dv_command;
+CREATE TABLE dv_command (
     id bigserial NOT NULL ,
     type int2 DEFAULT 0 ,
     parameter text ,
@@ -171,9 +169,8 @@ CREATE TABLE command (
     CONSTRAINT command_pk PRIMARY KEY (id)
 ) ;
 
--- datavines.job definition
-
-CREATE TABLE job (
+DROP TABLE IF EXISTS dv_job;
+CREATE TABLE dv_job (
     id bigserial NOT NULL,
     name varchar(255) DEFAULT NULL ,
     type int4 NOT NULL DEFAULT '0',
@@ -192,9 +189,8 @@ CREATE TABLE job (
     CONSTRAINT job_un UNIQUE (name)
 ) ;
 
--- datavines.server definition
-
-CREATE TABLE server (
+DROP TABLE IF EXISTS dv_server;
+CREATE TABLE dv_server (
     id serial NOT NULL,
     host varchar(255) NOT NULL,
     port int4 NOT NULL,
@@ -204,9 +200,8 @@ CREATE TABLE server (
     CONSTRAINT server_un UNIQUE (host,port)
 ) ;
 
--- datavines.task definition
-
-CREATE TABLE task (
+DROP TABLE IF EXISTS dv_task;
+CREATE TABLE dv_task (
     id bigserial NOT NULL,
     name varchar(255) NOT NULL,
     job_id int8 NOT NULL DEFAULT '-1',
@@ -238,9 +233,8 @@ CREATE TABLE task (
     CONSTRAINT task_pk PRIMARY KEY (id)
 );
 
--- datavines.task_result definition
-
-CREATE TABLE task_result (
+DROP TABLE IF EXISTS dv_task_result;
+CREATE TABLE dv_task_result (
     id bigserial NOT NULL,
     metric_type varchar(255) DEFAULT NULL,
     metric_dimension varchar(255) DEFAULT NULL,
@@ -259,14 +253,42 @@ CREATE TABLE task_result (
     CONSTRAINT task_result_pk PRIMARY KEY (id)
 );
 
-CREATE TABLE datasource (
+DROP TABLE IF EXISTS dv_datasource;
+CREATE TABLE dv_datasource (
     id bigserial NOT NULL ,
     name varchar(255) NOT NULL,
     type varchar(255) NOT NULL,
     param text NOT NULL,
+    workspace_i int8 NOT NULL,
     create_by int8 DEFAULT NULL,
     create_time timestamp(0) DEFAULT NULL,
     update_by int8 DEFAULT NULL,
     update_time timestamp(0) DEFAULT NULL,
-    CONSTRAINT datasource_pk PRIMARY KEY (id)
+    CONSTRAINT datasource_pk PRIMARY KEY (id),
+    CONSTRAINT datasource_name_un UNIQUE (name)
+);
+
+DROP TABLE IF EXISTS dv_workspace;
+CREATE TABLE dv_workspace (
+    id bigserial NOT NULL,
+    name varchar(255) NOT NULL,
+    create_by int8 DEFAULT NULL,
+    create_time timestamp(0) DEFAULT NULL,
+    update_by int8 DEFAULT NULL,
+    update_time timestamp(0) DEFAULT NULL,
+    CONSTRAINT workspace_pk PRIMARY KEY (id),
+    CONSTRAINT workspace_name_un UNIQUE (name)
+);
+
+DROP TABLE IF EXISTS dv_user;
+CREATE TABLE dv_user (
+    id bigserial NOT NULL,
+    username varchar(255) NOT NULL,
+    password varchar(255) NOT NULL,
+    email varchar(255) NOT NULL,
+    phone varchar(127) DEFAULT NULL,
+    admin int2 NOT NULL DEFAULT 0,
+    create_time timestamp(0) DEFAULT NULL,
+    update_time timestamp(0) DEFAULT NULL,
+    CONSTRAINT user_pk PRIMARY KEY (id)
 );

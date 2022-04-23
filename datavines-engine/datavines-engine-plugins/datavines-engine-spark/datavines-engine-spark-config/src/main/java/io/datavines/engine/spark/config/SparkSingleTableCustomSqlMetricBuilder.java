@@ -62,7 +62,7 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
     public void buildSinkConfigs() throws DataVinesException {
         List<SinkConfig> sinkConfigs = new ArrayList<>();
         //get the actual value storage parameter
-        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SparkSinkSqlBuilder.getActualValueSql(), "actual_values");
+        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SparkSinkSqlBuilder.getActualValueSql(),  "dv_actual_values");
         sinkConfigs.add(actualValueSinkConfig);
 
         String taskSinkSql = SparkSinkSqlBuilder.getSingleTableCustomSqlSinkSql();
@@ -70,7 +70,7 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
             taskSinkSql = taskSinkSql.replaceAll("join \\$\\{expected_table}","");
         }
         //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql,"task_result");
+        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "dv_task_result");
         sinkConfigs.add(taskResultSinkConfig);
 
         //todo
