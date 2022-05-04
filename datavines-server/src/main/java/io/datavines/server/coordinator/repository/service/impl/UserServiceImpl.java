@@ -21,19 +21,27 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.dto.user.*;
 import io.datavines.server.coordinator.api.enums.ApiStatus;
 import io.datavines.server.coordinator.repository.entity.User;
+import io.datavines.server.coordinator.repository.entity.WorkSpace;
 import io.datavines.server.coordinator.repository.mapper.UserMapper;
+import io.datavines.server.coordinator.repository.mapper.WorkSpaceMapper;
 import io.datavines.server.coordinator.repository.service.UserService;
 import io.datavines.server.exception.DataVinesServerException;
+import io.datavines.server.utils.ContextHolder;
 import jodd.util.BCrypt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
 @Slf4j
 @Service("userService")
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+
+    @Autowired
+    private WorkSpaceMapper workSpaceMapper;
 
     @Override
     public User getByUsername(String username) {
@@ -47,22 +55,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         User user = getByUsername(username);
         if (user != null) {
-            try {
-                boolean checkPassword = BCrypt.checkpw(password, user.getPassword());
-                if (checkPassword) {
-                    UserLoginResult result = new UserLoginResult();
-                    BeanUtils.copyProperties(user, result);
-                    return result;
-                }
-            } catch (Exception e) {
+
+            boolean checkPassword = BCrypt.checkpw(password, user.getPassword());
+            if (checkPassword) {
+                UserLoginResult result = new UserLoginResult();
+                BeanUtils.copyProperties(user, result);
+                return result;
+            } else {
                 log.error("Username({}) password ({}) is wrong", username, password);
                 throw new DataVinesServerException(ApiStatus.USERNAME_OR_PASSWORD_ERROR);
             }
         }
+
         throw new DataVinesServerException(ApiStatus.USERNAME_OR_PASSWORD_ERROR);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UserBaseInfo register(UserRegister userRegister) throws DataVinesServerException {
         String username = userRegister.getUsername();
 
@@ -73,17 +82,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             BeanUtils.copyProperties(userRegister, user);
             user.setUpdateTime(LocalDateTime.now());
 
-            try {
-                if (baseMapper.insert(user) <= 0) {
-                    log.info("Register fail, userRegister:{}", userRegister);
-                    throw new DataVinesServerException(ApiStatus.REGISTER_USER_ERROR, username);
-                }
-            } catch (Exception e) {
-                log.info(e.getMessage());
-                throw new DataVinesServerException(e.getMessage());
+            if (baseMapper.insert(user) <= 0) {
+                log.info("Register fail, userRegister:{}", userRegister);
+                throw new DataVinesServerException(ApiStatus.REGISTER_USER_ERROR, username);
             }
+
             UserBaseInfo userBaseInfo = new UserBaseInfo();
             BeanUtils.copyProperties(user, userBaseInfo);
+
+            //create default workspace
+            WorkSpace workSpace = new WorkSpace();
+            workSpace.setName(username + "'s default");
+            workSpace.setCreateBy(ContextHolder.getUserId());
+            workSpace.setCreateTime(LocalDateTime.now());
+            workSpace.setUpdateBy(ContextHolder.getUserId());
+            workSpace.setUpdateTime(LocalDateTime.now());
+
+            workSpaceMapper.insert(workSpace);
+
             return userBaseInfo;
         } else {
             log.info("The username({}) has been registered", username);

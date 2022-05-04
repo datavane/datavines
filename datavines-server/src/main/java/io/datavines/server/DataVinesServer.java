@@ -61,7 +61,7 @@ public class DataVinesServer {
 
     @PostConstruct
     private void initializeAndStart() throws Exception {
-        logger.info("datavines server start");
+        logger.info("DataVines server start");
 
         initCommonProperties();
 

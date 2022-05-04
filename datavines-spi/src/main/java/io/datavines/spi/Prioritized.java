@@ -21,12 +21,6 @@ import static java.lang.Integer.compare;
 
 import java.util.Comparator;
 
-/**
- * {@code Prioritized} interface can be implemented by objects that
- * should be sorted, for example the tasks in executable queue.
- *
- * @since 2.7.5
- */
 public interface Prioritized extends Comparable<Prioritized> {
 
     /**

@@ -9,6 +9,7 @@ import java.util.Arrays;
 
 public class DataVinesServerException extends DataVinesException {
 
+    private ApiStatus status;
 
     public DataVinesServerException(String message) {
         super(message);
@@ -28,13 +29,20 @@ public class DataVinesServerException extends DataVinesException {
 
     public DataVinesServerException(ApiStatus status) {
         super(status.getMsg());
+        this.status = status;
     }
 
     public DataVinesServerException(ApiStatus status, Throwable cause) {
         super(status.getMsg(), cause);
+        this.status = status;
     }
 
     public DataVinesServerException(ApiStatus status, Object... statusParams) {
         super(CollectionUtils.isEmpty(Arrays.asList(statusParams)) ? status.getMsg() : MessageFormat.format(status.getMsg(), statusParams));
+        this.status = status;
+    }
+
+    public ApiStatus getStatus() {
+        return status;
     }
 }

@@ -17,6 +17,12 @@
 
 package io.datavines.server.coordinator.api.entity;
 
+import io.datavines.server.DataVinesConstants;
+import io.datavines.server.coordinator.api.enums.ApiStatus;
+import io.datavines.server.utils.TokenManager;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 public class ResultMap extends HashMap<String, Object> {
@@ -25,13 +31,32 @@ public class ResultMap extends HashMap<String, Object> {
 
     private int code;
 
+    private TokenManager tokenManager;
+
     public ResultMap() {
+    }
+
+    public ResultMap(TokenManager tokenManager) {
+        this.tokenManager = tokenManager;
     }
 
     public ResultMap success() {
         this.code = 200;
         this.put("code", this.code);
         this.put("msg", "Success");
+        this.put("data", EMPTY);
+        return this;
+    }
+
+    public ResultMap successAndRefreshToken(HttpServletRequest request) {
+        String token = request.getHeader(DataVinesConstants.TOKEN_HEADER_STRING);
+        if(StringUtils.isEmpty(token)) {
+            token = (String)request.getAttribute(DataVinesConstants.TOKEN_HEADER_STRING);
+        }
+        this.code = ApiStatus.SUCCESS.getCode();
+        this.put("code", this.code);
+        this.put("msg", "Success");
+        this.put("token", this.tokenManager.refreshToken(token));
         this.put("data", EMPTY);
         return this;
     }
@@ -46,6 +71,20 @@ public class ResultMap extends HashMap<String, Object> {
     public ResultMap fail(int code) {
         this.code = code;
         this.put("code", code);
+        this.put("data", EMPTY);
+        return this;
+    }
+
+    public ResultMap failAndRefreshToken(HttpServletRequest request) {
+        this.code = ApiStatus.FAIL.getCode();
+        this.put("code", code);
+        this.put("msg", ApiStatus.FAIL.getMsg());
+
+        String token = request.getHeader(DataVinesConstants.TOKEN_HEADER_STRING);
+
+        if (!StringUtils.isEmpty(token)) {
+            this.put("token", this.tokenManager.refreshToken(token));
+        }
         this.put("data", EMPTY);
         return this;
     }

@@ -19,6 +19,12 @@ package io.datavines.server;
 
 public class DataVinesConstants {
 
+    public static String LOGIN_USER = "login_user";
+
+    public static String WORKSPACE_ID = "workspace_id";
+
+    public static String DATASOURCE_ID = "datasource_id";
+
     public static String PROJECT_ID = "project_id";
 
     public static String PROJECT_JOB_ID = "project_job_id";
@@ -74,5 +80,6 @@ public class DataVinesConstants {
     public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
 
     public static final String JDBC = "jdbc";
+
     public static final String SPARK = "spark";
 }
