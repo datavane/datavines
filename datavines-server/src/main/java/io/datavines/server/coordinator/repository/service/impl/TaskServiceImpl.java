@@ -33,6 +33,7 @@ import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
+import io.datavines.server.exception.DataVinesServerException;
 import io.datavines.spi.PluginLoader;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +83,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
     }
 
     @Override
-    public Long submitTask(SubmitTask submitTask) throws DataVinesException{
+    public Long submitTask(SubmitTask submitTask) throws DataVinesServerException {
 
         checkTaskParameter(submitTask);
 
@@ -149,26 +150,26 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
                 .eq("status",ExecutionStatus.RUNNING_EXECUTION.getCode()));
     }
 
-    private void checkTaskParameter(SubmitTask submitTask) throws DataVinesException {
+    private void checkTaskParameter(SubmitTask submitTask) throws DataVinesServerException {
         TaskParameter taskParameter = submitTask.getParameter();
         String engineType = submitTask.getEngineType();
 
         String metricType = taskParameter.getMetricType();
         Set<String> metricPluginSet = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
         if (!metricPluginSet.contains(metricType)) {
-            throw new DataVinesException(String.format("%s metric does not supported", metricType));
+            throw new DataVinesServerException(String.format("%s metric does not supported", metricType));
         }
 
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricType);
         CheckResult checkResult = sqlMetric.validateConfig(taskParameter.getMetricParameter());
         if (checkResult== null || !checkResult.isSuccess()) {
-            throw new DataVinesException(checkResult== null? "check error": checkResult.getMsg());
+            throw new DataVinesServerException(checkResult== null? "check error": checkResult.getMsg());
         }
 
         String configBuilder = engineType + "_" + sqlMetric.getType().getDescription();
         Set<String> configBuilderPluginSet = PluginLoader.getPluginLoader(DataQualityConfigurationBuilder.class).getSupportedPlugins();
         if (!configBuilderPluginSet.contains(configBuilder)) {
-            throw new DataVinesException(String.format("%s engine does not supported %s metric", engineType, metricType));
+            throw new DataVinesServerException(String.format("%s engine does not supported %s metric", engineType, metricType));
         }
 
         ConnectorParameter srcConnectorParameter = taskParameter.getSrcConnectorParameter();
@@ -177,29 +178,29 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
             Set<String> connectorFactoryPluginSet =
                     PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
             if (!connectorFactoryPluginSet.contains(srcConnectorType)) {
-                throw new DataVinesException(String.format("%s connector does not supported", srcConnectorType));
+                throw new DataVinesServerException(String.format("%s connector does not supported", srcConnectorType));
             }
 
             if (JDBC.equals(engineType)) {
                 ConnectorFactory srcConnectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
                 if (!JDBC.equals(srcConnectorFactory.getCategory())) {
-                    throw new DataVinesException(String.format("jdbc engine does not supported %s connector", srcConnectorType));
+                    throw new DataVinesServerException(String.format("jdbc engine does not supported %s connector", srcConnectorType));
                 }
             }
         } else {
-            throw new DataVinesException("src connector parameter should not be null");
+            throw new DataVinesServerException("src connector parameter should not be null");
         }
 
         String expectedMetric = taskParameter.getExpectedType();
         Set<String> expectedValuePluginSet = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
         if (!expectedValuePluginSet.contains(expectedMetric)) {
-            throw new DataVinesException(String.format("%s expected value does not supported", metricType));
+            throw new DataVinesServerException(String.format("%s expected value does not supported", metricType));
         }
 
         String resultFormula = taskParameter.getResultFormula();
         Set<String> resultFormulaPluginSet = PluginLoader.getPluginLoader(ResultFormula.class).getSupportedPlugins();
         if (!resultFormulaPluginSet.contains(resultFormula)) {
-            throw new DataVinesException(String.format("%s result formula does not supported", metricType));
+            throw new DataVinesServerException(String.format("%s result formula does not supported", metricType));
         }
     }
 }

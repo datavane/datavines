@@ -20,8 +20,10 @@ package io.datavines.server.coordinator.api.controller;
 import javax.validation.Valid;
 
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.server.coordinator.api.aop.RefreshToken;
 import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.TaskResultService;
+import io.datavines.server.exception.DataVinesServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -36,9 +38,10 @@ import io.swagger.annotations.ApiOperation;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(value = "/task", tags = "task", produces = MediaType.APPLICATION_JSON_VALUE)
+@Api(value = "task", tags = "task", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/task", produces = MediaType.APPLICATION_JSON_VALUE)
+@RefreshToken
 public class TaskController {
 
     @Autowired
@@ -49,38 +52,25 @@ public class TaskController {
 
     @ApiOperation(value = "submit task")
     @PostMapping(value = "/submit", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object submitTask(@Valid @RequestBody SubmitTask submitTask)  {
-        Map<String,Object> result = new HashMap<>();
-        try {
-            result.put("taskId",taskService.submitTask(submitTask));
-        } catch (DataVinesException e) {
-            return new ResultMap().fail().payload(e.getMessage());
-        }
-
-        return new ResultMap().success().payload(result);
+    public Object submitTask(@Valid @RequestBody SubmitTask submitTask) throws DataVinesServerException {
+        return taskService.submitTask(submitTask);
     }
 
     @ApiOperation(value = "kill task")
     @DeleteMapping(value = "/kill/{id}")
     public Object killTask(@PathVariable("id") Long taskId) {
-        Map<String,Object> result = new HashMap<>();
-        result.put("taskId",taskService.killTask(taskId));
-        return new ResultMap().success().payload(result);
+        return taskService.killTask(taskId);
     }
 
     @ApiOperation(value = "get task status")
     @GetMapping(value = "/status/{id}")
     public Object getTaskStatus(@PathVariable("id") Long taskId) {
-        Map<String,Object> result = new HashMap<>();
-        result.put("taskStatus",taskService.getById(taskId).getStatus().getDescription());
-        return new ResultMap().success().payload(result);
+        return taskService.getById(taskId).getStatus().getDescription();
     }
 
     @ApiOperation(value = "get task result")
     @GetMapping(value = "result/{id}")
     public Object getTaskResultInfo(@PathVariable("id") Long taskId) {
-        Map<String,Object> result = new HashMap<>();
-        result.put("taskResult", taskResultService.getByTaskId(taskId));
-        return new ResultMap().success().payload(result);
+        return taskResultService.getByTaskId(taskId);
     }
 }

@@ -21,6 +21,7 @@ import io.datavines.common.dto.user.UserLogin;
 import io.datavines.common.dto.user.UserRegister;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.server.DataVinesConstants;
+import io.datavines.server.coordinator.api.aop.RefreshToken;
 import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.UserService;
 import io.swagger.annotations.Api;
@@ -32,9 +33,10 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(value = "/user", tags = "user")
+@Api(value = "user", tags = "user")
 @RestController
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/user")
+@RefreshToken
 public class UserController {
 
     @Autowired
@@ -42,18 +44,14 @@ public class UserController {
 
     @ApiOperation(value = "update user info")
     @PutMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object login(@RequestBody UserLogin userLogin) throws DataVinesException {
-        Map<String,Object> result = new HashMap<>();
-        result.put("result", userService.login(userLogin));
-        return new ResultMap().success().payload(result);
+    public Object update(@RequestBody UserLogin userLogin) throws DataVinesException {
+        return null;
     }
 
     @ApiOperation(value = "reset password")
     @PostMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object register(@RequestBody UserRegister userRegister) throws DataVinesException {
-        Map<String,Object> result = new HashMap<>();
-        result.put("result", userService.register(userRegister));
-        return new ResultMap().success().payload(result);
+    public Object resetPassword(@RequestBody UserRegister userRegister) throws DataVinesException {
+        return null;
     }
 
 }

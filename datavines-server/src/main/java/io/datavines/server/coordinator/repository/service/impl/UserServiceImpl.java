@@ -17,6 +17,7 @@
 
 package io.datavines.server.coordinator.repository.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.dto.user.*;
 import io.datavines.server.coordinator.api.enums.ApiStatus;
@@ -45,7 +46,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User getByUsername(String username) {
-        return null;
+        return baseMapper.selectOne(new QueryWrapper<User>().eq("username",username));
     }
 
     @Override

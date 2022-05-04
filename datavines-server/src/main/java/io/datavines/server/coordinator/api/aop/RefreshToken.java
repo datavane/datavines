@@ -15,31 +15,14 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.server.coordinator.api.aop;
 
-import java.util.List;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.dto.task.SubmitTask;
-import io.datavines.server.coordinator.repository.entity.Task;
-import io.datavines.server.exception.DataVinesServerException;
-
-public interface TaskService {
-
-    long insert(Task task);
-
-    int update(Task task);
-
-    Task getById(long id);
-
-    List<Task> listByDataSourceId(long dataSourceId);
-
-    Long submitTask(SubmitTask submitTask) throws DataVinesServerException;
-
-    Long killTask(Long taskId);
-
-    List<Task> listNeedFailover(String host);
-
-    List<Task> listTaskNotInServerList(List<String> hostList);
-
+@Target({ElementType.TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface RefreshToken {
 }

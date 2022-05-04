@@ -41,6 +41,7 @@ public enum ApiStatus {
     USERNAME_HAS_BEEN_REGISTERED_ERROR(10020001, "The username {0} has been registered", "用户名{0}已被注册过"),
     REGISTER_USER_ERROR(10020002, "Register User {0} Error", "注册用户{0}失败"),
     USERNAME_OR_PASSWORD_ERROR(10020003, "Username or Email Error", "用户名或者密码错误"),
+    USER_IS_NOT_EXIST_ERROR(10020004, "User is not exist", "用户不存在错误"),
 
     WORKSPACE_EXIST_ERROR(11010001, "WorkSpace {0} is Exist error", "工作空间{0}已存在错误"),
     CREATE_WORKSPACE_ERROR(11010002, "Create WorkSpace {0} Error", "创建工作空间{0}错误"),

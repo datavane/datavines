@@ -48,6 +48,15 @@ public class ResultMap extends HashMap<String, Object> {
         return this;
     }
 
+    public ResultMap successWithToken(String username, String password) {
+        this.code = 200;
+        this.put("code", this.code);
+        this.put("msg", "Success");
+        this.put("data", EMPTY);
+        this.put("token", this.tokenManager.generateToken(username, password));
+        return this;
+    }
+
     public ResultMap successAndRefreshToken(HttpServletRequest request) {
         String token = request.getHeader(DataVinesConstants.TOKEN_HEADER_STRING);
         if(StringUtils.isEmpty(token)) {

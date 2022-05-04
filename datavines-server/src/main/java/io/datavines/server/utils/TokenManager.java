@@ -48,6 +48,14 @@ public class TokenManager {
     @Value("${jwt.token.algorithm:HS512}")
     private String algorithm;
 
+    public String generateToken(String username, String password) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put(DataVinesConstants.TOKEN_USER_NAME, StringUtils.isEmpty(username) ? DataVinesConstants.EMPTY : username);
+        claims.put(DataVinesConstants.TOKEN_USER_PASSWORD, StringUtils.isEmpty(password) ? DataVinesConstants.EMPTY : password);
+        claims.put(DataVinesConstants.TOKEN_CREATE_TIME, System.currentTimeMillis());
+        return generate(claims);
+    }
+
     public String generateToken(TokenInfo tokenInfo) {
         Map<String, Object> claims = new HashMap<>();
         claims.put(DataVinesConstants.TOKEN_USER_NAME, StringUtils.isEmpty(tokenInfo.getUsername()) ? DataVinesConstants.EMPTY : tokenInfo.getUsername());

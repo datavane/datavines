@@ -21,8 +21,10 @@ import io.datavines.common.dto.user.UserLogin;
 import io.datavines.common.dto.user.UserRegister;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.server.DataVinesConstants;
+import io.datavines.server.coordinator.api.annotation.AuthIgnore;
 import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.UserService;
+import io.datavines.server.utils.TokenManager;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +34,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(value = "", tags = "")
+@Api(value = "login", tags = "login")
 @RestController
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH)
 public class LoginController {
@@ -40,14 +42,19 @@ public class LoginController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private TokenManager tokenManager;
+
+    @AuthIgnore
     @ApiOperation(value = "login")
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object login(@RequestBody UserLogin userLogin) throws DataVinesException {
-        Map<String,Object> result = new HashMap<>();
-        result.put("result", userService.login(userLogin));
-        return new ResultMap().success().payload(result);
+        return new ResultMap(tokenManager)
+                .successWithToken(userLogin.getUsername(), userLogin.getPassword())
+                .payload(userService.login(userLogin));
     }
 
+    @AuthIgnore
     @ApiOperation(value = "register")
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object register(@RequestBody UserRegister userRegister) throws DataVinesException {

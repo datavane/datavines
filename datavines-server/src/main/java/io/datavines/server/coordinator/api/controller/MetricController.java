@@ -19,6 +19,7 @@ package io.datavines.server.coordinator.api.controller;
 
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.DataVinesConstants;
+import io.datavines.server.coordinator.api.aop.RefreshToken;
 import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
@@ -29,25 +30,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-@Api(value = "/metric", tags = "metric", produces = MediaType.APPLICATION_JSON_VALUE)
+@Api(value = "metric", tags = "metric", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/metric", produces = MediaType.APPLICATION_JSON_VALUE)
+@RefreshToken
 public class MetricController {
 
     @ApiOperation(value = "get metric list")
     @GetMapping(value = "/list")
     public Object getMetricList() {
-        Map<String,Object> result = new HashMap<>();
-        result.put("metrics", PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins());
-        return new ResultMap().success().payload(result);
+        return PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
     }
 
     @ApiOperation(value = "get metric info")
     @GetMapping(value = "/info/{name}")
     public Object getMetricInfo(@PathVariable("name") String name) {
-        Map<String,Object> result = new HashMap<>();
-        result.put("metricInfo", PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name));
-        return new ResultMap().success().payload(result);
+        return PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name);
     }
 
 }
