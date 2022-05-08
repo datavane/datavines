@@ -70,6 +70,7 @@ public class Event {
 
     public enum Type {
         ADD,
+        UPDATE,
         REMOVE
     }
 
