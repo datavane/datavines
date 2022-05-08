@@ -18,12 +18,15 @@ package io.datavines.http.client.base;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.client.urlconnection.URLConnectionClientHandler;
+import io.datavines.http.client.response.DataVinesResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import javax.ws.rs.core.Cookie;
 import javax.ws.rs.core.MediaType;
 import java.util.HashMap;
@@ -42,19 +45,31 @@ public abstract class DatavinesBaseClient {
     private int retryTimes = 1;
     private int sleepBetweenRetries = 1000;
     protected WebResource service;
+    protected ObjectMapper objectMapper;
+    private String token;
 
-    protected DatavinesBaseClient(String baseUrl, Properties configuration, String user, Cookie cookie){
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    protected DatavinesBaseClient(String baseUrl, Properties configuration, String user, Cookie cookie) {
         this.baseURL = baseUrl;
+        objectMapper = new ObjectMapper();
+        objectMapper.enable(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT);
         Client client = getClient(configuration, user);
         service = client.resource(baseUrl);
         this.cookie = cookie;
     }
 
-    protected Client getClient(Properties configuration, String user){
-        Integer readTimeout = (Integer)configuration.getOrDefault(DataVinesClientConfig.CLIENT_READ_TIMEOUT_MSECS, 6000);
-        Integer connectTimeout = (Integer)configuration.getOrDefault(DataVinesClientConfig.CLIENT_CONNECT_TIMEOUT_MESCS, 6000);
-        retryTimes = (Integer)configuration.getOrDefault(DataVinesClientConfig.CLIENT_RETRY_TIMES, 1);
-        sleepBetweenRetries = (Integer)configuration.getOrDefault(DataVinesClientConfig.CLIENT_SLEEP_BETWEEN_RETRY, 1000);
+    protected Client getClient(Properties configuration, String user) {
+        Integer readTimeout = (Integer) configuration.getOrDefault(DataVinesClientConfig.CLIENT_READ_TIMEOUT_MSECS, 6000);
+        Integer connectTimeout = (Integer) configuration.getOrDefault(DataVinesClientConfig.CLIENT_CONNECT_TIMEOUT_MESCS, 6000);
+        retryTimes = (Integer) configuration.getOrDefault(DataVinesClientConfig.CLIENT_RETRY_TIMES, 1);
+        sleepBetweenRetries = (Integer) configuration.getOrDefault(DataVinesClientConfig.CLIENT_SLEEP_BETWEEN_RETRY, 1000);
 
         final URLConnectionClientHandler handler = new URLConnectionClientHandler();
         DefaultClientConfig clientConfig = new DefaultClientConfig();
@@ -64,7 +79,7 @@ public abstract class DatavinesBaseClient {
         return client;
     }
 
-    protected <T> T callAPI(DataVinesAPI dataVinesApi, WebResource service, Object requestObject) throws DatavinesApiException {
+    protected <T> DataVinesResponse<T> callAPI(DataVinesAPI dataVinesApi, WebResource service, Object requestObject) throws DatavinesApiException {
         ClientResponse clientResponse = null;
         int i = 0;
         do {
@@ -86,25 +101,36 @@ public abstract class DatavinesBaseClient {
             if (Objects.nonNull(cookie)) {
                 requestBuilder.cookie(cookie);
             }
+            //Set token
+            if (Objects.nonNull(token)){
+                requestBuilder.header("Authorization", token);
+            }
+
+            if (Objects.nonNull(requestObject) && !(requestObject instanceof String)) {
+                try {
+                    requestObject = objectMapper.writeValueAsString(requestObject);
+                } catch (JsonProcessingException e) {
+                    log.error("json parse error", e);
+                }
+            }
 
             clientResponse = requestBuilder.method(dataVinesApi.getMethod(), ClientResponse.class, requestObject);
             log.debug(String.format("Response Status is  : %s", clientResponse.getStatus()));
 
             if (!log.isDebugEnabled()) {
-                log.info( String.format("method=%s path=%s contentType=%s accept=%s status=%s", dataVinesApi.getMethod(),
+                log.info(String.format("method=%s path=%s contentType=%s accept=%s status=%s", dataVinesApi.getMethod(),
                         dataVinesApi.getPath(), dataVinesApi.getConsumerMediaType(), dataVinesApi.getProviderMediaType(), clientResponse.getStatus()));
             }
 
-            if (dataVinesApi.getConsumerMediaType().contains(MediaType.APPLICATION_JSON)){
+            if (dataVinesApi.getConsumerMediaType().contains(MediaType.APPLICATION_JSON)) {
                 String result = clientResponse.getEntity(String.class);
-                ObjectMapper mapper = new ObjectMapper();
-                HashMap resultMap = null;
+                DataVinesResponse<T> response = null;
                 try {
-                    resultMap = mapper.readValue(result, HashMap.class);
+                    response = (DataVinesResponse<T>) objectMapper.readValue(result, dataVinesApi.getResultType());
                 } catch (JsonProcessingException e) {
                     log.error("json parse error", e);
                 }
-                return (T) resultMap;
+                return response;
             }
 
             try {
@@ -115,7 +141,11 @@ public abstract class DatavinesBaseClient {
             i++;
         } while (i < retryTimes);
 
-       throw new DatavinesApiException("unknown response!");
+        throw new DatavinesApiException("unknown response!");
+    }
+
+    protected <T> DataVinesResponse<T> callAPI(DataVinesAPI dataVinesApi, Object requestObject) throws DatavinesApiException {
+        return callAPI(dataVinesApi, service, requestObject);
     }
 
 }

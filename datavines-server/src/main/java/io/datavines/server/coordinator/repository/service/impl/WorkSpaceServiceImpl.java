@@ -29,6 +29,7 @@ import io.datavines.server.coordinator.repository.mapper.WorkSpaceMapper;
 import io.datavines.server.coordinator.repository.service.JobService;
 import io.datavines.server.coordinator.repository.service.WorkSpaceService;
 import io.datavines.server.exception.DataVinesServerException;
+import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -79,8 +80,8 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper,WorkSpace>
     }
 
     @Override
-    public List<WorkSpace> listByUserId(Long userId) {
-        return baseMapper.selectList(new QueryWrapper<WorkSpace>().eq("create_by", userId));
+    public List<WorkSpace> listByUserId() {
+        return baseMapper.selectList(new QueryWrapper<WorkSpace>().eq("create_by", ContextHolder.getUserId()));
     }
 
     @Override

@@ -16,9 +16,10 @@
  */
 package io.datavines.http.client.base;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.Objects;
 
 public class DataVinesAPI {
     private String path;
@@ -26,17 +27,20 @@ public class DataVinesAPI {
     private String consumerMediaType;
     private String providerMediaType;
     private Response.Status expectStatus;
+    private TypeReference resultType;
+
     private static final String JSON_UTF8_MEDIA = MediaType.APPLICATION_JSON + "; charset=UTF-8";
 
-    public DataVinesAPI(String path, String method, String consumerMediaType, String providerMediaType, Response.Status status) {
+    public DataVinesAPI(String path, String method, String consumerMediaType, String providerMediaType, Response.Status status, TypeReference resultType) {
         this.path = path;
         this.method = method;
         this.consumerMediaType = consumerMediaType;
         this.providerMediaType = providerMediaType;
         this.expectStatus = status;
+        this.resultType = resultType;
     }
-    public DataVinesAPI(String path, String method, Response.Status status) {
-        this(path, method, JSON_UTF8_MEDIA, MediaType.APPLICATION_JSON, status);
+    public DataVinesAPI(String path, String method, Response.Status status, TypeReference resultType) {
+        this(path, method, JSON_UTF8_MEDIA, MediaType.APPLICATION_JSON, status, resultType);
     }
 
     public String getPath() {
@@ -79,4 +83,11 @@ public class DataVinesAPI {
         this.expectStatus = expectStatus;
     }
 
+    public TypeReference getResultType() {
+        return resultType;
+    }
+
+    public void setResultType(TypeReference resultType) {
+        this.resultType = resultType;
+    }
 }

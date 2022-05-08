@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.http.client.request;
 
-import io.datavines.common.dto.workspace.WorkSpaceCreate;
-import io.datavines.common.dto.workspace.WorkSpaceUpdate;
-import io.datavines.server.coordinator.repository.entity.WorkSpace;
-import io.datavines.server.exception.DataVinesServerException;
 
-import java.util.List;
+import io.datavines.http.client.response.UserBaseInfo;
 
-public interface WorkSpaceService {
+public class UserLoginResult extends UserBaseInfo {
 
-    long insert(WorkSpaceCreate workSpaceCreate) throws DataVinesServerException;
+    private Boolean admin;
 
-    int update(WorkSpaceUpdate workSpaceUpdate) throws DataVinesServerException;
+    public UserLoginResult() {
+    }
 
-    WorkSpace getById(long id);
+    public Boolean getAdmin() {
+        return admin;
+    }
 
-    List<WorkSpace> listByUserId();
+    public void setAdmin(Boolean admin) {
+        this.admin = admin;
+    }
 
-    int deleteById(long id);
+    @Override
+    public String toString() {
+        return "UserLoginResult{" +
+                "admin=" + admin +
+                "super=" + super.toString() +
+                '}';
+    }
 }

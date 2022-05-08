@@ -61,8 +61,8 @@ public class WorkSpaceController {
     }
 
     @ApiOperation(value = "list workspace by user id")
-    @GetMapping(value = "list/{id}")
-    public Object listByUserId(@PathVariable Long id)  {
-        return workSpaceService.listByUserId(id);
+    @GetMapping(value = "list")
+    public Object listByUserId()  {
+        return workSpaceService.listByUserId();
     }
 }

@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.http.client.request;
 
-import io.datavines.common.dto.workspace.WorkSpaceCreate;
-import io.datavines.common.dto.workspace.WorkSpaceUpdate;
-import io.datavines.server.coordinator.repository.entity.WorkSpace;
-import io.datavines.server.exception.DataVinesServerException;
+import java.util.Map;
 
-import java.util.List;
+public class ConnectorParameter {
 
-public interface WorkSpaceService {
+    private String type;
 
-    long insert(WorkSpaceCreate workSpaceCreate) throws DataVinesServerException;
+    private Map<String,Object> parameters;
 
-    int update(WorkSpaceUpdate workSpaceUpdate) throws DataVinesServerException;
+    public String getType() {
+        return type;
+    }
 
-    WorkSpace getById(long id);
+    public void setType(String type) {
+        this.type = type;
+    }
 
-    List<WorkSpace> listByUserId();
+    public Map<String, Object> getParameters() {
+        return parameters;
+    }
 
-    int deleteById(long id);
+    public void setParameters(Map<String, Object> parameters) {
+        this.parameters = parameters;
+    }
 }
