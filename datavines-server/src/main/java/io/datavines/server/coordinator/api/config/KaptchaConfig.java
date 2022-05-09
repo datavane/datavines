@@ -7,12 +7,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import java.util.Properties;
 
-/**
- * @author TGspace
- * @ClassName CaptchaConfig.java
- * @Description
- * @createTime 2022-05-09 10:12:00
- */
 @Configuration
 public class KaptchaConfig {
 

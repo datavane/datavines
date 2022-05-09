@@ -19,12 +19,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author TGspace
- * @ClassName VerificationUtil.java
- * @Description
- * @createTime 2022-05-08 21:48:00
- */
 public class VerificationUtil {
 
     private static Logger logger = LoggerFactory.getLogger(VerificationUtil.class);
