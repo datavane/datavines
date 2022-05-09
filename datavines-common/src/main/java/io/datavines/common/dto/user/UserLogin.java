@@ -32,4 +32,10 @@ public class UserLogin {
     @NotBlank(message = "Password cannot be empty")
     @Pattern(regexp = CommonConstants.REG_USER_PASSWORD, message = "password length must between 6-20")
     private String password;
+
+    @NotBlank(message = "verificationCode cannot be empty")
+    private String verificationCode;
+
+    @NotBlank(message = "verificationCodeJwt cannot be empty")
+    private String verificationCodeJwt;
 }

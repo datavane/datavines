@@ -72,6 +72,8 @@ public class DataVinesConstants {
 
     public static final String TOKEN_CREATE_TIME = "token_create_time";
 
+    public static final String TOKEN_VERIFICATION_CODE = "token_verification_code";
+
     public static final String EMPTY = "";
 
     /**

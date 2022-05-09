@@ -24,7 +24,9 @@ import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.annotation.AuthIgnore;
 import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.UserService;
+import io.datavines.server.exception.DataVinesServerException;
 import io.datavines.server.utils.TokenManager;
+import io.datavines.server.utils.VerificationUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +51,7 @@ public class LoginController {
     @ApiOperation(value = "login")
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object login(@RequestBody UserLogin userLogin) throws DataVinesException {
+        VerificationUtil.validVerificationCode(userLogin.getVerificationCode(), userLogin.getVerificationCodeJwt());
         return new ResultMap(tokenManager)
                 .successWithToken(userLogin.getUsername(), userLogin.getPassword())
                 .payload(userService.login(userLogin));
@@ -58,9 +61,16 @@ public class LoginController {
     @ApiOperation(value = "register")
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object register(@RequestBody UserRegister userRegister) throws DataVinesException {
+        VerificationUtil.validVerificationCode(userRegister.getVerificationCode(), userRegister.getVerificationCodeJwt());
         Map<String,Object> result = new HashMap<>();
         result.put("result", userService.register(userRegister));
         return new ResultMap().success().payload(result);
     }
 
+    @AuthIgnore
+    @ApiOperation(value = "refreshVerificationCode")
+    @GetMapping(value = "/refreshVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object refreshVerificationCode() throws DataVinesServerException {
+        return new ResultMap().success().payload(VerificationUtil.creatVerificationCodeAndImage());
+    }
 }

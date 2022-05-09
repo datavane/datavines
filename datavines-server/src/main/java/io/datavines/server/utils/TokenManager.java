@@ -96,14 +96,14 @@ public class TokenManager {
         return toTokenString(timeout, claims);
     }
 
-    private String toTokenString(Long timeOutMillis, Map<String, Object> claims) {
+    public String toTokenString(Long timeOutMillis, Map<String, Object> claims) {
         long expiration = Long.parseLong(claims.get(DataVinesConstants.TOKEN_CREATE_TIME) + DataVinesConstants.EMPTY) + timeOutMillis;
 
         SignatureAlgorithm.valueOf(algorithm);
 
         return Jwts.builder()
                 .setClaims(claims)
-                .setSubject(claims.get(DataVinesConstants.TOKEN_USER_NAME).toString())
+                .setSubject(null == claims.get(DataVinesConstants.TOKEN_USER_NAME) ? null : claims.get(DataVinesConstants.TOKEN_USER_NAME).toString())
                 .setExpiration(new Date(expiration))
                 .signWith(SignatureAlgorithm.valueOf(algorithm), tokenSecret.getBytes(StandardCharsets.UTF_8))
                 .compact();
@@ -131,7 +131,7 @@ public class TokenManager {
         return password;
     }
 
-    private Claims getClaims(String token) {
+    public Claims getClaims(String token) {
        return Jwts.parser()
                     .setSigningKey(tokenSecret.getBytes(StandardCharsets.UTF_8))
                     .parseClaimsJws(token.startsWith(DataVinesConstants.TOKEN_PREFIX) ?

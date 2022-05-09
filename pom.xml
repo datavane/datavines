@@ -104,6 +104,7 @@
         <hikari.version>4.0.3</hikari.version>
         <spring.version>5.3.12</spring.version>
         <jodd.version>3.5.2</jodd.version>
+        <kaptcha.version>2.3.2</kaptcha.version>
 
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
@@ -563,6 +564,11 @@
                 <groupId>org.jodd</groupId>
                 <artifactId>jodd-core</artifactId>
                 <version>${jodd.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.penggle</groupId>
+                <artifactId>kaptcha</artifactId>
+                <version>${kaptcha.version}</version>
             </dependency>
 
         </dependencies>
