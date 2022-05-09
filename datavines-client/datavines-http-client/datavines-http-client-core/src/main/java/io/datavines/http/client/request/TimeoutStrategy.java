@@ -15,24 +15,34 @@
  * limitations under the License.
  */
 
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.http.client.request;
 
-import io.datavines.common.dto.workspace.WorkSpaceCreate;
-import io.datavines.common.dto.workspace.WorkSpaceUpdate;
-import io.datavines.server.coordinator.repository.entity.WorkSpace;
-import io.datavines.server.exception.DataVinesServerException;
+/**
+ * failure policy when some task node failed.
+ */
+public enum TimeoutStrategy{
 
-import java.util.List;
+  /**
+   * 0 ending process when some tasks failed.
+   * 1 continue running when some tasks failed.
+   **/
+  RETRY(0, "retry"),
+  WARN(1, "warn");
 
-public interface WorkSpaceService {
+  TimeoutStrategy(int code, String description){
+    this.code = code;
+    this.description = description;
+  }
 
-    long insert(WorkSpaceCreate workSpaceCreate) throws DataVinesServerException;
+  final int code;
 
-    int update(WorkSpaceUpdate workSpaceUpdate) throws DataVinesServerException;
+  final String description;
 
-    WorkSpace getById(long id);
+  public int getCode() {
+    return code;
+  }
 
-    List<WorkSpace> listByUserId();
-
-    int deleteById(long id);
+  public String getDescription() {
+    return description;
+  }
 }

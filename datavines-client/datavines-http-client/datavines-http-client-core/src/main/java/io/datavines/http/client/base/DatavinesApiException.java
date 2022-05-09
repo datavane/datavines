@@ -1,10 +1,11 @@
 package io.datavines.http.client.base;
 
 public class DatavinesApiException extends Exception {
-    public DatavinesApiException(){
+    public DatavinesApiException() {
         super();
     }
-    public DatavinesApiException(String message){
+
+    public DatavinesApiException(String message) {
         super(message);
     }
 
