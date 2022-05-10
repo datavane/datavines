@@ -24,7 +24,7 @@ public class VerificationUtil {
     private static Logger logger = LoggerFactory.getLogger(VerificationUtil.class);
     private static DefaultKaptcha defaultKaptcha;
     private static TokenManager tokenManager;
-    private static final Long timeOutMillis = 10000L;
+    private static final Long timeOutMillis = 60000L;
 
     static {
         defaultKaptcha = SpringApplicationContext.getBean(DefaultKaptcha.class);
