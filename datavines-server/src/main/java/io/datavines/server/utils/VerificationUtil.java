@@ -83,7 +83,6 @@ public class VerificationUtil {
                 }
             }
         }
-
         String imageByte64;
         BASE64Encoder encoder = new BASE64Encoder();
         if(null == imageInByte){
