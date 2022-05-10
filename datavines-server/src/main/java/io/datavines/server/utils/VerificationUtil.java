@@ -28,6 +28,7 @@ public class VerificationUtil {
 
     static {
         defaultKaptcha = SpringApplicationContext.getBean(DefaultKaptcha.class);
+
         tokenManager = SpringApplicationContext.getBean(TokenManager.class);
     }
 
