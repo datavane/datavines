@@ -521,6 +521,11 @@
             <artifactId>jodd-core</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.penggle</groupId>
+            <artifactId>kaptcha</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

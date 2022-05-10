@@ -44,6 +44,7 @@ public class DataVinesExceptionHandler {
 
     @ExceptionHandler(DataVinesServerException.class)
     public ResponseEntity<ResultMap> dataVinesServerExceptionHandler(DataVinesServerException e, HttpServletRequest request) {
+        log.error("DataVinesServerException:", e);
         ResultMap resultMap = new ResultMap(tokenManager);
         ApiStatus status = e.getStatus();
         if (ApiStatus.INVALID_TOKEN.equals(status)){
@@ -59,6 +60,7 @@ public class DataVinesExceptionHandler {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ResultMap> constraintViolationExceptionHandler(Exception e, HttpServletRequest request) {
+        log.error("ConstraintViolationException:", e);
         ResultMap resultMap = new ResultMap(tokenManager);
         resultMap.failAndRefreshToken(request);
         resultMap.message(buildValidFailMessage((ConstraintViolationException) e));
@@ -67,6 +69,7 @@ public class DataVinesExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResultMap> commonExceptionHandler(Exception e, HttpServletRequest request) {
+        log.error("Exception:", e);
         ResultMap resultMap = new ResultMap(tokenManager);
         resultMap.failAndRefreshToken(request);
         resultMap.message(e.getMessage());
