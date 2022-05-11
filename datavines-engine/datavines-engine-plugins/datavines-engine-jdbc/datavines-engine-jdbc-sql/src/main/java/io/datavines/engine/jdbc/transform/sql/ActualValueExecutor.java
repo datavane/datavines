@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.datavines.engine.jdbc.transform.sql;
 
 import io.datavines.common.utils.StringUtils;
