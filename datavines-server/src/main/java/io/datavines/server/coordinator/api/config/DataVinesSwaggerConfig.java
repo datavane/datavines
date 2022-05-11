@@ -14,7 +14,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.datavines.server.coordinator.api.config;
 
 import org.springframework.context.annotation.Bean;
