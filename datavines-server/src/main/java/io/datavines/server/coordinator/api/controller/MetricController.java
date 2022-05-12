@@ -19,15 +19,11 @@ package io.datavines.server.coordinator.api.controller;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.aop.RefreshToken;
-import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Api(value = "metric", tags = "metric", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController

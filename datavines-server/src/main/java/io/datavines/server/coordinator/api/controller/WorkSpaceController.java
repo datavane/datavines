@@ -20,7 +20,6 @@ import io.datavines.common.dto.workspace.WorkSpaceCreate;
 import io.datavines.common.dto.workspace.WorkSpaceUpdate;
 import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.aop.RefreshToken;
-import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.WorkSpaceService;
 import io.datavines.server.exception.DataVinesServerException;
 import io.swagger.annotations.Api;
@@ -28,9 +27,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Api(value = "workspace", tags = "workspace", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController

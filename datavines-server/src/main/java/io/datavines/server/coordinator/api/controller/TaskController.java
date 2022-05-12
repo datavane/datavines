@@ -18,24 +18,17 @@ package io.datavines.server.coordinator.api.controller;
 
 import javax.validation.Valid;
 
-import io.datavines.common.exception.DataVinesException;
 import io.datavines.server.coordinator.api.aop.RefreshToken;
-import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.TaskResultService;
 import io.datavines.server.exception.DataVinesServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
 import io.datavines.server.DataVinesConstants;
-
 import io.datavines.common.dto.task.SubmitTask;
 import io.datavines.server.coordinator.repository.service.TaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Api(value = "task", tags = "task", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController

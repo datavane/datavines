@@ -22,7 +22,6 @@ import io.datavines.server.DataVinesConstants;
 import io.datavines.common.dto.datasource.DataSourceCreate;
 import io.datavines.common.dto.datasource.DataSourceUpdate;
 import io.datavines.server.coordinator.api.aop.RefreshToken;
-import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.DataSourceService;
 
 import io.swagger.annotations.Api;
@@ -31,9 +30,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Api(value = "datasource", tags = "datasource", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController

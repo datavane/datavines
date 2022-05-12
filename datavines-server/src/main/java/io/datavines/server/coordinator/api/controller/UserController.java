@@ -21,16 +21,12 @@ import io.datavines.common.dto.user.UserRegister;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.aop.RefreshToken;
-import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Api(value = "user", tags = "user")
 @RestController
