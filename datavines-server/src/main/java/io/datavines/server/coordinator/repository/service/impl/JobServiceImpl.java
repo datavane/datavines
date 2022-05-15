@@ -14,10 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.datavines.server.coordinator.repository.service.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
+import io.datavines.common.dto.job.JobCreate;
+import io.datavines.common.enums.ExecutionStatus;
+import io.datavines.common.utils.JSONUtils;
+import io.datavines.server.coordinator.repository.entity.Command;
+import io.datavines.server.coordinator.repository.entity.Task;
+import io.datavines.server.coordinator.repository.mapper.CommandMapper;
+import io.datavines.server.coordinator.repository.mapper.TaskMapper;
+import io.datavines.server.enums.CommandType;
+import io.datavines.server.enums.Priority;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -28,6 +41,12 @@ import io.datavines.server.coordinator.repository.entity.Job;
 
 @Service("jobService")
 public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobService {
+
+    @Autowired
+    private TaskMapper taskMapper;
+
+    @Autowired
+    private CommandMapper commandMapper;
 
     @Override
     public long insert(Job job) {
@@ -53,5 +72,43 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     @Override
     public int deleteById(long id) {
         return baseMapper.deleteById(id);
+    }
+
+    @Override
+    public long createJob(JobCreate jobCreate) {
+
+        Job job = new Job();
+        BeanUtils.copyProperties(jobCreate, job);
+        job.setParameter(JSONUtils.toJsonString(jobCreate.getParameter()));
+
+        job.setCreateTime(LocalDateTime.now());
+        job.setUpdateTime(LocalDateTime.now());
+
+        // add a job
+        long jobId = insert(job);
+
+
+        // whether running now
+        if(jobCreate.getRunningNow() == 1) {
+            // add a task
+            Task task = new Task();
+            BeanUtils.copyProperties(jobCreate, task);
+            task.setParameter(JSONUtils.toJsonString(jobCreate.getParameter()));
+
+            task.setJobId(jobId);
+            task.setJobType(job.getType());
+            task.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
+            task.setSubmitTime(LocalDateTime.now());
+
+            long taskId = taskMapper.insert(task);
+
+            // add a command
+            Command command = new Command();
+            command.setType(CommandType.START);
+            command.setPriority(Priority.MEDIUM);
+            command.setTaskId(taskId);
+            commandMapper.insert(command);
+        }
+        return jobId;
     }
 }
