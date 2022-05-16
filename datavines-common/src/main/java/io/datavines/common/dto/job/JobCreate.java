@@ -12,10 +12,10 @@ public class JobCreate {
     private String name;
 
     @NotNull(message = "Job type cannot be empty")
-    private int type;
+    private String type;
 
     @NotNull(message = "Datasource cannot be empty")
-    private long datasourceId;
+    private long dataSourceId;
 
     private int timeout = 60000;
 
@@ -55,20 +55,20 @@ public class JobCreate {
         this.name = name;
     }
 
-    public int getType() {
+    public String getType() {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(String type) {
         this.type = type;
     }
 
-    public long getDatasourceId() {
-        return datasourceId;
+    public long getDataSourceId() {
+        return dataSourceId;
     }
 
-    public void setDatasourceId(long datasourceId) {
-        this.datasourceId = datasourceId;
+    public void setDataSourceId(long dataSourceId) {
+        this.dataSourceId = dataSourceId;
     }
 
     public int getTimeout() {

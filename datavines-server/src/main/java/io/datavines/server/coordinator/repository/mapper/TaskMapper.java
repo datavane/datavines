@@ -29,4 +29,14 @@ public interface TaskMapper extends BaseMapper<Task>  {
 
     @Select("SELECT * from dv_task WHERE datasource_id = #{dataSourceId} ")
     List<Task> listByDataSourceId(long dataSourceId);
+
+    @Insert("INSERT INTO dv_task (id, name, job_id, job_type, datasource_id, execute_platform_type, execute_platform_parameter, engine_type," +
+            "engine_parameter, parameter, status, retry_times, retry_interval, timeout, timeout_strategy, tenant_code, execute_host," +
+            "application_id, application_tag, process_id, execute_file_path, log_path, env, submit_time, start_time, end_time, create_time, update_time)" +
+            "values(#{id},#{name},#{jobId}, #{jobType}, #{dataSourceId}, #{executePlatformType},#{executePlatformParameter},#{engineType}" +
+            ",#{engineParameter},#{parameter},#{status},#{retryTimes},#{retryInterval},#{timeout},#{timeoutStrategy},#{tenantCode}" +
+            ",#{executeHost},#{applicationId},#{applicationIdTag},#{processId},#{executeFilePath},#{logPath},#{env},#{submitTime}" +
+            ",#{startTime},#{endTime},#{createTime},#{updateTime})")
+    @Options(keyColumn = "id", keyProperty = "id", useGeneratedKeys = true)
+    int insert(Task task);
 }

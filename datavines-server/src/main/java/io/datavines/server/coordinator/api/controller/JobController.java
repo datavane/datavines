@@ -2,6 +2,7 @@ package io.datavines.server.coordinator.api.controller;
 
 import io.datavines.common.dto.job.JobCreate;
 import io.datavines.server.DataVinesConstants;
+import io.datavines.server.coordinator.api.annotation.AuthIgnore;
 import io.datavines.server.coordinator.api.aop.RefreshToken;
 import io.datavines.server.coordinator.repository.service.JobService;
 import io.swagger.annotations.Api;
@@ -24,6 +25,7 @@ public class JobController {
     @Autowired
     private JobService jobService;
 
+//    @AuthIgnore
     @ApiOperation(value = "Job create")
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createJob(@Valid @RequestBody JobCreate jobCreate) {

@@ -28,6 +28,7 @@ import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.coordinator.repository.mapper.CommandMapper;
 import io.datavines.server.coordinator.repository.mapper.TaskMapper;
 import io.datavines.server.enums.CommandType;
+import io.datavines.server.enums.JobType;
 import io.datavines.server.enums.Priority;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,11 +82,16 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         BeanUtils.copyProperties(jobCreate, job);
         job.setParameter(JSONUtils.toJsonString(jobCreate.getParameter()));
 
+        job.setType(JobType.valueOf(jobCreate.getType()));
+        job.setRetryTimes(10000);
+        job.setRetryInterval(60000);
         job.setCreateTime(LocalDateTime.now());
         job.setUpdateTime(LocalDateTime.now());
 
+        insert(job);
+
         // add a job
-        long jobId = insert(job);
+        long jobId = job.getId();
 
 
         // whether running now
@@ -95,18 +101,24 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             BeanUtils.copyProperties(jobCreate, task);
             task.setParameter(JSONUtils.toJsonString(jobCreate.getParameter()));
 
+            task.setName(jobCreate.getName() + "_task_" + System.currentTimeMillis());
             task.setJobId(jobId);
             task.setJobType(job.getType());
             task.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
             task.setSubmitTime(LocalDateTime.now());
+            task.setCreateTime(LocalDateTime.now());
+            task.setUpdateTime(LocalDateTime.now());
 
-            long taskId = taskMapper.insert(task);
+            taskMapper.insert(task);
 
+
+
+            System.out.println(task.getId());
             // add a command
             Command command = new Command();
             command.setType(CommandType.START);
             command.setPriority(Priority.MEDIUM);
-            command.setTaskId(taskId);
+            command.setTaskId(task.getId());
             commandMapper.insert(command);
         }
         return jobId;
