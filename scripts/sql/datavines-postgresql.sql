@@ -292,3 +292,5 @@ CREATE TABLE dv_user (
     update_time timestamp(0) DEFAULT NULL,
     CONSTRAINT user_pk PRIMARY KEY (id)
 );
+
+INSERT INTO dv_user (id, username, password, email, phone, admin, create_time, update_time) VALUES ('1521854257267453954', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');
