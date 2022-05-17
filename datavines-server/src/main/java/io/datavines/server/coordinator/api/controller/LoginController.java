@@ -50,7 +50,7 @@ public class LoginController {
     @ApiOperation(value = "login")
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object login(@RequestBody UserLogin userLogin) throws DataVinesException {
-        VerificationUtil.validVerificationCode(userLogin.getVerificationCode(), userLogin.getVerificationCodeJwt());
+//        VerificationUtil.validVerificationCode(userLogin.getVerificationCode(), userLogin.getVerificationCodeJwt());
         return new ResultMap(tokenManager)
                 .successWithToken(userLogin.getUsername(), userLogin.getPassword())
                 .payload(userService.login(userLogin));
@@ -68,7 +68,7 @@ public class LoginController {
 
     @AuthIgnore
     @ApiOperation(value = "refreshVerificationCode")
-    @GetMapping(value = "/refreshVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/refreshVerificationCode")
     public Object refreshVerificationCode() throws DataVinesServerException {
         return new ResultMap().success().payload(VerificationUtil.creatVerificationCodeAndImage());
     }

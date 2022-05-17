@@ -16,14 +16,20 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
+import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.aop.RefreshToken;
+import io.datavines.server.coordinator.api.entity.Item;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Api(value = "metric", tags = "metric", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
@@ -34,13 +40,39 @@ public class MetricController {
     @ApiOperation(value = "get metric list")
     @GetMapping(value = "/list")
     public Object getMetricList() {
-        return PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+        Set<String> metricList = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+        List<Item> items = new ArrayList<>();
+        metricList.forEach(it -> {
+            Item item = new Item(it,it);
+            items.add(item);
+        });
+
+        return items;
     }
 
     @ApiOperation(value = "get metric info")
     @GetMapping(value = "/info/{name}")
     public Object getMetricInfo(@PathVariable("name") String name) {
         return PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name);
+    }
+
+    @ApiOperation(value = "get expected value list")
+    @GetMapping(value = "/expectedValue/list")
+    public Object getExpectedTypeList() {
+        Set<String> expectedValueList = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
+        List<Item> items = new ArrayList<>();
+        expectedValueList.forEach(it -> {
+            Item item = new Item(it,it);
+            items.add(item);
+        });
+
+        return items;
+    }
+
+    @ApiOperation(value = "get expected value info")
+    @GetMapping(value = "/expectedValue/info/{name}")
+    public Object getExpectedValueInfo(@PathVariable("name") String name) {
+        return PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(name);
     }
 
 }

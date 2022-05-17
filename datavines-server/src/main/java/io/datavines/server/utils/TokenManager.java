@@ -41,7 +41,7 @@ public class TokenManager {
     @Value("${jwt.token.secret:asdqwe}")
     private String tokenSecret;
 
-    @Value("${jwt.token.timeout:86400}")
+    @Value("${jwt.token.timeout:8640000}")
     private Long timeout;
 
     @Value("${jwt.token.algorithm:HS512}")
