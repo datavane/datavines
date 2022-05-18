@@ -16,25 +16,13 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Executor;
-import io.datavines.connector.api.ResponseConverter;
+import io.datavines.connector.plugin.datasource.BaseDataSourceInfo;
+import io.datavines.connector.plugin.datasource.ConnectionInfo;
 
-public abstract class JdbcConnectorFactory implements ConnectorFactory {
+public class HiveExecutor extends JdbcExecutor {
 
     @Override
-    public String getCategory() {
-        return "jdbc";
-    }
-
-    @Override
-    public ResponseConverter getResponseConvert() {
-        return new JdbcResponseConverter();
-    }
-
-    @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new JdbcConnectorParameterConverter();
+    public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
+        return new HiveDataSourceInfo(connectionInfo);
     }
 }

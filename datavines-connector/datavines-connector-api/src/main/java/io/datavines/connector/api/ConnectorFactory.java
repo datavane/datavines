@@ -30,4 +30,6 @@ public interface ConnectorFactory {
     Dialect getDialect();
 
     ConnectorParameterConverter getConnectorParameterConverter();
+
+    Executor getExecutor();
 }

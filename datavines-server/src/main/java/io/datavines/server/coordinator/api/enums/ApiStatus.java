@@ -37,7 +37,7 @@ public enum ApiStatus {
     REQUEST_ERROR(10010001, "Request Error", "请求错误"),
     INVALID_TOKEN(10010002, "Invalid Token ：{0}", "无效的Token ：{0}"),
     TOKEN_IS_NULL_ERROR(10010002, "Token is Null Error", "Token为空错误"),
-    USERNAME_HAS_BEEN_REGISTERED_ERROR(10020001, "The username {0} has been registered", "用户名{0}已被注册过"),
+    USERNAME_HAS_BEEN_REGISTERED_ERROR(10020001, "The username {0} has been registered", "用户名 {0} 已被注册过"),
     REGISTER_USER_ERROR(10020002, "Register User {0} Error", "注册用户{0}失败"),
     USERNAME_OR_PASSWORD_ERROR(10020003, "Username or Email Error", "用户名或者密码错误"),
     USER_IS_NOT_EXIST_ERROR(10020004, "User is not exist", "用户不存在错误"),
@@ -45,15 +45,19 @@ public enum ApiStatus {
     EXPIRED_VERIFICATION_CODE(10020006, "expired verification code", "验证码已过期，请重新刷新"),
     INVALID_VERIFICATION_CODE(10020007, "invalid verification code", "错误的验证码，请重新输入"),
 
-    WORKSPACE_EXIST_ERROR(11010001, "WorkSpace {0} is Exist error", "工作空间{0}已存在错误"),
-    CREATE_WORKSPACE_ERROR(11010002, "Create WorkSpace {0} Error", "创建工作空间{0}错误"),
-    WORKSPACE_NOT_EXIST_ERROR(11010003, "WorkSpace {0} is Not Exist Error", "工作空间{0}不存在错误"),
-    UPDATE_WORKSPACE_ERROR(11010004, "Update WorkSpace {0} Error", "更新工作空间{0}错误"),
+    WORKSPACE_EXIST_ERROR(11010001, "WorkSpace {0} is Exist error", "工作空间 {0} 已存在错误"),
+    CREATE_WORKSPACE_ERROR(11010002, "Create WorkSpace {0} Error", "创建工作空间 {0} 错误"),
+    WORKSPACE_NOT_EXIST_ERROR(11010003, "WorkSpace {0} is Not Exist Error", "工作空间 {0} 不存在错误"),
+    UPDATE_WORKSPACE_ERROR(11010004, "Update WorkSpace {0} Error", "更新工作空间 {0} 错误"),
 
-    DATASOURCE_EXIST_ERROR(12010001, "DataSource {0} is Exist error", "数据源{0}已存在错误"),
-    CREATE_DATASOURCE_ERROR(12010002, "Create DataSource {0} Error", "创建数据源{0}错误"),
-    DATASOURCE_NOT_EXIST_ERROR(12010003, "DataSource {0} is Not Exist Error", "数据源{0}不存在错误"),
-    UPDATE_DATASOURCE_ERROR(12010004, "Update DataSource {0} Error", "更新数据源{0}错误"),
+    DATASOURCE_EXIST_ERROR(12010001, "DataSource {0} is Exist error", "数据源 {0} 已存在错误"),
+    CREATE_DATASOURCE_ERROR(12010002, "Create DataSource {0} Error", "创建数据源 {0} 错误"),
+    DATASOURCE_NOT_EXIST_ERROR(12010003, "DataSource {0} is Not Exist Error", "数据源 {0} 不存在错误"),
+    UPDATE_DATASOURCE_ERROR(12010004, "Update DataSource {0} Error", "更新数据源 {0} 错误"),
+    GET_DATABASE_LIST_ERROR(12010005, "Get DataSource {0} Database List Error", "获取数据源 {0} 数据库列表错误"),
+    GET_TABLE_LIST_ERROR(12010006, "Get DataSource {0} Database {1} Table List Error", "获取数据源 {0} 数据库 {1} 表列表错误"),
+    GET_COLUMN_LIST_ERROR(12010007, "Get DataSource {0} Database {1} Table {2} Column List Error", "获取数据源 {0} 数据库 {1} 表 {2} 字段列表错误"),
+    EXECUTE_SCRIPT_ERROR(12010008, "Execute Script {0} Error", "执行脚本 {0} 错误")
     ;
 
     private final int code;

@@ -14,27 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.plugin;
+package io.datavines.common.dto.datasource;
 
-import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Executor;
-import io.datavines.connector.api.ResponseConverter;
+import lombok.Data;
 
-public abstract class JdbcConnectorFactory implements ConnectorFactory {
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
-    @Override
-    public String getCategory() {
-        return "jdbc";
-    }
+@Data
+@NotNull(message = "ExecuteRequest cannot be null")
+public class ExecuteRequest {
 
-    @Override
-    public ResponseConverter getResponseConvert() {
-        return new JdbcResponseConverter();
-    }
+    @NotBlank(message = "DataSource id cannot be empty")
+    private long datasourceId;
 
-    @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new JdbcConnectorParameterConverter();
-    }
+    @NotBlank(message = "DataSource type cannot be empty")
+    private String script;
+
+    private String variables;
 }

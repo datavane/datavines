@@ -16,11 +16,13 @@
  */
 package io.datavines.server.coordinator.repository.service;
 
+import io.datavines.common.dto.datasource.ExecuteRequest;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.common.dto.datasource.DataSourceCreate;
 import io.datavines.common.dto.datasource.DataSourceUpdate;
 import io.datavines.server.coordinator.repository.entity.DataSource;
+import io.datavines.server.exception.DataVinesServerException;
 
 import java.util.List;
 
@@ -38,9 +40,11 @@ public interface DataSourceService {
 
     List<DataSource> listByWorkSpaceId(long workspaceId);
 
-    Object getDatabaseList(Long id);
+    Object getDatabaseList(Long id) throws DataVinesServerException;
 
-    Object getTableList(Long id, String database);
+    Object getTableList(Long id, String database) throws DataVinesServerException;
 
-    Object getColumnList(Long id, String database, String table);
+    Object getColumnList(Long id, String database, String table) throws DataVinesServerException;
+
+    Object executeScript(ExecuteRequest request) throws DataVinesServerException;
 }

@@ -20,10 +20,12 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Data
 @TableName("dv_datasource")
 public class DataSource implements Serializable {
 
@@ -31,6 +33,9 @@ public class DataSource implements Serializable {
 
     @TableId(type= IdType.ASSIGN_ID)
     private Long id;
+
+    @TableField(value = "workspace_id")
+    private Long workspaceId;
 
     @TableField(value = "name")
     private String name;
@@ -52,68 +57,4 @@ public class DataSource implements Serializable {
 
     @TableField(value = "update_time")
     private LocalDateTime updateTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getParam() {
-        return param;
-    }
-
-    public void setParam(String param) {
-        this.param = param;
-    }
-
-    public Long getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(Long createBy) {
-        this.createBy = createBy;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getUpdateBy() {
-        return updateBy;
-    }
-
-    public void setUpdateBy(Long updateBy) {
-        this.updateBy = updateBy;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
 }
