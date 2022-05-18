@@ -14,27 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.plugin;
+package io.datavines.common.entity;
 
-import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Executor;
-import io.datavines.connector.api.ResponseConverter;
+import lombok.Data;
 
-public abstract class JdbcConnectorFactory implements ConnectorFactory {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
-    @Override
-    public String getCategory() {
-        return "jdbc";
-    }
+@Data
+public class ListWithQueryColumn implements Serializable {
 
-    @Override
-    public ResponseConverter getResponseConvert() {
-        return new JdbcResponseConverter();
-    }
+    private List<Map<String, Object>> resultList = new ArrayList<>();
 
-    @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new JdbcConnectorParameterConverter();
-    }
+    private List<QueryColumn> columns;
 }

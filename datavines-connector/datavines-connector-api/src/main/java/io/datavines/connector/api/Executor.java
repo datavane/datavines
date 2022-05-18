@@ -16,5 +16,19 @@
  */
 package io.datavines.connector.api;
 
+import io.datavines.common.param.ConnectorResponse;
+import io.datavines.common.param.ExecuteRequestParam;
+
+import java.sql.SQLException;
+
 public interface Executor {
+
+    /**
+     * execute script
+     * @param param param
+     * @return Map<String,Object>
+     */
+    default ConnectorResponse executeSyncQuery(ExecuteRequestParam param) throws SQLException {
+        return null;
+    };
 }

@@ -14,27 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.plugin;
+package io.datavines.common.param;
 
-import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Executor;
-import io.datavines.connector.api.ResponseConverter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-public abstract class JdbcConnectorFactory implements ConnectorFactory {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class ExecuteRequestParam extends ConnectorRequestParam {
 
-    @Override
-    public String getCategory() {
-        return "jdbc";
-    }
+    private String script;
 
-    @Override
-    public ResponseConverter getResponseConvert() {
-        return new JdbcResponseConverter();
-    }
+    private String variables;
 
-    @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new JdbcConnectorParameterConverter();
-    }
+    private long limit = 1000;
 }

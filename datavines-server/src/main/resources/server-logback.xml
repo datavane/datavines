@@ -17,7 +17,7 @@
     limitations under the License.
 
 -->
-<!-- Logback configuration. See http://logback.qos.ch/manual/index.html -->
+
 <configuration scan="true" scanPeriod="120 seconds"> <!--debug="true" -->
 
     <property name="log.base" value="logs"/>

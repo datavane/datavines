@@ -25,8 +25,6 @@ public class ConnectorResponse {
 
     private Object result;
 
-    private String requestId;
-
     private String errorMsg;
 
     public Status getStatus() {
@@ -43,14 +41,6 @@ public class ConnectorResponse {
 
     public void setResult(Object result) {
         this.result = result;
-    }
-
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
     }
 
     public String getErrorMsg() {

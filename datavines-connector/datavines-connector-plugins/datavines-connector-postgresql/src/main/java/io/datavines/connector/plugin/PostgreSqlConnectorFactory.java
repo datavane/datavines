@@ -19,6 +19,7 @@ package io.datavines.connector.plugin;
 import io.datavines.connector.api.Connector;
 import io.datavines.connector.api.ConnectorParameterConverter;
 import io.datavines.connector.api.Dialect;
+import io.datavines.connector.api.Executor;
 
 public class PostgreSqlConnectorFactory extends JdbcConnectorFactory {
 
@@ -35,5 +36,10 @@ public class PostgreSqlConnectorFactory extends JdbcConnectorFactory {
     @Override
     public Connector getConnector() {
         return new PostgreSqlConnector();
+    }
+
+    @Override
+    public Executor getExecutor() {
+        return new PostgreSqlExecutor();
     }
 }
