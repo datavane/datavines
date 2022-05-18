@@ -21,6 +21,7 @@ import java.util.List;
 
 import io.datavines.common.dto.job.JobCreate;
 import io.datavines.server.coordinator.repository.entity.Job;
+import io.datavines.server.exception.DataVinesServerException;
 
 public interface JobService {
 
@@ -34,5 +35,5 @@ public interface JobService {
 
     int deleteById(long id);
 
-    long createJob(JobCreate jobCreate);
+    long createJob(JobCreate jobCreate) throws DataVinesServerException;
 }
