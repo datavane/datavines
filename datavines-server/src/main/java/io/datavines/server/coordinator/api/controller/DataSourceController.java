@@ -18,7 +18,6 @@ package io.datavines.server.coordinator.api.controller;
 
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.server.coordinator.api.entity.Item;
-import io.datavines.server.coordinator.api.entity.dto.datasource.ExecuteRequest;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.server.DataVinesConstants;

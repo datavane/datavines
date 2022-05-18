@@ -24,7 +24,6 @@ import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceCreat
 import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceUpdate;
 import io.datavines.server.coordinator.api.entity.vo.DataSourceVO;
 import io.datavines.server.coordinator.repository.entity.DataSource;
-import io.datavines.server.exception.DataVinesServerException;
 
 import java.util.List;
 
