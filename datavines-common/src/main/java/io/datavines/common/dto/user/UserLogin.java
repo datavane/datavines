@@ -20,9 +20,11 @@ import io.datavines.common.CommonConstants;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 @Data
+@NotNull(message = "UserLogin cannot be null")
 public class UserLogin {
 
     @NotBlank(message = "Username cannot be empty")
@@ -31,10 +33,4 @@ public class UserLogin {
     @NotBlank(message = "Password cannot be empty")
     @Pattern(regexp = CommonConstants.REG_USER_PASSWORD, message = "password length must between 6-20")
     private String password;
-
-    @NotBlank(message = "verificationCode cannot be empty")
-    private String verificationCode;
-
-    @NotBlank(message = "verificationCodeJwt cannot be empty")
-    private String verificationCodeJwt;
 }

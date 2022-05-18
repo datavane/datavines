@@ -48,7 +48,7 @@ public class VerificationUtil {
         tokenManager = SpringApplicationContext.getBean(TokenManager.class);
     }
 
-    public static KaptchaResp creatVerificationCodeAndImage() throws DataVinesServerException {
+    public static KaptchaResp creatVerificationCodeAndImage() {
         String verificationCode = defaultKaptcha.createText();
         return KaptchaResp.builder()
                 .imageByte64(buildImageByte64(verificationCode))
@@ -80,7 +80,7 @@ public class VerificationUtil {
         return tokenManager.toTokenString(timeOutMillis, claims);
     }
 
-    private static String buildImageByte64(String verificationCode) throws DataVinesServerException {
+    private static String buildImageByte64(String verificationCode) {
         BufferedImage image = defaultKaptcha.createImage(verificationCode);
         ByteArrayOutputStream outputStream = null;
         byte[] imageInByte = null;

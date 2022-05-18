@@ -57,7 +57,12 @@ public enum ApiStatus {
     GET_DATABASE_LIST_ERROR(12010005, "Get DataSource {0} Database List Error", "获取数据源 {0} 数据库列表错误"),
     GET_TABLE_LIST_ERROR(12010006, "Get DataSource {0} Database {1} Table List Error", "获取数据源 {0} 数据库 {1} 表列表错误"),
     GET_COLUMN_LIST_ERROR(12010007, "Get DataSource {0} Database {1} Table {2} Column List Error", "获取数据源 {0} 数据库 {1} 表 {2} 字段列表错误"),
-    EXECUTE_SCRIPT_ERROR(12010008, "Execute Script {0} Error", "执行脚本 {0} 错误")
+    EXECUTE_SCRIPT_ERROR(12010008, "Execute Script {0} Error", "执行脚本 {0} 错误"),
+
+    TASK_NOT_EXIST_ERROR(13010001, "Task {0} Not Exist Error", "任务{0}不存在错误"),
+    TASK_LOG_PATH_NOT_EXIST_ERROR(13010002, "Task {0} Log Path  Not Exist Error", "任务{0}的日志路径不存在错误"),
+    TASK_EXECUTE_HOST_NOT_EXIST_ERROR(13010003, "Task Execute Host {0} Not Exist Error", "任务{0}的执行服务地址不存在错误")
+
     ;
 
     private final int code;

@@ -23,6 +23,9 @@ import io.datavines.server.utils.TokenManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -31,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -66,6 +70,16 @@ public class DataVinesExceptionHandler {
         return ResponseEntity.ok(resultMap);
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ResultMap> methodArgumentNotValidExceptionHandler(Exception e, HttpServletRequest request) {
+        log.error("MethodArgumentNotValidException:", e);
+        ResultMap resultMap = new ResultMap(tokenManager);
+        resultMap.failAndRefreshToken(request);
+        String message = buildValidFailMessage((MethodArgumentNotValidException) e);
+        resultMap.message(message);
+        return ResponseEntity.ok(resultMap);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ResultMap> commonExceptionHandler(Exception e, HttpServletRequest request) {
         log.error("Exception:", e);
@@ -90,5 +104,25 @@ public class DataVinesExceptionHandler {
             }
         }
         return messageBuilder.toString();
+    }
+
+    private String buildValidFailMessage(MethodArgumentNotValidException notValidException) {
+        BindingResult bindingResult = notValidException.getBindingResult();
+        List<ObjectError> errorList = bindingResult.getAllErrors();
+
+        StringBuilder messageBuilder = new StringBuilder();
+        if(CollectionUtils.isEmpty(errorList)){
+            messageBuilder.append("invalid param");
+        }
+        Iterator<ObjectError> iterator = errorList.iterator();
+        while (iterator.hasNext()) {
+            ObjectError next = iterator.next();
+            messageBuilder.append(next.getDefaultMessage());
+            if (iterator.hasNext()) {
+                messageBuilder.append(System.lineSeparator());
+            }
+        }
+        String message = messageBuilder.toString();
+        return message;
     }
 }

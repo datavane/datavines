@@ -16,7 +16,7 @@
  */
 package io.datavines.common.exception;
 
-public class DataVinesException extends Exception {
+public class DataVinesException extends RuntimeException {
 
     public DataVinesException() {
         super();

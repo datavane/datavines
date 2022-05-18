@@ -106,6 +106,7 @@
         <spring.version>5.3.12</spring.version>
         <jodd.version>3.5.2</jodd.version>
         <kaptcha.version>2.3.2</kaptcha.version>
+        <hibernate-validator.version>6.0.21.Final</hibernate-validator.version>
 
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
@@ -571,6 +572,11 @@
                 <groupId>com.github.penggle</groupId>
                 <artifactId>kaptcha</artifactId>
                 <version>${kaptcha.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hibernate.validator</groupId>
+                <artifactId>hibernate-validator</artifactId>
+                <version>${hibernate-validator.version}</version>
             </dependency>
 
         </dependencies>
