@@ -47,4 +47,6 @@ public interface DataSourceService {
     Object getColumnList(Long id, String database, String table) throws DataVinesServerException;
 
     Object executeScript(ExecuteRequest request) throws DataVinesServerException;
+
+    String getConfigJson(String type);
 }

@@ -173,4 +173,9 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
         return result;
     }
+
+    @Override
+    public String getConfigJson(String type) {
+        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConnector().getConfigJson();
+    }
 }
