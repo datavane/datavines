@@ -23,20 +23,22 @@ import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.annotation.AuthIgnore;
 import io.datavines.server.coordinator.api.entity.ResultMap;
 import io.datavines.server.coordinator.repository.service.UserService;
-import io.datavines.server.exception.DataVinesServerException;
 import io.datavines.server.utils.TokenManager;
 import io.datavines.server.utils.VerificationUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.Map;
 
 @Api(value = "login", tags = "login")
 @RestController
+@Validated
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH)
 public class LoginController {
 
@@ -49,8 +51,7 @@ public class LoginController {
     @AuthIgnore
     @ApiOperation(value = "login")
     @PostMapping(value = "/login", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object login(@RequestBody UserLogin userLogin) throws DataVinesException {
-//        VerificationUtil.validVerificationCode(userLogin.getVerificationCode(), userLogin.getVerificationCodeJwt());
+    public Object login(@Valid @RequestBody UserLogin userLogin) throws DataVinesException {
         return new ResultMap(tokenManager)
                 .successWithToken(userLogin.getUsername(), userLogin.getPassword())
                 .payload(userService.login(userLogin));
@@ -59,7 +60,7 @@ public class LoginController {
     @AuthIgnore
     @ApiOperation(value = "register")
     @PostMapping(value = "/register", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object register(@RequestBody UserRegister userRegister) throws DataVinesException {
+    public Object register(@Valid @RequestBody UserRegister userRegister) throws DataVinesException {
         VerificationUtil.validVerificationCode(userRegister.getVerificationCode(), userRegister.getVerificationCodeJwt());
         Map<String,Object> result = new HashMap<>();
         result.put("result", userService.register(userRegister));
@@ -68,8 +69,8 @@ public class LoginController {
 
     @AuthIgnore
     @ApiOperation(value = "refreshVerificationCode")
-    @GetMapping(value = "/refreshVerificationCode")
-    public Object refreshVerificationCode() throws DataVinesServerException {
+    @GetMapping(value = "/refreshVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object refreshVerificationCode() {
         return new ResultMap().success().payload(VerificationUtil.creatVerificationCodeAndImage());
     }
 }
