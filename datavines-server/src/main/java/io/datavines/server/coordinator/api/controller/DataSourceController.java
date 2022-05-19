@@ -96,4 +96,10 @@ public class DataSourceController {
         return dataSourceService.executeScript(param);
     }
 
+    @ApiOperation(value = "get config json")
+    @GetMapping(value = "/config/{type}")
+    public Object getConfigJson(@PathVariable String type){
+        return dataSourceService.getConfigJson(type);
+    }
+
 }
