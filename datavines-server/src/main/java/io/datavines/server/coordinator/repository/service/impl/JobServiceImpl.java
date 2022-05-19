@@ -129,8 +129,6 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             command.setPriority(Priority.MEDIUM);
             command.setTaskId(task.getId());
             commandMapper.insert(command);
-
-            System.out.println("任务ID:" + command.getId());
         }
         return jobId;
     }
