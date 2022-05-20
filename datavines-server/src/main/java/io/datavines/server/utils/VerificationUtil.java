@@ -40,7 +40,7 @@ public class VerificationUtil {
     private static Logger logger = LoggerFactory.getLogger(VerificationUtil.class);
     private static DefaultKaptcha defaultKaptcha;
     private static TokenManager tokenManager;
-    private static final Long timeOutMillis = 60000L;
+    private static final Long timeOutMillis = 300000L;
 
     static {
         defaultKaptcha = SpringApplicationContext.getBean(DefaultKaptcha.class);
@@ -48,7 +48,7 @@ public class VerificationUtil {
         tokenManager = SpringApplicationContext.getBean(TokenManager.class);
     }
 
-    public static KaptchaResp creatVerificationCodeAndImage() {
+    public static KaptchaResp createVerificationCodeAndImage() {
         String verificationCode = defaultKaptcha.createText();
         return KaptchaResp.builder()
                 .imageByte64(buildImageByte64(verificationCode))

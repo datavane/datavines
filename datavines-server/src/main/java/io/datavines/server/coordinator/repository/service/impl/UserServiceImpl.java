@@ -81,7 +81,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             userRegister.setPassword(BCrypt.hashpw(userRegister.getPassword(), BCrypt.gensalt()));
             BeanUtils.copyProperties(userRegister, user);
             user.setUpdateTime(LocalDateTime.now());
-
+            
             if (baseMapper.insert(user) <= 0) {
                 log.info("Register fail, userRegister:{}", userRegister);
                 throw new DataVinesServerException(ApiStatus.REGISTER_USER_ERROR, username);
@@ -93,9 +93,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             //create default workspace
             WorkSpace workSpace = new WorkSpace();
             workSpace.setName(username + "'s default");
-            workSpace.setCreateBy(ContextHolder.getUserId());
+            workSpace.setCreateBy(user.getId());
             workSpace.setCreateTime(LocalDateTime.now());
-            workSpace.setUpdateBy(ContextHolder.getUserId());
+            workSpace.setUpdateBy(user.getId());
             workSpace.setUpdateTime(LocalDateTime.now());
 
             workSpaceMapper.insert(workSpace);
