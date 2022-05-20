@@ -69,7 +69,7 @@ public class LoginController {
 
     @AuthIgnore
     @ApiOperation(value = "refreshVerificationCode")
-    @GetMapping(value = "/refreshVerificationCode", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/refreshVerificationCode")
     public Object refreshVerificationCode() {
         return new ResultMap().success().payload(VerificationUtil.creatVerificationCodeAndImage());
     }
