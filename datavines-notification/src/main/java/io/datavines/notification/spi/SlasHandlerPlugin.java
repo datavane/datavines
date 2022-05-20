@@ -6,7 +6,7 @@ import io.datavines.spi.SPI;
 
 
 @SPI
-public interface SlasHandler {
+public interface SlasHandlerPlugin {
     /**
      * save message to db then send message to receiver , return the status finally
      * @param slasMessage issue message a
