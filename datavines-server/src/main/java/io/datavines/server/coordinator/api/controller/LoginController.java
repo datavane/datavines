@@ -71,6 +71,6 @@ public class LoginController {
     @ApiOperation(value = "refreshVerificationCode")
     @GetMapping(value = "/refreshVerificationCode")
     public Object refreshVerificationCode() {
-        return new ResultMap().success().payload(VerificationUtil.creatVerificationCodeAndImage());
+        return new ResultMap().success().payload(VerificationUtil.createVerificationCodeAndImage());
     }
 }
