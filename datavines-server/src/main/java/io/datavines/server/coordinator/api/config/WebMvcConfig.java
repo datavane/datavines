@@ -23,11 +23,16 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import java.util.Collections;
+import java.util.Locale;
+
+import static io.datavines.server.DataVinesConstants.LOCALE_LANGUAGE_COOKIE;
 
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurationSupport {
@@ -55,6 +60,22 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
                 .addResourceLocations("classpath:/static/templates/");
     }
 
+    /**
+     * Cookie
+     * @return local resolver
+     */
+    @Bean(name = "localeResolver")
+    @Override
+    public LocaleResolver localeResolver() {
+        CookieLocaleResolver localeResolver = new CookieLocaleResolver();
+        localeResolver.setCookieName(LOCALE_LANGUAGE_COOKIE);
+        // set default locale
+        localeResolver.setDefaultLocale(Locale.CHINA);
+        // set language tag compliant
+        localeResolver.setLanguageTagCompliant(false);
+        return localeResolver;
+    }
+
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -66,7 +87,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOriginPatterns(Collections.singletonList("*"));
         corsConfiguration.addAllowedHeader("*");
-        corsConfiguration.addAllowedOrigin("*");
         corsConfiguration.addAllowedMethod("*");
         corsConfiguration.setAllowCredentials(true);
         return corsConfiguration;
