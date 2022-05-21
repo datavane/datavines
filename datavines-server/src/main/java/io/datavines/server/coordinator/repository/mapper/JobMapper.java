@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.datavines.server.coordinator.repository.mapper;
 
 import org.apache.ibatis.annotations.*;
@@ -29,5 +30,4 @@ public interface JobMapper extends BaseMapper<Job> {
 
     @Select("SELECT * from dv_job WHERE datasource_id = #{datasourceId} ")
     List<Job> listByDataSourceId(long dataSourceId);
-
 }

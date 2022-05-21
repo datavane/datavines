@@ -14,11 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.datavines.server.coordinator.repository.service;
 
 import java.util.List;
 
+import io.datavines.common.dto.job.JobCreate;
 import io.datavines.server.coordinator.repository.entity.Job;
+import io.datavines.server.exception.DataVinesServerException;
 
 public interface JobService {
 
@@ -31,4 +34,6 @@ public interface JobService {
     List<Job> listByDataSourceId(Long dataSourceId);
 
     int deleteById(long id);
+
+    long createJob(JobCreate jobCreate) throws DataVinesServerException;
 }
