@@ -33,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -46,6 +47,10 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper,WorkSpace>
         }
         WorkSpace workSpace = new WorkSpace();
         BeanUtils.copyProperties(workSpaceCreate, workSpace);
+        workSpace.setCreateBy(ContextHolder.getUserId());
+        workSpace.setCreateTime(LocalDateTime.now());
+        workSpace.setUpdateBy(ContextHolder.getUserId());
+        workSpace.setUpdateTime(LocalDateTime.now());
 
         if (baseMapper.insert(workSpace) <= 0) {
             log.info("create workspace fail : {}", workSpaceCreate);
@@ -64,10 +69,12 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper,WorkSpace>
         }
 
         BeanUtils.copyProperties(workSpaceUpdate, workSpace);
+        workSpace.setUpdateBy(ContextHolder.getUserId());
+        workSpace.setUpdateTime(LocalDateTime.now());
 
         if (baseMapper.updateById(workSpace) <= 0) {
             log.info("update workspace fail : {}", workSpaceUpdate);
-            throw new DataVinesServerException(ApiStatus.CREATE_WORKSPACE_ERROR, workSpaceUpdate.getName());
+            throw new DataVinesServerException(ApiStatus.UPDATE_WORKSPACE_ERROR, workSpaceUpdate.getName());
         }
 
         return 1;
