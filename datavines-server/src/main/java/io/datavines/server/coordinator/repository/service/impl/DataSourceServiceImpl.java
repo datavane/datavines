@@ -31,6 +31,7 @@ import io.datavines.server.coordinator.repository.mapper.DataSourceMapper;
 import io.datavines.server.coordinator.repository.service.DataSourceService;
 
 import io.datavines.server.exception.DataVinesServerException;
+import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -58,6 +59,8 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         BeanUtils.copyProperties(dataSourceCreate, dataSource);
         dataSource.setCreateTime(LocalDateTime.now());
         dataSource.setUpdateTime(LocalDateTime.now());
+        dataSource.setCreateBy(ContextHolder.getUserId());
+        dataSource.setUpdateBy(ContextHolder.getUserId());
         baseMapper.insert(dataSource);
         return dataSource.getId();
     }
@@ -71,6 +74,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
         BeanUtils.copyProperties(dataSourceUpdate, dataSource);
         dataSource.setUpdateTime(LocalDateTime.now());
+        dataSource.setUpdateBy(ContextHolder.getUserId());
 
         return baseMapper.updateById(dataSource);
     }

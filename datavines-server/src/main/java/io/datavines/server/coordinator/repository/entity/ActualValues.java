@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -29,7 +30,7 @@ public class ActualValues implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
-    @TableId(type= IdType.ASSIGN_ID)
+    @TableId(type= IdType.AUTO)
     private Long id;
 
     @TableField(value = "task_id")
@@ -47,12 +48,15 @@ public class ActualValues implements Serializable {
     @TableField(value = "actual_value")
     private Double actualValue;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "data_time")
     private LocalDateTime dataTime;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "create_time")
     private LocalDateTime createTime;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "update_time")
     private LocalDateTime updateTime;
 
