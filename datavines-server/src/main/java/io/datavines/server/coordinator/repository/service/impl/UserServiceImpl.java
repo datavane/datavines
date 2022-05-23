@@ -80,6 +80,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
             userRegister.setPassword(BCrypt.hashpw(userRegister.getPassword(), BCrypt.gensalt()));
             BeanUtils.copyProperties(userRegister, user);
+            user.setCreateTime(LocalDateTime.now());
             user.setUpdateTime(LocalDateTime.now());
             
             if (baseMapper.insert(user) <= 0) {

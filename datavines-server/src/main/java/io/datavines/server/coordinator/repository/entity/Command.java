@@ -24,6 +24,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 
@@ -32,7 +33,7 @@ public class Command implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
-    @TableId(type= IdType.ASSIGN_ID)
+    @TableId(type= IdType.AUTO)
     private Long id;
 
     @TableField(value = "type")
@@ -47,9 +48,11 @@ public class Command implements Serializable {
     @TableField(value = "priority")
     private Priority priority;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "create_time")
     private LocalDateTime createTime;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "update_time")
     private LocalDateTime updateTime;
 

@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.TimeoutStrategy;
@@ -33,7 +34,7 @@ public class Task implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
-    @TableId(type= IdType.ASSIGN_ID)
+    @TableId(type= IdType.AUTO)
     private Long id;
 
     @TableField(value = "name")
@@ -105,18 +106,23 @@ public class Task implements Serializable {
     @TableField(value = "env")
     private String env;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "submit_time")
     private LocalDateTime submitTime;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "start_time")
     private LocalDateTime startTime;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "end_time")
     private LocalDateTime endTime;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "create_time")
     private LocalDateTime createTime;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "update_time")
     private LocalDateTime updateTime;
 
