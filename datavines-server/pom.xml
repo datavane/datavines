@@ -532,6 +532,11 @@
             <artifactId>hibernate-validator</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-core</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>

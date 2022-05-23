@@ -16,7 +16,7 @@
  */
 package io.datavines.server.coordinator.api.config;
 
-import io.datavines.server.DataVinesConstants;
+import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.coordinator.api.inteceptor.AuthenticationInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

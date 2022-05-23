@@ -18,12 +18,14 @@ package io.datavines.server.coordinator.api.controller;
 
 import javax.validation.Valid;
 
-import io.datavines.server.coordinator.api.aop.RefreshToken;
+import io.datavines.core.aop.RefreshToken;
 import io.datavines.server.coordinator.repository.service.TaskResultService;
-import io.datavines.server.exception.DataVinesServerException;
+import io.datavines.core.exception.DataVinesServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import io.datavines.core.constant.DataVinesConstants;
+import io.datavines.common.dto.task.SubmitTask;
 import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
 import io.datavines.server.coordinator.repository.service.TaskService;

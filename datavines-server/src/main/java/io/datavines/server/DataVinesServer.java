@@ -20,6 +20,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.Stopper;
 import io.datavines.common.utils.ThreadUtils;
+import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.registry.api.Registry;
 import io.datavines.server.coordinator.registry.Register;
 import io.datavines.server.coordinator.server.cache.TaskExecuteManager;
@@ -36,7 +37,7 @@ import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"io.datavines"})
 public class DataVinesServer {
 
     private static final Logger logger = LoggerFactory.getLogger(DataVinesServer.class);

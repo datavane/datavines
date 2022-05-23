@@ -40,6 +40,7 @@
         <module>datavines-dist</module>
         <module>datavines-server</module>
         <module>datavines-registry</module>
+        <module>datavines-core</module>
     </modules>
 
     <properties>
@@ -572,6 +573,16 @@
                 <groupId>org.hibernate.validator</groupId>
                 <artifactId>hibernate-validator</artifactId>
                 <version>${hibernate-validator.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-notification-api</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
         </dependencies>

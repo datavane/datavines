@@ -35,6 +35,7 @@ import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.coordinator.api.entity.vo.TaskVO;
 import io.datavines.server.exception.DataVinesServerException;
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.spi.PluginLoader;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +54,8 @@ import io.datavines.server.coordinator.repository.mapper.TaskMapper;
 import io.datavines.server.coordinator.repository.service.TaskService;
 import io.datavines.server.coordinator.repository.entity.Task;
 
-import static io.datavines.server.DataVinesConstants.JDBC;
-import static io.datavines.server.DataVinesConstants.SPARK;
+import static io.datavines.core.constant.DataVinesConstants.JDBC;
+import static io.datavines.core.constant.DataVinesConstants.SPARK;
 
 @Service("taskService")
 public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements TaskService {

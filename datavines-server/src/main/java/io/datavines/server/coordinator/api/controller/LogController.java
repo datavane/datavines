@@ -16,8 +16,8 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
-import io.datavines.server.DataVinesConstants;
-import io.datavines.server.coordinator.api.aop.RefreshToken;
+import io.datavines.core.constant.DataVinesConstants;
+import io.datavines.core.aop.RefreshToken;
 import io.datavines.server.coordinator.server.log.LogService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
