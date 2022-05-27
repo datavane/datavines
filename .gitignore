@@ -21,6 +21,7 @@ target/
 node_modules
 npm-debug.log
 .vscode
+!datavines-ui/.vscode
 logs/*
 .mvn/
 .www

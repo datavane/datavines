@@ -60,6 +60,7 @@
     "file-loader": "^6.2.0",
     "fork-ts-checker-webpack-plugin": "^7.2.9",
     "html-webpack-plugin": "^5.5.0",
+    "js-cookie": "^3.0.1",
     "less": "^4.1.2",
     "less-loader": "^10.2.0",
     "mini-css-extract-plugin": "^2.6.0",
