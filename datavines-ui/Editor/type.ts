@@ -1,7 +1,32 @@
+import type {
+    editor, languages, Uri, CancellationTokenSource, Emitter, KeyCode, KeyMod, MarkerSeverity, MarkerTag, Position, Range, Selection, SelectionDirection,
+} from 'monaco-editor';
+
+export type TCodeEditor = editor.ICodeEditor;
+declare global {
+    interface Window {
+        monaco: {
+            editor: typeof editor,
+            languages: typeof languages,
+            Uri: typeof Uri,
+            CancellationTokenSource: typeof CancellationTokenSource,
+            Emitter: typeof Emitter,
+            KeyCode: typeof KeyCode,
+            KeyMod: typeof KeyMod,
+            MarkerSeverity: typeof MarkerSeverity,
+            MarkerTag: typeof MarkerTag,
+            Position: typeof Position,
+            Range: typeof Range,
+            Selection: typeof Selection,
+            SelectionDirection: typeof SelectionDirection,
+        }
+    }
+}
+
 export type TUseEditor = {
     elRef: any,
     value: string,
-    language: 'sql',
+    language: 'mysql',
     onChange?: (...args: any[]) => any
 };
 
