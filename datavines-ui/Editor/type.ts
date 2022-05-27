@@ -22,11 +22,11 @@ declare global {
         }
     }
 }
-
+export type TSqlType = 'mysql' | 'clickhouse' | 'hive' | 'impala' | 'postgresql';
 export type TUseEditor = {
     elRef: any,
     value: string,
-    language: 'mysql',
+    language: TSqlType,
     onChange?: (...args: any[]) => any
 };
 

@@ -19,6 +19,7 @@ const Inner = ({ form }: InnerProps) => {
     const intl = useIntl();
     const { data: initData } = useContextModal<IDataSourceListItem | null>();
     const [dynamicMeta, setDynamicMeta] = useState<IFormRenderItem[]>([]);
+    const [sqlTypeList, setSqlTypeList] = useState([]);
     const onSourceTypeChange = async (type: string) => {
         try {
             const res = (await $http.get(`/datasource/config/${type}`) || '[]');
@@ -38,6 +39,8 @@ const Inner = ({ form }: InnerProps) => {
         }
     };
     useMount(async () => {
+        const $sqlTypeList = (await $http.get('/datasource/type/list')) || [];
+        setSqlTypeList($sqlTypeList);
         if (initData) {
             await onSourceTypeChange(initData.type);
             const paramObj = JSON.parse(initData.param || '{}');
@@ -85,7 +88,13 @@ const Inner = ({ form }: InnerProps) => {
                     },
                 ],
                 initialValue: initData?.type,
-                widget: <CustomSelect size="small" placeholder={`${tipText}${sourceTypeText}`} onChange={onSourceTypeChange} source={[{ label: 'mysql', value: 'mysql' }]} />,
+                widget: <CustomSelect
+                    size="small"
+                    placeholder={`${tipText}${sourceTypeText}`}
+                    onChange={onSourceTypeChange}
+                    source={sqlTypeList}
+                    sourceValueMap="key"
+                />,
             },
             ...dynamicMeta,
         ],
