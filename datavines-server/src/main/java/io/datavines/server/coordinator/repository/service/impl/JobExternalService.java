@@ -31,6 +31,7 @@ import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.coordinator.repository.entity.TaskResult;
 import io.datavines.server.coordinator.repository.service.*;
 import io.datavines.server.utils.DefaultDataSourceInfoUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -161,6 +162,9 @@ public class JobExternalService {
     }
 
     public List<Task> getTaskListNeedFailover(List<String> host){
+        if (CollectionUtils.isEmpty(host)) {
+            return null;
+        }
         return taskService.listTaskNotInServerList(host);
     }
 }

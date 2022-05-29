@@ -517,6 +517,12 @@
         </dependency>
 
         <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-registry-zookeeper</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.jodd</groupId>
             <artifactId>jodd-core</artifactId>
         </dependency>
