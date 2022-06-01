@@ -14,17 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.dto.workspace;
+package io.datavines.server.coordinator.api.config;
 
-import lombok.Data;
+import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+@Configuration
+public class MybatisPlusConfig {
 
-@Data
-@NotNull(message = "WorkSpace Create cannot be null")
-public class WorkSpaceCreate {
-
-    @NotBlank(message = "WorkSpace name cannot be empty")
-    private String name;
+    @Bean
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        return interceptor;
+    }
 }

@@ -45,6 +45,18 @@ public class Job implements Serializable {
     @TableField(value = "datasource_id")
     private Long dataSourceId;
 
+    @TableField(value = "execute_platform_type")
+    private String executePlatformType;
+
+    @TableField(value = "execute_platform_parameter")
+    private String executePlatformParameter;
+
+    @TableField(value = "engine_type")
+    private String engineType;
+
+    @TableField(value = "engine_parameter")
+    private String engineParameter;
+
     /**
      * {@link TaskParameter}
      */
@@ -102,6 +114,38 @@ public class Job implements Serializable {
 
     public void setType(JobType type) {
         this.type = type;
+    }
+
+    public String getExecutePlatformType() {
+        return executePlatformType;
+    }
+
+    public void setExecutePlatformType(String executePlatformType) {
+        this.executePlatformType = executePlatformType;
+    }
+
+    public String getExecutePlatformParameter() {
+        return executePlatformParameter;
+    }
+
+    public void setExecutePlatformParameter(String executePlatformParameter) {
+        this.executePlatformParameter = executePlatformParameter;
+    }
+
+    public String getEngineType() {
+        return engineType;
+    }
+
+    public void setEngineType(String engineType) {
+        this.engineType = engineType;
+    }
+
+    public String getEngineParameter() {
+        return engineParameter;
+    }
+
+    public void setEngineParameter(String engineParameter) {
+        this.engineParameter = engineParameter;
     }
 
     public String getParameter() {

@@ -16,11 +16,13 @@
  */
 package io.datavines.server.coordinator.repository.service;
 
-import io.datavines.common.dto.datasource.ExecuteRequest;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.datavines.server.coordinator.api.entity.dto.datasource.ExecuteRequest;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.TestConnectionRequestParam;
-import io.datavines.common.dto.datasource.DataSourceCreate;
-import io.datavines.common.dto.datasource.DataSourceUpdate;
+import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceCreate;
+import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceUpdate;
+import io.datavines.server.coordinator.api.entity.vo.DataSourceVO;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.server.exception.DataVinesServerException;
 
@@ -39,6 +41,8 @@ public interface DataSourceService {
     int delete(long id);
 
     List<DataSource> listByWorkSpaceId(long workspaceId);
+
+    IPage<DataSourceVO> getDataSourcePage(String searchVal, Long workSpaceId, Integer pageNumber, Integer pageSize);
 
     Object getDatabaseList(Long id) throws DataVinesServerException;
 

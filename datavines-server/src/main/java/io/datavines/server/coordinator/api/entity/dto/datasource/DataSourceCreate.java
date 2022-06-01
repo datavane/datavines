@@ -14,19 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.dto.user;
+package io.datavines.server.coordinator.api.entity.dto.datasource;
 
 import lombok.Data;
 
-import java.io.Serializable;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
-public class UserBaseInfo implements Serializable {
+@NotNull(message = "DataSource Create cannot be null")
+public class DataSourceCreate {
 
-    private Long id;
+    @NotBlank(message = "DataSource workspaceId cannot be empty")
+    private long workspaceId;
 
-    private String username;
+    @NotBlank(message = "DataSource name cannot be empty")
+    private String name;
 
-    private String email;
+    @NotBlank(message = "DataSource type cannot be empty")
+    private String type;
 
+    @NotBlank(message = "DataSource param cannot be empty")
+    private String param;
 }

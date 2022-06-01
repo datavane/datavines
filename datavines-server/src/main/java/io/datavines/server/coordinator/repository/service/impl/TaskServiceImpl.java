@@ -26,7 +26,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.TaskParameter;
-import io.datavines.common.exception.DataVinesException;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
@@ -42,7 +41,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.dto.task.SubmitTask;
+import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.coordinator.repository.entity.Command;
@@ -84,7 +83,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
     @Override
     public Long submitTask(SubmitTask submitTask) throws DataVinesServerException {
 
-        checkTaskParameter(submitTask);
+        checkTaskParameter(submitTask.getParameter(), submitTask.getEngineType());
 
         Task task = new Task();
         BeanUtils.copyProperties(submitTask,task);
@@ -113,6 +112,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
 
         task.setSubmitTime(LocalDateTime.now());
         task.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
+
+        return executeTask(task);
+    }
+
+    @Override
+    public Long executeTask(Task task) throws DataVinesServerException {
         Long taskId = insert(task);
 
         Command command = new Command();
@@ -149,10 +154,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
                 .eq("status",ExecutionStatus.RUNNING_EXECUTION.getCode()));
     }
 
-    private void checkTaskParameter(SubmitTask submitTask) throws DataVinesServerException {
-        TaskParameter taskParameter = submitTask.getParameter();
-        String engineType = submitTask.getEngineType();
-
+    private void checkTaskParameter(TaskParameter taskParameter, String engineType) throws DataVinesServerException {
         String metricType = taskParameter.getMetricType();
         Set<String> metricPluginSet = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
         if (!metricPluginSet.contains(metricType)) {

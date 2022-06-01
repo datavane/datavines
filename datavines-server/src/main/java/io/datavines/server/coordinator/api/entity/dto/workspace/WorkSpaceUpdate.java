@@ -14,14 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.dto.user;
+package io.datavines.server.coordinator.api.entity.dto.workspace;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class UserLoginResult extends UserBaseInfo {
+@NotNull(message = "WorkSpace Update cannot be null")
+public class WorkSpaceUpdate extends WorkSpaceCreate {
 
-    private Boolean admin;
+    @NotNull(message = "WorkSpace id cannot be null")
+    private Long id;
 }

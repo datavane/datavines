@@ -17,14 +17,17 @@
 package io.datavines.server.coordinator.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import io.datavines.common.dto.datasource.ExecuteRequest;
+import io.datavines.server.coordinator.api.entity.dto.datasource.ExecuteRequest;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.*;
 import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.common.dto.datasource.DataSourceCreate;
-import io.datavines.common.dto.datasource.DataSourceUpdate;
+import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceCreate;
+import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceUpdate;
+import io.datavines.server.coordinator.api.entity.vo.DataSourceVO;
 import io.datavines.server.coordinator.api.enums.ApiStatus;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.server.coordinator.repository.mapper.DataSourceMapper;
@@ -87,6 +90,13 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     @Override
     public int delete(long id) {
         return baseMapper.deleteById(id);
+    }
+
+    @Override
+    public IPage<DataSourceVO> getDataSourcePage(String searchVal, Long workSpaceId, Integer pageNumber, Integer pageSize) {
+        Page<DataSourceVO> page = new Page<>(pageNumber, pageSize);
+        IPage<DataSourceVO> dataSources = baseMapper.getDataSourcePage(page, searchVal, workSpaceId);
+        return dataSources;
     }
 
     @Override

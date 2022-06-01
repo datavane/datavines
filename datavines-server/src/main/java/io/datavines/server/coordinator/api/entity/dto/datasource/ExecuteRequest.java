@@ -14,27 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.dto.user;
+package io.datavines.server.coordinator.api.entity.dto.datasource;
 
-import io.datavines.common.CommonConstants;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
-import java.io.Serializable;
 
 @Data
-@NotNull
-public class UserResetPassword implements Serializable {
+@NotNull(message = "ExecuteRequest cannot be null")
+public class ExecuteRequest {
 
-    @NotNull(message = "user id cannot be null")
-    private Long id;
+    @NotBlank(message = "DataSource id cannot be empty")
+    private long datasourceId;
 
-    @NotBlank(message = "old password must not be null")
-    private String oldPassword;
+    @NotBlank(message = "DataSource type cannot be empty")
+    private String script;
 
-    @NotBlank(message = "new password must not be null")
-    @Pattern(regexp = CommonConstants.REG_USER_PASSWORD, message = "password length must between 6-20")
-    private String newPassword;
+    private String variables;
 }
