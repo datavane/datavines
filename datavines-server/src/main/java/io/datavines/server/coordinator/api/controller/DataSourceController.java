@@ -18,15 +18,14 @@ package io.datavines.server.coordinator.api.controller;
 
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.server.coordinator.api.entity.Item;
-import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceCreate;
 import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceUpdate;
 import io.datavines.server.coordinator.api.aop.RefreshToken;
+import io.datavines.server.coordinator.api.entity.dto.datasource.ExecuteRequest;
 import io.datavines.server.coordinator.repository.service.DataSourceService;
 
-import io.datavines.server.exception.DataVinesServerException;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -62,7 +61,7 @@ public class DataSourceController {
 
     @ApiOperation(value = "update datasource")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateDataSource(@RequestBody DataSourceUpdate dataSourceUpdate) throws DataVinesException {
+    public Object updateDataSource(@RequestBody DataSourceUpdate dataSourceUpdate) {
         return dataSourceService.update(dataSourceUpdate)>0;
     }
 
@@ -83,25 +82,25 @@ public class DataSourceController {
 
     @ApiOperation(value = "get databases")
     @GetMapping(value = "/{id}/databases")
-    public Object getDatabaseList(@PathVariable Long id) throws DataVinesServerException {
+    public Object getDatabaseList(@PathVariable Long id) {
         return dataSourceService.getDatabaseList(id);
     }
 
     @ApiOperation(value = "get tables")
     @GetMapping(value = "/{id}/{database}/tables")
-    public Object getTableList(@PathVariable Long id, @PathVariable String database) throws DataVinesServerException {
+    public Object getTableList(@PathVariable Long id, @PathVariable String database) {
         return dataSourceService.getTableList(id, database);
     }
 
     @ApiOperation(value = "get columns")
     @GetMapping(value = "/{id}/{database}/{table}/columns")
-    public Object getColumnList(@PathVariable Long id, @PathVariable String database, @PathVariable String table) throws DataVinesServerException {
+    public Object getColumnList(@PathVariable Long id, @PathVariable String database, @PathVariable String table) {
         return dataSourceService.getColumnList(id, database, table);
     }
 
     @ApiOperation(value = "execute script")
     @PostMapping(value = "/execute", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object execute(@RequestBody ExecuteRequest param) throws DataVinesServerException {
+    public Object execute(@RequestBody ExecuteRequest param)  {
         return dataSourceService.executeScript(param);
     }
 
