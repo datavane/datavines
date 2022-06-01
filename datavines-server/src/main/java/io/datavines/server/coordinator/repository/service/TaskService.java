@@ -18,8 +18,7 @@ package io.datavines.server.coordinator.repository.service;
 
 import java.util.List;
 
-import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.dto.task.SubmitTask;
+import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
 import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.exception.DataVinesServerException;
 
@@ -34,6 +33,8 @@ public interface TaskService {
     List<Task> listByDataSourceId(long dataSourceId);
 
     Long submitTask(SubmitTask submitTask) throws DataVinesServerException;
+
+    Long executeTask(Task task) throws DataVinesServerException;
 
     Long killTask(Long taskId);
 

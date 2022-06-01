@@ -14,16 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.dto.user;
+package io.datavines.server.coordinator.api.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
-public class UserUpdate {
+public class DataSourceVO {
 
-    private String username;
+    private Long id;
 
-    private String email;
+    private String name;
 
-    private String phone;
+    private String type;
+
+    private String param;
+
+    private String updater;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime updateTime;
 }

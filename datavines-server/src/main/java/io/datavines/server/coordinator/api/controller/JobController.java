@@ -16,9 +16,8 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
-import io.datavines.common.dto.job.JobCreate;
+import io.datavines.server.coordinator.api.entity.dto.job.JobCreate;
 import io.datavines.server.DataVinesConstants;
-import io.datavines.server.coordinator.api.annotation.AuthIgnore;
 import io.datavines.server.coordinator.api.aop.RefreshToken;
 import io.datavines.server.coordinator.repository.service.JobService;
 import io.datavines.server.exception.DataVinesServerException;
@@ -26,10 +25,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -42,9 +38,15 @@ public class JobController {
     @Autowired
     private JobService jobService;
 
-    @ApiOperation(value = "Job create")
+    @ApiOperation(value = "create job")
     @PostMapping(value = "/create", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createJob(@Valid @RequestBody JobCreate jobCreate) throws DataVinesServerException {
         return jobService.createJob(jobCreate);
+    }
+
+    @ApiOperation(value = "execute job")
+    @PostMapping(value = "/execute/{jobId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object executeJob(@PathVariable("jobId") Long jobId) throws DataVinesServerException {
+        return jobService.executeJob(jobId);
     }
 }

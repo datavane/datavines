@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import io.datavines.common.config.CheckResult;
-import io.datavines.common.dto.job.JobCreate;
+import io.datavines.server.coordinator.api.entity.dto.job.JobCreate;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.enums.ExecutionStatus;
@@ -40,7 +40,9 @@ import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.JobType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.exception.DataVinesServerException;
+import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
+import org.eclipse.jetty.server.handler.ContextHandler;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -61,12 +63,6 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
 
     @Autowired
     private CommandMapper commandMapper;
-
-    @Override
-    public long insert(Job job) {
-        baseMapper.insert(job);
-        return job.getId();
-    }
 
     @Override
     public int update(Job job) {
@@ -98,11 +94,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         job.setType(JobType.valueOf(jobCreate.getType()));
         job.setRetryTimes(10000);
         job.setRetryInterval(60000);
+        job.setCreateBy(ContextHolder.getUserId());
         job.setCreateTime(LocalDateTime.now());
+        job.setUpdateBy(ContextHolder.getUserId());
         job.setUpdateTime(LocalDateTime.now());
 
         // add a job
-        long jobId = insert(job);
+        long jobId = baseMapper.insert(job);
 
         // whether running now
         if(jobCreate.getRunningNow() == 1) {
@@ -130,7 +128,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             command.setTaskId(task.getId());
             commandMapper.insert(command);
         }
-        return jobId;
+
+        return job.getId();
     }
 
 
@@ -186,5 +185,10 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         if (!resultFormulaPluginSet.contains(resultFormula)) {
             throw new DataVinesServerException(String.format("%s result formula does not supported", metricType));
         }
+    }
+
+    @Override
+    public boolean executeJob(Long jobId) throws DataVinesServerException {
+        return false;
     }
 }

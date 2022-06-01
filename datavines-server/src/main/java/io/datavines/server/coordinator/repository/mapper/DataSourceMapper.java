@@ -17,10 +17,17 @@
 package io.datavines.server.coordinator.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.datavines.server.coordinator.api.entity.vo.DataSourceVO;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface DataSourceMapper extends BaseMapper<DataSource> {
 
+    IPage<DataSourceVO> getDataSourcePage(Page<DataSourceVO> page,
+                                          @Param("searchVal") String searchVal,
+                                          @Param("workSpaceId") Long workSpaceId);
 }

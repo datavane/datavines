@@ -16,11 +16,14 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
+import io.datavines.engine.api.engine.EngineExecutor;
 import io.datavines.metric.api.ExpectedValue;
+import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.aop.RefreshToken;
 import io.datavines.server.coordinator.api.entity.Item;
+import io.datavines.server.enums.OperatorType;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,10 +53,26 @@ public class MetricController {
         return items;
     }
 
+//    @ApiOperation(value = "get metric info")
+//    @GetMapping(value = "/info/{name}")
+//    public Object getMetricInfo(@PathVariable("name") String name) {
+//        return PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name);
+//    }
+
     @ApiOperation(value = "get metric info")
-    @GetMapping(value = "/info/{name}")
-    public Object getMetricInfo(@PathVariable("name") String name) {
-        return PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name);
+    @GetMapping(value = "/configs/{name}")
+    public Object getMetricConfig(@PathVariable("name") String name) {
+        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name);
+        if (sqlMetric != null) {
+            Set<String> resultSet = sqlMetric.getConfigSet();
+            resultSet.remove("table");
+            resultSet.remove("column");
+            resultSet.remove("filter");
+
+            return resultSet;
+        }
+
+        return null;
     }
 
     @ApiOperation(value = "get expected value list")
@@ -69,10 +88,43 @@ public class MetricController {
         return items;
     }
 
-    @ApiOperation(value = "get expected value info")
-    @GetMapping(value = "/expectedValue/info/{name}")
-    public Object getExpectedValueInfo(@PathVariable("name") String name) {
-        return PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(name);
+    @ApiOperation(value = "get engine type list")
+    @GetMapping(value = "/engine/list")
+    public Object getEngineTypeList() {
+        Set<String> engineTypeList = PluginLoader.getPluginLoader(EngineExecutor.class).getSupportedPlugins();
+        List<Item> items = new ArrayList<>();
+        engineTypeList.forEach(it -> {
+            Item item = new Item(it,it);
+            items.add(item);
+        });
+
+        return items;
+    }
+
+    @ApiOperation(value = "get result formula list")
+    @GetMapping(value = "/resultFormula/list")
+    public Object getResultFormulaList() {
+        Set<String> resultFormulaTypeList = PluginLoader.getPluginLoader(ResultFormula.class).getSupportedPlugins();
+        List<Item> items = new ArrayList<>();
+        resultFormulaTypeList.forEach(it -> {
+            Item item = new Item(it,it);
+            items.add(item);
+        });
+
+        return items;
+    }
+
+    @ApiOperation(value = "get operator list")
+    @GetMapping(value = "/operator/list")
+    public Object getOperatorList() {
+        List<Item> items = new ArrayList<>();
+        items.add(new Item("=","eq"));
+        items.add(new Item("<","lt"));
+        items.add(new Item("<=","lte"));
+        items.add(new Item(">","gt"));
+        items.add(new Item(">=","gte"));
+        items.add(new Item("!=","neq"));
+        return items;
     }
 
 }

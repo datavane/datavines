@@ -14,22 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.dto.datasource;
+package io.datavines.server.coordinator.api.entity.dto.user;
 
 import lombok.Data;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import lombok.EqualsAndHashCode;
 
 @Data
-@NotNull(message = "ExecuteRequest cannot be null")
-public class ExecuteRequest {
+@EqualsAndHashCode(callSuper = true)
+public class UserLoginResult extends UserBaseInfo {
 
-    @NotBlank(message = "DataSource id cannot be empty")
-    private long datasourceId;
-
-    @NotBlank(message = "DataSource type cannot be empty")
-    private String script;
-
-    private String variables;
+    private Boolean admin;
 }

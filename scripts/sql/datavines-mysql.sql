@@ -261,6 +261,10 @@ CREATE TABLE `dv_job` (
     `name` varchar(255) DEFAULT NULL COMMENT '任务名称',
     `type` int(11) NOT NULL DEFAULT '0',
     `datasource_id` bigint(20) NOT NULL,
+    `execute_platform_type` varchar(128) DEFAULT NULL,
+    `execute_platform_parameter` text,
+    `engine_type` varchar(128) DEFAULT NULL,
+    `engine_parameter` text,
     `parameter` text COMMENT '任务参数',
     `retry_times` int(11) DEFAULT NULL COMMENT '重试次数',
     `retry_interval` int(11) DEFAULT NULL COMMENT '重试间隔',
@@ -374,4 +378,4 @@ CREATE TABLE `dv_user` (
     UNIQUE KEY `user_un` (`username`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`, `create_time`, `update_time`) VALUES ('1521854257267453954', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');
+INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`, `create_time`, `update_time`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');

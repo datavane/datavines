@@ -14,18 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.dto.workspace;
+package io.datavines.server.coordinator.api.entity.dto.user;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-@NotNull(message = "WorkSpace Update cannot be null")
-public class WorkSpaceUpdate extends WorkSpaceCreate {
+public class UserBaseInfo implements Serializable {
 
-    @NotNull(message = "WorkSpace id cannot be null")
     private Long id;
+
+    private String username;
+
+    private String email;
+
 }

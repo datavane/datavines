@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.dto.job;
+package io.datavines.server.coordinator.api.entity.dto.job;
 
 import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.enums.TimeoutStrategy;
@@ -45,6 +45,11 @@ public class JobCreate {
 
     private String engineParameter;
 
+    /**
+     * Task Parameters
+     */
+    private TaskParameter parameter;
+
     private String tenantCode;
 
     private String env;
@@ -53,15 +58,6 @@ public class JobCreate {
      * 1:running now, 0:don't run
      */
     private int runningNow;
-
-    private long createBy;
-
-    private long updateBy;
-
-    /**
-     * Task Parameters
-     */
-    private TaskParameter parameter;
 
     public String getName() {
         return name;
@@ -141,22 +137,6 @@ public class JobCreate {
 
     public void setTenantCode(String tenantCode) {
         this.tenantCode = tenantCode;
-    }
-
-    public long getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(long createBy) {
-        this.createBy = createBy;
-    }
-
-    public long getUpdateBy() {
-        return updateBy;
-    }
-
-    public void setUpdateBy(long updateBy) {
-        this.updateBy = updateBy;
     }
 
     public TaskParameter getParameter() {
