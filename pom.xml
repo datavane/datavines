@@ -103,6 +103,9 @@
         <jodd.version>3.5.2</jodd.version>
         <kaptcha.version>2.3.2</kaptcha.version>
         <hibernate-validator.version>6.0.21.Final</hibernate-validator.version>
+        <commons.email.version>1.5</commons.email.version>
+        <poi.version>4.1.2</poi.version>
+        <javax.mail.version>1.6.2</javax.mail.version>
 
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
@@ -116,6 +119,28 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.sun.mail</groupId>
+                <artifactId>javax.mail</artifactId>
+                <version>${javax.mail.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.poi</groupId>
+                <artifactId>poi-ooxml</artifactId>
+                <version>${poi.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-email</artifactId>
+                <version>${commons.email.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.springframework.boot</groupId>
