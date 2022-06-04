@@ -19,9 +19,14 @@ package io.datavines.server.coordinator.repository.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import io.datavines.common.config.CheckResult;
+import io.datavines.common.entity.ConnectionInfo;
+import io.datavines.common.entity.job.BaseJobParameter;
+import io.datavines.common.entity.job.builder.TaskParameterBuilderFactory;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.server.coordinator.api.entity.dto.job.JobCreate;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.TaskParameter;
@@ -32,17 +37,21 @@ import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
+import io.datavines.server.coordinator.api.enums.ApiStatus;
 import io.datavines.server.coordinator.repository.entity.Command;
+import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.coordinator.repository.mapper.CommandMapper;
+import io.datavines.server.coordinator.repository.mapper.DataSourceMapper;
 import io.datavines.server.coordinator.repository.mapper.TaskMapper;
 import io.datavines.server.enums.CommandType;
-import io.datavines.server.enums.JobType;
+import io.datavines.common.enums.JobType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.exception.DataVinesServerException;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
-import org.eclipse.jetty.server.handler.ContextHandler;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,6 +61,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.server.coordinator.repository.mapper.JobMapper;
 import io.datavines.server.coordinator.repository.service.JobService;
 import io.datavines.server.coordinator.repository.entity.Job;
+import org.springframework.transaction.annotation.Transactional;
 
 import static io.datavines.server.DataVinesConstants.JDBC;
 
@@ -63,6 +73,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
 
     @Autowired
     private CommandMapper commandMapper;
+
+    @Autowired
+    private DataSourceMapper dataSourceMapper;
 
     @Override
     public int update(Job job) {
@@ -85,110 +98,103 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public long createJob(JobCreate jobCreate) throws DataVinesServerException{
+
+        String parameter = jobCreate.getParameter();
+        if (StringUtils.isEmpty(parameter)) {
+            throw new DataVinesServerException(ApiStatus.JOB_PARAMETER_IS_NULL_ERROR);
+        }
 
         Job job = new Job();
         BeanUtils.copyProperties(jobCreate, job);
-        job.setParameter(JSONUtils.toJsonString(jobCreate.getParameter()));
 
-        job.setType(JobType.valueOf(jobCreate.getType()));
-        job.setRetryTimes(10000);
-        job.setRetryInterval(60000);
+        job.setName(getJobName(jobCreate.getType(), jobCreate.getParameter()));
+        job.setType(JobType.of(jobCreate.getType()));
         job.setCreateBy(ContextHolder.getUserId());
         job.setCreateTime(LocalDateTime.now());
         job.setUpdateBy(ContextHolder.getUserId());
         job.setUpdateTime(LocalDateTime.now());
 
         // add a job
-        long jobId = baseMapper.insert(job);
+        baseMapper.insert(job);
+        long jobId = job.getId();
 
         // whether running now
         if(jobCreate.getRunningNow() == 1) {
+            DataSource dataSource = dataSourceMapper.selectById(jobCreate.getDataSourceId());
+            Map<String, Object> srcSourceConfigMap = JSONUtils.toMap(dataSource.getParam(), String.class, Object.class);
+            ConnectionInfo srcConnectionInfo = new ConnectionInfo();
+            srcConnectionInfo.setType(dataSource.getType());
+            srcConnectionInfo.setConfig(srcSourceConfigMap);
 
-            checkTaskParameter(jobCreate);
-            // add a task
-            Task task = new Task();
-            BeanUtils.copyProperties(jobCreate, task);
-            task.setParameter(JSONUtils.toJsonString(jobCreate.getParameter()));
+            List<String> taskParameterList = buildTaskParameter(
+                    jobCreate.getType(), jobCreate.getParameter(), srcConnectionInfo, null);
 
-            task.setName(jobCreate.getName() + "_task_" + System.currentTimeMillis());
-            task.setJobId(jobId);
-            task.setJobType(job.getType());
-            task.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
-            task.setSubmitTime(LocalDateTime.now());
-            task.setCreateTime(LocalDateTime.now());
-            task.setUpdateTime(LocalDateTime.now());
+            taskParameterList.forEach(param -> {
+                // add a task
+                job.setId(null);
+                Task task = new Task();
+                BeanUtils.copyProperties(job, task);
+                task.setParameter(param);
+                task.setName(job.getName() + "_task_" + System.currentTimeMillis());
+                task.setJobId(jobId);
+                task.setJobType(job.getType());
+                task.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
+                task.setSubmitTime(LocalDateTime.now());
+                task.setCreateTime(LocalDateTime.now());
+                task.setUpdateTime(LocalDateTime.now());
 
-            taskMapper.insert(task);
+                taskMapper.insert(task);
 
-            // add a command
-            Command command = new Command();
-            command.setType(CommandType.START);
-            command.setPriority(Priority.MEDIUM);
-            command.setTaskId(task.getId());
-            commandMapper.insert(command);
+                // add a command
+                Command command = new Command();
+                command.setType(CommandType.START);
+                command.setPriority(Priority.MEDIUM);
+                command.setTaskId(task.getId());
+                commandMapper.insert(command);
+            });
+
         }
 
-        return job.getId();
-    }
-
-
-    private void checkTaskParameter(JobCreate jobCreate) throws DataVinesServerException {
-        TaskParameter taskParameter = jobCreate.getParameter();
-        String engineType = jobCreate.getEngineType();
-
-        String metricType = taskParameter.getMetricType();
-        Set<String> metricPluginSet = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
-        if (!metricPluginSet.contains(metricType)) {
-            throw new DataVinesServerException(String.format("%s metric does not supported", metricType));
-        }
-
-        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricType);
-        CheckResult checkResult = sqlMetric.validateConfig(taskParameter.getMetricParameter());
-        if (checkResult== null || !checkResult.isSuccess()) {
-            throw new DataVinesServerException(checkResult== null? "check error": checkResult.getMsg());
-        }
-
-        String configBuilder = engineType + "_" + sqlMetric.getType().getDescription();
-        Set<String> configBuilderPluginSet = PluginLoader.getPluginLoader(DataQualityConfigurationBuilder.class).getSupportedPlugins();
-        if (!configBuilderPluginSet.contains(configBuilder)) {
-            throw new DataVinesServerException(String.format("%s engine does not supported %s metric", engineType, metricType));
-        }
-
-        ConnectorParameter srcConnectorParameter = taskParameter.getSrcConnectorParameter();
-        if (srcConnectorParameter != null) {
-            String srcConnectorType = srcConnectorParameter.getType();
-            Set<String> connectorFactoryPluginSet =
-                    PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
-            if (!connectorFactoryPluginSet.contains(srcConnectorType)) {
-                throw new DataVinesServerException(String.format("%s connector does not supported", srcConnectorType));
-            }
-
-            if (JDBC.equals(engineType)) {
-                ConnectorFactory srcConnectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
-                if (!JDBC.equals(srcConnectorFactory.getCategory())) {
-                    throw new DataVinesServerException(String.format("jdbc engine does not supported %s connector", srcConnectorType));
-                }
-            }
-        } else {
-            throw new DataVinesServerException("src connector parameter should not be null");
-        }
-
-        String expectedMetric = taskParameter.getExpectedType();
-        Set<String> expectedValuePluginSet = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
-        if (!expectedValuePluginSet.contains(expectedMetric)) {
-            throw new DataVinesServerException(String.format("%s expected value does not supported", metricType));
-        }
-
-        String resultFormula = taskParameter.getResultFormula();
-        Set<String> resultFormulaPluginSet = PluginLoader.getPluginLoader(ResultFormula.class).getSupportedPlugins();
-        if (!resultFormulaPluginSet.contains(resultFormula)) {
-            throw new DataVinesServerException(String.format("%s result formula does not supported", metricType));
-        }
+        return jobId;
     }
 
     @Override
     public boolean executeJob(Long jobId) throws DataVinesServerException {
         return false;
+    }
+
+    private String getJobName(String jobType, String parameter) {
+        List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
+
+        if (CollectionUtils.isEmpty(jobParameters)) {
+            throw new DataVinesServerException(ApiStatus.JOB_PARAMETER_IS_NULL_ERROR);
+        }
+
+        BaseJobParameter baseJobParameter = jobParameters.get(0);
+        Map<String,Object> metricParameter = baseJobParameter.getMetricParameter();
+        if (MapUtils.isEmpty(metricParameter)) {
+            throw new DataVinesServerException(ApiStatus.JOB_PARAMETER_IS_NULL_ERROR);
+        }
+
+        String database = (String)metricParameter.get("database");
+        String table = (String)metricParameter.get("table");
+        String column = (String)metricParameter.get("column");
+
+        switch (JobType.of(jobType)) {
+            case DATA_QUALITY:
+                String metric = baseJobParameter.getMetricType();
+                return String.format("%s[%s.%s.%s]%s", metric.toUpperCase(), database, table, column, System.currentTimeMillis());
+            case DATA_PROFILE:
+                return String.format("%s[%s.%s.%s]%s", "DATA_PROFILE", database, table, column, System.currentTimeMillis());
+            default:
+                return String.format("%s[%s.%s.%s]%s", "JOB", database, table, column, System.currentTimeMillis());
+        }
+    }
+
+    private List<String> buildTaskParameter(String jobType, String parameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo) {
+        return TaskParameterBuilderFactory.builder(JobType.of(jobType))
+                .buildTaskParameter(parameter,srcConnectionInfo,targetConnectionInfo);
     }
 }

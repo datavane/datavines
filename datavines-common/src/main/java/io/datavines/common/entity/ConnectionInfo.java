@@ -16,6 +16,9 @@
  */
 package io.datavines.common.entity;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * ConnectionInfo
  */
@@ -131,5 +134,25 @@ public class ConnectionInfo {
                 + ", params='" + params + '\''
                 + ", address='" + address + '\''
                 + '}';
+    }
+
+    public Map<String, Object> configMap() {
+        Map<String, Object> configMap = new HashMap<>();
+        configMap.put("database",database);
+        configMap.put("password",password);
+        configMap.put("host",host);
+        configMap.put("port",port);
+        configMap.put("user",username);
+        configMap.put("properties",params);
+        return configMap;
+    }
+
+    public void setConfig(Map<String, Object> configMap) {
+        this.database = (String)configMap.get("database");
+        this.password = (String)configMap.get("password");
+        this.host = (String)configMap.get("host");
+        this.port = (String)configMap.get("port");
+        this.username = (String)configMap.get("user");
+        this.params = (String)configMap.get("properties");
     }
 }

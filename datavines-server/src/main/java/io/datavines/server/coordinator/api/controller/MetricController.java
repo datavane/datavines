@@ -53,11 +53,6 @@ public class MetricController {
         return items;
     }
 
-//    @ApiOperation(value = "get metric info")
-//    @GetMapping(value = "/info/{name}")
-//    public Object getMetricInfo(@PathVariable("name") String name) {
-//        return PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name);
-//    }
 
     @ApiOperation(value = "get metric info")
     @GetMapping(value = "/configs/{name}")
@@ -68,8 +63,12 @@ public class MetricController {
             resultSet.remove("table");
             resultSet.remove("column");
             resultSet.remove("filter");
-
-            return resultSet;
+            List<Item> items = new ArrayList<>();
+            resultSet.forEach(it -> {
+                Item item = new Item(it,it);
+                items.add(item);
+            });
+            return items;
         }
 
         return null;

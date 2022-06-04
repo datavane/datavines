@@ -23,7 +23,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.enums.TimeoutStrategy;
-import io.datavines.server.enums.JobType;
+import io.datavines.common.enums.JobType;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -57,9 +57,6 @@ public class Job implements Serializable {
     @TableField(value = "engine_parameter")
     private String engineParameter;
 
-    /**
-     * {@link TaskParameter}
-     */
     @TableField(value = "parameter")
     private String parameter;
 

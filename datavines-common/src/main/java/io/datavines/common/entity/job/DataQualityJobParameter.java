@@ -14,35 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.enums;
-
-import com.baomidou.mybatisplus.annotation.EnumValue;
+package io.datavines.common.entity.job;
 
 /**
- * task node type
+ *  data quality job parameter, only contains base parameter
  */
-public enum JobType {
-    /**
-     * 0 DATA_QUALITY
-     * 1 DATA_PROFILE
-     */
-    DATA_QUALITY(0, "DATA_QUALITY"),
-    DATA_PROFILE(1, "DATA_PROFILE");
-
-    JobType(int code, String desc) {
-        this.code = code;
-        this.desc = desc;
-    }
-
-    @EnumValue
-    private final int code;
-    private final String desc;
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
+public class DataQualityJobParameter extends BaseJobParameter {
 }

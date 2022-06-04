@@ -41,7 +41,7 @@ public enum ApiStatus {
     REGISTER_USER_ERROR(10020002, "Register User {0} Error", "注册用户{0}失败"),
     USERNAME_OR_PASSWORD_ERROR(10020003, "Username or Email Error", "用户名或者密码错误"),
     USER_IS_NOT_EXIST_ERROR(10020004, "User is not exist", "用户不存在错误"),
-    CREAT_VERIFICATION_IMAGE_ERROR(10020005, "creat verification image error", "创建验证码错误"),
+    CREATE_VERIFICATION_IMAGE_ERROR(10020005, "create verification image error", "创建验证码错误"),
     EXPIRED_VERIFICATION_CODE(10020006, "expired verification code", "验证码已过期，请重新刷新"),
     INVALID_VERIFICATION_CODE(10020007, "invalid verification code", "错误的验证码，请重新输入"),
 
@@ -61,7 +61,9 @@ public enum ApiStatus {
 
     TASK_NOT_EXIST_ERROR(13010001, "Task {0} Not Exist Error", "任务{0}不存在错误"),
     TASK_LOG_PATH_NOT_EXIST_ERROR(13010002, "Task {0} Log Path  Not Exist Error", "任务{0}的日志路径不存在错误"),
-    TASK_EXECUTE_HOST_NOT_EXIST_ERROR(13010003, "Task Execute Host {0} Not Exist Error", "任务{0}的执行服务地址不存在错误")
+    TASK_EXECUTE_HOST_NOT_EXIST_ERROR(13010003, "Task Execute Host {0} Not Exist Error", "任务{0}的执行服务地址不存在错误"),
+
+    JOB_PARAMETER_IS_NULL_ERROR(13010001, "Job {0} Parameter is Null Error", "作业{0}参数为空错误")
 
     ;
 
