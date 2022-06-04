@@ -14,12 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.enums;
+package io.datavines.common.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 
+import java.util.HashMap;
+
 /**
- * task node type
+ * job type
  */
 public enum JobType {
     /**
@@ -29,20 +31,36 @@ public enum JobType {
     DATA_QUALITY(0, "DATA_QUALITY"),
     DATA_PROFILE(1, "DATA_PROFILE");
 
-    JobType(int code, String desc) {
+    JobType(int code, String description) {
         this.code = code;
-        this.desc = desc;
+        this.description = description;
     }
 
     @EnumValue
     private final int code;
-    private final String desc;
+    private final String description;
 
     public int getCode() {
         return code;
     }
 
-    public String getDesc() {
-        return desc;
+    public String getDescription() {
+        return description;
+    }
+
+
+    private static final HashMap<String, JobType> JOB_TYPE_MAP = new HashMap<>();
+
+    static {
+        for (JobType jobType: JobType.values()){
+            JOB_TYPE_MAP.put(jobType.description, jobType);
+        }
+    }
+
+    public static JobType of(String jobType){
+        if(JOB_TYPE_MAP.containsKey(jobType)){
+            return JOB_TYPE_MAP.get(jobType);
+        }
+        throw new IllegalArgumentException("invalid job type : " + jobType);
     }
 }

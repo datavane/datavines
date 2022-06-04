@@ -103,7 +103,7 @@ public class VerificationUtil {
         String imageByte64;
         BASE64Encoder encoder = new BASE64Encoder();
         if(null == imageInByte){
-            throw new DataVinesServerException(ApiStatus.CREAT_VERIFICATION_IMAGE_ERROR);
+            throw new DataVinesServerException(ApiStatus.CREATE_VERIFICATION_IMAGE_ERROR);
         }
         imageByte64 = encoder.encodeBuffer(imageInByte).replaceAll("\n", "").replaceAll("\r", "");
         return "data:image/jpg;base64,".concat(imageByte64);
