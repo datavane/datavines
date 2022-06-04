@@ -18,9 +18,8 @@ package io.datavines.server.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 
-/**
- *  define process and task priority
- */
+import java.util.HashMap;
+
 public enum Priority {
     /**
      * 0 highest priority
@@ -35,20 +34,21 @@ public enum Priority {
     LOW(3, "low"),
     LOWEST(4, "lowest");
 
-    Priority(int code, String descp) {
+    Priority(int code, String description) {
         this.code = code;
-        this.descp = descp;
+        this.description = description;
     }
 
     @EnumValue
     private final int code;
-    private final String descp;
+
+    private final String description;
 
     public int getCode() {
         return code;
     }
 
-    public String getDescp() {
-        return descp;
+    public String getDescription() {
+        return description;
     }
 }
