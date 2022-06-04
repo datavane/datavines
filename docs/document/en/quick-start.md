@@ -82,9 +82,32 @@ Check the log, if there is no error message in the log, and you can see `[INFO] 
 
 ### Submit the task for verification
 Currently only supports `API` to submit tasks, you can make requests through Postman or other tools
+- Get token
+> POST localhost:5600/api/v1/login
+````
+{
+"username": "admin",
+"password": "123456"
+}
+````
+- response
+````
+{
+    "msg": "Success",
+    "code": 200,
+    "data": {
+        "id": 1,
+        "username": "admin",
+        "email": "admin@gmail.com",
+        "admin": false
+    },
+    "token": "eyJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9jcmVhdGVfdGltZSI6MTY1NDM1MzY2OTU1OCwic3ViIjoiYWRtaW4iLCJ0b2tlbl91c2VyX25hbWUiOiJhZG1pbiIsImV4cCI6MTY1NDM2MjMwOSwidG9rZW5fdXNlcl9wYXNzd29yZCI6IjEyMzQ1NiJ9.gh4s6sYSrzDBQ_-fTYGZQyuMyxFJKzrBoBHCvAJ2t8ouCdHHv7Pv9SiYnt0DG1wJtLB7MDg5MrMBcmtiwpMIZw"
+}
+````
 - Submit tasks
 > POST localhost:5600/api/v1/task/submit
 ````
+Request Body:
 {
     "name":"test",
     "parameter":{
@@ -106,20 +129,23 @@ Currently only supports `API` to submit tasks, you can make requests through Pos
         }
     }
 }
+Authorization: 
+Bearer eyJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9jcmVhdGVfdGltZSI6MTY1NDM1MzY2OTU1OCwic3ViIjoiYWRtaW4iLCJ0b2tlbl91c2VyX25hbWUiOiJhZG1pbiIsImV4cCI6MTY1NDM2MjMwOSwidG9rZW5fdXNlcl9wYXNzd29yZCI6IjEyMzQ1NiJ9.gh4s6sYSrzDBQ_-fTYGZQyuMyxFJKzrBoBHCvAJ2t8ouCdHHv7Pv9SiYnt0DG1wJtLB7MDg5MrMBcmtiwpMIZw
 ````
 - response
 ````
 {
     "msg": "Success",
     "code": 200,
-    "data": {
-        "taskId": 1511355300065992706
-    }
+    "data": 1
 }
 ````
 - Query task status
 > GET localhost:5600/api/v1/task/status/{taskId}
-
+````
+Authorization:
+Bearer eyJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9jcmVhdGVfdGltZSI6MTY1NDM1MzY2OTU1OCwic3ViIjoiYWRtaW4iLCJ0b2tlbl91c2VyX25hbWUiOiJhZG1pbiIsImV4cCI6MTY1NDM2MjMwOSwidG9rZW5fdXNlcl9wYXNzd29yZCI6IjEyMzQ1NiJ9.gh4s6sYSrzDBQ_-fTYGZQyuMyxFJKzrBoBHCvAJ2t8ouCdHHv7Pv9SiYnt0DG1wJtLB7MDg5MrMBcmtiwpMIZw
+````
 - response
 ````
 {
@@ -133,7 +159,10 @@ Currently only supports `API` to submit tasks, you can make requests through Pos
 If the result of the task is success, then you can query the result of the task
 - Query task execution results
 > GET localhost:5600/api/v1/task/result/{taskId}
-
+````
+Authorization:
+Bearer eyJhbGciOiJIUzUxMiJ9.eyJ0b2tlbl9jcmVhdGVfdGltZSI6MTY1NDM1MzY2OTU1OCwic3ViIjoiYWRtaW4iLCJ0b2tlbl91c2VyX25hbWUiOiJhZG1pbiIsImV4cCI6MTY1NDM2MjMwOSwidG9rZW5fdXNlcl9wYXNzd29yZCI6IjEyMzQ1NiJ9.gh4s6sYSrzDBQ_-fTYGZQyuMyxFJKzrBoBHCvAJ2t8ouCdHHv7Pv9SiYnt0DG1wJtLB7MDg5MrMBcmtiwpMIZw
+````
 - response
 ````
 {
