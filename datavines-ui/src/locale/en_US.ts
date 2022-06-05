@@ -23,7 +23,7 @@ export default {
 
     '/main/home': 'DataSource',
     '/main/warning': 'Warning',
-    '/main/detail/:id/editor': 'Development',
+    '/main/detail/:id/editor': 'Data',
     '/main/detail/:id/jobs': 'Jobs',
     '/main/detail/:id/tasks': 'Tasks',
     '/main/detail/:id': 'Detail',

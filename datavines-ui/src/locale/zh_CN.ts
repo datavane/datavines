@@ -23,7 +23,7 @@ export default {
 
     '/main/home': '数据源',
     '/main/warning': '告警',
-    '/main/detail/:id/editor': '开发',
+    '/main/detail/:id/editor': '数据开发',
     '/main/detail/:id/jobs': '作业列表',
     '/main/detail/:id/tasks': '任务列表',
     '/main/detail/:id': '详情',

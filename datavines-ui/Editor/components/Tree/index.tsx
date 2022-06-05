@@ -1,100 +1,113 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Tree } from 'antd';
-import { DatabaseOutlined, TableOutlined } from '@ant-design/icons';
+import {
+    DatabaseOutlined, TableOutlined, DownOutlined, EditOutlined, ReloadOutlined,
+} from '@ant-design/icons';
+import type { TreeProps } from 'antd/lib/tree';
 import { useMetricModal } from '../MetricModal';
-import useRequest from '../../hooks/useRequest';
-import { useEditorActions, setEditorFn, useEditorContextState } from '../../store/editor';
+import { useEditorContextState } from '../../store/editor';
 import { usePersistFn } from '../../common';
 import { IDvDataBaseItem } from '../../type';
+import useTableCloumn from './useTableCloumn';
+import './index.less';
 
-const Index = () => {
+type TIndexProps = {
+    getDatabases: (...args: any[]) => void;
+}
+
+const Index = ({ getDatabases }: TIndexProps) => {
     const { Render: RenderModal, show } = useMetricModal();
     const [{ databases, id }] = useEditorContextState();
-    const { $http } = useRequest();
-    const fns = useEditorActions({ setEditorFn });
-    const onRequestTable = usePersistFn(async (databaseName) => {
-        try {
-            const fileDatabaseName = databases.find((item) => ((item.name === databaseName) && (item.children || []).length > 0));
-            if (fileDatabaseName) {
-                return;
-            }
-            const res = await $http.get(`/datasource/${id}/${databaseName}/tables`);
-            const data = databases.reduce<IDvDataBaseItem[]>((prev, cur) => {
-                if (cur.name === databaseName) {
-                    cur.children = res;
-                }
-                prev.push({ ...cur });
-                return prev;
-            }, []);
-            fns.setEditorFn({ databases: data });
-        } catch (error) {
+    const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
+    const $setExpandedKeys = usePersistFn((key: React.Key, isCancel?: boolean) => {
+        if (isCancel) {
+            setExpandedKeys(expandedKeys.filter((item) => (item !== key)));
+            return;
         }
+        setExpandedKeys([...expandedKeys, key]);
     });
-    const onRequestCloumn = usePersistFn(async (databaseName, tableName) => {
-        try {
-            const fileDatabase = databases.find((item) => (item.name === databaseName));
-            if (fileDatabase) {
-                const findTable = (fileDatabase.children || []).find((item) => (item.name === tableName) && (item.children || []).length > 0);
-                if (findTable) {
-                    return;
-                }
-            }
-            const res = await $http.get(`/datasource/${id}/${databaseName}/${tableName}/columns`);
-            const data = databases.reduce<IDvDataBaseItem[]>((prev, cur) => {
-                if (cur.name === databaseName) {
-                    const children = (cur.children || []).map((item) => {
-                        if (item.name === tableName) {
-                            return {
-                                ...item,
-                                children: res?.columns || [],
-                            };
-                        }
-                        return { ...item };
-                    });
-                    cur.children = children;
-                }
-                prev.push({ ...cur });
-                return prev;
-            }, []);
-            fns.setEditorFn({ databases: data });
-        } catch (error) {
-        }
-    });
+    const { onRequestTable, onRequestCloumn } = useTableCloumn({ $setExpandedKeys });
+
+    const onFieldClick = (databaseName: string, tableName: string, columnName?: string) => {
+        show({
+            id,
+            databaseName,
+            tableName,
+            columnName,
+        });
+    };
 
     const renderSingle = (item: IDvDataBaseItem) => ({
-        title: <span>{item.name}</span>,
+        title: <span className="dv-editor-tree-title">{item.name}</span>,
         key: item.name,
         dataName: item.name,
         type: item.type,
         icon: <DatabaseOutlined />,
         children: (item.children || []).map((tableItem) => ({
-            title: <span>{tableItem.name}</span>,
+            title: <span className="dv-editor-tree-title">{tableItem.name}</span>,
             key: `${item.name}_${tableItem.name}`,
             dataName: tableItem.name,
             parentName: item.name,
             type: tableItem.type,
             icon: <TableOutlined />,
             children: (tableItem.children || []).map((fieldItem) => ({
-                title: <span>{fieldItem.name}</span>,
+                title: (
+                    <span className="dv-editor-tree-title">
+                        <EditOutlined
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onFieldClick(item.name, tableItem.name);
+                            }}
+                        />
+                        {' '}
+                        {fieldItem.name}
+                    </span>
+                ),
+                className: 'dv-editor-tree-field',
                 key: `${item.name}_${tableItem.name}_${fieldItem.name}`,
                 dataName: fieldItem.name,
                 type: fieldItem.type,
             })),
         })),
     });
-    const onSelect = (data: any, e: any) => {
-        // console.log('data', data, e);
+    const onSelect: TreeProps['onSelect'] = (selectedKeys, e: any) => {
+        if (e.node.children?.length >= 1) {
+            if (e.selected) {
+                $setExpandedKeys(e.node.key);
+            } else {
+                $setExpandedKeys(e.node.key, true);
+            }
+        }
         if (e.node.type === 'DATABASE') {
-            onRequestTable(e.node.dataName);
+            onRequestTable(e.node.dataName, e.node.key);
         } else if (e.node.type === 'TABLE') {
-            onRequestCloumn(e.node.parentName, e.node.dataName);
+            onRequestCloumn(e.node.parentName, e.node.dataName, e.node.key);
         }
     };
+
+    const onExpand = (expandedKeysValue: React.Key[]) => {
+        setExpandedKeys(expandedKeysValue);
+    };
+
     return (
-        <div>
+        <div className="dv-editor-tree">
+            <div className="dv-editor-flex-between">
+                <span />
+                <span style={{ marginRight: 15 }}>
+                    <ReloadOutlined
+                        onClick={() => {
+                            getDatabases();
+                        }}
+                    />
+
+                </span>
+            </div>
             <Tree
                 showIcon
+                switcherIcon={<DownOutlined />}
                 onSelect={onSelect}
+                onExpand={onExpand}
+                expandedKeys={expandedKeys}
                 treeData={databases.map((item) => renderSingle(item))}
             />
             <RenderModal />
