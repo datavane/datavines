@@ -1,27 +1,41 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import {
     Row, Col, Form, Input, Radio, FormInstance,
 } from 'antd';
 import Title from '../Title';
-import CustomSelect from '../../../common/CustomSelect';
+import { CustomSelect, useMount } from '../../../common';
 import {
     layoutItem, layoutActuatorItem, layoutActuatorLineItem,
 } from '../helper';
+import useRequest from '../../../hooks/useRequest';
+import useRequiredRule from '../../../hooks/useRequiredRule';
 
 type InnerProps = {
     form: FormInstance
 }
 
 const Index = ({ form }: InnerProps) => {
+    const { $http } = useRequest();
     const intl = useIntl();
+    const requiredRule = useRequiredRule();
+    const [engineList, setEngineList] = useState([]);
+    useMount(async () => {
+        try {
+            const $engineList = await $http.get('metric/engine/list');
+            setEngineList($engineList || []);
+        } catch (error) {
+        }
+    });
     const renderSpark = () => (
         <>
             <Form.Item
                 dependencies={['actuatorType']}
                 {...layoutActuatorLineItem}
-                label={intl.formatMessage({ id: 'dv_metric_expected_value' })}
-                name="expectValue"
+                label={intl.formatMessage({ id: 'dv_metric_actuator_deploy_mode' })}
+                name="deployMode"
+                rules={[...requiredRule]}
+                initialValue="cluster"
             >
                 <Radio.Group>
                     <Radio value="cluster">cluster</Radio>
@@ -35,6 +49,7 @@ const Index = ({ form }: InnerProps) => {
                         {...layoutActuatorItem}
                         label={intl.formatMessage({ id: 'dv_metric_actuator_driver_cores' })}
                         name="driverCores"
+                        rules={[...requiredRule]}
                     >
                         <Input allowClear />
                     </Form.Item>
@@ -44,6 +59,7 @@ const Index = ({ form }: InnerProps) => {
                         {...layoutActuatorItem}
                         label={intl.formatMessage({ id: 'dv_metric_actuator_driver_memory' })}
                         name="driverMemory"
+                        rules={[...requiredRule]}
                     >
                         <Input allowClear />
                     </Form.Item>
@@ -52,7 +68,8 @@ const Index = ({ form }: InnerProps) => {
                     <Form.Item
                         {...layoutActuatorItem}
                         label={intl.formatMessage({ id: 'dv_metric_actuator_executor_numbers' })}
-                        name="executorNumber"
+                        name="numExecutors"
+                        rules={[...requiredRule]}
                     >
                         <Input allowClear />
                     </Form.Item>
@@ -62,6 +79,7 @@ const Index = ({ form }: InnerProps) => {
                         {...layoutActuatorItem}
                         label={intl.formatMessage({ id: 'dv_metric_actuator_executor_memory' })}
                         name="executorMemory"
+                        rules={[...requiredRule]}
                     >
                         <Input allowClear />
                     </Form.Item>
@@ -71,6 +89,7 @@ const Index = ({ form }: InnerProps) => {
                         {...layoutActuatorItem}
                         label={intl.formatMessage({ id: 'dv_metric_actuator_executor_cores' })}
                         name="executorCores"
+                        rules={[...requiredRule]}
                     >
                         <Input allowClear />
                     </Form.Item>
@@ -79,7 +98,8 @@ const Index = ({ form }: InnerProps) => {
             <Form.Item
                 {...layoutActuatorLineItem}
                 label={intl.formatMessage({ id: 'dv_metric_actuator_executor_options' })}
-                name="excutorOptions"
+                name="others"
+                rules={[...requiredRule]}
             >
                 <Input.TextArea rows={3} />
             </Form.Item>
@@ -92,26 +112,22 @@ const Index = ({ form }: InnerProps) => {
                     <Form.Item
                         {...layoutItem}
                         label=""
-                        name="actuatorType"
-                        initialValue="Spark"
+                        name="engineType"
+                        initialValue="jdbc"
+                        rules={[...requiredRule]}
                     >
                         <CustomSelect
-                            source={
-                                [
-                                    { labe: 'JDBC', value: 'JDBC' },
-                                    { labe: 'Spark', value: 'Spark' },
-                                ]
-                            }
+                            source={engineList}
+                            sourceValueMap="key"
                             style={{ width: 200 }}
                         />
                     </Form.Item>
-                    <span style={{ paddingTop: 5, marginLeft: 15 }}>{intl.formatMessage({ id: 'dv_metric_actuator_tip' })}</span>
                 </Col>
             </Row>
-            <Form.Item noStyle dependencies={['actuatorType']}>
+            <Form.Item noStyle dependencies={['engineType']}>
                 {() => {
-                    const value = form.getFieldValue('actuatorType');
-                    if (value !== 'Spark') {
+                    const value = form.getFieldValue('engineType');
+                    if (value !== 'spark') {
                         return null;
                     }
                     return renderSpark();
