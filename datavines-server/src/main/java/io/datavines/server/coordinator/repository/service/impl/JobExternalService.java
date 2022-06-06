@@ -83,8 +83,8 @@ public class JobExternalService {
         return taskService.update(task);
     }
 
-    public Long insertTask(Task task){
-        return taskService.insert(task);
+    public Long createTask(Task task){
+        return taskService.create(task);
     }
 
     public Long insertCommand(Command command){

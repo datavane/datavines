@@ -16,7 +16,6 @@
  */
 package io.datavines.common.entity.job.builder;
 
-import com.fasterxml.jackson.databind.util.BeanUtil;
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.TaskParameter;

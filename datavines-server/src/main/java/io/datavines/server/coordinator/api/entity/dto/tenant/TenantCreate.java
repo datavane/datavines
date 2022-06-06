@@ -14,27 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.api.entity.vo;
+package io.datavines.server.coordinator.api.entity.dto.tenant;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
-public class DataSourceVO implements Serializable {
+@NotNull(message = "Tenant Create cannot be null")
+public class TenantCreate {
 
-    private Long id;
-
-    private String name;
-
-    private String type;
-
-    private String param;
-
-    private String updater;
-
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private LocalDateTime updateTime;
+    @NotBlank(message = "Tenant cannot be empty")
+    private String tenant;
 }

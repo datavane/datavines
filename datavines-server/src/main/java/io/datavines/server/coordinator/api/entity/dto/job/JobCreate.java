@@ -23,9 +23,6 @@ import javax.validation.constraints.NotNull;
 @NotNull(message = "JobCreate cannot be null")
 public class JobCreate {
 
-//    @NotNull(message = "Job name cannot be empty")
-//    private String name;
-
     @NotNull(message = "Job type cannot be empty")
     private String type;
 
@@ -53,22 +50,14 @@ public class JobCreate {
 
     private Integer retryInterval = 1000;
 
-    private String tenantCode;
+    private Long tenantCode;
 
-    private String env;
+    private Long env;
 
     /**
      * 1:running now, 0:don't run
      */
     private int runningNow;
-
-//    public String getName() {
-//        return name;
-//    }
-//
-//    public void setName(String name) {
-//        this.name = name;
-//    }
 
     public String getType() {
         return type;
@@ -134,11 +123,11 @@ public class JobCreate {
         this.engineParameter = engineParameter;
     }
 
-    public String getTenantCode() {
+    public Long getTenantCode() {
         return tenantCode;
     }
 
-    public void setTenantCode(String tenantCode) {
+    public void setTenantCode(Long tenantCode) {
         this.tenantCode = tenantCode;
     }
 
@@ -166,11 +155,11 @@ public class JobCreate {
         this.parameter = parameter;
     }
 
-    public String getEnv() {
+    public Long getEnv() {
         return env;
     }
 
-    public void setEnv(String env) {
+    public void setEnv(Long env) {
         this.env = env;
     }
 

@@ -48,7 +48,6 @@ public enum JobType {
         return description;
     }
 
-
     private static final HashMap<String, JobType> JOB_TYPE_MAP = new HashMap<>();
 
     static {

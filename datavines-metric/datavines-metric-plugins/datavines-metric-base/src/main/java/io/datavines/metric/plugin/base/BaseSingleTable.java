@@ -19,9 +19,7 @@ package io.datavines.metric.plugin.base;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.ConfigChecker;
 import io.datavines.common.entity.ExecuteSql;
-import io.datavines.common.utils.JSONUtils;
 import io.datavines.metric.api.SqlMetric;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -29,7 +27,7 @@ public abstract class BaseSingleTable implements SqlMetric {
 
     protected final StringBuilder invalidateItemsSql = new StringBuilder("select * from ${table}");
 
-    private final StringBuilder actualValueSql = new StringBuilder("select count(*) as actual_value from ${invalidate_items_table}");
+    private final StringBuilder actualValueSql = new StringBuilder("select count(1) as actual_value from ${invalidate_items_table}");
 
     protected List<String> filters = new ArrayList<>();
 

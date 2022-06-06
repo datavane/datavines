@@ -57,7 +57,7 @@ public class ColumnUnique extends BaseSingleTableColumn {
         }
 
         if (config.containsKey("column")) {
-            invalidateItemsSql.append(" group by ${column} having count(*) = 1");
+            invalidateItemsSql.append(" group by ${column} having count(1) = 1");
         }
 
     }
