@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.entity.job.builder.TaskParameterBuilderFactory;
@@ -35,12 +36,20 @@ import io.datavines.server.coordinator.api.entity.vo.JobVO;
 import io.datavines.server.coordinator.api.enums.ApiStatus;
 import io.datavines.server.coordinator.repository.entity.*;
 import io.datavines.server.coordinator.repository.mapper.*;
+import io.datavines.server.coordinator.repository.entity.Command;
+import io.datavines.server.coordinator.repository.entity.DataSource;
+import io.datavines.server.coordinator.repository.entity.Task;
+import io.datavines.server.coordinator.repository.mapper.CommandMapper;
+import io.datavines.server.coordinator.repository.mapper.DataSourceMapper;
+import io.datavines.server.coordinator.repository.mapper.TaskMapper;
 import io.datavines.server.enums.CommandType;
 import io.datavines.common.enums.JobType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.exception.DataVinesServerException;
 import io.datavines.server.utils.ContextHolder;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
@@ -50,7 +59,11 @@ import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import io.datavines.server.coordinator.repository.service.JobService;
+
 import org.springframework.transaction.annotation.Transactional;
+
+import io.datavines.server.coordinator.repository.entity.Job;
+
 
 @Slf4j
 @Service("jobService")
@@ -108,6 +121,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+
     public long create(JobCreate jobCreate) throws DataVinesServerException{
 
         // 需要对参数进行校验，判断插件类型是否存在

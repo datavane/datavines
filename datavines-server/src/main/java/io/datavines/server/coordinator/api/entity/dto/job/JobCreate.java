@@ -42,13 +42,13 @@ public class JobCreate {
      */
     private String parameter;
 
+    private int timeout = 60000;
+
+    private TimeoutStrategy timeoutStrategy = TimeoutStrategy.WARN;
+
     private Integer retryTimes = 0;
 
     private Integer retryInterval = 1000;
-
-    private int timeout = 360000;
-
-    private TimeoutStrategy timeoutStrategy = TimeoutStrategy.WARN;
 
     private Long tenantCode;
 
