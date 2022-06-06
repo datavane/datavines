@@ -19,9 +19,7 @@ package io.datavines.metric.plugin.base;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.ConfigChecker;
 import io.datavines.common.entity.ExecuteSql;
-import io.datavines.common.utils.JSONUtils;
 import io.datavines.metric.api.SqlMetric;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
