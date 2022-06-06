@@ -73,7 +73,10 @@ public class Job implements Serializable {
     private TimeoutStrategy timeoutStrategy;
 
     @TableField(value = "tenant_code")
-    private String tenantCode;
+    private Long tenantCode;
+
+    @TableField(value = "env")
+    private Long env;
 
     @TableField(value = "create_by")
     private Long createBy;
@@ -193,12 +196,20 @@ public class Job implements Serializable {
         this.timeoutStrategy = timeoutStrategy;
     }
 
-    public String getTenantCode() {
+    public Long getTenantCode() {
         return tenantCode;
     }
 
-    public void setTenantCode(String tenantCode) {
+    public void setTenantCode(Long tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public Long getEnv() {
+        return env;
+    }
+
+    public void setEnv(Long env) {
+        this.env = env;
     }
 
     public Long getCreateBy() {

@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.TaskParameter;
@@ -31,6 +33,7 @@ import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
+import io.datavines.server.coordinator.api.entity.vo.TaskVO;
 import io.datavines.server.exception.DataVinesServerException;
 import io.datavines.spi.PluginLoader;
 import org.springframework.beans.BeanUtils;
@@ -60,7 +63,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
     private CommandMapper commandMapper;
 
     @Override
-    public long insert(Task task) {
+    public long create(Task task) {
         baseMapper.insert(task);
         return task.getId();
     }
@@ -76,8 +79,15 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
     }
 
     @Override
-    public List<Task> listByDataSourceId(long dataSourceId) {
-        return baseMapper.listByDataSourceId(dataSourceId);
+    public List<Task> listByJobId(long jobId) {
+        return baseMapper.listByJobId(jobId);
+    }
+
+    @Override
+    public IPage<TaskVO> getTaskPage(String searchVal, Long jobId, Integer pageNumber, Integer pageSize) {
+        Page<TaskVO> page = new Page<>(pageNumber, pageSize);
+        IPage<TaskVO> jobs = baseMapper.getTaskPage(page, searchVal, jobId);
+        return jobs;
     }
 
     @Override
@@ -118,7 +128,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
 
     @Override
     public Long executeTask(Task task) throws DataVinesServerException {
-        Long taskId = insert(task);
+        Long taskId = create(task);
 
         Command command = new Command();
         command.setType(CommandType.START);

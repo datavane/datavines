@@ -17,24 +17,29 @@
 package io.datavines.server.coordinator.api.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.datavines.common.enums.JobType;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class DataSourceVO implements Serializable {
+public class JobVO implements Serializable {
+
+    private static final long serialVersionUID = -1L;
 
     private Long id;
 
     private String name;
 
-    private String type;
-
-    private String param;
+    private JobType type;
 
     private String updater;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private LocalDateTime updateTime;
+
+    public String getType() {
+        return type.getDescription();
+    }
 }

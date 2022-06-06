@@ -14,36 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package io.datavines.server.coordinator.repository.service;
+
+import io.datavines.server.coordinator.api.entity.dto.tenant.TenantCreate;
+import io.datavines.server.coordinator.api.entity.dto.tenant.TenantUpdate;
+import io.datavines.server.coordinator.repository.entity.Tenant;
+import io.datavines.server.exception.DataVinesServerException;
 
 import java.util.List;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
-import io.datavines.server.coordinator.api.entity.vo.TaskVO;
-import io.datavines.server.coordinator.repository.entity.Task;
-import io.datavines.server.exception.DataVinesServerException;
+public interface TenantService {
 
-public interface TaskService {
+    long create(TenantCreate tenantCreate) throws DataVinesServerException;
 
-    long create(Task task);
+    int deleteById(long id);
 
-    int update(Task task);
+    int update(TenantUpdate tenantUpdate) throws DataVinesServerException;
 
-    Task getById(long id);
+    Tenant getById(long id);
 
-    List<Task> listByJobId(long jobId);
-
-    IPage<TaskVO> getTaskPage(String searchVal, Long jobId, Integer pageNumber, Integer pageSize);
-
-    Long submitTask(SubmitTask submitTask) throws DataVinesServerException;
-
-    Long executeTask(Task task) throws DataVinesServerException;
-
-    Long killTask(Long taskId);
-
-    List<Task> listNeedFailover(String host);
-
-    List<Task> listTaskNotInServerList(List<String> hostList);
+    List<Tenant> listByUserId();
 
 }

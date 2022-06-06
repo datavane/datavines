@@ -16,6 +16,10 @@
  */
 package io.datavines.server.coordinator.repository.mapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.datavines.server.coordinator.api.entity.vo.JobVO;
+import io.datavines.server.coordinator.api.entity.vo.TaskVO;
 import org.apache.ibatis.annotations.*;
 
 import java.util.List;
@@ -27,6 +31,10 @@ import io.datavines.server.coordinator.repository.entity.Task;
 @Mapper
 public interface TaskMapper extends BaseMapper<Task>  {
 
-    @Select("SELECT * from dv_task WHERE datasource_id = #{dataSourceId} ")
-    List<Task> listByDataSourceId(long dataSourceId);
+    @Select("SELECT * from dv_task WHERE job_id = #{jobId} ")
+    List<Task> listByJobId(long jobId);
+
+    IPage<TaskVO> getTaskPage(Page<TaskVO> page,
+                             @Param("searchVal") String searchVal,
+                             @Param("jobId") Long jobId);
 }
