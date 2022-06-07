@@ -4,21 +4,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.io.Serializable;
-import java.util.List;
-
 @Data
-@EqualsAndHashCode
 @ToString
-public class SlasNotificationResult implements Serializable {
-
+@EqualsAndHashCode
+public class SlasNotificationResultRecord {
     private static final long serialVersionUID = -1L;
 
     private Boolean status;
 
-    private List<SlasNotificationResultRecord> records;
+    private String message;
 
-    public SlasNotificationResult(){
+    public SlasNotificationResultRecord(){
         this.status = false;
     }
 }

@@ -6,6 +6,7 @@ import com.sun.mail.smtp.SMTPProvider;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.notification.api.entity.SlasNotificationResult;
+import io.datavines.notification.api.entity.SlasNotificationResultRecord;
 import io.datavines.notification.api.entity.SlasSenderMessage;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -71,8 +72,8 @@ public class EMailSender {
         requireNonNull(sslTrust, "smtpSslTrust" + mustNotNull);
     }
 
-    public SlasNotificationResult sendMails(Set<String> receiverSet, Set<String> copyReceiverSet, String subject, String message){
-        SlasNotificationResult result = new SlasNotificationResult();
+    public SlasNotificationResultRecord sendMails(Set<String> receiverSet, Set<String> copyReceiverSet, String subject, String message){
+        SlasNotificationResultRecord result = new SlasNotificationResultRecord();
 
         // if there is no receivers && no receiversCc, no need to process
         if (CollectionUtils.isEmpty(receiverSet)) {

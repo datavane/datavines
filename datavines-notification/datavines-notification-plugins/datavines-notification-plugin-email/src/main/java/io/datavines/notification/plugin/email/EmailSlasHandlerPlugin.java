@@ -2,7 +2,9 @@ package io.datavines.notification.plugin.email;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.datavines.common.CommonConstants;
 import io.datavines.common.param.form.ParamsOptions;
 import io.datavines.common.param.form.PluginParams;
@@ -11,12 +13,12 @@ import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.props.InputParamsProps;
 import io.datavines.common.param.form.type.InputParam;
 import io.datavines.common.param.form.type.RadioParam;
-import io.datavines.notification.api.entity.SlasNotificationMessage;
-import io.datavines.notification.api.entity.SlasNotificationResult;
-import io.datavines.notification.api.entity.SlasReceiverMessage;
-import io.datavines.notification.api.entity.SlasSenderMessage;
+import io.datavines.common.utils.JSONUtils;
+import io.datavines.notification.api.entity.*;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
+import io.datavines.notification.plugin.email.entity.ReceiverConfig;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -53,22 +55,41 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
     @Override
     public SlasNotificationResult notify(SlasNotificationMessage slasNotificationMessage, Map<SlasSenderMessage, Set<SlasReceiverMessage>> config) {
         Set<SlasSenderMessage> emailSenderSet = config.keySet().stream().filter(x -> "email".equals(x.getType())).collect(Collectors.toSet());
+        SlasNotificationResult result = new SlasNotificationResult();
+        ArrayList<SlasNotificationResultRecord> records = new ArrayList<>();
+        result.setStatus(true);
         for(SlasSenderMessage senderMessage: emailSenderSet){
             EMailSender eMailSender = new EMailSender(senderMessage);
             Set<SlasReceiverMessage> slasReceiverMessageSet = config.get(senderMessage);
             for(SlasReceiverMessage receiver: slasReceiverMessageSet){
-                String receiverConfig = receiver.getConfig();
+                String receiverConfigStr = receiver.getConfig();
+                ReceiverConfig receiverConfig = JSONUtils.parseObject(receiverConfigStr, ReceiverConfig.class);
+                Set<String> toReceivers = receiverConfig.getToReceivers();
+                Set<String> ccReceivers = receiverConfig.getCcReceivers();
+                String subject = slasNotificationMessage.getSubject();
+                String message = slasNotificationMessage.getMessage();
+                SlasNotificationResultRecord record = eMailSender.sendMails(toReceivers, ccReceivers, subject, message);
+                if (record.getStatus().equals(false)){
+                    String to = "";
+                    String recordMessage = "";
 
-
+                    if (!CollectionUtils.isEmpty(toReceivers)){
+                        to = toReceivers.stream().collect(Collectors.joining(","));
+                        recordMessage = String.format("send to %s fail", to);
+                    }
+                    String cc = "";
+                    if (!CollectionUtils.isEmpty(ccReceivers)){
+                        cc = ccReceivers.stream().collect(Collectors.joining(","));
+                        recordMessage += String.format("copy to %s fail", cc);
+                    }
+                    record.setMessage(recordMessage);
+                    result.setStatus(false);
+                }
+                records.add(record);
             }
-
-
-
         }
-
-
-
-        return null;
+        result.setRecords(records);
+        return result;
     }
 
     @Override
