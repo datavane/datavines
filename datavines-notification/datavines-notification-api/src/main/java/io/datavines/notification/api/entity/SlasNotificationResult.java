@@ -21,4 +21,10 @@ public class SlasNotificationResult implements Serializable {
     public SlasNotificationResult(){
         this.status = false;
     }
+
+    public SlasNotificationResult merge(SlasNotificationResult other){
+        this.status = this.status && other.status;
+        this.records.addAll(other.getRecords());
+        return this;
+    }
 }
