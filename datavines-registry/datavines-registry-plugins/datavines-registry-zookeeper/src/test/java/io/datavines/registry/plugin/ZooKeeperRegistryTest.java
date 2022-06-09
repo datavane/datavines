@@ -46,6 +46,7 @@ public class ZooKeeperRegistryTest {
         server = new TestingServer(true);
         Properties properties = CommonPropertyUtils.getProperties();
         registry = new ZooKeeperRegistry();
+        properties.setProperty("server.port", "5600");
         registry.init(properties);
         registry.put("/sub", "", false);
     }
