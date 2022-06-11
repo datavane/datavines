@@ -1,31 +1,88 @@
-import React, { useImperativeHandle, useRef } from 'react';
+import React, { useImperativeHandle, useRef, useState } from 'react';
 import {
-    Button, Form, FormInstance,
+    Button, Form, FormInstance, message,
 } from 'antd';
 import { useIntl } from 'react-intl';
 import {
-    useModal, useImmutable, usePersistFn,
+    useModal, useImmutable, usePersistFn, useLoading,
 } from '@/common';
+import useRequest from '../../hooks/useRequest';
 import MetricSelect from './MetricSelect';
 import ExpectedValue from './ExpectedValue';
 import VerifyConfigure from './VerifyConfigure';
 import ActuatorConfigure from './ActuatorConfigure';
+import RunEvnironment from './RunEvnironment';
+import OtherConfig from './OtherConfig';
+import { pickProps } from './helper';
+import { TDetail } from './type';
 
 type InnerProps = {
     innerRef: {
-        current: FormInstance
-    }
+        current: {
+            form: FormInstance,
+            getValues: (...args: any[]) => any
+        }
+    },
+    id: string,
+    detail: TDetail
 }
-
-const Inner = ({ innerRef }: InnerProps) => {
+const keys = [
+    'engineType',
+    'retryTimes',
+    'retryInterval',
+    'timeout',
+    'timeoutStrategy',
+    'tenantCode',
+    'env',
+];
+const Inner = ({ innerRef, id, detail }: InnerProps) => {
     const [form] = Form.useForm();
-    useImperativeHandle(innerRef, () => (form));
+    const metricSelectRef = useRef<any>();
+    useImperativeHandle(innerRef, () => ({
+        form,
+        getValues() {
+            return new Promise((resolve, reject) => {
+                innerRef.current.form.validateFields().then((values) => {
+                    console.log('values', values);
+                    const params: any = {
+                        type: 'DATA_QUALITY',
+                        dataSourceId: id,
+                        ...(pickProps(values, [...keys])),
+                    };
+                    if (values.engineType === 'spark') {
+                        params.engineParameter = {
+                            programType: 'JAVA',
+                            ...pickProps(values, ['deployMode', 'driverCores', 'driverMemory', 'numExecutors', 'executorMemory', 'executorCores', 'others']),
+                        };
+                    }
+                    const parameter: any = {
+                        ...(pickProps(values, ['metricType', 'expectedType', 'result_formula', 'operator', 'threshold'])),
+                        metricParameter: {
+                            ...(pickProps(values, ['database', 'table', 'column', 'filter'])),
+                            ...(metricSelectRef.current.getDynamicValues()),
+                        },
+                    };
+                    if (values.expectedType === 'fix_value') {
+                        parameter.expectedParameter = {
+                            expected_value: values.expected_value,
+                        };
+                    }
+                    params.parameter = JSON.stringify([parameter]);
+                    resolve(params);
+                }).catch((error) => {
+                    reject(error);
+                });
+            });
+        },
+    }));
     return (
         <Form form={form}>
-            <MetricSelect form={form} />
+            <MetricSelect detail={detail} id={id} form={form} metricSelectRef={metricSelectRef} />
             <ExpectedValue form={form} />
             <VerifyConfigure />
             <ActuatorConfigure form={form} />
+            <RunEvnironment form={form} />
+            <OtherConfig form={form} />
         </Form>
     );
 };
@@ -33,15 +90,35 @@ const Inner = ({ innerRef }: InnerProps) => {
 export const useMetricModal = () => {
     const innerRef:InnerProps['innerRef'] = useRef<any>();
     const intl = useIntl();
+    const { $http } = useRequest();
+    const [id, setId] = useState('');
+    const idRef = useRef(id);
+    idRef.current = id;
+    const [detail, setDetail] = useState<TDetail>(null);
+    const detailRef = useRef(detail);
+    detailRef.current = detail;
+    const setLoading = useLoading();
+    const onJob = usePersistFn(async (runningNow = 0) => {
+        try {
+            setLoading(true);
+            const params = await innerRef.current.getValues();
+            console.log('params', params);
+            const res = await $http.post('/job', { ...params, runningNow });
+            console.log('res', res);
+            message.success('Success!');
+        } catch (error) {
+            console.log('error', error);
+        } finally {
+            setLoading(false);
+        }
+    });
     const onSave = usePersistFn(async () => {
-        innerRef.current.validateFields().then(async (values) => {
-            console.log('values', values);
-        }).catch(() => {});
+        onJob();
     });
     const onSaveRun = usePersistFn(async () => {
-
+        onJob(1);
     });
-    const { Render, ...rest } = useModal<any>({
+    const { Render, show, ...rest } = useModal<any>({
         title: (
             <div className="dv-editor-flex-between">
                 <span>
@@ -57,11 +134,20 @@ export const useMetricModal = () => {
             </div>
         ),
         width: 900,
+        afterClose() {
+            setId('');
+            setDetail(null);
+        },
         maskClosable: false,
         footer: null,
     });
     return {
-        Render: useImmutable(() => (<Render><Inner innerRef={innerRef} /></Render>)),
+        Render: useImmutable(() => (<Render><Inner id={idRef.current} detail={detailRef.current} innerRef={innerRef} /></Render>)),
+        show($id: string, $detail: TDetail) {
+            setId($id);
+            setDetail($detail);
+            show({});
+        },
         ...rest,
     };
 };

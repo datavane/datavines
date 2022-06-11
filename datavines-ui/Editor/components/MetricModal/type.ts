@@ -4,3 +4,7 @@ export type TMetricModal = {
     tableName?: string,
     columnName?: string,
 }
+
+export type TDetail = null | {
+    [key: string]: any,
+}

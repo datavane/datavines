@@ -5,6 +5,16 @@ export const captureName = (name: string) => {
     return name.substring(0, 1).toUpperCase() + name.substring(1);
 };
 
+export function pickProps(source: Record<string, any>, props: string[]) {
+    const target: Record<string, any> = {};
+    props.forEach((propName) => {
+        if (Object.prototype.hasOwnProperty.call(source, propName)) {
+            target[propName] = source[propName];
+        }
+    });
+    return target;
+}
+
 export const layoutItem = {
     style: {
         marginBottom: 12,

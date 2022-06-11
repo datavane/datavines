@@ -38,6 +38,7 @@ function useModal<T = any>(options: ModalProps) {
         setVisible(false);
     }, []);
     const setModalProps = usePersistFn((props: ModalProps) => {
+        console.log('visibleRef.current', visibleRef.current, props);
         if (visibleRef.current) {
             $setModalProps(props || {});
         }

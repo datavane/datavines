@@ -10,7 +10,7 @@ const TARGET_MAP = {
 };
 
 const target = TARGET_MAP[process.env.DV_ENV] || TARGET_MAP.test;
-
+console.log('host', host);
 module.exports = {
     mode: 'development',
     devtool: 'cheap-module-source-map',
