@@ -23,10 +23,13 @@ declare global {
     }
 }
 export type TSqlType = 'mysql' | 'clickhouse' | 'hive' | 'impala' | 'postgresql';
+
+export type THintsItem = [str:string, arg:string[]]
 export type TUseEditor = {
     elRef: any,
     value: string,
     language: TSqlType,
+    tableColumnHints: THintsItem[],
     onChange?: (...args: any[]) => any
 };
 

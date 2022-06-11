@@ -5,11 +5,12 @@ import './index.less';
 
 type IndexProps = {
     onSearch: (val: string) => void,
-    form?: FormInstance
+    form?: FormInstance,
+    placeholder?: string,
 }
 
 const Index = (props: IndexProps) => {
-    const { onSearch } = props;
+    const { onSearch, placeholder } = props;
     const [form] = (props.form ? useMemo(() => [props.form], [props.form]) : Form.useForm()) as [FormInstance];
     const intl = useIntl();
     const $onSearch = () => {
@@ -25,7 +26,8 @@ const Index = (props: IndexProps) => {
                 >
                     <Input.Search
                         style={{ width: '100%' }}
-                        placeholder={intl.formatMessage({ id: 'home_search_placeholder' })}
+                        // @ts-ignore
+                        placeholder={placeholder || intl.formatMessage({ id: 'home_search_placeholder' })}
                         onPressEnter={() => {
                             $onSearch();
                         }}
