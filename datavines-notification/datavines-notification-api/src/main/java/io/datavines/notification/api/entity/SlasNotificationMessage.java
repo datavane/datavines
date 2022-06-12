@@ -11,7 +11,7 @@ import java.io.Serializable;
 @ToString
 public class SlasNotificationMessage implements Serializable {
 
-    private Long slasGroupId;
+    private Long slasId;
 
     private String subject;
 

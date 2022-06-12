@@ -35,18 +35,18 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
     public String getConfigReceiverJson() {
         List<PluginParams> paramsList = new ArrayList<>();
 
-        InputParam receivers = InputParam.newBuilder("receivers", "receivers")
+        InputParam receiver = InputParam.newBuilder("receiver", "receiver")
                 .addValidate(Validate.newBuilder().setRequired(true).build())
                 .build();
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         String result = null;
-        paramsList.add(receivers);
+        paramsList.add(receiver);
         try {
             result = mapper.writeValueAsString(paramsList);
         } catch (JsonProcessingException e) {
-            log.error("json parse error : {}", e.getMessage(), e);
+                log.error("json parse error : {}", e.getMessage(), e);
         }
 
         return result;
