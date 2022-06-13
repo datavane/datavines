@@ -154,7 +154,7 @@ public class QuartzExecutors {
    * @param jobGroupName job group name
    * @return true if the Job was found and deleted.
    */
-  public boolean deleteJob(Scheduler scheduler,String jobName, String jobGroupName) {
+  public boolean deleteJob(Scheduler scheduler, String jobName, String jobGroupName) {
     lock.writeLock().lock();
     try {
       JobKey jobKey = new JobKey(jobName,jobGroupName);
@@ -181,7 +181,7 @@ public class QuartzExecutors {
    * @return true if all of the Jobs were found and deleted, false if
    *      one or more were not deleted.
    */
-  public boolean deleteAllJobs(Scheduler scheduler,String jobGroupName) {
+  public boolean deleteAllJobs(Scheduler scheduler, String jobGroupName) {
     lock.writeLock().lock();
     try {
       logger.info("try to delete all jobs in job group: {}", jobGroupName);
@@ -208,24 +208,24 @@ public class QuartzExecutors {
 
   /**
    * build job group name
-   * @param projectId project id
+   * @param datasourceId datasource id
    * @return job group name
    */
-  public static String buildJobGroupName(Long projectId) {
-    return DataVinesConstants.QUARTZ_JOB_GROUP_PREFIX + DataVinesConstants.UNDERLINE + projectId;
+  public static String buildJobGroupName(Long datasourceId) {
+    return DataVinesConstants.QUARTZ_JOB_GROUP_PREFIX + DataVinesConstants.UNDERLINE + datasourceId;
   }
 
   /**
-   * add params to map
    *
-   * @param projectId   project id
-   * @param scheduleId  schedule id
-   * @return data map
+   * @param dataSourceId dataSource id
+   * @param dataSourceJobId dataSource job id
+   * @param scheduleId schedule id
+   * @return map
    */
-  public static Map<String, Object> buildDataMap(Long projectId, Long projectFlowId, int scheduleId) {
+  public static Map<String, Object> buildDataMap(Long dataSourceId, Long dataSourceJobId, int scheduleId) {
     Map<String, Object> dataMap = Maps.newHashMap();
-    dataMap.put(DataVinesConstants.PROJECT_ID, projectId);
-    dataMap.put(DataVinesConstants.PROJECT_JOB_ID, projectFlowId);
+    dataMap.put(DataVinesConstants.DATASOURCE_ID, dataSourceId);
+    dataMap.put(DataVinesConstants.JOB_ID, dataSourceJobId);
     dataMap.put(DataVinesConstants.SCHEDULE_ID, scheduleId);
     return dataMap;
   }
