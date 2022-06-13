@@ -1,11 +1,11 @@
 import React, { memo } from 'react';
-import { RollbackOutlined } from '@ant-design/icons';
+import { ArrowLeftOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router-dom';
 
-export default memo(() => {
+export default memo(({ style }: { style?: React.CSSProperties}) => {
     const history = useHistory();
     const onClick = () => {
         history.goBack();
     };
-    return <span onClick={onClick}><RollbackOutlined style={{ fontSize: 20, cursor: 'pointer' }} /></span>;
+    return <a onClick={onClick} style={{ ...(style || {}) }}><ArrowLeftOutlined style={{ fontSize: 16, cursor: 'pointer' }} /></a>;
 });

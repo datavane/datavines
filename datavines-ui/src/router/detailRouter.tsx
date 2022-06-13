@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { lazy } from 'react';
-import { DatabaseOutlined, UnorderedListOutlined, OrderedListOutlined } from '@ant-design/icons';
+import { DatabaseOutlined, UnorderedListOutlined, HistoryOutlined } from '@ant-design/icons';
 import { TRouter } from './type';
 
 const detailRouter: TRouter = {
@@ -25,7 +25,7 @@ const detailRouter: TRouter = {
         key: '/main/detail/:id/tasks',
         label: '',
         exact: true,
-        icon: <OrderedListOutlined />,
+        icon: <HistoryOutlined />,
         component: lazy(() => import(/* webpackChunkName: 'view-detail-tasks' */ '@/view/Main/HomeDetail/Tasks')),
     },
 };

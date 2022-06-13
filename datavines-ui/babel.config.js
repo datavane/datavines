@@ -6,12 +6,6 @@ module.exports = {
         '@babel/preset-typescript',
     ],
     plugins: [
-        // [
-        //     '@babel/plugin-transform-runtime',
-        //     {
-        //         corejs: 3,
-        //     },
-        // ],
         isDevelopment && 'react-refresh/babel',
         isDevelopment && 'react-dev-inspector/plugins/babel',
         '@babel/plugin-syntax-dynamic-import',

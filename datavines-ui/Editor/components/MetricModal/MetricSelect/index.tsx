@@ -163,7 +163,7 @@ const Index = ({
                 }
             </Col>
             <Col span={12}>
-                <div style={{ paddingTop: 60 }} />
+                <div style={{ paddingTop: 20 }} />
                 <Form.Item
                     className="dv-editor__condition"
                     colon={false}
