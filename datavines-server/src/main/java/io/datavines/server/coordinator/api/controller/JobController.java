@@ -83,6 +83,6 @@ public class JobController {
     @ApiOperation(value = "execute job")
     @PostMapping(value = "/execute/{id}")
     public Object executeJob(@PathVariable("id") Long jobId) throws DataVinesServerException {
-        return jobService.execute(jobId);
+        return jobService.execute(jobId, null);
     }
 }
