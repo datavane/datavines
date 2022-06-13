@@ -103,7 +103,7 @@ public class ScheduleJob implements org.quartz.Job {
         task.setRetryInterval(job.getRetryInterval());
         task.setTimeout(job.getTimeout());
         task.setTimeoutStrategy(job.getTimeoutStrategy());
-        task.setTenantCode(job.getTenantCode());
+//        task.setTenantCode(job.getTenantCode());
         task.setSubmitTime(scheduleTime);
         task.setCreateTime(LocalDateTime.now());
         task.setUpdateTime(LocalDateTime.now());

@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.TimeoutStrategy;
-import io.datavines.server.enums.JobType;
+import io.datavines.common.enums.JobType;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;

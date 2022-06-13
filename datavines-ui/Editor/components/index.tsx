@@ -11,7 +11,7 @@ const Index = (props: IDvEditorProps) => {
     const { id } = props;
     const { $http } = useRequest();
     const fns = useEditorActions({ setEditorFn });
-    const getData = usePersistFn(async () => {
+    const getDatabases = usePersistFn(async () => {
         try {
             const res = await $http.get(`/datasource/${id}/databases`);
             fns.setEditorFn({ databases: res || [] });
@@ -19,13 +19,13 @@ const Index = (props: IDvEditorProps) => {
         }
     });
     useWatch(id, async () => {
-        getData();
+        getDatabases();
     }, { immediate: true });
 
     return (
         <div className="dv-editor">
             <div className="dv-editor-left">
-                <Tree />
+                <Tree getDatabases={getDatabases} />
             </div>
             <div className="dv-editor-right">
                 <div className="dv-editor__header">

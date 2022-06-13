@@ -8,6 +8,7 @@ import useMount from './useMount';
 import FormRender from './FormRender';
 import type { IFormRender, IFormRenderItem } from './FormRender';
 import CustomSelect from './CustomSelect';
+import IF from './IF';
 
 export {
     useImmutable,
@@ -22,4 +23,5 @@ export {
     IFormRender,
     IFormRenderItem,
     CustomSelect,
+    IF,
 };

@@ -18,19 +18,23 @@ package io.datavines.server.coordinator.repository.service;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
+import io.datavines.server.coordinator.api.entity.vo.TaskVO;
 import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.exception.DataVinesServerException;
 
 public interface TaskService {
 
-    long insert(Task task);
+    long create(Task task);
 
     int update(Task task);
 
     Task getById(long id);
 
-    List<Task> listByDataSourceId(long dataSourceId);
+    List<Task> listByJobId(long jobId);
+
+    IPage<TaskVO> getTaskPage(String searchVal, Long jobId, Integer pageNumber, Integer pageSize);
 
     Long submitTask(SubmitTask submitTask) throws DataVinesServerException;
 

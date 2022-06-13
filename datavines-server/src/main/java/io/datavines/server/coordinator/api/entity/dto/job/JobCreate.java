@@ -16,7 +16,6 @@
  */
 package io.datavines.server.coordinator.api.entity.dto.job;
 
-import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.enums.TimeoutStrategy;
 
 import javax.validation.constraints.NotNull;
@@ -24,20 +23,13 @@ import javax.validation.constraints.NotNull;
 @NotNull(message = "JobCreate cannot be null")
 public class JobCreate {
 
-    @NotNull(message = "Job name cannot be empty")
-    private String name;
-
     @NotNull(message = "Job type cannot be empty")
     private String type;
 
     @NotNull(message = "Datasource cannot be empty")
     private long dataSourceId;
 
-    private int timeout = 60000;
-
-    private TimeoutStrategy timeoutStrategy = TimeoutStrategy.WARN;
-
-    private String executePlatformType;
+    private String executePlatformType = "local";
 
     private String executePlatformParameter;
 
@@ -46,26 +38,26 @@ public class JobCreate {
     private String engineParameter;
 
     /**
-     * Task Parameters
+     * Job Parameters 根据 jobType 来进行参数转换
      */
-    private TaskParameter parameter;
+    private String parameter;
 
-    private String tenantCode;
+    private int timeout = 60000;
 
-    private String env;
+    private TimeoutStrategy timeoutStrategy = TimeoutStrategy.WARN;
+
+    private Integer retryTimes = 0;
+
+    private Integer retryInterval = 1000;
+
+    private Long tenantCode;
+
+    private Long env;
 
     /**
      * 1:running now, 0:don't run
      */
     private int runningNow;
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public String getType() {
         return type;
@@ -131,27 +123,43 @@ public class JobCreate {
         this.engineParameter = engineParameter;
     }
 
-    public String getTenantCode() {
+    public Long getTenantCode() {
         return tenantCode;
     }
 
-    public void setTenantCode(String tenantCode) {
+    public void setTenantCode(Long tenantCode) {
         this.tenantCode = tenantCode;
     }
 
-    public TaskParameter getParameter() {
+    public Integer getRetryTimes() {
+        return retryTimes;
+    }
+
+    public void setRetryTimes(Integer retryTimes) {
+        this.retryTimes = retryTimes;
+    }
+
+    public Integer getRetryInterval() {
+        return retryInterval;
+    }
+
+    public void setRetryInterval(Integer retryInterval) {
+        this.retryInterval = retryInterval;
+    }
+
+    public String getParameter() {
         return parameter;
     }
 
-    public void setParameter(TaskParameter parameter) {
+    public void setParameter(String parameter) {
         this.parameter = parameter;
     }
 
-    public String getEnv() {
+    public Long getEnv() {
         return env;
     }
 
-    public void setEnv(String env) {
+    public void setEnv(Long env) {
         this.env = env;
     }
 

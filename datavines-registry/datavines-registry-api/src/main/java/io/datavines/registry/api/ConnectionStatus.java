@@ -18,5 +18,6 @@ package io.datavines.registry.api;
 
 public enum ConnectionStatus {
     CONNECTED,
+    RECONNECTED,
     DISCONNECTED;
 }

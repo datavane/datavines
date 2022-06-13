@@ -19,10 +19,11 @@ package io.datavines.server.coordinator.api.entity.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class DataSourceVO {
+public class DataSourceVO implements Serializable {
 
     private Long id;
 

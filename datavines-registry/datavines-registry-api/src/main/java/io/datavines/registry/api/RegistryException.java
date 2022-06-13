@@ -14,35 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.enums;
+package io.datavines.registry.api;
 
-import com.baomidou.mybatisplus.annotation.EnumValue;
+public class RegistryException extends RuntimeException {
 
-/**
- * task node type
- */
-public enum JobType {
-    /**
-     * 0 DATA_QUALITY
-     * 1 DATA_PROFILE
-     */
-    DATA_QUALITY(0, "DATA_QUALITY"),
-    DATA_PROFILE(1, "DATA_PROFILE");
-
-    JobType(int code, String desc) {
-        this.code = code;
-        this.desc = desc;
+    public RegistryException(String msg) {
+        super(msg);
     }
 
-    @EnumValue
-    private final int code;
-    private final String desc;
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getDesc() {
-        return desc;
+    public RegistryException(String msg, Throwable cause) {
+        super(msg, cause);
     }
 }

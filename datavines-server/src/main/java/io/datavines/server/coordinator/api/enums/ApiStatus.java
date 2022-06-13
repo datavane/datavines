@@ -41,7 +41,7 @@ public enum ApiStatus {
     REGISTER_USER_ERROR(10020002, "Register User {0} Error", "注册用户{0}失败"),
     USERNAME_OR_PASSWORD_ERROR(10020003, "Username or Email Error", "用户名或者密码错误"),
     USER_IS_NOT_EXIST_ERROR(10020004, "User is not exist", "用户不存在错误"),
-    CREAT_VERIFICATION_IMAGE_ERROR(10020005, "creat verification image error", "创建验证码错误"),
+    CREATE_VERIFICATION_IMAGE_ERROR(10020005, "create verification image error", "创建验证码错误"),
     EXPIRED_VERIFICATION_CODE(10020006, "expired verification code", "验证码已过期，请重新刷新"),
     INVALID_VERIFICATION_CODE(10020007, "invalid verification code", "错误的验证码，请重新输入"),
 
@@ -61,8 +61,23 @@ public enum ApiStatus {
 
     TASK_NOT_EXIST_ERROR(13010001, "Task {0} Not Exist Error", "任务{0}不存在错误"),
     TASK_LOG_PATH_NOT_EXIST_ERROR(13010002, "Task {0} Log Path  Not Exist Error", "任务{0}的日志路径不存在错误"),
-    TASK_EXECUTE_HOST_NOT_EXIST_ERROR(13010003, "Task Execute Host {0} Not Exist Error", "任务{0}的执行服务地址不存在错误")
+    TASK_EXECUTE_HOST_NOT_EXIST_ERROR(13010003, "Task Execute Host {0} Not Exist Error", "任务{0}的执行服务地址不存在错误"),
 
+    JOB_PARAMETER_IS_NULL_ERROR(14010001, "Job {0} Parameter is Null Error", "作业{0}参数为空错误"),
+    CREATE_JOB_ERROR(14010002, "Create JOB {0} Error", "创建作业 {0} 错误"),
+    JOB_NOT_EXIST_ERROR(14010003, "Job {0} Not Exist Error", "作业{0}不存在错误"),
+    JOB_EXIST_ERROR(14010004, "Job {0} is Exist error", "作业 {0} 已存在错误"),
+    UPDATE_JOB_ERROR(14010005, "Update Job {0} Error", "更新作业 {0} 错误"),
+
+    CREATE_TENANT_ERROR(15010001, "Create Tenant {0} Error", "创建 Linux 用户 {0} 错误"),
+    TENANT_NOT_EXIST_ERROR(15010002, "Tenant {0} Not Exist Error", "Linux 用户{0}不存在错误"),
+    TENANT_EXIST_ERROR(15010003, "Tenant {0} is Exist error", "Linux 用户 {0} 已存在错误"),
+    UPDATE_TENANT_ERROR(15010004, "Update Tenant {0} Error", "更新 Linux 用户 {0} 错误"),
+
+    CREATE_ENV_ERROR(16010001, "Create Env {0} Error", "创建运行环境参数 {0} 错误"),
+    ENV_NOT_EXIST_ERROR(16010002, "Env {0} Not Exist Error", "运行环境参数{0}不存在错误"),
+    ENV_EXIST_ERROR(16010003, "Env {0} is Exist error", "运行环境参数 {0} 已存在错误"),
+    UPDATE_ENV_ERROR(16010004, "Update Env {0} Error", "更新运行环境参数 {0} 错误"),
     ;
 
     private final int code;

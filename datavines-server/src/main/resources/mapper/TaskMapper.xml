@@ -20,4 +20,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.datavines.server.coordinator.repository.mapper.TaskMapper">
 
+    <sql id="basic_sql">
+        select * from dv_task where job_id = #{jobId}
+    </sql>
+
+    <select id="getTaskPage" resultType="io.datavines.server.coordinator.api.entity.vo.TaskVO">
+        select p.id, p.name, p.job_type, p.status, p.update_time from (<include refid="basic_sql"/>) p
+        <where>
+            <if test="searchVal != null">
+                LOWER(p.`name`) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
+            </if>
+        </where>
+        order by p.update_time desc
+
+    </select>
 </mapper>

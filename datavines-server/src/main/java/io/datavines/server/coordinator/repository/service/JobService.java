@@ -19,21 +19,26 @@ package io.datavines.server.coordinator.repository.service;
 
 import java.util.List;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.datavines.server.coordinator.api.entity.dto.job.JobCreate;
+import io.datavines.server.coordinator.api.entity.dto.job.JobUpdate;
+import io.datavines.server.coordinator.api.entity.vo.JobVO;
 import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.exception.DataVinesServerException;
 
 public interface JobService {
 
-    int update(Job job);
+    long create(JobCreate jobCreate) throws DataVinesServerException;
+
+    int deleteById(long id);
+
+    int update(JobUpdate jobUpdate);
 
     Job getById(long id);
 
     List<Job> listByDataSourceId(Long dataSourceId);
 
-    int deleteById(long id);
+    IPage<JobVO> getJobPage(String searchVal, Long dataSourceId, Integer pageNumber, Integer pageSize);
 
-    long createJob(JobCreate jobCreate) throws DataVinesServerException;
-
-    boolean executeJob(Long jobId) throws DataVinesServerException;
+    boolean execute(Long jobId) throws DataVinesServerException;
 }

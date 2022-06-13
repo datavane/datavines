@@ -60,9 +60,25 @@ public class TaskController {
         return taskService.getById(taskId).getStatus().getDescription();
     }
 
+    @ApiOperation(value = "get task list by job id")
+    @GetMapping(value = "/list/{jobId}")
+    public Object getTaskListByJobId(@PathVariable("jobId") Long jobId) {
+        return taskService.listByJobId(jobId);
+    }
+
     @ApiOperation(value = "get task result")
-    @GetMapping(value = "result/{id}")
+    @GetMapping(value = "/result/{id}")
     public Object getTaskResultInfo(@PathVariable("id") Long taskId) {
         return taskResultService.getByTaskId(taskId);
+    }
+
+
+    @ApiOperation(value = "get task page")
+    @GetMapping(value = "/page")
+    public Object page(@RequestParam(value = "searchVal", required = false) String searchVal,
+                       @RequestParam("jobId") Long jobId,
+                       @RequestParam("pageNumber") Integer pageNumber,
+                       @RequestParam("pageSize") Integer pageSize)  {
+        return taskService.getTaskPage(searchVal, jobId, pageNumber, pageSize);
     }
 }

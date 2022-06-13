@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useImperativeHandle, useRef } from 'react';
 import {
     Button, Form, FormInstance,
 } from 'antd';
@@ -12,15 +12,18 @@ import VerifyConfigure from './VerifyConfigure';
 import ActuatorConfigure from './ActuatorConfigure';
 
 type InnerProps = {
-    form: FormInstance
+    innerRef: {
+        current: FormInstance
+    }
 }
 
-const Inner = ({ form }: InnerProps) => {
-    const intl = useIntl();
+const Inner = ({ innerRef }: InnerProps) => {
+    const [form] = Form.useForm();
+    useImperativeHandle(innerRef, () => (form));
     return (
         <Form form={form}>
-            <MetricSelect />
-            <ExpectedValue />
+            <MetricSelect form={form} />
+            <ExpectedValue form={form} />
             <VerifyConfigure />
             <ActuatorConfigure form={form} />
         </Form>
@@ -28,10 +31,12 @@ const Inner = ({ form }: InnerProps) => {
 };
 
 export const useMetricModal = () => {
-    const [form] = Form.useForm();
+    const innerRef:InnerProps['innerRef'] = useRef<any>();
     const intl = useIntl();
     const onSave = usePersistFn(async () => {
-
+        innerRef.current.validateFields().then(async (values) => {
+            console.log('values', values);
+        }).catch(() => {});
     });
     const onSaveRun = usePersistFn(async () => {
 
@@ -56,7 +61,7 @@ export const useMetricModal = () => {
         footer: null,
     });
     return {
-        Render: useImmutable(() => (<Render><Inner form={form} /></Render>)),
+        Render: useImmutable(() => (<Render><Inner innerRef={innerRef} /></Render>)),
         ...rest,
     };
 };

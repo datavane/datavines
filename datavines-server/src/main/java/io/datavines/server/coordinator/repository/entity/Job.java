@@ -23,7 +23,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.enums.TimeoutStrategy;
-import io.datavines.server.enums.JobType;
+import io.datavines.common.enums.JobType;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
@@ -57,9 +57,6 @@ public class Job implements Serializable {
     @TableField(value = "engine_parameter")
     private String engineParameter;
 
-    /**
-     * {@link TaskParameter}
-     */
     @TableField(value = "parameter")
     private String parameter;
 
@@ -76,7 +73,10 @@ public class Job implements Serializable {
     private TimeoutStrategy timeoutStrategy;
 
     @TableField(value = "tenant_code")
-    private String tenantCode;
+    private Long tenantCode;
+
+    @TableField(value = "env")
+    private Long env;
 
     @TableField(value = "create_by")
     private Long createBy;
@@ -196,12 +196,20 @@ public class Job implements Serializable {
         this.timeoutStrategy = timeoutStrategy;
     }
 
-    public String getTenantCode() {
+    public Long getTenantCode() {
         return tenantCode;
     }
 
-    public void setTenantCode(String tenantCode) {
+    public void setTenantCode(Long tenantCode) {
         this.tenantCode = tenantCode;
+    }
+
+    public Long getEnv() {
+        return env;
+    }
+
+    public void setEnv(Long env) {
+        this.env = env;
     }
 
     public Long getCreateBy() {
