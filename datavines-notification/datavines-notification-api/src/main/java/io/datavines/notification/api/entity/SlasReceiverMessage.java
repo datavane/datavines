@@ -10,11 +10,20 @@ import java.io.Serializable;
 @EqualsAndHashCode
 @ToString
 public class SlasReceiverMessage implements Serializable {
+
     private static final long serialVersionUID = -1L;
 
     private Long id;
 
     private Long type;
 
+    /**
+     * receiver config like config email address
+     */
     private String config;
+
+    /**
+     * notification config like config email is receiver or copy
+     */
+    private String notificationConfig;
 }

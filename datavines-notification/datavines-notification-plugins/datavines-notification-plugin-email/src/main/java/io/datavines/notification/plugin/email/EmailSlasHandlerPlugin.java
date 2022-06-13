@@ -2,9 +2,7 @@ package io.datavines.notification.plugin.email;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.datavines.common.CommonConstants;
 import io.datavines.common.param.form.ParamsOptions;
 import io.datavines.common.param.form.PluginParams;
@@ -19,7 +17,6 @@ import io.datavines.notification.api.spi.SlasHandlerPlugin;
 import io.datavines.notification.plugin.email.entity.ReceiverConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -167,6 +164,24 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
             log.error("json parse error : {}", e.getMessage(), e);
         }
 
+        return result;
+    }
+
+    @Override
+    public String getConfigJson() {
+        List<PluginParams> paramsList = new ArrayList<>();
+        InputParam receiver = InputParam.newBuilder("receiveType", "receiveType")
+                .addValidate(Validate.newBuilder().setRequired(true).build())
+                .build();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        String result = null;
+        paramsList.add(receiver);
+        try {
+            result = mapper.writeValueAsString(paramsList);
+        } catch (JsonProcessingException e) {
+            log.error("json parse error : {}", e.getMessage(), e);
+        }
         return result;
     }
 

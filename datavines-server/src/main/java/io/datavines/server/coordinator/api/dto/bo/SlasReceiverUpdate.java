@@ -5,8 +5,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class SlasReceiverUpdate extends SlasReceiverCreate{
 
     private Long id;

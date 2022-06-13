@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.core.utils.BeanConvertUtils;
 import io.datavines.notification.api.entity.SlasReceiverMessage;
 import io.datavines.notification.api.entity.SlasSenderMessage;
+import io.datavines.notification.api.spi.SlasHandlerPlugin;
 import io.datavines.server.coordinator.repository.entity.SlasNotification;
 import io.datavines.server.coordinator.repository.entity.SlasReceiver;
 import io.datavines.server.coordinator.repository.entity.SlasSender;
@@ -12,6 +13,7 @@ import io.datavines.server.coordinator.repository.mapper.SlasNotificationMapper;
 import io.datavines.server.coordinator.repository.service.SlasNotificationService;
 import io.datavines.server.coordinator.repository.service.SlasReceiverService;
 import io.datavines.server.coordinator.repository.service.SlasSenderService;
+import io.datavines.spi.PluginLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -42,6 +44,7 @@ public class SlasNotificationServiceImpl extends ServiceImpl<SlasNotificationMap
         }
         Set<Long> receiverSet = slasNotificationList.stream().map(SlasNotification::getReceiverId).collect(Collectors.toSet());
         Set<Long> senderSet = slasNotificationList.stream().map(SlasNotification::getSenderId).collect(Collectors.toSet());
+
         List<SlasReceiver> receiverList = slasReceiverService.listByIds(receiverSet);
         List<SlasSender> slasSenders = slasSenderService.listByIds(senderSet);
         Map<Long, SlasReceiverMessage> receiverMap = receiverList
@@ -63,5 +66,13 @@ public class SlasNotificationServiceImpl extends ServiceImpl<SlasNotificationMap
             result.putIfAbsent(slasSender, existSet);
         }
         return result;
+    }
+
+    @Override
+    public String getConfigJson(String type) {
+        return PluginLoader
+                .getPluginLoader(SlasHandlerPlugin.class)
+                .getOrCreatePlugin(type)
+                .getConfigJson();
     }
 }

@@ -21,5 +21,7 @@ public interface SlasHandlerPlugin {
 
     String getConfigSenderJson();
 
+    String getConfigJson();
+
     String getConfigReceiverJson();
 }

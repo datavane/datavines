@@ -36,6 +36,9 @@ public class SlasNotification {
     @TableField(value = "receiver_id")
     private Long receiverId;
 
+    @TableField(value = "config")
+    private String config;
+
     @TableField(value = "create_by")
     private Long createBy;
 

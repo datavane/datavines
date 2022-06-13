@@ -16,8 +16,10 @@ import io.datavines.notification.core.client.NotificationClient;
 import io.datavines.server.coordinator.api.dto.bo.*;
 import io.datavines.server.coordinator.api.dto.vo.SlasVo;
 import io.datavines.server.coordinator.repository.entity.Slas;
+import io.datavines.server.coordinator.repository.entity.SlasNotification;
 import io.datavines.server.coordinator.repository.entity.SlasReceiver;
 import io.datavines.server.coordinator.repository.entity.SlasSender;
+import io.datavines.server.coordinator.repository.service.SlasNotificationService;
 import io.datavines.server.coordinator.repository.service.SlasReceiverService;
 import io.datavines.server.coordinator.repository.service.SlasSenderService;
 import io.datavines.server.coordinator.repository.service.SlasService;
@@ -48,6 +50,9 @@ public class SlasController {
 
     @Autowired
     private SlasReceiverService slasReceiverService;
+
+    @Autowired
+    private SlasNotificationService slasNotificationService;
 
     @Autowired
     private NotificationClient client;
@@ -136,6 +141,13 @@ public class SlasController {
     @GetMapping(value = "/sender/config/{type}")
     public Object getSenderConfigJson(@PathVariable("type") String type){
         String json = slasService.getSenderConfigJson(type);
+        return json;
+    }
+
+    @ApiOperation(value = "get config param of sender")
+    @GetMapping(value = "/config/{type}")
+    public Object getConfigJson(@PathVariable("type") String type){
+        String json = slasNotificationService.getConfigJson(type);
         return json;
     }
 
@@ -231,6 +243,28 @@ public class SlasController {
     @DeleteMapping(value = "/receiver/{id}")
     public Object deleteReceiver(@PathVariable("id") Long id){
         boolean remove = slasReceiverService.removeById(id);
+        return remove;
+    }
+
+    @ApiOperation(value = "create notification")
+    @PostMapping(value = "/notification")
+    public Object createNotification(@RequestBody SlasNotificationCreate create){
+        SlasNotification bean = BeanConvertUtils.convertBean(create, SlasNotification::new);
+        bean.setCreateBy(ContextHolder.getUserId());
+        LocalDateTime now = LocalDateTime.now();
+        bean.setCreateTime(now);
+        bean.setUpdateTime(now);
+        bean.setUpdateBy(ContextHolder.getUserId());
+        boolean success = slasNotificationService.save(bean);
+        if (!success){
+            throw new DataVinesException("create sender error");
+        }
+        return bean;
+    }
+    @ApiOperation(value = "delete notification")
+    @DeleteMapping(value = "/notification/{id}")
+    public Object deleteNotification(@PathVariable("id") Long id){
+        boolean remove = slasNotificationService.removeById(id);
         return remove;
     }
 
