@@ -1,20 +1,54 @@
 import React, { useState } from 'react';
-import { Table } from 'antd';
+import { Table, Form } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
+import queryString from 'querystring';
 import { TJobsInstanceTableData, TJobsInstanceTableItem } from '@/type/JobsInstance';
+import { Title, SearchForm } from '@/component';
+import { useMount } from '@/common';
+import { $http } from '@/http';
+import { defaultRender } from '@/utils/helper';
 
 const JobsInstance = () => {
-    console.log('jobs instance');
     const intl = useIntl();
-    const [tableData, setTableData] = useState<TJobsInstanceTableData>({ list: [{ id: 1 }], total: 0 });
+    const form = Form.useForm()[0];
+    const [loading, setLoading] = useState(false);
+    const [tableData, setTableData] = useState<TJobsInstanceTableData>({ list: [], total: 0 });
     const [pageParams, setPageParams] = useState({
-        pageNo: 1,
+        pageNumber: 1,
         pageSize: 10,
     });
+    const [qs] = useState(queryString.parse(window.location.href.split('?')[1] || ''));
+    const getData = async (values: any = null) => {
+        try {
+            setLoading(true);
+            const res = (await $http.get('/task/page', {
+                jobId: qs.jobId,
+                ...pageParams,
+                ...(values || form.getFieldsValue()),
+            })) || [];
+            setTableData({
+                list: res?.records || [],
+                total: res.total || 0,
+            });
+        } catch (error) {
+        } finally {
+            setLoading(false);
+        }
+    };
+    useMount(() => {
+        getData();
+    });
+    const onSearch = (_values: any) => {
+        setPageParams({ ...pageParams, pageNumber: 1 });
+        getData({
+            ..._values,
+            pageNumber: 1,
+        });
+    };
     const onChange = ({ current, pageSize }: any) => {
         setPageParams({
-            pageNo: current,
+            pageNumber: current,
             pageSize,
         });
     };
@@ -31,46 +65,44 @@ const JobsInstance = () => {
         {
             title: intl.formatMessage({ id: 'jobs_task_name' }),
             dataIndex: 'name',
-            fixed: 'left',
             key: 'name',
-            render: (text: string) => <div>{text}</div>,
+            width: 240,
+            render: (text) => defaultRender(text, 240),
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_type' }),
-            dataIndex: 'type',
-            key: 'type',
+            dataIndex: 'jobType',
+            key: 'jobType',
+            width: 140,
             render: (text: string) => <div>{text}</div>,
         },
         {
-            title: intl.formatMessage({ id: 'jobs_dataSource' }),
-            dataIndex: 'dataSource',
-            key: 'dataSource',
-            render: (text: string) => <div>{text}</div>,
-        },
-        {
-            title: intl.formatMessage({ id: 'jobs_status' }),
+            title: intl.formatMessage({ id: 'jobs_task_status' }),
             dataIndex: 'status',
             key: 'status',
+            width: 140,
             render: (text: string) => <div>{text}</div>,
         },
         {
-            title: intl.formatMessage({ id: 'jobs_founder' }),
-            dataIndex: 'founder',
-            key: 'founder',
-            render: (text: string) => <div>{text}</div>,
+            title: intl.formatMessage({ id: 'jobs_updater' }),
+            dataIndex: 'updater',
+            key: 'updater',
+            width: 140,
+            render: (text: string) => <div>{text || '--'}</div>,
         },
         {
-            title: intl.formatMessage({ id: 'jobs_create_time' }),
-            dataIndex: 'createTime',
-            key: 'createTime',
-            render: (text: string) => <div>{text}</div>,
+            title: intl.formatMessage({ id: 'jobs_update_time' }),
+            dataIndex: 'updateTime',
+            key: 'updateTime',
+            width: 160,
+            render: (text: string) => <div>{text || '--'}</div>,
         },
         {
             title: intl.formatMessage({ id: 'common_action' }),
             fixed: 'right',
             key: 'right',
             dataIndex: 'right',
-            width: 120,
+            width: 200,
             render: (text: string, record: TJobsInstanceTableItem) => (
                 <>
                     <a style={{ marginRight: 5 }} onClick={() => { onStop(record); }}>{intl.formatMessage({ id: 'jobs_task_stop_btn' })}</a>
@@ -82,8 +114,15 @@ const JobsInstance = () => {
     ];
     return (
         <div className="dv-page-paddinng">
+            <Title isBack>{intl.formatMessage({ id: 'jobs_list' })}</Title>
+            <div style={{ paddingTop: '20px' }}>
+                <div className="dv-flex-between">
+                    <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
+                </div>
+            </div>
             <Table<TJobsInstanceTableItem>
                 size="middle"
+                loading={loading}
                 rowKey="id"
                 columns={columns}
                 dataSource={tableData.list || []}
@@ -93,7 +132,7 @@ const JobsInstance = () => {
                     total: tableData.total,
                     showSizeChanger: true,
                     defaultPageSize: 20,
-                    current: pageParams.pageNo,
+                    current: pageParams.pageNumber,
                     pageSize: pageParams.pageSize,
                 }}
             />

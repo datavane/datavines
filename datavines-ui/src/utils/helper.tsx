@@ -16,7 +16,6 @@ const DefaultRender = ({ text, width }: {text: any, width: any}) => {
     if ([undefined, null, ''].includes(text)) return <>--</>;
     return (
         <Popover
-            // placement="bottomLeft"
             content={(
                 <div style={{ maxWidth: width, wordWrap: 'break-word', wordBreak: 'break-word' }}>
                     {text || '--'}

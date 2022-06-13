@@ -25,8 +25,8 @@ export default {
     '/main/home': '数据源',
     '/main/warning': '告警',
     '/main/detail/:id/editor': '数据开发',
-    '/main/detail/:id/jobs': '作业列表',
-    '/main/detail/:id/tasks': '任务列表',
+    '/main/detail/:id/jobs': '作业管理',
+    '/main/detail/:id/tasks': '结果管理',
     '/main/detail/:id': '详情',
 
     confirm_text: '确认',
@@ -76,9 +76,21 @@ export default {
     jobs_view: '查看任务列表',
     jobs_task_name: '任务名称',
     jobs_task_type: '任务类型',
+    jobs_task_status: '任务状态',
     jobs_task_stop_btn: '停止',
-    jobs_task_log_btn: '日志',
-    jobs_task_result_btn: '结果',
+    jobs_task_log_btn: '查看日志',
+    jobs_task_result_btn: '查看结果',
+
+    jobs_tabs_title: '数据质量检查作业',
+    jobs_tabs_config: '作业配置',
+    jobs_tabs_schedule: '定时任务配置',
+    jobs_tabs_SLA: 'SLA配置',
+
+    jobs_schedule_type: '调度类型',
+    jobs_schedule_cycle: '调度周期',
+    jobs_schedule_time: '调度时间',
+    jobs_schedule_express: 'crontab表达式',
+    jobs_schedule_effect_time: '生效时间',
 
     warn_SLAs_name: '名字',
     warn_update_time: '更新时间',
@@ -102,4 +114,5 @@ export default {
     datasource_updater: '更新人',
     datasource_updateTime: '更新时间',
     datasource_list_title: '数据源列表',
+
 };

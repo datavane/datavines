@@ -1,6 +1,7 @@
 import type {
     editor, languages, Uri, CancellationTokenSource, Emitter, KeyCode, KeyMod, MarkerSeverity, MarkerTag, Position, Range, Selection, SelectionDirection,
 } from 'monaco-editor';
+import { TDetail } from './components/MetricModal/type';
 
 export type TCodeEditor = editor.ICodeEditor;
 declare global {
@@ -42,10 +43,13 @@ export interface IMonacoConfig{
 }
 
 export interface IDvEditorProps {
-    monacoConfig: IMonacoConfig,
+    monacoConfig?: IMonacoConfig,
     baseURL: string,
     headers?: Record<string, any>,
     id: number | string | null,
+    showMetricConfig?: boolean,
+    detail?: TDetail,
+    innerRef?: any,
 }
 
 export interface IDvDataBaseItem{

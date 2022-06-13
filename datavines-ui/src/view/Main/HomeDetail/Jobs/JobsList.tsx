@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
 import {
-    Table, Form, Button, Popconfirm,
+    Table, Form, Button, Popconfirm, message,
 } from 'antd';
-// import { PlayCircleOutlined, EditOutlined } from '@ant-design/icons';
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { TJobsTableData, TJobsTableItem } from '@/type/Jobs';
-import { useScheduleModal } from './hooks/useScheduleModal';
+import { useScheduleModal } from './useScheduleModal';
 import { Title, SearchForm } from '@/component';
 import { useMount } from '@/common';
 import { $http } from '@/http';
 import { defaultRender } from '@/utils/helper';
+import { useAddEditJobsModal } from './useAddEditJobsModal';
 
 const Jobs = () => {
     const { Render: RenderSchedule, show: showSchedule } = useScheduleModal({});
@@ -20,6 +20,9 @@ const Jobs = () => {
     const [loading, setLoading] = useState(false);
     const history = useHistory();
     const match = useRouteMatch();
+    const { Render: RenderJobsModal, show: showJobsModal } = useAddEditJobsModal({
+        title: intl.formatMessage({ id: 'jobs_tabs_title' }),
+    });
     const [tableData, setTableData] = useState<TJobsTableData>({ list: [], total: 0 });
     const [pageParams, setPageParams] = useState({
         pageNumber: 1,
@@ -31,7 +34,7 @@ const Jobs = () => {
             const res = (await $http.get('/job/page', {
                 datasourceId: (match.params as any).id,
                 ...pageParams,
-                ...(values || form.getFieldsValue),
+                ...(values || form.getFieldsValue()),
             })) || [];
             setTableData({
                 list: res?.records || [],
@@ -46,7 +49,11 @@ const Jobs = () => {
         getData();
     });
     const onSearch = (_values: any) => {
-        getData(_values);
+        setPageParams({ ...pageParams, pageNumber: 1 });
+        getData({
+            ..._values,
+            pageNumber: 1,
+        });
     };
     const onChange = ({ current, pageSize }: any) => {
         setPageParams({
@@ -54,8 +61,16 @@ const Jobs = () => {
             pageSize,
         });
     };
-    const onRun = (record: TJobsTableItem) => {
-        console.log(record);
+    const onRun = async (record: TJobsTableItem) => {
+        try {
+            setLoading(true);
+            await $http.post(`/job/execute/${record.id}`);
+            message.success('Run Success');
+            getData();
+        } catch (error) {
+        } finally {
+            setLoading(false);
+        }
     };
     const onSchedule = (record: TJobsTableItem) => {
         console.log(record);
@@ -63,13 +78,25 @@ const Jobs = () => {
     };
     const onEdit = (record: TJobsTableItem) => {
         console.log(record);
+        showJobsModal({
+            id: (match.params as any).id,
+            record,
+        });
     };
-    const onDelete = (record: TJobsTableItem) => {
-        console.log(record);
+    const onDelete = async (record: TJobsTableItem) => {
+        try {
+            setLoading(true);
+            await $http.delete(`/job/${record.id}`);
+            message.success('Delete Success');
+            getData();
+        } catch (error) {
+        } finally {
+            setLoading(false);
+        }
     };
     const onViewInstance = (record: TJobsTableItem) => {
         console.log(record, match);
-        history.push(`${match.url}/instance?id=${record.id}`);
+        history.push(`${match.url}/instance?jobId=${record.id}`);
     };
     const columns: ColumnsType<TJobsTableItem> = [
         {
@@ -109,7 +136,6 @@ const Jobs = () => {
             render: (text: string, record: TJobsTableItem) => (
                 <div className="dv-jobs">
                     <a style={{ marginRight: 5 }} onClick={() => { onRun(record); }}>{intl.formatMessage({ id: 'jobs_run' })}</a>
-                    <a style={{ marginRight: 5 }} onClick={() => { onSchedule(record); }}>{intl.formatMessage({ id: 'jobs_schedule' })}</a>
                     <a style={{ marginRight: 5 }} onClick={() => { onEdit(record); }}>{intl.formatMessage({ id: 'common_edit' })}</a>
                     <Popconfirm
                         title={intl.formatMessage({ id: 'common_delete_tip' })}
@@ -127,7 +153,7 @@ const Jobs = () => {
     return (
         <div className="dv-page-paddinng">
             <Title>{intl.formatMessage({ id: 'jobs_list' })}</Title>
-            <div style={{ padding: '20px 0px' }}>
+            <div style={{ paddingTop: '20px' }}>
                 <div className="dv-flex-between">
                     <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
                     <div>
@@ -137,6 +163,10 @@ const Jobs = () => {
                             onClick={() => {
                                 console.log('点击');
                                 // show(null);
+                                showJobsModal({
+                                    id: (match.params as any).id,
+                                    record: null,
+                                });
                             }}
                         >
                             {intl.formatMessage({ id: 'jobs_add' })}
@@ -162,6 +192,7 @@ const Jobs = () => {
                 }}
             />
             <RenderSchedule />
+            <RenderJobsModal />
         </div>
     );
 };
