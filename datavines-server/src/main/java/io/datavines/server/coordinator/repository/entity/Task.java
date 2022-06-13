@@ -25,10 +25,12 @@ import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.TimeoutStrategy;
 import io.datavines.common.enums.JobType;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Data
 @TableName("dv_task")
 public class Task implements Serializable {
 
@@ -111,6 +113,10 @@ public class Task implements Serializable {
     private LocalDateTime submitTime;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @TableField(value = "schedule_time")
+    private LocalDateTime scheduleTime;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "start_time")
     private LocalDateTime startTime;
 
@@ -125,228 +131,4 @@ public class Task implements Serializable {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "update_time")
     private LocalDateTime updateTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Long getJobId() {
-        return jobId;
-    }
-
-    public void setJobId(Long jobId) {
-        this.jobId = jobId;
-    }
-
-    public JobType getJobType() {
-        return jobType;
-    }
-
-    public void setJobType(JobType jobType) {
-        this.jobType = jobType;
-    }
-
-    public Long getDataSourceId() {
-        return dataSourceId;
-    }
-
-    public void setDataSourceId(Long dataSourceId) {
-        this.dataSourceId = dataSourceId;
-    }
-
-    public String getExecutePlatformType() {
-        return executePlatformType;
-    }
-
-    public void setExecutePlatformType(String executePlatformType) {
-        this.executePlatformType = executePlatformType;
-    }
-
-    public String getExecutePlatformParameter() {
-        return executePlatformParameter;
-    }
-
-    public void setExecutePlatformParameter(String executePlatformParameter) {
-        this.executePlatformParameter = executePlatformParameter;
-    }
-
-    public String getEngineType() {
-        return engineType;
-    }
-
-    public void setEngineType(String engineType) {
-        this.engineType = engineType;
-    }
-
-    public String getEngineParameter() {
-        return engineParameter;
-    }
-
-    public void setEngineParameter(String engineParameter) {
-        this.engineParameter = engineParameter;
-    }
-
-    public String getParameter() {
-        return parameter;
-    }
-
-    public void setParameter(String parameter) {
-        this.parameter = parameter;
-    }
-
-    public ExecutionStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(ExecutionStatus status) {
-        this.status = status;
-    }
-
-    public Integer getRetryTimes() {
-        return retryTimes;
-    }
-
-    public void setRetryTimes(Integer retryTimes) {
-        this.retryTimes = retryTimes;
-    }
-
-    public Integer getRetryInterval() {
-        return retryInterval;
-    }
-
-    public void setRetryInterval(Integer retryInterval) {
-        this.retryInterval = retryInterval;
-    }
-
-    public Integer getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(Integer timeout) {
-        this.timeout = timeout;
-    }
-
-    public TimeoutStrategy getTimeoutStrategy() {
-        return timeoutStrategy;
-    }
-
-    public void setTimeoutStrategy(TimeoutStrategy timeoutStrategy) {
-        this.timeoutStrategy = timeoutStrategy;
-    }
-
-    public String getTenantCode() {
-        return tenantCode;
-    }
-
-    public void setTenantCode(String tenantCode) {
-        this.tenantCode = tenantCode;
-    }
-
-    public String getExecuteHost() {
-        return executeHost;
-    }
-
-    public void setExecuteHost(String executeHost) {
-        this.executeHost = executeHost;
-    }
-
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
-
-    public String getApplicationIdTag() {
-        return applicationIdTag;
-    }
-
-    public void setApplicationIdTag(String applicationIdTag) {
-        this.applicationIdTag = applicationIdTag;
-    }
-
-    public int getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(int processId) {
-        this.processId = processId;
-    }
-
-    public String getExecuteFilePath() {
-        return executeFilePath;
-    }
-
-    public void setExecuteFilePath(String executeFilePath) {
-        this.executeFilePath = executeFilePath;
-    }
-
-    public String getLogPath() {
-        return logPath;
-    }
-
-    public void setLogPath(String logPath) {
-        this.logPath = logPath;
-    }
-
-    public String getEnv() {
-        return env;
-    }
-
-    public void setEnv(String env) {
-        this.env = env;
-    }
-
-    public LocalDateTime getSubmitTime() {
-        return submitTime;
-    }
-
-    public void setSubmitTime(LocalDateTime submitTime) {
-        this.submitTime = submitTime;
-    }
-
-    public LocalDateTime getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
-    }
-
-    public LocalDateTime getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(LocalDateTime endTime) {
-        this.endTime = endTime;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
 }

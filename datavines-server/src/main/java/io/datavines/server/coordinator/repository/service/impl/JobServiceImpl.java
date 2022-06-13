@@ -146,7 +146,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
 
         // whether running now
         if(jobCreate.getRunningNow() == 1) {
-            executeJob(job);
+            executeJob(job, null);
         }
 
         return jobId;
@@ -160,18 +160,18 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     }
 
     @Override
-    public boolean execute(Long jobId) throws DataVinesServerException {
+    public boolean execute(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException {
         Job job = baseMapper.selectById(jobId);
         if  (job == null) {
             throw new DataVinesServerException(ApiStatus.JOB_NOT_EXIST_ERROR, jobId);
         }
 
-        executeJob(job);
+        executeJob(job, scheduleTime);
 
         return true;
     }
 
-    private void executeJob(Job job) {
+    private void executeJob(Job job, LocalDateTime scheduleTime) {
         DataSource dataSource = dataSourceMapper.selectById(job.getDataSourceId());
         Map<String, Object> srcSourceConfigMap = JSONUtils.toMap(dataSource.getParam(), String.class, Object.class);
         ConnectionInfo srcConnectionInfo = new ConnectionInfo();
@@ -206,6 +206,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             task.setTenantCode(tenantStr);
             task.setEnv(envStr);
             task.setSubmitTime(LocalDateTime.now());
+            task.setScheduleTime(scheduleTime);
             task.setCreateTime(LocalDateTime.now());
             task.setUpdateTime(LocalDateTime.now());
 

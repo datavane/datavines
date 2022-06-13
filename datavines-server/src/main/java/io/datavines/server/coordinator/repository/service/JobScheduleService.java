@@ -17,29 +17,22 @@
 
 package io.datavines.server.coordinator.repository.service;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.datavines.server.coordinator.api.entity.dto.job.JobCreate;
-import io.datavines.server.coordinator.api.entity.dto.job.JobUpdate;
-import io.datavines.server.coordinator.api.entity.vo.JobVO;
-import io.datavines.server.coordinator.repository.entity.Job;
+import io.datavines.server.coordinator.api.entity.dto.tenant.TenantCreate;
+import io.datavines.server.coordinator.api.entity.dto.tenant.TenantUpdate;
+import io.datavines.server.coordinator.repository.entity.JobSchedule;
+import io.datavines.server.coordinator.repository.entity.Tenant;
 import io.datavines.server.exception.DataVinesServerException;
 
-public interface JobService {
+import java.util.List;
 
-    long create(JobCreate jobCreate) throws DataVinesServerException;
+public interface JobScheduleService {
+
+    long create(TenantCreate tenantCreate) throws DataVinesServerException;
 
     int deleteById(long id);
 
-    int update(JobUpdate jobUpdate);
+    int update(TenantUpdate tenantUpdate) throws DataVinesServerException;
 
-    Job getById(long id);
+    JobSchedule getById(long id);
 
-    List<Job> listByDataSourceId(Long dataSourceId);
-
-    IPage<JobVO> getJobPage(String searchVal, Long dataSourceId, Integer pageNumber, Integer pageSize);
-
-    boolean execute(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException;
 }

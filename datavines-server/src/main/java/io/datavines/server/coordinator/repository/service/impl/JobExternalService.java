@@ -162,4 +162,8 @@ public class JobExternalService {
     public List<Task> getTaskListNeedFailover(List<String> host){
         return taskService.listTaskNotInServerList(host);
     }
+
+    public JobService getJobService() {
+        return jobService;
+    }
 }

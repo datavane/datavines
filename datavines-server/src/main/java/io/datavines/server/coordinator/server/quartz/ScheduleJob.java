@@ -61,63 +61,20 @@ public class ScheduleJob implements org.quartz.Job {
 
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
-        Long projectJobId = dataMap.getLong(DataVinesConstants.PROJECT_JOB_ID);
-        Long projectId = dataMap.getLong(DataVinesConstants.PROJECT_ID);
+        Long jobId = dataMap.getLong(DataVinesConstants.DATASOURCE_JOB_ID);
 
         LocalDateTime scheduleTime = DateUtils.date2LocalDateTime(context.getScheduledFireTime());
         LocalDateTime fireTime = DateUtils.date2LocalDateTime(context.getFireTime());
 
-        logger.info("scheduled fire time :{}, fire time :{}, process id :{}", scheduleTime, fireTime, projectJobId);
+        logger.info("scheduled fire time :{}, fire time :{}, job id :{}", scheduleTime, fireTime, jobId);
 
-        Job job = getJobExternalService().getJobById(projectJobId);
+        Job job = getJobExternalService().getJobById(jobId);
         if (job == null) {
-            logger.warn("job {} is null", projectJobId);
+            logger.warn("job {} is null", jobId);
             return;
         }
 
-        Task task = createTask(job,scheduleTime);
-
-        createCommand(task,scheduleTime,fireTime);
+        getJobExternalService().getJobService().execute(jobId, scheduleTime);
     }
 
-    private void deleteJob(Long projectId, long scheduleId) throws RuntimeException{
-        logger.info("delete schedules of project id:{}, schedule id:{}", projectId, scheduleId);
-
-        String jobName = QuartzExecutors.buildJobName(scheduleId);
-        String jobGroupName = QuartzExecutors.buildJobGroupName(projectId);
-
-//        if(!QuartzExecutors.getInstance().deleteJob(jobName, jobGroupName)){
-//            logger.warn("set offline failure:projectId:{},scheduleId:{}",projectId,scheduleId);
-//            throw new RuntimeException("set offline failure");
-//        }
-    }
-
-    private Task createTask(Job job, LocalDateTime scheduleTime){
-        Task task = new Task();
-        task.setName(job.getName());
-        task.setJobId(job.getId());
-        task.setDataSourceId(job.getDataSourceId());
-        task.setParameter(job.getParameter());
-        task.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
-        task.setRetryTimes(job.getRetryTimes());
-        task.setRetryInterval(job.getRetryInterval());
-        task.setTimeout(job.getTimeout());
-        task.setTimeoutStrategy(job.getTimeoutStrategy());
-//        task.setTenantCode(job.getTenantCode());
-        task.setSubmitTime(scheduleTime);
-        task.setCreateTime(LocalDateTime.now());
-        task.setUpdateTime(LocalDateTime.now());
-
-        return task;
-    }
-
-    private void createCommand(Task task, LocalDateTime scheduleTime, LocalDateTime fireTime) {
-        Command command = new Command();
-        command.setTaskId(task.getId());
-        command.setType(CommandType.SCHEDULER);
-        command.setPriority(Priority.MEDIUM);
-        command.setCreateTime(LocalDateTime.now());
-        command.setUpdateTime(LocalDateTime.now());
-        getJobExternalService().insertCommand(command);
-    }
 }

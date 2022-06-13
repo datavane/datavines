@@ -279,6 +279,21 @@ CREATE TABLE `dv_job` (
     UNIQUE KEY `unique_name` (`name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+CREATE TABLE `dv_job_schedule` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `type` varchar(255) NOT NULL,
+    `param` text NOT NULL,
+    `job_id` bigint(20) NOT NULL,
+    `status` tinyint(1) DEFAULT NULL,
+    `start_time` datetime DEFAULT NULL,
+    `end_time` datetime DEFAULT NULL,
+    `create_by` bigint(20) DEFAULT NULL,
+    `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+    `update_by` bigint(20) DEFAULT NULL,
+    `update_time` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `dv_server` (
     `id` int(11) NOT NULL AUTO_INCREMENT,
     `host` varchar(255) NOT NULL,
@@ -314,6 +329,7 @@ CREATE TABLE `dv_task` (
     `log_path` varchar(255) DEFAULT NULL COMMENT 'log path',
     `env` text,
     `submit_time` datetime DEFAULT NULL,
+    `schedule_time` datetime DEFAULT NULL,
     `start_time` datetime DEFAULT NULL,
     `end_time` datetime DEFAULT NULL,
     `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',

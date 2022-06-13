@@ -189,6 +189,23 @@ CREATE TABLE dv_job (
     CONSTRAINT job_un UNIQUE (name)
 ) ;
 
+DROP TABLE IF EXISTS dv_job_schedule;
+CREATE TABLE dv_job_schedule (
+    id bigserial NOT NULL ,
+    type varchar(255) NOT NULL,
+    param text NOT NULL,
+    job_id int8 NOT NULL,
+    status int2 NOT NULL DEFAULT 1,
+    start_time timestamp(0) DEFAULT NULL,
+    end_time timestamp(0) DEFAULT NULL,
+    create_by int8 DEFAULT NULL,
+    create_time timestamp(0) DEFAULT NULL,
+    update_by int8 DEFAULT NULL,
+    update_time timestamp(0) DEFAULT NULL,
+    CONSTRAINT datasource_pk PRIMARY KEY (id),
+    CONSTRAINT datasource_name_un UNIQUE (name)
+);
+
 DROP TABLE IF EXISTS dv_server;
 CREATE TABLE dv_server (
     id serial NOT NULL,
@@ -226,6 +243,7 @@ CREATE TABLE dv_task (
     log_path varchar(255) DEFAULT NULL ,
     env text,
     submit_time timestamp DEFAULT NULL,
+    schedule_time timestamp DEFAULT NULL,
     start_time timestamp DEFAULT NULL,
     end_time timestamp DEFAULT NULL,
     create_time timestamp(0) NOT NULL DEFAULT current_timestamp ,
@@ -259,7 +277,7 @@ CREATE TABLE dv_datasource (
     name varchar(255) NOT NULL,
     type varchar(255) NOT NULL,
     param text NOT NULL,
-    workspace_i int8 NOT NULL,
+    workspace_id int8 NOT NULL,
     create_by int8 DEFAULT NULL,
     create_time timestamp(0) DEFAULT NULL,
     update_by int8 DEFAULT NULL,
