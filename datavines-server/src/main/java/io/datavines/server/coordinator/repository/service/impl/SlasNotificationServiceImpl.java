@@ -30,27 +30,32 @@ public class SlasNotificationServiceImpl extends ServiceImpl<SlasNotificationMap
     @Autowired
     private SlasReceiverService slasReceiverService;
 
+    @Autowired
+    private SlasNotificationMapper slasNotificationMapper;
+
     /**
      * get slas sender and receiver configuration from db by slasId. it will return empty Map if slas not association with sender and receiver
      * @param slasId
      * @return
      */
     public Map<SlasSenderMessage, Set<SlasReceiverMessage>> getSlasNotificationConfigurationBySlasId(Long slasId){
+        //get all notification config
         LambdaQueryWrapper<SlasNotification> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SlasNotification::getSlasId, slasId);
         List<SlasNotification> slasNotificationList = list(wrapper);
         if (CollectionUtils.isEmpty(slasNotificationList)){
             return new HashMap<>();
         }
-        Set<Long> receiverSet = slasNotificationList.stream().map(SlasNotification::getReceiverId).collect(Collectors.toSet());
+        //make receiverSet and senderSet
         Set<Long> senderSet = slasNotificationList.stream().map(SlasNotification::getSenderId).collect(Collectors.toSet());
-
-        List<SlasReceiver> receiverList = slasReceiverService.listByIds(receiverSet);
-        List<SlasSender> slasSenders = slasSenderService.listByIds(senderSet);
-        Map<Long, SlasReceiverMessage> receiverMap = receiverList
+        //make notificationSet;
+        Set<SlasReceiverMessage> slasReceiverMessages = listReceiverMessageBySlasId(slasId);
+        Map<Long, SlasReceiverMessage> receiverMessageMap = slasReceiverMessages
                 .stream()
-                .map(x-> BeanConvertUtils.convertBean(x, SlasReceiverMessage::new))
                 .collect(Collectors.toMap(SlasReceiverMessage::getId, x -> x));
+
+        List<SlasSender> slasSenders = slasSenderService.listByIds(senderSet);
+
         Map<Long, SlasSenderMessage> senderMap = slasSenders
                 .stream()
                 .map(x -> BeanConvertUtils.convertBean(x, SlasSenderMessage::new))
@@ -60,13 +65,19 @@ public class SlasNotificationServiceImpl extends ServiceImpl<SlasNotificationMap
             Long senderId = entity.getSenderId();
             Long receiverId = entity.getReceiverId();
             SlasSenderMessage slasSender = senderMap.get(senderId);
-            SlasReceiverMessage receiver = receiverMap.get(receiverId);
+            SlasReceiverMessage slasReceiverMessage = receiverMessageMap.get(receiverId);
             Set<SlasReceiverMessage> existSet = result.getOrDefault(slasSender, new HashSet<>());
-            existSet.add(receiver);
+            existSet.add(slasReceiverMessage);
             result.putIfAbsent(slasSender, existSet);
         }
         return result;
     }
+
+    public Set<SlasReceiverMessage> listReceiverMessageBySlasId(Long id){
+        return slasNotificationMapper.listReceiverMessageBySlasId(id);
+    }
+
+
 
     @Override
     public String getConfigJson(String type) {
