@@ -7,7 +7,6 @@ import io.datavines.notification.api.entity.SlasReceiverMessage;
 import io.datavines.notification.api.entity.SlasSenderMessage;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
 import io.datavines.server.coordinator.repository.entity.SlasNotification;
-import io.datavines.server.coordinator.repository.entity.SlasReceiver;
 import io.datavines.server.coordinator.repository.entity.SlasSender;
 import io.datavines.server.coordinator.repository.mapper.SlasNotificationMapper;
 import io.datavines.server.coordinator.repository.service.SlasNotificationService;
@@ -38,6 +37,7 @@ public class SlasNotificationServiceImpl extends ServiceImpl<SlasNotificationMap
      * @param slasId
      * @return
      */
+    @Override
     public Map<SlasSenderMessage, Set<SlasReceiverMessage>> getSlasNotificationConfigurationBySlasId(Long slasId){
         //get all notification config
         LambdaQueryWrapper<SlasNotification> wrapper = new LambdaQueryWrapper<>();

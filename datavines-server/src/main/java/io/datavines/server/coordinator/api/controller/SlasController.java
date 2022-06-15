@@ -58,20 +58,13 @@ public class SlasController {
     private NotificationClient client;
 
     @ApiOperation(value = "test slas")
-    @GetMapping(value = "/test")
-    public Object test(){
+    @GetMapping(value = "/test/{slasId}")
+    public Object test(@PathVariable("slasId") Long slasId){
         SlasNotificationMessage message = new SlasNotificationMessage();
         message.setMessage("test");
-        message.setSubject("test");
-        SlasSender byId = slasSenderService.getById(1);
-        SlasSenderMessage senderMessage = BeanConvertUtils.convertBean(byId, SlasSenderMessage::new);
-        Map<SlasSenderMessage, Set<SlasReceiverMessage>> map = new HashMap<>();
-        SlasReceiver receiver = slasReceiverService.getById(1);
-        SlasReceiverMessage slasReceiver = BeanConvertUtils.convertBean(receiver, SlasReceiverMessage::new);
-        HashSet<SlasReceiverMessage> set = new HashSet<>();
-        set.add(slasReceiver);
-        map.put(senderMessage, set);
-        SlasNotificationResult notify = client.notify(message, map);
+        message.setSubject("just test slasId");
+        Map<SlasSenderMessage, Set<SlasReceiverMessage>> configuration = slasNotificationService.getSlasNotificationConfigurationBySlasId(slasId);
+        SlasNotificationResult notify = client.notify(message, configuration);
         return notify;
     }
 
@@ -144,7 +137,7 @@ public class SlasController {
         return json;
     }
 
-    @ApiOperation(value = "get config param of sender")
+    @ApiOperation(value = "get config param of notification")
     @GetMapping(value = "/config/{type}")
     public Object getConfigJson(@PathVariable("type") String type){
         String json = slasNotificationService.getConfigJson(type);
