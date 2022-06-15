@@ -10,12 +10,14 @@ import {
 } from '../helper';
 import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
+import { TDetail, TEngineParameter } from '../type';
 
 type InnerProps = {
-    form: FormInstance
+    form: FormInstance,
+    detail: TDetail
 }
 
-const Index = ({ form }: InnerProps) => {
+const Index = ({ form, detail }: InnerProps) => {
     const { $http } = useRequest();
     const intl = useIntl();
     const requiredRule = useRequiredRule();
@@ -24,6 +26,18 @@ const Index = ({ form }: InnerProps) => {
         try {
             const $engineList = await $http.get('metric/engine/list');
             setEngineList($engineList || []);
+            if (detail && detail.id) {
+                const paramter = detail?.engineParameter || {} as TEngineParameter;
+                form.setFieldsValue({
+                    deployMode: paramter.deployMode,
+                    driverCores: paramter.driverCores,
+                    driverMemory: paramter.driverMemory,
+                    numExecutors: paramter.numExecutors,
+                    executorMemory: paramter.executorMemory,
+                    executorCores: paramter.executorCores,
+                    others: paramter.others,
+                });
+            }
         } catch (error) {
         }
     });

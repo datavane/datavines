@@ -1,7 +1,6 @@
 const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ForkTsCheckerPlugin = require('fork-ts-checker-webpack-plugin');
-// const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const { resolve } = require('./utils');
 
@@ -68,10 +67,6 @@ module.exports = {
                 test: /\.css$/,
                 use: [isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader'],
             },
-            // {
-            //     test: /\.(eot|otf|ttf|woff|woff2)$/,
-            //     use: 'file-loader',
-            // },
             {
                 test: /\.(eot|otf|woff|woff2)$/,
                 use: 'file-loader',
@@ -152,7 +147,6 @@ module.exports = {
                 { from: resolve('node_modules/monaco-editor'), to: 'monaco-editor' },
             ],
         }),
-        // new MonacoWebpackPlugin(),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
             'process.env.DV_ENV': JSON.stringify(process.env.DV_ENV),
