@@ -17,10 +17,10 @@
 
 package io.datavines.server.coordinator.repository.service;
 
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.coordinator.api.entity.dto.env.EnvCreate;
 import io.datavines.server.coordinator.api.entity.dto.env.EnvUpdate;
 import io.datavines.server.coordinator.repository.entity.Env;
-import io.datavines.server.exception.DataVinesServerException;
 
 import java.util.List;
 

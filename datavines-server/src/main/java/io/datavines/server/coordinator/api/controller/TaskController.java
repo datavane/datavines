@@ -25,8 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import io.datavines.core.constant.DataVinesConstants;
-import io.datavines.common.dto.task.SubmitTask;
-import io.datavines.server.DataVinesConstants;
 import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
 import io.datavines.server.coordinator.repository.service.TaskService;
 import io.swagger.annotations.Api;

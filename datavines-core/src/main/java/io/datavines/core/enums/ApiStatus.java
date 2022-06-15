@@ -69,8 +69,6 @@ public enum ApiStatus {
     JOB_NOT_EXIST_ERROR(14010003, "Job {0} Not Exist Error", "作业{0}不存在错误"),
     JOB_EXIST_ERROR(14010004, "Job {0} is Exist error", "作业 {0} 已存在错误"),
     UPDATE_JOB_ERROR(14010005, "Update Job {0} Error", "更新作业 {0} 错误"),
-    TASK_EXECUTE_HOST_NOT_EXIST_ERROR(13010003, "Task Execute Host {0} Not Exist Error", "任务{0}的执行服务地址不存在错误"),
-
     CREATE_TENANT_ERROR(15010001, "Create Tenant {0} Error", "创建 Linux 用户 {0} 错误"),
     TENANT_NOT_EXIST_ERROR(15010002, "Tenant {0} Not Exist Error", "Linux 用户{0}不存在错误"),
     TENANT_EXIST_ERROR(15010003, "Tenant {0} is Exist error", "Linux 用户 {0} 已存在错误"),

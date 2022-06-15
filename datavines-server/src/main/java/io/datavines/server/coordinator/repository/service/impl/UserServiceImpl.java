@@ -18,18 +18,14 @@ package io.datavines.server.coordinator.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.datavines.common.dto.user.*;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.server.coordinator.api.entity.dto.user.*;
-import io.datavines.server.coordinator.api.enums.ApiStatus;
 import io.datavines.server.coordinator.repository.entity.User;
 import io.datavines.server.coordinator.repository.entity.WorkSpace;
 import io.datavines.server.coordinator.repository.mapper.UserMapper;
 import io.datavines.server.coordinator.repository.mapper.WorkSpaceMapper;
 import io.datavines.server.coordinator.repository.service.UserService;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.utils.ContextHolder;
-import io.datavines.server.exception.DataVinesServerException;
 import jodd.util.BCrypt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;

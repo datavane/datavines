@@ -34,7 +34,6 @@ import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.coordinator.api.entity.vo.TaskVO;
-import io.datavines.server.exception.DataVinesServerException;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.spi.PluginLoader;
 import org.springframework.beans.BeanUtils;
