@@ -78,11 +78,11 @@ export const MetricConfig = ({ innerRef, id, detail }: InnerProps) => {
     return (
         <Form form={form}>
             <MetricSelect detail={detail} id={id} form={form} metricSelectRef={metricSelectRef} />
-            <ExpectedValue form={form} />
-            <VerifyConfigure />
-            <ActuatorConfigure form={form} />
+            <ExpectedValue detail={detail} form={form} />
+            <VerifyConfigure detail={detail} form={form} />
+            <ActuatorConfigure detail={detail} form={form} />
             <RunEvnironment form={form} />
-            <OtherConfig form={form} />
+            <OtherConfig detail={detail} form={form} />
         </Form>
     );
 };

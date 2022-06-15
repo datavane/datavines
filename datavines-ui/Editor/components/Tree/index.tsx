@@ -28,11 +28,15 @@ const Index = ({ getDatabases }: TIndexProps) => {
     });
     const { onRequestTable, onRequestCloumn } = useTableCloumn({ $setExpandedKeys });
 
-    const onFieldClick = (databaseName: string, tableName: string, columnName?: string) => {
+    const onFieldClick = (database: string, table: string, column?: string) => {
         show(id as string, {
-            databaseName,
-            tableName,
-            columnName,
+            parameterItem: {
+                metricParameter: {
+                    database,
+                    table,
+                    column: column || '',
+                },
+            },
         });
     };
 

@@ -45,6 +45,7 @@ const Inner = ({ innerRef }: InnerProps) => {
         }
         try {
             const res = await $http.get(`/job/${data.record.id}`);
+            res.parameterItem = res.parameter ? JSON.parse(res.parameter)[0] : {};
             setMetricDetail(res);
         } catch (error) {
         } finally {

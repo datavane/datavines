@@ -1,13 +1,13 @@
 import React, { useState, useImperativeHandle } from 'react';
 import {
-    Row, Col, Form, Input, InputNumber, FormInstance,
+    Row, Col, Form, Input, FormInstance,
 } from 'antd';
 import { useIntl } from 'react-intl';
 import './index.less';
 import { layoutItem } from '../helper';
 import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
-import { TMetricModal, TDetail } from '../type';
+import { TDetail, TMetricParameter } from '../type';
 import {
     CustomSelect, useMount, useContextModal, usePersistFn, IF,
 } from '../../../common';
@@ -61,21 +61,35 @@ const Index = ({
     };
     console.log('detail', detail);
     useMount(async () => {
-        const $metricList = await $http.get('metric/list');
-        const $databases = await $http.get(`/datasource/${id}/databases`);
-        if (detail?.databaseName) {
-            await getTable(detail.databaseName);
+        try {
+            const $metricList = await $http.get('metric/list');
+            const $databases = await $http.get(`/datasource/${id}/databases`);
+            const {
+                database, table, column, filter, ...rest
+            } = detail?.parameterItem?.metricParameter || {} as TMetricParameter;
+            if (database) {
+                await getTable(database);
+            }
+            if (database && table) {
+                await getCloumn(database, table);
+            }
+            setDataBases($databases || []);
+            setMetricList($metricList || []);
+            const options: Record<string, any> = {
+                database,
+                table,
+                column,
+                metricType: detail?.parameterItem?.metricType,
+                filter,
+            };
+            Object.keys(rest).forEach((item) => {
+                options[item] = rest[item];
+            });
+            console.log('metric set default', options);
+            form.setFieldsValue(options);
+        } catch (error) {
+
         }
-        if (detail?.databaseName && detail.tableName) {
-            await getCloumn(detail.databaseName, detail.tableName);
-        }
-        setDataBases($databases || []);
-        setMetricList($metricList || []);
-        form.setFieldsValue({
-            database: detail?.databaseName,
-            table: detail?.tableName,
-            column: detail?.columnName,
-        });
     });
 
     const getConfigsName = usePersistFn(async (val) => {
@@ -173,7 +187,6 @@ const Index = ({
                             :
                         </div>
                     )}
-                    // rules={[...requiredRules]}
                     name="filter"
                 >
                     <Input.TextArea style={{ marginLeft: -60 }} rows={5} />

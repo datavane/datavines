@@ -3,16 +3,29 @@ import { useIntl } from 'react-intl';
 import {
     Row, Col, Form, InputNumber, FormInstance,
 } from 'antd';
-import { CustomSelect } from '../../../common';
+import { CustomSelect, useMount } from '../../../common';
 import Title from '../Title';
 import { layoutItem } from '../helper';
+import { TDetail } from '../type';
 
 type InnerProps = {
-    form: FormInstance
+    form: FormInstance,
+    detail: TDetail
 }
 
-const Index = ({ form }: InnerProps) => {
+const Index = ({ form, detail }: InnerProps) => {
     const intl = useIntl();
+
+    useMount(() => {
+        if (detail && detail.id) {
+            form.setFieldsValue({
+                retryTimes: detail?.retryTimes || 0,
+                retryInterval: detail?.retryInterval || 1,
+                timeout: detail?.timeout || 36000,
+                timeoutStrategy: detail?.timeoutStrategy || 0,
+            });
+        }
+    });
 
     return (
         <Title title={intl.formatMessage({ id: 'dv_metric_other_config' })}>
