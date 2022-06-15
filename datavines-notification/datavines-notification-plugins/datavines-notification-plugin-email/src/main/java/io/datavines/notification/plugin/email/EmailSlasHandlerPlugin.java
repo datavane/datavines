@@ -14,6 +14,7 @@ import io.datavines.common.param.form.type.RadioParam;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.notification.api.entity.*;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
+import io.datavines.notification.plugin.email.entity.NotificationConfig;
 import io.datavines.notification.plugin.email.entity.ReceiverConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -55,35 +56,45 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
         SlasNotificationResult result = new SlasNotificationResult();
         ArrayList<SlasNotificationResultRecord> records = new ArrayList<>();
         result.setStatus(true);
+        String subject = slasNotificationMessage.getSubject();
+        String message = slasNotificationMessage.getMessage();
         for(SlasSenderMessage senderMessage: emailSenderSet){
             EMailSender eMailSender = new EMailSender(senderMessage);
             Set<SlasReceiverMessage> slasReceiverMessageSet = config.get(senderMessage);
+            HashSet<String> toReceivers = new HashSet<>();
+            HashSet<String> ccReceivers = new HashSet<>();
             for(SlasReceiverMessage receiver: slasReceiverMessageSet){
                 String receiverConfigStr = receiver.getConfig();
+                String notificationConfigStr = receiver.getNotificationConfig();
                 ReceiverConfig receiverConfig = JSONUtils.parseObject(receiverConfigStr, ReceiverConfig.class);
-                Set<String> toReceivers = receiverConfig.getToReceivers();
-                Set<String> ccReceivers = receiverConfig.getCcReceivers();
-                String subject = slasNotificationMessage.getSubject();
-                String message = slasNotificationMessage.getMessage();
-                SlasNotificationResultRecord record = eMailSender.sendMails(toReceivers, ccReceivers, subject, message);
-                if (record.getStatus().equals(false)){
-                    String to = "";
-                    String recordMessage = "";
-
-                    if (!CollectionUtils.isEmpty(toReceivers)){
-                        to = toReceivers.stream().collect(Collectors.joining(","));
-                        recordMessage = String.format("send to %s fail", to);
-                    }
-                    String cc = "";
-                    if (!CollectionUtils.isEmpty(ccReceivers)){
-                        cc = ccReceivers.stream().collect(Collectors.joining(","));
-                        recordMessage += String.format("copy to %s fail", cc);
-                    }
-                    record.setMessage(recordMessage);
-                    result.setStatus(false);
+                NotificationConfig notificationConfig = JSONUtils.parseObject(notificationConfigStr, NotificationConfig.class);
+                String realReceiver = receiverConfig.getReceiver();
+                String configReceiver = realReceiver;
+                if ("recipient".equals(notificationConfig)){
+                    toReceivers.add(realReceiver);
                 }
-                records.add(record);
+                if("cc".equals(notificationConfig)){
+                    ccReceivers.add(realReceiver);
+                }
             }
+            SlasNotificationResultRecord record = eMailSender.sendMails(toReceivers, ccReceivers, subject, message);
+            if (record.getStatus().equals(false)){
+                String to = "";
+                String recordMessage = "";
+
+                if (!CollectionUtils.isEmpty(toReceivers)){
+                    to = toReceivers.stream().collect(Collectors.joining(","));
+                    recordMessage = String.format("send to %s fail", to);
+                }
+                String cc = "";
+                if (!CollectionUtils.isEmpty(ccReceivers)){
+                    cc = ccReceivers.stream().collect(Collectors.joining(","));
+                    recordMessage += String.format("copy to %s fail", cc);
+                }
+                record.setMessage(recordMessage);
+                result.setStatus(false);
+            }
+            records.add(record);
         }
         result.setRecords(records);
         return result;
@@ -169,16 +180,18 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
 
     @Override
     public String getConfigJson() {
-        List<PluginParams> paramsList = new ArrayList<>();
-        InputParam receiver = InputParam.newBuilder("receiveType", "receiveType")
+
+        RadioParam receiverType = RadioParam.newBuilder("receiveType", "receiveType")
+                .addParamsOptions(new ParamsOptions("recipient", "recipient", false))
+                .addParamsOptions(new ParamsOptions("cc", "cc", false))
+                .setValue("recipient")
                 .addValidate(Validate.newBuilder().setRequired(true).build())
                 .build();
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         String result = null;
-        paramsList.add(receiver);
         try {
-            result = mapper.writeValueAsString(paramsList);
+            result = mapper.writeValueAsString(receiverType);
         } catch (JsonProcessingException e) {
             log.error("json parse error : {}", e.getMessage(), e);
         }

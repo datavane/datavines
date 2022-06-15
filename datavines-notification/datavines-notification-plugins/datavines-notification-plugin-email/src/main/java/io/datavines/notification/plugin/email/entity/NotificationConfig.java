@@ -4,13 +4,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.util.Set;
-
 @Data
 @EqualsAndHashCode
 @ToString
-public class ReceiverConfig {
-
-    private String receiver;
-
+public class NotificationConfig {
+    private String receiverType;
 }
