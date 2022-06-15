@@ -27,7 +27,7 @@ const Index = ({ form, detail }: InnerProps) => {
             const $engineList = await $http.get('metric/engine/list');
             setEngineList($engineList || []);
             if (detail && detail.id) {
-                const paramter = detail?.engineParameter || {} as TEngineParameter;
+                const paramter = detail.engineParameter || {} as TEngineParameter;
                 form.setFieldsValue({
                     deployMode: paramter.deployMode,
                     driverCores: paramter.driverCores,
@@ -36,6 +36,8 @@ const Index = ({ form, detail }: InnerProps) => {
                     executorMemory: paramter.executorMemory,
                     executorCores: paramter.executorCores,
                     others: paramter.others,
+                    tenantCode: detail.tenantCode,
+                    env: detail.env,
                 });
             }
         } catch (error) {
