@@ -16,10 +16,10 @@
  */
 package io.datavines.server.coordinator.api.inteceptor;
 
-import io.datavines.server.coordinator.api.entity.ResultMap;
-import io.datavines.server.coordinator.api.enums.ApiStatus;
-import io.datavines.server.exception.DataVinesServerException;
-import io.datavines.server.utils.TokenManager;
+import io.datavines.core.entity.ResultMap;
+import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.utils.TokenManager;
+import io.datavines.core.exception.DataVinesServerException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.http.ResponseEntity;

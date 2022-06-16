@@ -16,8 +16,8 @@
  */
 package io.datavines.server.coordinator.server.log;
 
-import io.datavines.server.coordinator.api.enums.ApiStatus;
-import io.datavines.server.exception.DataVinesServerException;
+import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.exception.DataVinesServerException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 

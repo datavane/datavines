@@ -16,9 +16,9 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
-import io.datavines.server.DataVinesConstants;
+import io.datavines.core.constant.DataVinesConstants;
+import io.datavines.core.aop.RefreshToken;
 import io.datavines.server.coordinator.api.annotation.AuthIgnore;
-import io.datavines.server.coordinator.api.aop.RefreshToken;
 import io.datavines.server.coordinator.api.enums.ApiStatus;
 import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.coordinator.repository.service.TaskService;

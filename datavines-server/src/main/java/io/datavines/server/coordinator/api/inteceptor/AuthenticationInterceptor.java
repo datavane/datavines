@@ -16,14 +16,14 @@
  */
 package io.datavines.server.coordinator.api.inteceptor;
 
-import io.datavines.server.DataVinesConstants;
+import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.coordinator.api.annotation.AuthIgnore;
-import io.datavines.server.coordinator.api.enums.ApiStatus;
+import io.datavines.core.enums.ApiStatus;
 import io.datavines.server.coordinator.repository.entity.User;
 import io.datavines.server.coordinator.repository.service.UserService;
-import io.datavines.server.exception.DataVinesServerException;
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.utils.ContextHolder;
-import io.datavines.server.utils.TokenManager;
+import io.datavines.core.utils.TokenManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
