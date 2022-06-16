@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.mail.smtp.SMTPProvider;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
-import io.datavines.notification.api.entity.SlasNotificationResult;
 import io.datavines.notification.api.entity.SlasNotificationResultRecord;
 import io.datavines.notification.api.entity.SlasSenderMessage;
 import lombok.Data;
@@ -179,7 +178,7 @@ public class EMailSender {
                 contents.append(EmailConstants.TD).append(jsonNode.toString()).append(EmailConstants.TD_END);
                 contents.append(EmailConstants.TR_END);
             }
-            return EmailConstants.HTML_HEADER_PREFIX + content + EmailConstants.TABLE_BODY_HTML_TAIL;
+            return EmailConstants.HTML_HEADER_PREFIX + content + EmailConstants.BODY_HTML_TAIL;
 
         }
         return content;

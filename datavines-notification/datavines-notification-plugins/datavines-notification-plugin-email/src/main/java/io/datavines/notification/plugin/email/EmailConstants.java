@@ -61,15 +61,12 @@ public class EmailConstants {
             .append("<meta name='Keywords' content=''>")
             .append("<meta name='Description' content=''>")
             .append("<style type=\"text/css\">")
-            .append("table {margin-top:0px;padding-top:0px;border:1px solid;font-size: 14px;color: #333333;border-width: 1px;border-color: #666666;border-collapse: collapse;}")
-            .append("table th {border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #dedede;text-align: left;}")
-            .append("table td {border-width: 1px;padding: 8px;border-style: solid;border-color: #666666;background-color: #ffffff;text-align: left;}")
             .append("</style>")
             .append("</head>")
             .append("<body style=\"margin:0;padding:0\"><table border=\"1px\" cellpadding=\"5px\" cellspacing=\"-10px\"> ")
             .toString();
 
-    public static final String TABLE_BODY_HTML_TAIL = "</table></body></html>";
+    public static final String BODY_HTML_TAIL = "</body></html>";
 
     public static final String UTF_8 = "UTF-8";
 
