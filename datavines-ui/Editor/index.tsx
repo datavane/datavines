@@ -7,10 +7,11 @@ import zhCN from './locale/zh_CN';
 import { IDvEditorProps } from './type';
 import { EditorProvider, useEditorActions, setEditorFn } from './store/editor';
 import { useMount, useWatch } from './common';
+import { MetricConfig } from './components/MetricModal';
 
 const App = (props: IDvEditorProps) => {
     const {
-        monacoConfig, baseURL, headers, id,
+        monacoConfig, baseURL, headers, id, ...rest
     } = props;
     const [loading, setLoading] = useState(true);
     const fns = useEditorActions({ setEditorFn });
@@ -30,6 +31,10 @@ const App = (props: IDvEditorProps) => {
     });
     if (loading) {
         return null;
+    }
+
+    if (props.showMetricConfig) {
+        return <MetricConfig id={id as string} detail={props.detail || null} {...rest} />;
     }
     return <Editor {...props} />;
 };

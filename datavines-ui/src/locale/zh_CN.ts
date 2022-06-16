@@ -5,6 +5,7 @@ export default {
     common_action: '操作',
     common_edit: '编辑',
     common_view: '查看',
+    common_search: '搜索',
     common_delete: '删除',
     common_type: '类型',
     common_dataSource: '数据源',
@@ -24,8 +25,8 @@ export default {
     '/main/home': '数据源',
     '/main/warning': '告警',
     '/main/detail/:id/editor': '数据开发',
-    '/main/detail/:id/jobs': '作业列表',
-    '/main/detail/:id/tasks': '任务列表',
+    '/main/detail/:id/jobs': '作业管理',
+    '/main/detail/:id/tasks': '结果管理',
     '/main/detail/:id': '详情',
 
     confirm_text: '确认',
@@ -65,20 +66,31 @@ export default {
 
     // jobs
     jobs_list: '作业列表',
+    jobs_add: '创建作业',
     jobs_name: '作业名称',
     jobs_type: '作业类型',
-    jobs_dataSource: '数据源',
-    jobs_status: '状态',
-    jobs_founder: '创建人',
-    jobs_create_time: '创建时间',
+    jobs_updater: '更新人',
+    jobs_update_time: '更新时间',
     jobs_run: '运行',
     jobs_schedule: '定时',
-    jobs_view_instance: '查看实例',
+    jobs_view: '查看任务列表',
     jobs_task_name: '任务名称',
     jobs_task_type: '任务类型',
+    jobs_task_status: '任务状态',
     jobs_task_stop_btn: '停止',
-    jobs_task_log_btn: '日志',
-    jobs_task_result_btn: '结果',
+    jobs_task_log_btn: '查看日志',
+    jobs_task_result_btn: '查看结果',
+
+    jobs_tabs_title: '数据质量检查作业',
+    jobs_tabs_config: '作业配置',
+    jobs_tabs_schedule: '定时任务配置',
+    jobs_tabs_SLA: 'SLA配置',
+
+    jobs_schedule_type: '调度类型',
+    jobs_schedule_cycle: '调度周期',
+    jobs_schedule_time: '调度时间',
+    jobs_schedule_express: 'crontab表达式',
+    jobs_schedule_effect_time: '生效时间',
 
     warn_SLAs_name: '名字',
     warn_update_time: '更新时间',
@@ -102,4 +114,5 @@ export default {
     datasource_updater: '更新人',
     datasource_updateTime: '更新时间',
     datasource_list_title: '数据源列表',
+
 };

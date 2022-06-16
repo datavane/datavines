@@ -1,7 +1,8 @@
+/* eslint-disable camelcase */
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import {
-    Row, Col, Form, Input,
+    Row, Col, Form, Input, FormInstance,
 } from 'antd';
 import { CustomSelect, useMount } from '../../../common';
 import { layoutItem } from '../helper';
@@ -9,7 +10,14 @@ import Title from '../Title';
 import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
 
-const Index = () => {
+import { TDetail, TParameterItem } from '../type';
+
+type InnerProps = {
+    form: FormInstance,
+    detail: TDetail
+}
+
+const Index = ({ form, detail }: InnerProps) => {
     const intl = useIntl();
     const { $http } = useRequest();
     const [operatorList, setOperatorList] = useState([]);
@@ -21,6 +29,17 @@ const Index = () => {
             const $operatorList = await $http.get('metric/operator/list');
             setOperatorList($operatorList || []);
             setResultFormula($resultFormula || []);
+            if (detail && detail.id) {
+                const {
+                    result_formula, operator, threshold,
+                } = detail?.parameterItem || {} as TParameterItem;
+                const options: Record<string, any> = {
+                    result_formula,
+                    operator,
+                    threshold,
+                };
+                form.setFieldsValue(options);
+            }
         } catch (error) {
         }
     });
