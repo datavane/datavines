@@ -18,12 +18,11 @@ package io.datavines.server.coordinator.api.controller;
 
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
-import io.datavines.server.coordinator.api.annotation.AuthIgnore;
-import io.datavines.server.coordinator.api.enums.ApiStatus;
+import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.coordinator.repository.service.TaskService;
 import io.datavines.server.coordinator.server.log.LogService;
-import io.datavines.server.exception.DataVinesServerException;
 import io.datavines.server.utils.FileUtils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
