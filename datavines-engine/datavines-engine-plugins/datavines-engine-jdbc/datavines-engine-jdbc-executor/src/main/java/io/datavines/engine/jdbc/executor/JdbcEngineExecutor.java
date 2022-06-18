@@ -34,7 +34,6 @@ public class JdbcEngineExecutor extends AbstractEngineExecutor {
     public void init(TaskRequest taskRequest, Logger logger, Configurations configurations) throws Exception {
         String threadLoggerInfoName = String.format(LoggerUtils.TASK_LOG_INFO_FORMAT, taskRequest.getTaskUniqueId());
         Thread.currentThread().setName(threadLoggerInfoName);
-
         this.taskRequest = taskRequest;
         this.logger = logger;
         this.configurations = configurations;
@@ -44,7 +43,7 @@ public class JdbcEngineExecutor extends AbstractEngineExecutor {
     public void execute() throws Exception {
         String[] args = new String[1];
         args[0] = taskRequest.getApplicationParameter();
-        bootstrap = new JdbcBaseDataVinesBootstrap();
+        bootstrap = new JdbcBaseDataVinesBootstrap(this.logger);
         this.processResult = bootstrap.execute(args);
     }
 

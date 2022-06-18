@@ -21,8 +21,9 @@ import io.datavines.common.config.Config;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcRuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcSource;
+import io.datavines.engine.jdbc.api.utils.LoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class BaseJdbcSource implements JdbcSource {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseJdbcSource.class);
+    private Logger logger = LoggerFactory.getLogger(BaseJdbcSource.class);
 
     private Config config = new Config();
 

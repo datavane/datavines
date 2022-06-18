@@ -82,4 +82,8 @@ public class Config {
     public void merge(Map<String,Object> config) {
         config.forEach(this.config::putIfAbsent);
     }
+
+    public Object remove(String key) {
+        return config.remove(key);
+    }
 }
