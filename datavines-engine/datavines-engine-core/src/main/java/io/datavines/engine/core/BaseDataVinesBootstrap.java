@@ -105,23 +105,15 @@ public abstract class BaseDataVinesBootstrap {
     }
 
     private void showConfigError(Throwable throwable) {
-        logger.info(
-                "\n\n===============================================================================\n\n");
         String errorMsg = throwable.getMessage();
         logger.info("Config Error:\n");
         logger.info("Reason: " + errorMsg + "\n");
-        logger.info(
-                "\n===============================================================================\n\n\n");
     }
 
     private void showFatalError(Throwable throwable) {
-        logger.info(
-                "\n\n===============================================================================\n\n");
         String errorMsg = throwable.getMessage();
         logger.info("Fatal Error, \n");
         logger.info("Reason: " + errorMsg + "\n");
         logger.info("Exception StackTrace: " + ExceptionUtils.getStackTrace(throwable));
-        logger.info(
-                "\n===============================================================================\n\n\n");
     }
 }
