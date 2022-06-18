@@ -32,7 +32,7 @@ public class DayCronImpl implements FunCron {
                 .withDoW(questionMark())
                 .withMonth(always())
                 .withDoM(always())
-                .withHour(on(23))
+                .withHour(on(0))
                 .withMinute(on(Integer.parseInt(mintute)))
                 .withSecond(on (0))
                 .instance();
