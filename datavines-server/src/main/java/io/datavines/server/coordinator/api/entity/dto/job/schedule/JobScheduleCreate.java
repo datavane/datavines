@@ -25,12 +25,12 @@ import javax.validation.constraints.NotNull;
 @NotNull(message = "Job Schedule Create cannot be null")
 public class JobScheduleCreate {
 
-    @NotBlank(message = "job id cannot be empty")
+    @NotNull(message = "job id cannot be empty")
     private Long jobId;
 
     @NotBlank(message = "job schedule type cannot be empty")
     private String type;
 
-    @NotBlank(message = "job schedule param cannot be empty")
-    private String param;
+   // @NotBlank(message = "job schedule param cannot be empty")
+    private MapParam param;
 }

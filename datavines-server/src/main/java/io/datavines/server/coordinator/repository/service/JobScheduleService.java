@@ -17,21 +17,20 @@
 
 package io.datavines.server.coordinator.repository.service;
 
-import io.datavines.server.coordinator.api.entity.dto.tenant.TenantCreate;
-import io.datavines.server.coordinator.api.entity.dto.tenant.TenantUpdate;
+import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreate;
+import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleUpdate;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
-import io.datavines.server.coordinator.repository.entity.Tenant;
 import io.datavines.server.exception.DataVinesServerException;
 
 import java.util.List;
 
 public interface JobScheduleService {
 
-    long create(TenantCreate tenantCreate) throws DataVinesServerException;
+    long create(JobScheduleCreate jobScheduleCreateCreate) throws DataVinesServerException;
 
     int deleteById(long id);
 
-    int update(TenantUpdate tenantUpdate) throws DataVinesServerException;
+    int update(JobScheduleUpdate jobScheduleUpdate) throws DataVinesServerException;
 
     JobSchedule getById(long id);
 

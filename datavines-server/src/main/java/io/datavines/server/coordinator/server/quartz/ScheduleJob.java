@@ -63,10 +63,11 @@ public class ScheduleJob implements org.quartz.Job {
 
         Long jobId = dataMap.getLong(DataVinesConstants.DATASOURCE_JOB_ID);
 
-        LocalDateTime scheduleTime = DateUtils.date2LocalDateTime(context.getScheduledFireTime());
-        LocalDateTime fireTime = DateUtils.date2LocalDateTime(context.getFireTime());
-
-        logger.info("scheduled fire time :{}, fire time :{}, job id :{}", scheduleTime, fireTime, jobId);
+//        LocalDateTime scheduleTime = DateUtils.date2LocalDateTime(context.getScheduledFireTime());
+//        LocalDateTime fireTime = DateUtils.date2LocalDateTime(context.getFireTime());
+//
+//        logger.info("scheduled fire time :{}, fire time :{}, job id :{}", scheduleTime, fireTime, jobId);
+        logger.info("scheduled exe.....");
 
         Job job = getJobExternalService().getJobById(jobId);
         if (job == null) {
@@ -74,7 +75,7 @@ public class ScheduleJob implements org.quartz.Job {
             return;
         }
 
-        getJobExternalService().getJobService().execute(jobId, scheduleTime);
+       // getJobExternalService().getJobService().execute(jobId, scheduleTime);
     }
 
 }

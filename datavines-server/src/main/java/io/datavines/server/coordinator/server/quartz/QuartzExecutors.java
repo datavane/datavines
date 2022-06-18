@@ -16,12 +16,17 @@
  */
 package io.datavines.server.coordinator.server.quartz;
 
+import static io.datavines.server.DataVinesConstants.SCHEDULE;
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
 
+import io.datavines.common.utils.JSONUtils;
+import io.datavines.server.coordinator.repository.entity.JobSchedule;
 import org.apache.commons.lang.StringUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -43,14 +48,18 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Maps;
 
 import io.datavines.server.DataVinesConstants;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 /**
  * single Quartz executors instance
  */
+@Service
 public class QuartzExecutors {
 
   private static final Logger logger = LoggerFactory.getLogger(QuartzExecutors.class);
-
+  @Autowired
+  private Scheduler scheduler;
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
   private static final class Holder {
@@ -76,13 +85,106 @@ public class QuartzExecutors {
    * @param cronExpression    cron expression
    * @param jobDataMap        job parameters data map
    */
-  public void addJob(Scheduler scheduler, Class<? extends Job> clazz,
-                     String jobName,
-                     String jobGroupName,
-                     Date startDate,
-                     Date endDate,
-                     String cronExpression,
-                     Map<String, Object> jobDataMap) {
+//  public void addJob(Scheduler scheduler, Class<? extends Job> clazz,
+//                     String jobName,
+//                     String jobGroupName,
+//                     Date startDate,
+//                     Date endDate,
+//                     String cronExpression,
+//                     Map<String, Object> jobDataMap) {
+//    lock.writeLock().lock();
+//    try {
+//
+//      JobKey jobKey = new JobKey(jobName, jobGroupName);
+//      JobDetail jobDetail;
+//      //add a task (if this task already exists, return this task directly)
+//      if (scheduler.checkExists(jobKey)) {
+//
+//        jobDetail = scheduler.getJobDetail(jobKey);
+//        if (jobDataMap != null) {
+//          jobDetail.getJobDataMap().putAll(jobDataMap);
+//        }
+//      } else {
+//        jobDetail = newJob(clazz).withIdentity(jobKey).build();
+//
+//        if (jobDataMap != null) {
+//          jobDetail.getJobDataMap().putAll(jobDataMap);
+//        }
+//
+//        scheduler.addJob(jobDetail, false, true);
+//
+//        logger.info("Add job, job name: {}, group name: {}",
+//                jobName, jobGroupName);
+//      }
+//
+//      TriggerKey triggerKey = new TriggerKey(jobName, jobGroupName);
+//
+//      /*
+//       * Instructs the Scheduler that upon a mis-fire
+//       * situation, the CronTrigger wants to have it's
+//       * next-fire-time updated to the next time in the schedule after the
+//       * current time (taking into account any associated Calendar),
+//       * but it does not want to be fired now.
+//       */
+//      CronTrigger cronTrigger = newTrigger().withIdentity(triggerKey).startAt(startDate).endAt(endDate)
+//              .withSchedule(cronSchedule(cronExpression).withMisfireHandlingInstructionDoNothing())
+//              .forJob(jobDetail).build();
+//
+//      if (scheduler.checkExists(triggerKey)) {
+//          // updateProcessInstance scheduler trigger when scheduler cycle changes
+//          CronTrigger oldCronTrigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+//          String oldCronExpression = oldCronTrigger.getCronExpression();
+//
+//          if (!StringUtils.equalsIgnoreCase(cronExpression,oldCronExpression)) {
+//            // reschedule job trigger
+//            scheduler.rescheduleJob(triggerKey, cronTrigger);
+//            logger.info("reschedule job trigger, triggerName: {}, triggerGroupName: {}, cronExpression: {}, startDate: {}, endDate: {}",
+//                    jobName, jobGroupName, cronExpression, startDate, endDate);
+//          }
+//      } else {
+//        scheduler.scheduleJob(cronTrigger);
+//        logger.info("schedule job trigger, triggerName: {}, triggerGroupName: {}, cronExpression: {}, startDate: {}, endDate: {}",
+//                jobName, jobGroupName, cronExpression, startDate, endDate);
+//      }
+//
+//    } catch (Exception e) {
+//      logger.error("add job failed", e);
+//      throw new RuntimeException("add job failed", e);
+//    } finally {
+//      lock.writeLock().unlock();
+//    }
+//  }
+
+  /**
+   * add task trigger , if this task already exists, return this task with updated trigger
+   *
+   * @param clazz job class name
+   * @param dataSourceId projectId
+   * @param schedule schedule
+   */
+
+  public void addJob(Class<? extends Job> clazz, long dataSourceId, final JobSchedule schedule) throws ParseException {
+   // String jobName = this.buildJobName(schedule.getId());
+    String jobName = this.buildJobName(schedule.getJobId());
+    String jobGroupName = this.buildJobGroupName(dataSourceId);
+
+    Map<String, Object> jobDataMap = this.buildDataMap(dataSourceId, schedule);
+    String cronExpression = schedule.getCron_expression();//"*/50 * * * * ? ";
+
+
+
+    /**
+     * transform from server default timezone to schedule timezone
+     * e.g. server default timezone is `UTC`
+     * user set a schedule with startTime `2022-04-28 10:00:00`, timezone is `Asia/Shanghai`,
+     * api skip to transform it and save into databases directly, startTime `2022-04-28 10:00:00`, timezone is `UTC`, which actually added 8 hours,
+     * so when add job to quartz, it should recover by transform timezone
+     */
+
+
+    Date startDate =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-11-01 08:30:20");
+    Date endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2024-11-01 08:30:20");
+
     lock.writeLock().lock();
     try {
 
@@ -92,15 +194,11 @@ public class QuartzExecutors {
       if (scheduler.checkExists(jobKey)) {
 
         jobDetail = scheduler.getJobDetail(jobKey);
-        if (jobDataMap != null) {
-          jobDetail.getJobDataMap().putAll(jobDataMap);
-        }
+        jobDetail.getJobDataMap().putAll(jobDataMap);
       } else {
         jobDetail = newJob(clazz).withIdentity(jobKey).build();
 
-        if (jobDataMap != null) {
-          jobDetail.getJobDataMap().putAll(jobDataMap);
-        }
+        jobDetail.getJobDataMap().putAll(jobDataMap);
 
         scheduler.addJob(jobDetail, false, true);
 
@@ -109,7 +207,6 @@ public class QuartzExecutors {
       }
 
       TriggerKey triggerKey = new TriggerKey(jobName, jobGroupName);
-
       /*
        * Instructs the Scheduler that upon a mis-fire
        * situation, the CronTrigger wants to have it's
@@ -117,21 +214,28 @@ public class QuartzExecutors {
        * current time (taking into account any associated Calendar),
        * but it does not want to be fired now.
        */
-      CronTrigger cronTrigger = newTrigger().withIdentity(triggerKey).startAt(startDate).endAt(endDate)
-              .withSchedule(cronSchedule(cronExpression).withMisfireHandlingInstructionDoNothing())
+
+      CronTrigger cronTrigger = newTrigger()
+              .withIdentity(triggerKey)
+              .startAt(startDate)
+              .endAt(endDate)
+              .withSchedule(
+                      cronSchedule(cronExpression)
+                              .withMisfireHandlingInstructionDoNothing()
+              )
               .forJob(jobDetail).build();
 
       if (scheduler.checkExists(triggerKey)) {
-          // updateProcessInstance scheduler trigger when scheduler cycle changes
-          CronTrigger oldCronTrigger = (CronTrigger) scheduler.getTrigger(triggerKey);
-          String oldCronExpression = oldCronTrigger.getCronExpression();
+        // updateProcessInstance scheduler trigger when scheduler cycle changes
+        CronTrigger oldCronTrigger = (CronTrigger) scheduler.getTrigger(triggerKey);
+        String oldCronExpression = oldCronTrigger.getCronExpression();
 
-          if (!StringUtils.equalsIgnoreCase(cronExpression,oldCronExpression)) {
-            // reschedule job trigger
-            scheduler.rescheduleJob(triggerKey, cronTrigger);
-            logger.info("reschedule job trigger, triggerName: {}, triggerGroupName: {}, cronExpression: {}, startDate: {}, endDate: {}",
-                    jobName, jobGroupName, cronExpression, startDate, endDate);
-          }
+        if (!StringUtils.equalsIgnoreCase(cronExpression, oldCronExpression)) {
+          // reschedule job trigger
+          scheduler.rescheduleJob(triggerKey, cronTrigger);
+          logger.info("reschedule job trigger, triggerName: {}, triggerGroupName: {}, cronExpression: {}, startDate: {}, endDate: {}",
+                  jobName, jobGroupName, cronExpression, startDate, endDate);
+        }
       } else {
         scheduler.scheduleJob(cronTrigger);
         logger.info("schedule job trigger, triggerName: {}, triggerGroupName: {}, cronExpression: {}, startDate: {}, endDate: {}",
@@ -146,7 +250,6 @@ public class QuartzExecutors {
     }
   }
 
-
   /**
    * delete job
    *
@@ -154,10 +257,12 @@ public class QuartzExecutors {
    * @param jobGroupName job group name
    * @return true if the Job was found and deleted.
    */
-  public boolean deleteJob(Scheduler scheduler, String jobName, String jobGroupName) {
+  public boolean deleteJob( long jobName, long jobGroupName) {
     lock.writeLock().lock();
     try {
-      JobKey jobKey = new JobKey(jobName,jobGroupName);
+      String jobname = this.buildJobName(jobName);
+      String jobgroupname = this.buildJobGroupName(jobGroupName);
+      JobKey jobKey = new JobKey(jobname,jobgroupname);
       if(scheduler.checkExists(jobKey)){
         logger.info("try to delete job, job name: {}, job group name: {},", jobName, jobGroupName);
         return scheduler.deleteJob(jobKey);
@@ -218,15 +323,14 @@ public class QuartzExecutors {
   /**
    *
    * @param dataSourceId dataSource id
-   * @param dataSourceJobId dataSource job id
-   * @param scheduleId schedule id
+   * @param schedule  schedule
    * @return map
    */
-  public static Map<String, Object> buildDataMap(Long dataSourceId, Long dataSourceJobId, int scheduleId) {
+  public static Map<String, Object> buildDataMap(Long dataSourceId, JobSchedule schedule) {
     Map<String, Object> dataMap = Maps.newHashMap();
     dataMap.put(DataVinesConstants.DATASOURCE_ID, dataSourceId);
-    dataMap.put(DataVinesConstants.JOB_ID, dataSourceJobId);
-    dataMap.put(DataVinesConstants.SCHEDULE_ID, scheduleId);
+    dataMap.put(DataVinesConstants.SCHEDULE_ID, schedule.getId());
+    dataMap.put(SCHEDULE, JSONUtils.toJsonString(schedule));
     return dataMap;
   }
 
