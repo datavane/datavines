@@ -37,6 +37,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service("JobScheduleService")
 public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSchedule>  implements JobScheduleService {
@@ -60,9 +62,13 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             jobSchedule.setCron_expression(cron);
 
             //quartzExecutor.deleteJob(jobSchedule.getJobId(), 1);
-            quartzExecutor.addJob(ScheduleJob.class, 1,  jobSchedule);
-
-            System.out.println(cron);
+         //   quartzExecutor.addJob(ScheduleJob.class, 1,  jobSchedule);
+            List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
+            if(jobScheduleList.size()>0){
+                log.info("delete jobschedul...");
+            }else {
+                log.info("insert jobschedule...");
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -18,9 +18,15 @@
 package io.datavines.server.coordinator.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface JobScheduleMapper extends BaseMapper<JobSchedule> {
+    @Select("SELECT * from dv_job_schedule WHERE job_id = #{jobId} ")
+    List<JobSchedule> listByDataJobId(long jobId);
 }
