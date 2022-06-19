@@ -24,7 +24,8 @@ public class DayCronImpl implements FunCron {
         String param = jobschedule.getParam();
         MapParam mapParam = JSONUtils.parseObject(param,MapParam.class);
         Map<String ,String>   parameter = mapParam.getParameter();
-        String mintute =parameter.get("minute");
+        String hour = parameter.get("hour");
+        String mintute = parameter.get("minute");
       //  String second =parameter.get("second");
 
         Cron cron = CronBuilder.cron(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ))
@@ -32,11 +33,10 @@ public class DayCronImpl implements FunCron {
                 .withDoW(questionMark())
                 .withMonth(always())
                 .withDoM(always())
-                .withHour(on(0))
+                .withHour(on(Integer.parseInt(hour)))
                 .withMinute(on(Integer.parseInt(mintute)))
                 .withSecond(on (0))
                 .instance();
-        System.out.println(cron.asString());
 
         return cron.asString();
     }
@@ -48,7 +48,7 @@ public class DayCronImpl implements FunCron {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        StrategyFactory.register(1, this);
+        StrategyFactory.register("day", this);
     }
 
 }

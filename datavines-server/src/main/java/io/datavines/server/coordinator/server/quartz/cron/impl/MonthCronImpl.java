@@ -30,7 +30,6 @@ public class MonthCronImpl implements FunCron {
                 .withMinute(on(5))
                 .withSecond(on (1))
                 .instance();
-        System.out.println(cron.asString());
         return cron.asString();
     }
 
@@ -40,7 +39,7 @@ public class MonthCronImpl implements FunCron {
     }
     @Override
     public void afterPropertiesSet() throws Exception {
-        StrategyFactory.register(2, this);
+        StrategyFactory.register("month", this);
     }
 
 }

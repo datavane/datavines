@@ -27,7 +27,7 @@ import java.util.List;
 
 public interface JobScheduleService {
 
-    long create(JobScheduleCreate jobScheduleCreateCreate) throws DataVinesServerException;
+    List<String> create(JobScheduleCreate jobScheduleCreateCreate) throws DataVinesServerException;
 
     int deleteById(long id);
 

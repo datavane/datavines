@@ -24,6 +24,7 @@ import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleUp
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
+import io.datavines.server.coordinator.repository.mapper.JobMapper;
 import io.datavines.server.coordinator.repository.mapper.JobScheduleMapper;
 import io.datavines.server.coordinator.repository.service.JobScheduleService;
 import io.datavines.server.coordinator.server.quartz.QuartzExecutors;
@@ -39,6 +40,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -47,9 +49,13 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
 
     @Autowired
     private QuartzExecutors quartzExecutor;
+
+    @Autowired
+    private JobMapper jobMapper;
     @Override
-    public long create(JobScheduleCreate jobScheduleCreateCreate) throws DataVinesServerException {
+    public List<String> create(JobScheduleCreate jobScheduleCreateCreate) throws DataVinesServerException {
         String cron = "";
+        List<String> listCron=new ArrayList<String>();
         try {
             JobSchedule jobSchedule = new JobSchedule();
             BeanUtils.copyProperties(jobScheduleCreateCreate, jobSchedule);
@@ -58,10 +64,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             ObjectMapper mapper = new ObjectMapper();
             String result1 = mapper.writeValueAsString(param);
             jobSchedule.setParam(result1);
-            log.info(result1);
-            FunCron api =  StrategyFactory.getByNum(1);
-            cron = api.funcDeal(jobSchedule);
-            jobSchedule.setCron_expression(cron);
+
             jobSchedule.setCreateBy(ContextHolder.getUserId());
             jobSchedule.setCreateTime(LocalDateTime.now());
             jobSchedule.setUpdateBy(ContextHolder.getUserId());
@@ -69,21 +72,41 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             jobSchedule.setStatus(true);
             jobSchedule.setStartTime(jobScheduleCreateCreate.getStartTime());
             jobSchedule.setEndTime(jobScheduleCreateCreate.getEndTime());
+            log.info("get jobSchedule parm:{}", result1);
+            if(type.equals("cycle")){
+                FunCron api =  StrategyFactory.getByType(param.getCycle());
+                cron = api.funcDeal(jobSchedule);
+                jobSchedule.setCron_expression(cron);
+            } else if (type.equals("cron")) {
+                cron = param.getCycle();
+                jobSchedule.setCron_expression(cron);
+            }else {
+                jobSchedule.setStatus(false);
+                baseMapper.insert(jobSchedule);
+                return listCron;
+            }
 
             List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
             if(jobScheduleList.size()>0){
                 baseMapper.deleteById(jobScheduleList.get(0).getId());
-                log.info("delete jobschedul...");
             }
-            quartzExecutor.addJob(ScheduleJob.class, 1,  jobSchedule);
+            Job job = jobMapper.selectById(jobSchedule.getJobId());
+            if (job == null) {
+                quartzExecutor.addJob(ScheduleJob.class, 1,  jobSchedule);
+            }else {
+                quartzExecutor.addJob(ScheduleJob.class, job.getDataSourceId(),  jobSchedule);
+            }
+
             baseMapper.insert(jobSchedule);
-            log.info("insert jobschedule...");
+            listCron.add(cron);
+            log.info("create jobschedule success: datasource id:{}, job id :{}",  job.getDataSourceId(), jobSchedule.getJobId());
+
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        return 0;
+        return listCron;
     }
 
     @Override

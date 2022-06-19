@@ -15,13 +15,13 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StrategyFactory {
 
 
-    private static Map<Integer, FunCron> services = new ConcurrentHashMap<>();
+    private static Map<String, FunCron> services = new ConcurrentHashMap<>();
 
-    public static FunCron getByNum(int type) {
+    public static FunCron getByType(String type) {
         return services.get(type);
     }
 
-    public static void register(int type, FunCron cronService) {
+    public static void register(String type, FunCron cronService) {
         Assert.notNull(type, "type can't be null");
         services.put(type, cronService);
     }
