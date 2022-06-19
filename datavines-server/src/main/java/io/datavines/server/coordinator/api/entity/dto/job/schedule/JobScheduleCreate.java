@@ -20,6 +20,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Data
 @NotNull(message = "Job Schedule Create cannot be null")
@@ -33,4 +34,8 @@ public class JobScheduleCreate {
 
    // @NotBlank(message = "job schedule param cannot be empty")
     private MapParam param;
+
+    private LocalDateTime startTime;
+
+    private LocalDateTime endTime;
 }

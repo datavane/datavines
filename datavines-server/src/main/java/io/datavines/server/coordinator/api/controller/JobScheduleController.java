@@ -22,6 +22,7 @@ import io.datavines.server.coordinator.api.entity.dto.job.JobCreate;
 import io.datavines.server.coordinator.api.entity.dto.job.JobUpdate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleUpdate;
+import io.datavines.server.coordinator.repository.entity.JobSchedule;
 import io.datavines.server.coordinator.repository.service.JobScheduleService;
 import io.datavines.server.coordinator.repository.service.JobService;
 import io.datavines.server.exception.DataVinesServerException;
@@ -33,6 +34,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Api(value = "job", tags = "job", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
@@ -67,6 +69,12 @@ public class JobScheduleController {
     @GetMapping(value = "/{id}")
     public Object getById(@PathVariable Long id)  {
         return jobScheduleService.getById(id);
+    }
+
+    @ApiOperation(value = "get list jobschedule by taskid")
+    @GetMapping(value = "/list/{taskId}")
+    public Object getlistByJobId(@PathVariable Long taskId)  {
+        return jobScheduleService.listByJobId(taskId);
     }
 
 

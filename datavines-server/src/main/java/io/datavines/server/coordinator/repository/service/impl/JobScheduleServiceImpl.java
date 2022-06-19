@@ -31,12 +31,14 @@ import io.datavines.server.coordinator.server.quartz.ScheduleJob;
 import io.datavines.server.coordinator.server.quartz.StrategyFactory;
 import io.datavines.server.coordinator.server.quartz.cron.FunCron;
 import io.datavines.server.exception.DataVinesServerException;
+import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -60,15 +62,23 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             FunCron api =  StrategyFactory.getByNum(1);
             cron = api.funcDeal(jobSchedule);
             jobSchedule.setCron_expression(cron);
+            jobSchedule.setCreateBy(ContextHolder.getUserId());
+            jobSchedule.setCreateTime(LocalDateTime.now());
+            jobSchedule.setUpdateBy(ContextHolder.getUserId());
+            jobSchedule.setUpdateTime(LocalDateTime.now());
+            jobSchedule.setStatus(true);
+            jobSchedule.setStartTime(jobScheduleCreateCreate.getStartTime());
+            jobSchedule.setEndTime(jobScheduleCreateCreate.getEndTime());
 
-            //quartzExecutor.deleteJob(jobSchedule.getJobId(), 1);
-         //   quartzExecutor.addJob(ScheduleJob.class, 1,  jobSchedule);
             List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
             if(jobScheduleList.size()>0){
+                baseMapper.deleteById(jobScheduleList.get(0).getId());
                 log.info("delete jobschedul...");
-            }else {
-                log.info("insert jobschedule...");
             }
+            quartzExecutor.addJob(ScheduleJob.class, 1,  jobSchedule);
+            baseMapper.insert(jobSchedule);
+            log.info("insert jobschedule...");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -78,15 +88,31 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
 
     @Override
     public int update(JobScheduleUpdate jobScheduleUpdate) throws DataVinesServerException {
+        Long id = jobScheduleUpdate.getId();
+        JobSchedule jobSchedule = baseMapper.selectById(id);
+        jobSchedule.setStatus(false);
+        Boolean deljob = quartzExecutor.deleteJob(id, 1);
+        if(! deljob ){
+            return 0;
+        }
+        baseMapper.updateById(jobSchedule);
         return 0;
     }
 
     @Override
     public int deleteById(long id) {
+        Boolean deljob = quartzExecutor.deleteJob(id, 1);
+        if(! deljob ){
+            return 0;
+        }
         return baseMapper.deleteById(id);
     }
 
-
+    @Override
+    public List<JobSchedule> listByJobId(Long jobId) {
+        List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobId);
+        return jobScheduleList;
+    }
 
     @Override
     public JobSchedule getById(long id) {

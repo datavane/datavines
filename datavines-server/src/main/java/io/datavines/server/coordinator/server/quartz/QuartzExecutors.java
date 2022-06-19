@@ -62,16 +62,10 @@ public class QuartzExecutors {
   private Scheduler scheduler;
   private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
-  private static final class Holder {
-    private static final QuartzExecutors INSTANCE = new QuartzExecutors();
-  }
 
   private QuartzExecutors() {
   }
 
-  public static QuartzExecutors getInstance() {
-    return Holder.INSTANCE;
-  }
 
 
   /**
