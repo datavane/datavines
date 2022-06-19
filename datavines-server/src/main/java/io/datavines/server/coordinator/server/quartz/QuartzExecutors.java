@@ -27,6 +27,10 @@ import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -72,18 +76,16 @@ public class QuartzExecutors {
    * add task trigger , if this task already exists, return this task with updated trigger
    *
    * @param clazz job class name
-   * @param dataSourceId projectId
+   * @param dataSourceId dataSource dd
    * @param schedule schedule
    */
 
   public void addJob(Class<? extends Job> clazz, long dataSourceId, final JobSchedule schedule) throws ParseException {
-   // String jobName = this.buildJobName(schedule.getId());
     String jobName = this.buildJobName(schedule.getJobId());
     String jobGroupName = this.buildJobGroupName(dataSourceId);
 
     Map<String, Object> jobDataMap = this.buildDataMap(dataSourceId, schedule);
-    String cronExpression = schedule.getCron_expression();//"*/50 * * * * ? ";
-
+    String cronExpression = schedule.getCron_expression();
 
 
     /**
@@ -94,9 +96,8 @@ public class QuartzExecutors {
      * so when add job to quartz, it should recover by transform timezone
      */
 
-
-    Date startDate =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-11-01 08:30:20");
-    Date endDate = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2024-11-01 08:30:20");
+    Date startDate = this.bulidDate(schedule.getStartTime());
+    Date endDate = this.bulidDate(schedule.getEndTime());
 
     lock.writeLock().lock();
     try {
@@ -245,6 +246,14 @@ public class QuartzExecutors {
     dataMap.put(DataVinesConstants.SCHEDULE_ID, schedule.getId());
     dataMap.put(SCHEDULE, JSONUtils.toJsonString(schedule));
     return dataMap;
+  }
+
+  public static Date bulidDate(LocalDateTime localDateTime){
+    ZoneId zoneId = ZoneId.systemDefault();
+    ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
+    Instant instant = zonedDateTime.toInstant();
+    Date date = Date.from(instant);
+    return date;
   }
 
 }
