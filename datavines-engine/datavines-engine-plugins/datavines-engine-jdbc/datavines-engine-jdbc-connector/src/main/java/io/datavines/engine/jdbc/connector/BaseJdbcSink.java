@@ -24,9 +24,10 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcRuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcSink;
 import io.datavines.engine.jdbc.api.entity.ResultList;
+import io.datavines.engine.jdbc.api.utils.LoggerFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,7 +39,7 @@ import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
 public class BaseJdbcSink implements JdbcSink {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseJdbcSink.class);
+    private Logger logger = LoggerFactory.getLogger(BaseJdbcSource.class);
 
     private Config config = new Config();
 
@@ -106,6 +107,7 @@ public class BaseJdbcSink implements JdbcSink {
                 case TASK_RESULT:
                     String sql = config.getString("sql");
                     sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
+                    logger.info("execute output sql : {}", sql);
                     executeInsert(sql, env);
                     break;
                 default:
@@ -114,7 +116,6 @@ public class BaseJdbcSink implements JdbcSink {
         } catch (SQLException e){
             logger.error("sink error : {}", e.getMessage());
         }
-
     }
 
     private void executeInsert(String sql, JdbcRuntimeEnvironment env) throws SQLException {

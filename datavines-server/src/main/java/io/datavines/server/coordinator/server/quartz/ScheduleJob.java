@@ -25,7 +25,7 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import io.datavines.server.DataVinesConstants;
+import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.coordinator.repository.service.impl.JobExternalService;

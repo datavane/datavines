@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import {
@@ -8,12 +9,14 @@ import Title from '../Title';
 import { layoutItem } from '../helper';
 import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
+import { TDetail, TParameterItem } from '../type';
 
 type InnerProps = {
-    form: FormInstance
+    form: FormInstance,
+    detail: TDetail
 }
 
-const Index = ({ form }: InnerProps) => {
+const Index = ({ form, detail }: InnerProps) => {
     const intl = useIntl();
     const { $http } = useRequest();
     const [expectedTypeList, setExpectedTypeList] = useState([]);
@@ -22,6 +25,16 @@ const Index = ({ form }: InnerProps) => {
         try {
             const res = await $http.get('metric/expectedValue/list');
             setExpectedTypeList(res || []);
+            if (detail && detail.id) {
+                const {
+                    expectedType, expected_value,
+                } = detail?.parameterItem || {} as TParameterItem;
+                const options: Record<string, any> = {
+                    expectedType,
+                    expected_value,
+                };
+                form.setFieldsValue(options);
+            }
         } catch (error) {
         }
     });
@@ -33,11 +46,6 @@ const Index = ({ form }: InnerProps) => {
                     <Form.Item
                         {...layoutItem}
                         rules={requiredRules}
-                        // rules={
-                        //     [
-                        //         { required: true, message: '123' },
-                        //     ]
-                        // }
                         label={intl.formatMessage({ id: 'dv_metric_expected_value_type' })}
                         name="expectedType"
                     >
