@@ -29,5 +29,22 @@
 
     <artifactId>datavines-connector-presto</artifactId>
 
+    <properties>
+        <presto.jdbc.version>0.238.1</presto.jdbc.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-connector-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.facebook.presto</groupId>
+            <artifactId>presto-jdbc</artifactId>
+            <version>${presto.jdbc.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

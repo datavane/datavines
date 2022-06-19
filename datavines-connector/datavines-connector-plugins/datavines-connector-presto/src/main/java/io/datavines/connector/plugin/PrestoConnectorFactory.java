@@ -14,23 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.jdbc.api.utils;
+package io.datavines.connector.plugin;
 
-import org.slf4j.Logger;
+import io.datavines.connector.api.Connector;
+import io.datavines.connector.api.ConnectorParameterConverter;
+import io.datavines.connector.api.Dialect;
+import io.datavines.connector.api.Executor;
 
-public class LoggerFactory {
+public class PrestoConnectorFactory extends JdbcConnectorFactory{
 
-    private static Logger logger;
-
-    public static void setLogger(Logger newLogger){
-        logger = newLogger;
+    @Override
+    public ConnectorParameterConverter getConnectorParameterConverter() {
+        return new PrestoConnectorParameterConverter();
     }
 
-    public static Logger getLogger(Class clazz) {
-        if (logger != null) {
-            return logger;
-        }   else {
-            return org.slf4j.LoggerFactory.getLogger(clazz);
-        }
+    @Override
+    public Connector getConnector() {
+        return new PrestoConnector();
+    }
+
+    @Override
+    public Dialect getDialect() {
+        return new PrestoDialect();
+    }
+
+    @Override
+    public Executor getExecutor() {
+        return new PrestoExecutor();
     }
 }

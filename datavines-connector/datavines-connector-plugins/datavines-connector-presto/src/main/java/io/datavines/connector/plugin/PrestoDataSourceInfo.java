@@ -14,23 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.jdbc.api.utils;
+package io.datavines.connector.plugin;
 
-import org.slf4j.Logger;
+import io.datavines.connector.plugin.datasource.BaseDataSourceInfo;
+import io.datavines.connector.plugin.datasource.ConnectionInfo;
 
-public class LoggerFactory {
+public class PrestoDataSourceInfo extends BaseDataSourceInfo {
 
-    private static Logger logger;
-
-    public static void setLogger(Logger newLogger){
-        logger = newLogger;
+    public PrestoDataSourceInfo(ConnectionInfo connectionInfo) {
+        super(connectionInfo);
     }
 
-    public static Logger getLogger(Class clazz) {
-        if (logger != null) {
-            return logger;
-        }   else {
-            return org.slf4j.LoggerFactory.getLogger(clazz);
-        }
+    @Override
+    public String getAddress() {
+        return "jdbc:presto" + "://" + getHost() + ":" + getPort();
+    }
+
+    @Override
+    public String getDriverClass() {
+        return "com.facebook.presto.jdbc.PrestoDriver";
+    }
+
+    @Override
+    public String getType() {
+        return "presto";
+    }
+
+    @Override
+    protected String getSeparator() {
+        return "?";
     }
 }

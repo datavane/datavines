@@ -14,23 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.jdbc.api.utils;
+package io.datavines.connector.plugin;
 
-import org.slf4j.Logger;
+import io.datavines.connector.api.ConnectorParameterConverter;
 
-public class LoggerFactory {
+import java.util.HashMap;
+import java.util.Map;
 
-    private static Logger logger;
+public class PrestoConnectorParameterConverter implements ConnectorParameterConverter {
 
-    public static void setLogger(Logger newLogger){
-        logger = newLogger;
-    }
-
-    public static Logger getLogger(Class clazz) {
-        if (logger != null) {
-            return logger;
-        }   else {
-            return org.slf4j.LoggerFactory.getLogger(clazz);
-        }
+    @Override
+    public Map<String, Object> converter(Map<String, Object> parameter) {
+        Map<String,Object> config = new HashMap<>();
+        config.put("table", parameter.get("table"));
+        config.put("user", parameter.get("user"));
+        config.put("password", parameter.get("password"));
+        config.put("url", String.format("jdbc:presto://%s:%s/%s",
+                parameter.get("host"),
+                parameter.get("port"),
+                parameter.get("database")));
+        return config;
     }
 }
