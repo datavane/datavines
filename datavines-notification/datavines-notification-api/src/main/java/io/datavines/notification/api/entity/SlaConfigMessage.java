@@ -14,23 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.notification.api.entity;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import io.datavines.server.coordinator.api.dto.vo.SlasVo;
-import io.datavines.server.coordinator.repository.entity.Slas;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-import java.util.List;
-import java.util.Set;
+import java.io.Serializable;
 
-public interface SlasService extends IService<Slas> {
+@Data
+@EqualsAndHashCode
+@ToString
+public class SlaConfigMessage implements Serializable {
 
-    List<SlasVo> listSlas(Long workSpaceId);
+    private static final long serialVersionUID = -1L;
 
-    boolean deleteById(Long id);
+    private Long id;
+    /**
+     *
+     */
+    private String type;
 
-    String getSenderConfigJson(String type);
-    String getReceiverConfigJson(String type);
+    /**
+     * receiver config like config email address and receiver type
+     */
+    private String config;
 
-    Set<String> getSupportPlugin();
 }

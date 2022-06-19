@@ -14,10 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.server.coordinator.api.dto.bo;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import io.datavines.server.coordinator.repository.entity.SlasReceiver;
+import lombok.Data;
 
-public interface SlasReceiverService extends IService<SlasReceiver> {
+@Data
+public class SlaCreate {
+    private String name;
+    private String description;
+    private Long workSpaceId;
 }

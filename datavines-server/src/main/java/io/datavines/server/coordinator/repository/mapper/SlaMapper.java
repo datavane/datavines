@@ -14,13 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.api.dto.bo;
+package io.datavines.server.coordinator.repository.mapper;
 
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.datavines.server.coordinator.api.dto.vo.SlaVo;
+import io.datavines.server.coordinator.repository.entity.Sla;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
-@Data
-public class SlasCreate {
-    private String name;
-    private String description;
-    private Long workSpaceId;
+import java.util.List;
+
+@Mapper
+public interface SlaMapper extends BaseMapper<Sla> {
+    List<SlaVo> listSlas(@Param("workSpaceId") Long workSpaceId);
 }

@@ -16,10 +16,10 @@
  */
 package io.datavines.notification.core.client.impl;
 
-import io.datavines.notification.api.entity.SlasNotificationMessage;
-import io.datavines.notification.api.entity.SlasNotificationResult;
-import io.datavines.notification.api.entity.SlasReceiverMessage;
-import io.datavines.notification.api.entity.SlasSenderMessage;
+import io.datavines.notification.api.entity.SlaNotificationMessage;
+import io.datavines.notification.api.entity.SlaNotificationResult;
+import io.datavines.notification.api.entity.SlaConfigMessage;
+import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.NotificationManager;
 import io.datavines.notification.core.client.NotificationClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +35,8 @@ public class NotificationClientImpl implements NotificationClient {
     private NotificationManager notificationManager;
 
     @Override
-    public SlasNotificationResult notify(SlasNotificationMessage slasNotificationMessage, Map<SlasSenderMessage, Set<SlasReceiverMessage>> config) {
-        SlasNotificationResult result = notificationManager.notify(slasNotificationMessage, config);
+    public SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config) {
+        SlaNotificationResult result = notificationManager.notify(slaNotificationMessage, config);
         return result;
     }
 }

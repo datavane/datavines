@@ -14,17 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.mapper;
+package io.datavines.server.coordinator.repository.service;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.datavines.server.coordinator.api.dto.vo.SlasVo;
-import io.datavines.server.coordinator.repository.entity.Slas;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.coordinator.api.dto.vo.SlaVo;
+import io.datavines.server.coordinator.repository.entity.Sla;
 
 import java.util.List;
+import java.util.Set;
 
-@Mapper
-public interface SlasMapper extends BaseMapper<Slas> {
-    List<SlasVo> listSlas(@Param("workSpaceId") Long workSpaceId);
+public interface SlaService extends IService<Sla> {
+
+    List<SlaVo> listSlas(Long workSpaceId);
+
+    boolean deleteById(Long id);
+
+    String getSenderConfigJson(String type);
+
+    Set<String> getSupportPlugin();
 }

@@ -14,17 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.api.dto.vo;
+package io.datavines.server.coordinator.repository.service.impl;
 
-import lombok.Data;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.server.coordinator.repository.entity.SlaSender;
+import io.datavines.server.coordinator.repository.mapper.SlaSenderMapper;
+import io.datavines.server.coordinator.repository.service.SlaSenderService;
+import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
-@Data
-public class SlasVo {
-    private Long id;
-    private String name;
-    private Integer jobs;
-    private String updater;
-    private LocalDateTime updateTime;
+@Service
+public class SlaSenderServiceImpl extends ServiceImpl<SlaSenderMapper, SlaSender> implements SlaSenderService {
 }

@@ -28,24 +28,29 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("dv_slas_job")
 @EqualsAndHashCode
 @ToString
-public class SlasJob {
-
+@TableName("dv_sla_notification")
+public class SlaNotification {
     private static final long serialVersionUID = -1L;
 
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
 
+    @TableField(value = "type")
+    private String type;
+
     @TableField(value = "work_space_id")
     private Long workSpaceId;
 
-    @TableField(value = "slas_id")
-    private Long slasId;
+    @TableField(value = "sla_id")
+    private Long slaId;
 
-    @TableField(value = "job_id")
-    private Long jobId;
+    @TableField(value = "sender_id")
+    private Long senderId;
+
+    @TableField(value = "config")
+    private String config;
 
     @TableField(value = "create_by")
     private Long createBy;

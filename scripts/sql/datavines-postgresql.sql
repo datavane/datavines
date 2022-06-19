@@ -312,68 +312,55 @@ CREATE TABLE dv_user (
 );
 
 
-DROP TABLE IF EXISTS dv_slas;
-CREATE TABLE dv_slas (
-    id bigserial NOT NULL,
-    work_space_id bigserial NOT NULL,
+DROP TABLE IF EXISTS dv_sla;
+CREATE TABLE dv_sla (
+    id bigint NOT NULL,
+    work_space_id bigint NOT NULL,
     name varchar(255) NOT NULL,
-    create_by int8 DEFAULT NULL,
-    create_time timestamp(0) default current_timestamp,
-    update_by int8 DEFAULT NULL,
-    update_time timestamp(0) default current_timestamp
+    create_by bigint DEFAULT NULL,
+    create_time timestamp default current_timestamp,
+    update_by bigint DEFAULT NULL,
+    update_time timestamp default current_timestamp
 );
 
-DROP TABLE IF EXISTS dv_slas_job;
-CREATE TABLE dv_slas_job (
-    id bigserial NOT NULL,
-    work_space_id bigserial NOT NULL,
-    slas_id bigserial NOT NULL,
-    job_id bigserial NOT NULL,
-    create_by int8 DEFAULT NULL,
-    create_time timestamp(0) DEFAULT NULL,
-    update_by int8 DEFAULT NULL,
-    update_time timestamp(0) DEFAULT NULL
+DROP TABLE IF EXISTS dv_sla_job;
+CREATE TABLE dv_sla_job (
+    id bigint NOT NULL,
+    work_space_id bigint NOT NULL,
+    sla_id bigint NOT NULL,
+    job_id bigint NOT NULL,
+    create_by bigint DEFAULT NULL,
+    create_time timestamp default current_timestamp,
+    update_by bigint DEFAULT NULL,
+    update_time timestamp default current_timestamp
 );
 
-DROP TABLE if EXISTS dv_slas_notification;
-CREATE TABLE dv_slas_notification(
-    id bigserial NOT NULL,
+DROP TABLE if EXISTS dv_sla_notification;
+CREATE TABLE dv_sla_notification(
+    id bigint NOT NULL,
     type VARCHAR(40) NOT NULL,
-    work_space_id bigserial NOT NULL,
-    slas_id bigserial NOT NULL,
-    sender_id bigserial NOT null,
+    work_space_id bigint NOT NULL,
+    sla_id bigint NOT NULL,
+    sender_id bigint NOT null,
     config text DEFAULT NULL ,
-    receiver_id bigserial NOT NULL,
-    create_by int8 DEFAULT NULL,
-    create_time TIMESTAMP(0) DEFAULT NULL,
-    update_by int8 DEFAULT NULL,
-    update_time TIMESTAMP(0) DEFAULT NULL
+    create_by bigint DEFAULT NULL,
+    create_time timestamp default current_timestamp,
+    update_by bigint DEFAULT NULL,
+    update_time timestamp default current_timestamp
 );
 
-DROP TABLE dv_slas_sender
-CREATE TABLE dv_slas_sender(
-    id bigserial NOT NULL,
+DROP TABLE if exists dv_sla_sender;
+CREATE TABLE dv_sla_sender(
+    id bigint NOT NULL,
     type VARCHAR(40) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    work_space_id bigserial NOT NULL,
+    work_space_id bigint NOT NULL,
     config text NOT NULL,
-    create_by int8 DEFAULT NULL,
-    create_time timestamp(0) DEFAULT NULL,
-    update_by int8 DEFAULT NULL,
-    update_time timestamp(0) DEFAULT NULL
+    create_by bigint DEFAULT NULL,
+    create_time timestamp default current_timestamp,
+    update_by bigint DEFAULT NULL,
+    update_time timestamp default current_timestamp
 );
 
-DROP TABLE dv_slas_receiver ;
-CREATE TABLE dv_slas_receiver(
-    id bigserial NOT NULL,
-    type VARCHAR(20) NOT NULL,
-    name VARCHAR(255) NOT NULL,
-    work_space_id bigserial NOT NULL,
-    config text NOT NULL,
-    create_by int8 DEFAULT NULL,
-    create_time timestamp(0) DEFAULT NULL,
-    update_by int8 DEFAULT NULL,
-    update_time timestamp(0) DEFAULT NULL
-);
 
 INSERT INTO dv_user (id, username, password, email, phone, admin, create_time, update_time) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');

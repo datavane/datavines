@@ -14,16 +14,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.mapper;
+package io.datavines.server.coordinator.repository.service;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.datavines.notification.api.entity.SlasReceiverMessage;
-import io.datavines.server.coordinator.repository.entity.SlasNotification;
-import org.apache.ibatis.annotations.Mapper;
+import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.notification.api.entity.SlaConfigMessage;
+import io.datavines.notification.api.entity.SlaSenderMessage;
+import io.datavines.server.coordinator.repository.entity.SlaNotification;
 
+import java.util.Map;
 import java.util.Set;
 
-@Mapper
-public interface SlasNotificationMapper extends BaseMapper<SlasNotification> {
-    Set<SlasReceiverMessage> listReceiverMessageBySlasId(Long id);
+public interface SlaNotificationService extends IService<SlaNotification>{
+    Map<SlaSenderMessage, Set<SlaConfigMessage>> getSlasNotificationConfigurationBySlasId(Long slasId);
+
+    String getConfigJson(String type);
 }

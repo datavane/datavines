@@ -16,13 +16,19 @@
  */
 package io.datavines.server.coordinator.api.dto.bo;
 
+
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 @Data
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
-public class SlasUpdate extends SlasCreate {
-    private Long id;
+@ToString
+public class SlaSenderCreate {
+
+    private Long workSpaceId;
+
+    private String type;
+
+    private String name;
+
+    private String config;
 }

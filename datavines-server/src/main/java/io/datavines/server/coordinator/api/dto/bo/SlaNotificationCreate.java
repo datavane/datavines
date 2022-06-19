@@ -14,33 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.notification.api.entity;
+package io.datavines.server.coordinator.api.dto.bo;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.io.Serializable;
-import java.util.List;
-
-@Data
-@EqualsAndHashCode
 @ToString
-public class SlasNotificationResult implements Serializable {
+@EqualsAndHashCode
+@Data
+public class SlaNotificationCreate {
 
-    private static final long serialVersionUID = -1L;
+    private String type;
 
-    private Boolean status;
+    private Long workSpaceId;
 
-    private List<SlasNotificationResultRecord> records;
+    private Long slasId;
 
-    public SlasNotificationResult(){
-        this.status = false;
-    }
+    private Long senderId;
 
-    public SlasNotificationResult merge(SlasNotificationResult other){
-        this.status = this.status && other.status;
-        this.records.addAll(other.getRecords());
-        return this;
-    }
+    private Long receiverId;
+
+    private String config;
 }

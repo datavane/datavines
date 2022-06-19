@@ -16,10 +16,10 @@
  */
 package io.datavines.notification.api.spi;
 
-import io.datavines.notification.api.entity.SlasNotificationMessage;
-import io.datavines.notification.api.entity.SlasNotificationResult;
-import io.datavines.notification.api.entity.SlasReceiverMessage;
-import io.datavines.notification.api.entity.SlasSenderMessage;
+import io.datavines.notification.api.entity.SlaNotificationMessage;
+import io.datavines.notification.api.entity.SlaNotificationResult;
+import io.datavines.notification.api.entity.SlaConfigMessage;
+import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.spi.SPI;
 
 import java.util.Map;
@@ -30,14 +30,13 @@ import java.util.Set;
 public interface SlasHandlerPlugin {
     /**
      * save message to db then send message to receiver , return the status finally
-     * @param slasNotificationMessage issue message a
+     * @param slaNotificationMessage issue message a
      * @return send status
      */
-    SlasNotificationResult notify(SlasNotificationMessage slasNotificationMessage, Map<SlasSenderMessage, Set<SlasReceiverMessage>> config);
+    SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config);
 
     String getConfigSenderJson();
 
     String getConfigJson();
 
-    String getConfigReceiverJson();
 }

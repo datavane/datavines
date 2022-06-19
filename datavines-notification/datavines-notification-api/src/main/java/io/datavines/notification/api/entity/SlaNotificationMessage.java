@@ -25,7 +25,7 @@ import java.io.Serializable;
 @Data
 @EqualsAndHashCode
 @ToString
-public class SlasNotificationMessage implements Serializable {
+public class SlaNotificationMessage implements Serializable {
 
     private Long slasId;
 

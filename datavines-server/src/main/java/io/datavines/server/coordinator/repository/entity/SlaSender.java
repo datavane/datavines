@@ -28,23 +28,23 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("dv_slas_receiver")
+@TableName("dv_sla_sender")
 @EqualsAndHashCode
 @ToString
-public class SlasReceiver {
+public class SlaSender {
     private static final long serialVersionUID = -1L;
 
     @TableId(type = IdType.ASSIGN_ID)
     private Long id;
+
+    @TableField(value = "work_space_id")
+    private Long workSpaceId;
 
     @TableField(value = "type")
     private String type;
 
     @TableField(value = "name")
     private String name;
-
-    @TableField(value = "work_space_id")
-    private Long workSpaceId;
 
     @TableField(value = "config")
     private String config;
