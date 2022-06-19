@@ -21,8 +21,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.sun.mail.smtp.SMTPProvider;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
-import io.datavines.notification.api.entity.SlasNotificationResultRecord;
-import io.datavines.notification.api.entity.SlasSenderMessage;
+import io.datavines.notification.api.entity.SlaNotificationResultRecord;
+import io.datavines.notification.api.entity.SlaSenderMessage;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +55,7 @@ public class EMailSender {
     private String sslTrust;
     private String mustNotNull = " must not be null";
 
-    public EMailSender(SlasSenderMessage senderMessage) {
+    public EMailSender(SlaSenderMessage senderMessage) {
 
         String configString = senderMessage.getConfig();
         Map<String, String> config = JSONUtils.toMap(configString);
@@ -87,8 +87,8 @@ public class EMailSender {
         requireNonNull(sslTrust, "smtpSslTrust" + mustNotNull);
     }
 
-    public SlasNotificationResultRecord sendMails(Set<String> receiverSet, Set<String> copyReceiverSet, String subject, String message){
-        SlasNotificationResultRecord result = new SlasNotificationResultRecord();
+    public SlaNotificationResultRecord sendMails(Set<String> receiverSet, Set<String> copyReceiverSet, String subject, String message){
+        SlaNotificationResultRecord result = new SlaNotificationResultRecord();
 
         // if there is no receivers && no receiversCc, no need to process
         if (CollectionUtils.isEmpty(receiverSet)) {

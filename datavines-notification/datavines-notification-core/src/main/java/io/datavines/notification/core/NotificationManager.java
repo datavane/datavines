@@ -17,10 +17,10 @@
 package io.datavines.notification.core;
 
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.notification.api.entity.SlasNotificationMessage;
-import io.datavines.notification.api.entity.SlasNotificationResult;
-import io.datavines.notification.api.entity.SlasReceiverMessage;
-import io.datavines.notification.api.entity.SlasSenderMessage;
+import io.datavines.notification.api.entity.SlaNotificationMessage;
+import io.datavines.notification.api.entity.SlaNotificationResult;
+import io.datavines.notification.api.entity.SlaConfigMessage;
+import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
@@ -43,14 +43,14 @@ public class NotificationManager {
     }
 
 
-    public SlasNotificationResult notify(SlasNotificationMessage slasNotificationMessage, Map<SlasSenderMessage, Set<SlasReceiverMessage>> config){
+    public SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config){
         if (config == null || config.isEmpty()){
             throw new DataVinesException("message cannot be send without sender and receiver");
         }
-        SlasNotificationResult result = new SlasNotificationResult();
+        SlaNotificationResult result = new SlaNotificationResult();
         result.setStatus(true);
 
-        for(Map.Entry<SlasSenderMessage, Set<SlasReceiverMessage>> entry: config.entrySet()){
+        for(Map.Entry<SlaSenderMessage, Set<SlaConfigMessage>> entry: config.entrySet()){
             String type = entry.getKey().getType();
             if (supportedPlugins.contains(type)){
                 throw new DataVinesException("sender type not support of "+ type);
@@ -58,12 +58,12 @@ public class NotificationManager {
             SlasHandlerPlugin handlerPlugin = PluginLoader
                     .getPluginLoader(SlasHandlerPlugin.class)
                     .getOrCreatePlugin(type);
-            Map<SlasSenderMessage, Set<SlasReceiverMessage>> senderEntity = new HashMap(){
+            Map<SlaSenderMessage, Set<SlaConfigMessage>> senderEntity = new HashMap(){
                 {
                     put(entry.getKey(), entry.getValue());
                 }
             };
-            SlasNotificationResult entryResult = handlerPlugin.notify(slasNotificationMessage, senderEntity);
+            SlaNotificationResult entryResult = handlerPlugin.notify(slaNotificationMessage, senderEntity);
             result.merge(entryResult);
         }
         return result;

@@ -28,10 +28,10 @@ import lombok.ToString;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("dv_slas")
+@TableName("dv_sla_job")
 @EqualsAndHashCode
 @ToString
-public class Slas {
+public class SlaJob {
 
     private static final long serialVersionUID = -1L;
 
@@ -41,8 +41,11 @@ public class Slas {
     @TableField(value = "work_space_id")
     private Long workSpaceId;
 
-    @TableField(value = "name")
-    private String name;
+    @TableField(value = "sla_id")
+    private Long slaId;
+
+    @TableField(value = "job_id")
+    private Long jobId;
 
     @TableField(value = "create_by")
     private Long createBy;

@@ -16,16 +16,16 @@
  */
 package io.datavines.notification.core.client;
 
-import io.datavines.notification.api.entity.SlasNotificationMessage;
-import io.datavines.notification.api.entity.SlasNotificationResult;
-import io.datavines.notification.api.entity.SlasReceiverMessage;
-import io.datavines.notification.api.entity.SlasSenderMessage;
+import io.datavines.notification.api.entity.SlaNotificationMessage;
+import io.datavines.notification.api.entity.SlaNotificationResult;
+import io.datavines.notification.api.entity.SlaConfigMessage;
+import io.datavines.notification.api.entity.SlaSenderMessage;
 
 import java.util.Map;
 import java.util.Set;
 
 public interface NotificationClient {
 
-    SlasNotificationResult notify(SlasNotificationMessage slasNotificationMessage, Map<SlasSenderMessage, Set<SlasReceiverMessage>> config);
+    SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config);
 
 }

@@ -14,12 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.mapper;
+package io.datavines.server.coordinator.repository.service;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.datavines.server.coordinator.repository.entity.SlasSender;
-import org.apache.ibatis.annotations.Mapper;
+import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.coordinator.repository.entity.SlaSender;
 
-@Mapper
-public interface SlasSenderMapper extends BaseMapper<SlasSender> {
+public interface SlaSenderService extends IService<SlaSender> {
 }

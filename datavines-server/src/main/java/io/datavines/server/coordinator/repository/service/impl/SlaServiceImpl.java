@@ -19,12 +19,12 @@ package io.datavines.server.coordinator.repository.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
-import io.datavines.server.coordinator.api.dto.vo.SlasVo;
-import io.datavines.server.coordinator.repository.entity.Slas;
-import io.datavines.server.coordinator.repository.entity.SlasJob;
-import io.datavines.server.coordinator.repository.mapper.SlasMapper;
+import io.datavines.server.coordinator.api.dto.vo.SlaVo;
+import io.datavines.server.coordinator.repository.entity.Sla;
+import io.datavines.server.coordinator.repository.entity.SlaJob;
+import io.datavines.server.coordinator.repository.mapper.SlaMapper;
 import io.datavines.server.coordinator.repository.service.SlasJobService;
-import io.datavines.server.coordinator.repository.service.SlasService;
+import io.datavines.server.coordinator.repository.service.SlaService;
 import io.datavines.spi.PluginLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,17 +34,17 @@ import java.util.List;
 import java.util.Set;
 
 @Service
-public class SlasServiceImpl extends ServiceImpl<SlasMapper, Slas> implements SlasService {
+public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaService {
 
     @Autowired
-    private SlasMapper slasMapper;
+    private SlaMapper slaMapper;
 
     @Autowired
     private SlasJobService slasJobService;
 
     @Override
-    public List<SlasVo> listSlas(Long workSpaceId) {
-        List<SlasVo> res = slasMapper.listSlas(workSpaceId);
+    public List<SlaVo> listSlas(Long workSpaceId) {
+        List<SlaVo> res = slaMapper.listSlas(workSpaceId);
         return res;
     }
 
@@ -52,8 +52,8 @@ public class SlasServiceImpl extends ServiceImpl<SlasMapper, Slas> implements Sl
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteById(Long id) {
         boolean removeSlas = removeById(id);
-        LambdaQueryWrapper<SlasJob> lambda = new LambdaQueryWrapper<>();
-        lambda.eq(SlasJob::getSlasId, id);
+        LambdaQueryWrapper<SlaJob> lambda = new LambdaQueryWrapper<>();
+        lambda.eq(SlaJob::getSlaId, id);
         boolean removeSlasJob = slasJobService.remove(lambda);
         boolean result = removeSlas && removeSlasJob;
         return result;
@@ -67,13 +67,6 @@ public class SlasServiceImpl extends ServiceImpl<SlasMapper, Slas> implements Sl
                 .getConfigSenderJson();
     }
 
-    @Override
-    public String getReceiverConfigJson(String type) {
-        return PluginLoader
-                .getPluginLoader(SlasHandlerPlugin.class)
-                .getOrCreatePlugin(type)
-                .getConfigReceiverJson();
-    }
 
     @Override
     public Set<String> getSupportPlugin(){

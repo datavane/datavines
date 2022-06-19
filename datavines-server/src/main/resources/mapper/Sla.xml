@@ -18,10 +18,26 @@
 
 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.datavines.server.coordinator.repository.mapper.SlasNotificationMapper">
+<mapper namespace="io.datavines.server.coordinator.repository.mapper.SlaMapper">
 
-    <select id="listReceiverMessageBySlasId" resultType="io.datavines.notification.api.entity.SlasReceiverMessage" parameterType="java.lang.Long">
-        select dsn.type, dsn.config as notificationConfig, dsr.config, dsr.id  from dv_slas_notification dsn left join dv_slas_receiver dsr on dsn.receiver_id = dsr.id
+    <select id="listSlas" resultType="io.datavines.server.coordinator.api.dto.vo.SlaVo" parameterType="java.lang.Long">
+        SELECT sla.id,
+            sla.name,
+            slagroup.jobs,
+            du.username AS creator,
+            sla.update_time
+            FROM dv_sla sla
+        LEFT JOIN
+            (SELECT sla_id,
+            count(job_id) AS jobs
+            FROM dv_sla_job
+            WHERE work_space_id = ${workSpaceId}
+                GROUP BY  sla_id
+            )slagroup
+        ON sla .id = slagroup.sla_id
+        LEFT JOIN
+            dv_user du
+        ON sla.update_by = du.id
     </select>
 
 </mapper>

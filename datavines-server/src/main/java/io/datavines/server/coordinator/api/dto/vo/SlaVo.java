@@ -14,14 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.service.impl;
+package io.datavines.server.coordinator.api.dto.vo;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.datavines.server.coordinator.repository.entity.SlasReceiver;
-import io.datavines.server.coordinator.repository.mapper.SlasReceiverMapper;
-import io.datavines.server.coordinator.repository.service.SlasReceiverService;
-import org.springframework.stereotype.Service;
+import lombok.Data;
 
-@Service
-public class SlasReceiverServiceImpl extends ServiceImpl<SlasReceiverMapper, SlasReceiver> implements SlasReceiverService {
+import java.time.LocalDateTime;
+
+@Data
+public class SlaVo {
+    private Long id;
+    private String name;
+    private Integer jobs;
+    private String updater;
+    private LocalDateTime updateTime;
 }

@@ -20,28 +20,17 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.io.Serializable;
-
 @Data
-@EqualsAndHashCode
 @ToString
-public class SlasReceiverMessage implements Serializable {
-
+@EqualsAndHashCode
+public class SlaNotificationResultRecord {
     private static final long serialVersionUID = -1L;
 
-    private Long id;
-    /**
-     *
-     */
-    private String type;
+    private Boolean status;
 
-    /**
-     * receiver config like config email address
-     */
-    private String config;
+    private String message;
 
-    /**
-     * notification config like config email is receiver or copy
-     */
-    private String notificationConfig;
+    public SlaNotificationResultRecord(){
+        this.status = false;
+    }
 }

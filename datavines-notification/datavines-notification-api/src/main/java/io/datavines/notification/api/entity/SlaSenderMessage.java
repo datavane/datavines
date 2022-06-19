@@ -14,12 +14,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.mapper;
+package io.datavines.notification.api.entity;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.datavines.server.coordinator.repository.entity.SlasJob;
-import org.apache.ibatis.annotations.Mapper;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Mapper
-public interface SlasJobMapper extends BaseMapper<SlasJob> {
+import java.io.Serializable;
+
+@Data
+@EqualsAndHashCode
+@ToString
+public class SlaSenderMessage implements Serializable {
+
+    private static final long serialVersionUID = -1L;
+
+    private Long id;
+
+    private Long workSpaceId;
+
+    private String type;
+
+    private String name;
+
+    private String config;
 }

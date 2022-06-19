@@ -14,12 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.mapper;
+package io.datavines.server.coordinator.api.dto.bo;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.datavines.server.coordinator.repository.entity.SlasReceiver;
-import org.apache.ibatis.annotations.Mapper;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Mapper
-public interface SlasReceiverMapper extends BaseMapper<SlasReceiver> {
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class SlaUpdate extends SlaCreate {
+    private Long id;
 }

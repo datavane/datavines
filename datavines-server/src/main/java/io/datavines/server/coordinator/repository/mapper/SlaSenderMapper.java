@@ -14,23 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.notification.api.entity;
+package io.datavines.server.coordinator.repository.mapper;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.datavines.server.coordinator.repository.entity.SlaSender;
+import org.apache.ibatis.annotations.Mapper;
 
-@Data
-@ToString
-@EqualsAndHashCode
-public class SlasNotificationResultRecord {
-    private static final long serialVersionUID = -1L;
-
-    private Boolean status;
-
-    private String message;
-
-    public SlasNotificationResultRecord(){
-        this.status = false;
-    }
+@Mapper
+public interface SlaSenderMapper extends BaseMapper<SlaSender> {
 }
