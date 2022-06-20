@@ -29,6 +29,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>datavines-notification</artifactId>
+    <packaging>pom</packaging>
+    <modules>
+        <module>datavines-notification-core</module>
+        <module>datavines-notification-api</module>
+        <module>datavines-notification-plugins</module>
+    </modules>
+
 
 
 </project>

@@ -22,7 +22,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
 import io.datavines.server.coordinator.api.entity.vo.TaskVO;
 import io.datavines.server.coordinator.repository.entity.Task;
-import io.datavines.server.exception.DataVinesServerException;
+import io.datavines.core.exception.DataVinesServerException;
 
 public interface TaskService {
 

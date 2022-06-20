@@ -17,8 +17,9 @@
 package io.datavines.engine.jdbc.connector;
 
 import io.datavines.common.config.Config;
+import io.datavines.common.utils.JSONUtils;
+import io.datavines.engine.jdbc.api.utils.LoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -26,9 +27,8 @@ import java.sql.SQLException;
 
 public class ConnectionUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(ConnectionUtils.class);
-
     public static Connection getConnection(Config config) {
+        Logger logger = LoggerFactory.getLogger(ConnectionUtils.class);
         String driver = config.getString("driver");
         String url = config.getString("url");
         String username = config.getString("user");
@@ -44,8 +44,9 @@ public class ConnectionUtils {
             connection = DriverManager.getConnection(url, username, password);
         } catch (SQLException exception) {
             logger.error("get connection error: " + exception.getLocalizedMessage());
-
         }
+
+        logger.info("create connection success : {}", url + "[username=" + username + "]");
 
         return connection;
     }

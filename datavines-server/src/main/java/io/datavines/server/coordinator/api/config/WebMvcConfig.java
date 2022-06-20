@@ -16,7 +16,7 @@
  */
 package io.datavines.server.coordinator.api.config;
 
-import io.datavines.server.DataVinesConstants;
+import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.coordinator.api.inteceptor.AuthenticationInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,7 +32,8 @@ import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import java.util.Collections;
 import java.util.Locale;
 
-import static io.datavines.server.DataVinesConstants.LOCALE_LANGUAGE_COOKIE;
+import static io.datavines.core.constant.DataVinesConstants.LOCALE_LANGUAGE_COOKIE;
+
 
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurationSupport {

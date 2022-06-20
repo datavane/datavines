@@ -8,13 +8,12 @@ import {
     IF, usePersistFn, useWatch, useLoading,
 } from '@/common';
 import ContentLayout from '@/component/ContentLayout';
-import SearchForm from './SearchForm';
+import { Title, SearchForm } from '@/component';
 import CardList from './List/Card';
 import TableList from './List/Table';
 import { useAddDataSource } from './AddDataSource';
 import { $http } from '@/http';
 import { useSelector, useDatasourceActions } from '@/store';
-import { Title } from '@/component';
 
 function App() {
     const history = useHistory();

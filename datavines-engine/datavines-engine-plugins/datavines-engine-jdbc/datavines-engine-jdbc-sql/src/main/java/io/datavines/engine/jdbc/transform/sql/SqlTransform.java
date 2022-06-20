@@ -23,15 +23,16 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcRuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcTransform;
 import io.datavines.engine.jdbc.api.entity.ResultList;
+import io.datavines.engine.jdbc.api.utils.LoggerFactory;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SqlTransform implements JdbcTransform {
 
-    private static final Logger logger = LoggerFactory.getLogger(SqlTransform.class);
+    private Logger logger = LoggerFactory.getLogger(SqlTransform.class);
 
     private Config config = new Config();
 
