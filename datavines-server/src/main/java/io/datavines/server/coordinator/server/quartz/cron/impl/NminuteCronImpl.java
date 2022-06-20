@@ -19,9 +19,7 @@ package io.datavines.server.coordinator.server.quartz.cron.impl;
 import com.cronutils.builder.CronBuilder;
 import com.cronutils.model.Cron;
 import com.cronutils.model.CronType;
-import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
-import com.cronutils.model.field.expression.Weekdays;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
@@ -35,27 +33,24 @@ import static com.cronutils.model.field.expression.FieldExpressionFactory.*;
 import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
 
 @Service
-public class WeekCronImpl implements FunCron {
+public class NminuteCronImpl implements FunCron {
+
     @Override
     public String funcDeal(JobSchedule jobschedule) {
         String param = jobschedule.getParam();
         MapParam mapParam = JSONUtils.parseObject(param,MapParam.class);
         Map<String ,String> parameter = mapParam.getParameter();
-        Integer wday = Integer.parseInt(parameter.get("wday"));
-        Integer hour =  Integer.parseInt(parameter.get("hour"));
+        Integer nminute = Integer.parseInt(parameter.get("nminute"));
         Integer minute = Integer.parseInt(parameter.get("minute"));
-
-
         Cron cron = CronBuilder.cron(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ))
                 .withYear(always())
+                .withDoW(questionMark())
                 .withMonth(always())
-                .withDoW(on(wday))
-                .withDoM(questionMark())
-                .withHour(on(hour))
-                .withMinute(on(minute))
-                .withSecond(on(0))
+                .withDoM(always())
+                .withHour(always())
+                .withMinute(every(on(minute),nminute))
+                .withSecond(on (0))
                 .instance();
-
         return cron.asString();
     }
 
@@ -63,9 +58,8 @@ public class WeekCronImpl implements FunCron {
     public String getFuncName(){
         return "";
     }
-
     @Override
     public void afterPropertiesSet() throws Exception {
-        StrategyFactory.register("week", this);
+        StrategyFactory.register("nminute", this);
     }
 }
