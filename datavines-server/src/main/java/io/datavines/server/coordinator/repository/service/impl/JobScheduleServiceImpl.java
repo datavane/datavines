@@ -84,6 +84,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
                 jobSchedule.setCron_expression(cron);
             }else {
                 jobSchedule.setStatus(false);
+                baseMapper.deleteFromJobId(jobSchedule.getJobId());
                 baseMapper.insert(jobSchedule);
                 return listCron;
             }

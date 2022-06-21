@@ -20,6 +20,7 @@ package io.datavines.server.coordinator.repository.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -29,4 +30,6 @@ import java.util.List;
 public interface JobScheduleMapper extends BaseMapper<JobSchedule> {
     @Select("SELECT * from dv_job_schedule WHERE job_id = #{jobId} ")
     List<JobSchedule> listByDataJobId(long jobId);
+    @Delete("delete from dv_job_schedule WHERE job_id = #{jobId} ")
+    int deleteFromJobId(long jobId);
 }
