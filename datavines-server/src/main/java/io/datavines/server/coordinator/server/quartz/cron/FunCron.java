@@ -14,28 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.api.entity.dto.job.schedule;
+package io.datavines.server.coordinator.server.quartz.cron;
 
-import lombok.Data;
+import io.datavines.server.coordinator.repository.entity.JobSchedule;
+import org.springframework.beans.factory.InitializingBean;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
+public interface FunCron extends InitializingBean {
+    public String funcDeal(JobSchedule jobschedule);
 
-@Data
-@NotNull(message = "Job Schedule Create cannot be null")
-public class JobScheduleCreate {
-
-    @NotNull(message = "job id cannot be empty")
-    private Long jobId;
-
-    @NotBlank(message = "job schedule type cannot be empty")
-    private String type;
-
-   // @NotBlank(message = "job schedule param cannot be empty")
-    private MapParam param;
-
-    private LocalDateTime startTime;
-
-    private LocalDateTime endTime;
+    public String getFuncName();
 }

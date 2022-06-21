@@ -284,6 +284,7 @@ CREATE TABLE `dv_job_schedule` (
     `type` varchar(255) NOT NULL,
     `param` text NOT NULL,
     `job_id` bigint(20) NOT NULL,
+    `cron_expression` varchar(255) NOT NULL,
     `status` tinyint(1) DEFAULT NULL,
     `start_time` datetime DEFAULT NULL,
     `end_time` datetime DEFAULT NULL,

@@ -103,9 +103,11 @@
         <jodd.version>3.5.2</jodd.version>
         <kaptcha.version>2.3.2</kaptcha.version>
         <hibernate-validator.version>6.0.21.Final</hibernate-validator.version>
+        <cron-utils.version>9.1.3</cron-utils.version>
         <commons.email.version>1.5</commons.email.version>
         <poi.version>4.1.2</poi.version>
         <javax.mail.version>1.6.2</javax.mail.version>
+
 
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
@@ -608,6 +610,12 @@
                 <groupId>io.datavines</groupId>
                 <artifactId>datavines-notification-api</artifactId>
                 <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.cronutils</groupId>
+                <artifactId>cron-utils</artifactId>
+                <version> ${cron-utils.version}</version>
             </dependency>
 
         </dependencies>
