@@ -80,7 +80,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
                 cron = api.funcDeal(jobSchedule);
                 jobSchedule.setCron_expression(cron);
             } else if (type.equals("cron")) {
-                cron = param.getCycle();
+                cron = param.getCrontab();
                 jobSchedule.setCron_expression(cron);
             }else {
                 jobSchedule.setStatus(false);
