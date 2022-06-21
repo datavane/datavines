@@ -58,12 +58,12 @@ public class DayCronImpl implements FunCron {
 
     @Override
     public String getFuncName(){
-        return "";
+        return "day";
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        StrategyFactory.register("day", this);
+        StrategyFactory.register(this.getFuncName(), this);
     }
 
 }

@@ -56,10 +56,10 @@ public class NminuteCronImpl implements FunCron {
 
     @Override
     public String getFuncName(){
-        return "";
+        return "nminute";
     }
     @Override
     public void afterPropertiesSet() throws Exception {
-        StrategyFactory.register("nminute", this);
+        StrategyFactory.register(this.getFuncName(), this);
     }
 }

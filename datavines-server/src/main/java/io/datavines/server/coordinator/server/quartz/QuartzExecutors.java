@@ -16,7 +16,7 @@
  */
 package io.datavines.server.coordinator.server.quartz;
 
-import static io.datavines.server.DataVinesConstants.SCHEDULE;
+
 import static org.quartz.CronScheduleBuilder.cronSchedule;
 import static org.quartz.JobBuilder.newJob;
 import static org.quartz.TriggerBuilder.newTrigger;
@@ -26,7 +26,6 @@ import io.datavines.server.coordinator.repository.entity.JobSchedule;
 import org.apache.commons.lang.StringUtils;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -51,7 +50,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.google.common.collect.Maps;
 
-import io.datavines.server.DataVinesConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -247,7 +245,7 @@ public class QuartzExecutors {
     Map<String, Object> dataMap = Maps.newHashMap();
     dataMap.put(DataVinesConstants.DATASOURCE_ID, dataSourceId);
     dataMap.put(DataVinesConstants.SCHEDULE_ID, schedule.getId());
-    dataMap.put(SCHEDULE, JSONUtils.toJsonString(schedule));
+    dataMap.put(DataVinesConstants.SCHEDULE, JSONUtils.toJsonString(schedule));
     return dataMap;
   }
 

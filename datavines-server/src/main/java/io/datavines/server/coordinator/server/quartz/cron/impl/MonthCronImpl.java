@@ -58,12 +58,12 @@ public class MonthCronImpl implements FunCron {
 
     @Override
     public String getFuncName(){
-        return "";
+        return "month";
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        StrategyFactory.register("month", this);
+        StrategyFactory.register(this.getFuncName(), this);
     }
 
 

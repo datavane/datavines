@@ -61,11 +61,11 @@ public class WeekCronImpl implements FunCron {
 
     @Override
     public String getFuncName(){
-        return "";
+        return "week";
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        StrategyFactory.register("week", this);
+        StrategyFactory.register(this.getFuncName(), this);
     }
 }

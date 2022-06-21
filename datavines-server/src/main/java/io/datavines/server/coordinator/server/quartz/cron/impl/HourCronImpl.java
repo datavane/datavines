@@ -57,12 +57,12 @@ public class HourCronImpl implements FunCron {
 
     @Override
     public String getFuncName(){
-        return "";
+        return "hour";
     }
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        StrategyFactory.register("hour", this);
+        StrategyFactory.register(this.getFuncName(), this);
     }
 
 }

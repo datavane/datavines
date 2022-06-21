@@ -20,6 +20,8 @@ package io.datavines.server.coordinator.repository.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.datavines.common.utils.JSONUtils;
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleUpdate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
@@ -32,7 +34,7 @@ import io.datavines.server.coordinator.server.quartz.QuartzExecutors;
 import io.datavines.server.coordinator.server.quartz.ScheduleJob;
 import io.datavines.server.coordinator.server.quartz.StrategyFactory;
 import io.datavines.server.coordinator.server.quartz.cron.FunCron;
-import io.datavines.server.exception.DataVinesServerException;
+
 import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -62,8 +64,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             BeanUtils.copyProperties(jobScheduleCreateCreate, jobSchedule);
             String type = jobScheduleCreateCreate.getType();
             MapParam param=jobScheduleCreateCreate.getParam();
-            ObjectMapper mapper = new ObjectMapper();
-            String result1 = mapper.writeValueAsString(param);
+            String result1 = JSONUtils.toJsonString(param);
             jobSchedule.setParam(result1);
 
             jobSchedule.setCreateBy(ContextHolder.getUserId());

@@ -18,11 +18,12 @@
 package io.datavines.server.coordinator.repository.service;
 
 
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleUpdate;
 import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
-import io.datavines.server.exception.DataVinesServerException;
+
 
 import java.util.List;
 
