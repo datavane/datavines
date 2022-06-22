@@ -21,6 +21,8 @@ import com.cronutils.model.Cron;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import io.datavines.common.utils.JSONUtils;
+import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
 import io.datavines.server.coordinator.server.quartz.StrategyFactory;
@@ -31,6 +33,7 @@ import java.util.Map;
 
 import static com.cronutils.model.field.expression.FieldExpressionFactory.*;
 import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
+import static io.datavines.server.utils.VerificationUtil.verifyIsNeedParam;
 
 @Service
 public class MonthCronImpl implements FunCron {
@@ -39,6 +42,11 @@ public class MonthCronImpl implements FunCron {
         String param = jobschedule.getParam();
         MapParam mapParam = JSONUtils.parseObject(param,MapParam.class);
         Map<String ,String> parameter = mapParam.getParameter();
+        String[]  times = {"day", "hour", "minute"};
+        Boolean verify = verifyIsNeedParam(parameter, times);
+        if(!verify){
+            throw new DataVinesServerException(ApiStatus.CREATE_ENV_ERROR);
+        }
         String day = parameter.get("day");
         String hour = parameter.get("hour");
         String mintute = parameter.get("minute");

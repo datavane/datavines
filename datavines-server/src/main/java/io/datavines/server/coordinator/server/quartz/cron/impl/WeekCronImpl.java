@@ -23,6 +23,8 @@ import com.cronutils.model.definition.CronDefinition;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import com.cronutils.model.field.expression.Weekdays;
 import io.datavines.common.utils.JSONUtils;
+import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
 import io.datavines.server.coordinator.server.quartz.StrategyFactory;
@@ -33,6 +35,7 @@ import java.util.Map;
 
 import static com.cronutils.model.field.expression.FieldExpressionFactory.*;
 import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
+import static io.datavines.server.utils.VerificationUtil.verifyIsNeedParam;
 
 @Service
 public class WeekCronImpl implements FunCron {
@@ -41,6 +44,11 @@ public class WeekCronImpl implements FunCron {
         String param = jobschedule.getParam();
         MapParam mapParam = JSONUtils.parseObject(param,MapParam.class);
         Map<String ,String> parameter = mapParam.getParameter();
+        String[]  times = {"wday", "hour", "minute"};
+        Boolean verify = verifyIsNeedParam(parameter, times);
+        if(!verify){
+            throw new DataVinesServerException(ApiStatus.CREATE_ENV_ERROR);
+        }
         Integer wday = Integer.parseInt(parameter.get("wday"));
         Integer hour =  Integer.parseInt(parameter.get("hour"));
         Integer minute = Integer.parseInt(parameter.get("minute"));
