@@ -59,6 +59,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
     private JobMapper jobMapper;
     @Override
     @Transactional(rollbackFor = Exception.class)
+
     public Long create(JobScheduleCreate jobScheduleCreateCreate) throws DataVinesServerException {
         String cron = "";
         Long jobid = 0l;
@@ -80,6 +81,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             jobSchedule.setParam(result1);
             log.info("get jobSchedule parm:{}", result1);
         }
+
 
         if(type.equals("cycle")){
             FunCron api =  StrategyFactory.getByType(param.getCycle());
