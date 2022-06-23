@@ -23,6 +23,7 @@ import io.datavines.core.exception.DataVinesServerException;
 
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleUpdate;
+import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.service.JobScheduleService;
 
 
@@ -46,36 +47,35 @@ public class JobScheduleController {
     @Autowired
     private JobScheduleService jobScheduleService;
 
-    @ApiOperation(value = "create update job")
+    @ApiOperation(value = "create or update jobschedule")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createJob(@Valid @RequestBody JobScheduleCreate jobScheduleCreate) throws DataVinesServerException {
 
         return jobScheduleService.create(jobScheduleCreate);
     }
 
-    @ApiOperation(value = "delete job")
+    @ApiOperation(value = "delete jobschedule")
     @DeleteMapping(value = "/{id}")
     public Object deleteJob(@PathVariable Long id)  {
         return jobScheduleService.deleteById(id);
     }
 
-    @ApiOperation(value = "update job")
+    @ApiOperation(value = "update jobschedule, delete quartz")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object updateJob(@Valid @RequestBody JobScheduleUpdate jobScheduleUpdate) throws DataVinesServerException {
         return jobScheduleService.update(jobScheduleUpdate);
     }
 
-    @ApiOperation(value = "get job by id")
-    @GetMapping(value = "/{id}")
-    public Object getById(@PathVariable Long id)  {
-        return jobScheduleService.getById(id);
-    }
-
-    @ApiOperation(value = "get list jobschedule by taskid")
+    @ApiOperation(value = "get list jobschedule by jobid")
     @GetMapping(value = "/list/{taskId}")
     public Object getlistByJobId(@PathVariable Long taskId)  {
         return jobScheduleService.listByJobId(taskId);
     }
 
+    @ApiOperation(value = "get cron by cycle")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, value = "/cron")
+    public Object showCron(@Valid @RequestBody MapParam mapParam) throws DataVinesServerException {
+        return jobScheduleService.getCron(mapParam);
+    }
 
 }
