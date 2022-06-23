@@ -67,15 +67,14 @@ public class ScheduleJob implements org.quartz.Job {
         LocalDateTime fireTime = DateUtils.date2LocalDateTime(context.getFireTime());
 
         logger.info("scheduled fire time :{}, fire time :{}, job id :{}", scheduleTime, fireTime, jobId);
-        logger.info("scheduled exe.....");
+        logger.info("scheduled start work , job id :{} ", jobId);
 
         Job job = getJobExternalService().getJobById(jobId);
         if (job == null) {
             logger.warn("job {} is null", jobId);
             return;
         }
-
-        //getJobExternalService().getJobService().execute(jobId, scheduleTime);
+        getJobExternalService().getJobService().execute(jobId, scheduleTime);
     }
 
 }

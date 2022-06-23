@@ -109,6 +109,24 @@ public class VerificationUtil {
         imageByte64 = encoder.encodeBuffer(imageInByte).replaceAll("\n", "").replaceAll("\r", "");
         return "data:image/jpg;base64,".concat(imageByte64);
     }
+
+    public static boolean verifyIsNeedParam(Map<String ,String>  parameter, String[]  times) {
+        for (int i = 0; i < times.length; i++) {
+            String time = times[i];
+            if(! parameter.containsKey(time)){
+                return false;
+            }
+            try{
+                Integer timeValue = Integer.parseInt(parameter.get(time));
+                if(timeValue > 60 || timeValue < 0 ){
+                    return false;
+                }
+            }catch (Exception e){
+                return false;
+            }
+        }
+        return  true;
+    }
 }
 
 

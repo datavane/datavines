@@ -68,6 +68,7 @@ public enum ApiStatus {
     CREATE_JOB_ERROR(14010002, "Create JOB {0} Error", "创建作业 {0} 错误"),
     JOB_NOT_EXIST_ERROR(14010003, "Job {0} Not Exist Error", "作业{0}不存在错误"),
     JOB_EXIST_ERROR(14010004, "Job {0} is Exist error", "作业 {0} 已存在错误"),
+    ADD_QUARTZE_ERROR(14020001, "Create QUARTZE {0} Error", "创建 创建定时器{0}错误"),
     UPDATE_JOB_ERROR(14010005, "Update Job {0} Error", "更新作业 {0} 错误"),
     CREATE_TENANT_ERROR(15010001, "Create Tenant {0} Error", "创建 Linux 用户 {0} 错误"),
     TENANT_NOT_EXIST_ERROR(15010002, "Tenant {0} Not Exist Error", "Linux 用户{0}不存在错误"),

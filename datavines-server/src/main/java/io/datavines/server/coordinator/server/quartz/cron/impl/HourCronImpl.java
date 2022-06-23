@@ -21,6 +21,8 @@ import com.cronutils.model.Cron;
 import com.cronutils.model.CronType;
 import com.cronutils.model.definition.CronDefinitionBuilder;
 import io.datavines.common.utils.JSONUtils;
+import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
 import io.datavines.server.coordinator.server.quartz.StrategyFactory;
@@ -31,6 +33,7 @@ import java.util.Map;
 
 import static com.cronutils.model.field.expression.FieldExpressionFactory.*;
 import static com.cronutils.model.field.expression.FieldExpressionFactory.on;
+import static io.datavines.server.utils.VerificationUtil.verifyIsNeedParam;
 
 @Service
 public class HourCronImpl implements FunCron {
@@ -41,6 +44,11 @@ public class HourCronImpl implements FunCron {
         Map<String ,String> parameter = mapParam.getParameter();
 
         String minute = parameter.get("minute");
+        String[]  times = {"minute"};
+        Boolean verify = verifyIsNeedParam(parameter, times);
+        if(!verify){
+            throw new DataVinesServerException(ApiStatus.CREATE_ENV_ERROR);
+        }
 
         Cron cron = CronBuilder.cron(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ))
                 .withYear(always())
