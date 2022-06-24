@@ -81,6 +81,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             jobSchedule.setParam(result1);
             log.info("get jobSchedule parm:{}", result1);
         }
+
         List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
         if(jobScheduleList.size()>0){
             baseMapper.deleteById(jobScheduleList.get(0).getId());
@@ -103,7 +104,6 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             baseMapper.insert(jobSchedule);
             return jobid;
         }
-
 
 
         Job job = jobMapper.selectById(jobSchedule.getJobId());
