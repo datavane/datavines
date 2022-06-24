@@ -59,16 +59,15 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
     private JobMapper jobMapper;
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public List<String> create(JobScheduleCreate jobScheduleCreateCreate) throws DataVinesServerException {
+
+    public Long create(JobScheduleCreate jobScheduleCreateCreate) throws DataVinesServerException {
         String cron = "";
-        List<String> listCron=new ArrayList<String>();
+        Long jobid = 0l;
 
         JobSchedule jobSchedule = new JobSchedule();
         BeanUtils.copyProperties(jobScheduleCreateCreate, jobSchedule);
         String type = jobScheduleCreateCreate.getType();
         MapParam param=jobScheduleCreateCreate.getParam();
-        String result1 = JSONUtils.toJsonString(param);
-        jobSchedule.setParam(result1);
 
         jobSchedule.setCreateBy(ContextHolder.getUserId());
         jobSchedule.setCreateTime(LocalDateTime.now());
@@ -77,7 +76,13 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
         jobSchedule.setStatus(true);
         jobSchedule.setStartTime(jobScheduleCreateCreate.getStartTime());
         jobSchedule.setEndTime(jobScheduleCreateCreate.getEndTime());
-        log.info("get jobSchedule parm:{}", result1);
+        if(param != null){
+            String result1 = JSONUtils.toJsonString(param);
+            jobSchedule.setParam(result1);
+            log.info("get jobSchedule parm:{}", result1);
+        }
+
+
         if(type.equals("cycle")){
             FunCron api =  StrategyFactory.getByType(param.getCycle());
             cron = api.funcDeal(jobSchedule);
@@ -87,9 +92,10 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             jobSchedule.setCron_expression(cron);
         }else {
             jobSchedule.setStatus(false);
+            jobSchedule.setParam("");
             baseMapper.deleteFromJobId(jobSchedule.getJobId());
             baseMapper.insert(jobSchedule);
-            return listCron;
+            return jobid;
         }
 
         List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
@@ -113,17 +119,19 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
         }
 
         baseMapper.insert(jobSchedule);
-        listCron.add(cron);
         log.info("create jobschedule success: datasource id:{}, job id :{}, cron:{}",  job.getDataSourceId(), jobSchedule.getJobId(),cron);
-        return listCron;
+        return jobid;
     }
 
     @Override
     public int update(JobScheduleUpdate jobScheduleUpdate) throws DataVinesServerException {
         Long id = jobScheduleUpdate.getId();
+        Long jobid = jobScheduleUpdate.getJobId();
         JobSchedule jobSchedule = baseMapper.selectById(id);
         jobSchedule.setStatus(false);
-        Boolean deljob = quartzExecutor.deleteJob(id, 1);
+        Job job = jobMapper.selectById(jobid);
+        Long dataSourceID = job.getDataSourceId();
+        Boolean deljob = quartzExecutor.deleteJob(id, dataSourceID);
         if(! deljob ){
             return 0;
         }
@@ -132,8 +140,15 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteById(long id) {
-        Boolean deljob = quartzExecutor.deleteJob(id, 1);
+        JobSchedule jobSchedule = baseMapper.selectById(id);
+        Job job = jobMapper.selectById(jobSchedule.getJobId());
+        baseMapper.deleteById(id);
+        Long jobid = job.getId();
+        Long dataSourceId = job.getDataSourceId();
+
+        Boolean deljob = quartzExecutor.deleteJob(jobid, dataSourceId);
         if(! deljob ){
             return 0;
         }
@@ -150,4 +165,16 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
     public JobSchedule getById(long id) {
         return baseMapper.selectById(id);
     }
+    @Override
+    public  List<String> getCron(MapParam mapParam){
+        List<String> listCron=new ArrayList<String>();
+        FunCron api =  StrategyFactory.getByType(mapParam.getCycle());
+        JobSchedule jobSchedule = new JobSchedule();
+        String result1 = JSONUtils.toJsonString(mapParam);
+        jobSchedule.setParam(result1);
+        String cron = api.funcDeal(jobSchedule);
+        listCron.add(cron);
+        return  listCron;
+    }
+
 }
