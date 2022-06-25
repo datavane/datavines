@@ -86,7 +86,7 @@ public class QuartzExecutors {
     String jobGroupName = this.buildJobGroupName(dataSourceId);
 
     Map<String, Object> jobDataMap = this.buildDataMap(dataSourceId, schedule);
-    String cronExpression = schedule.getCron_expression();
+    String cronExpression = schedule.getCronExpression();
 
 
     /**

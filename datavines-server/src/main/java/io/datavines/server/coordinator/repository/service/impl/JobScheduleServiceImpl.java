@@ -85,22 +85,31 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
         if(jobScheduleList.size()>0){
             baseMapper.deleteById(jobScheduleList.get(0).getId());
         }
+        if (type == null){
+            throw new DataVinesServerException(ApiStatus.JOBSCHEDULE_PARAMETER_IS_NULL_ERROR);
+        }
 
         if(type.equals("cycle")){
+            if (param.getCycle() == null){
+                throw new DataVinesServerException(ApiStatus.JOBSCHEDULE_PARAMETER_IS_NULL_ERROR);
+            }
             FunCron api =  StrategyFactory.getByType(param.getCycle());
             cron = api.funcDeal(jobSchedule);
-            jobSchedule.setCron_expression(cron);
+            jobSchedule.setCronExpression(cron);
         } else if (type.equals("cron")) {
             cron = param.getCrontab();
-            jobSchedule.setCron_expression(cron);
+            jobSchedule.setCronExpression(cron);
         }else {
             if(jobScheduleList.size()==0){
                return 0l;
             }
-            jobSchedule.setStatus(false);
-            jobSchedule.setParam("");
-            baseMapper.deleteFromJobId(jobSchedule.getJobId());
-            baseMapper.insert(jobSchedule);
+            JobSchedule jobSchedule1= jobScheduleList.get(0);
+            jobid = jobSchedule1.getJobId();
+            Job job = jobMapper.selectById(jobid);
+            Long dataSourceId = job.getDataSourceId();
+            jobSchedule1.setStatus(false);
+            quartzExecutor.deleteJob(jobid, dataSourceId);
+            baseMapper.updateById(jobSchedule1);
             return jobid;
         }
 
@@ -108,8 +117,8 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
         if (job == null) {
             throw new DataVinesServerException(ApiStatus.JOB_NOT_EXIST_ERROR);
         }else {
-            Long envid = job.getEnv();
-            if(envid == null){
+            Long dataSourceId = job.getDataSourceId();
+            if(dataSourceId == null){
                 throw new DataVinesServerException(ApiStatus.DATASOURCE_NOT_EXIST_ERROR);
             }
             try{
