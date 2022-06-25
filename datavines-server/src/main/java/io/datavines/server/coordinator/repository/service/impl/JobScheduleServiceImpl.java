@@ -81,7 +81,10 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             jobSchedule.setParam(result1);
             log.info("get jobSchedule parm:{}", result1);
         }
-
+        List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
+        if(jobScheduleList.size()>0){
+            baseMapper.deleteById(jobScheduleList.get(0).getId());
+        }
 
         if(type.equals("cycle")){
             FunCron api =  StrategyFactory.getByType(param.getCycle());
@@ -91,6 +94,9 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             cron = param.getCrontab();
             jobSchedule.setCron_expression(cron);
         }else {
+            if(jobScheduleList.size()==0){
+               return 0l;
+            }
             jobSchedule.setStatus(false);
             jobSchedule.setParam("");
             baseMapper.deleteFromJobId(jobSchedule.getJobId());
@@ -98,10 +104,6 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             return jobid;
         }
 
-        List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
-        if(jobScheduleList.size()>0){
-            baseMapper.deleteById(jobScheduleList.get(0).getId());
-        }
         Job job = jobMapper.selectById(jobSchedule.getJobId());
         if (job == null) {
             throw new DataVinesServerException(ApiStatus.JOB_NOT_EXIST_ERROR);
