@@ -82,9 +82,6 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             log.info("get jobSchedule parm:{}", result1);
         }
         List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
-        if(jobScheduleList.size()>0){
-            baseMapper.deleteById(jobScheduleList.get(0).getId());
-        }
         if (type == null){
             throw new DataVinesServerException(ApiStatus.JOBSCHEDULE_PARAMETER_IS_NULL_ERROR);
         }
@@ -128,8 +125,13 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             }
 
         }
-
-        baseMapper.insert(jobSchedule);
+        if(jobScheduleList.size()>0){
+            long id= jobScheduleList.get(0).getId();
+            jobSchedule.setId(id);
+            baseMapper.updateById(jobSchedule);
+        }else {
+            baseMapper.insert(jobSchedule);
+        }
         log.info("create jobschedule success: datasource id:{}, job id :{}, cron:{}",  job.getDataSourceId(), jobSchedule.getJobId(),cron);
         return jobid;
     }
