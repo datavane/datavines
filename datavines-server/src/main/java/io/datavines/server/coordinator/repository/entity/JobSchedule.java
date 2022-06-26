@@ -45,7 +45,7 @@ public class JobSchedule implements Serializable {
     private String param;
 
     @TableField(value = "cron_expression")
-    private String cron_expression;
+    private String cronExpression;
 
     @TableField(value = "status")
     private boolean status;

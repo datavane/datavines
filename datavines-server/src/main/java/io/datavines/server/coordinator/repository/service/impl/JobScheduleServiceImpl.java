@@ -76,38 +76,46 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
         jobSchedule.setStatus(true);
         jobSchedule.setStartTime(jobScheduleCreateCreate.getStartTime());
         jobSchedule.setEndTime(jobScheduleCreateCreate.getEndTime());
-        if(param != null){
+        if (param != null) {
             String result1 = JSONUtils.toJsonString(param);
             jobSchedule.setParam(result1);
             log.info("get jobSchedule parm:{}", result1);
         }
-
+        List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
+        if (type == null) {
+            throw new DataVinesServerException(ApiStatus.JOBSCHEDULE_PARAMETER_IS_NULL_ERROR);
+        }
 
         if(type.equals("cycle")){
+            if (param.getCycle() == null) {
+                throw new DataVinesServerException(ApiStatus.JOBSCHEDULE_PARAMETER_IS_NULL_ERROR);
+            }
             FunCron api =  StrategyFactory.getByType(param.getCycle());
             cron = api.funcDeal(jobSchedule);
-            jobSchedule.setCron_expression(cron);
+            jobSchedule.setCronExpression(cron);
         } else if (type.equals("cron")) {
             cron = param.getCrontab();
-            jobSchedule.setCron_expression(cron);
-        }else {
-            jobSchedule.setStatus(false);
-            jobSchedule.setParam("");
-            baseMapper.deleteFromJobId(jobSchedule.getJobId());
-            baseMapper.insert(jobSchedule);
+            jobSchedule.setCronExpression(cron);
+        } else {
+            if (jobScheduleList.size() == 0) {
+               return 0l;
+            }
+            JobSchedule jobSchedule1= jobScheduleList.get(0);
+            jobid = jobSchedule1.getJobId();
+            Job job = jobMapper.selectById(jobid);
+            Long dataSourceId = job.getDataSourceId();
+            jobSchedule1.setStatus(false);
+            quartzExecutor.deleteJob(jobid, dataSourceId);
+            baseMapper.updateById(jobSchedule1);
             return jobid;
         }
 
-        List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
-        if(jobScheduleList.size()>0){
-            baseMapper.deleteById(jobScheduleList.get(0).getId());
-        }
         Job job = jobMapper.selectById(jobSchedule.getJobId());
         if (job == null) {
             throw new DataVinesServerException(ApiStatus.JOB_NOT_EXIST_ERROR);
-        }else {
-            Long envid = job.getEnv();
-            if(envid == null){
+        } else {
+            Long dataSourceId = job.getDataSourceId();
+            if (dataSourceId == null) {
                 throw new DataVinesServerException(ApiStatus.DATASOURCE_NOT_EXIST_ERROR);
             }
             try{
@@ -117,26 +125,15 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             }
 
         }
-
-        baseMapper.insert(jobSchedule);
+        if (jobScheduleList.size() >0 ) {
+            long id= jobScheduleList.get(0).getId();
+            jobSchedule.setId(id);
+            baseMapper.updateById(jobSchedule);
+        } else {
+            baseMapper.insert(jobSchedule);
+        }
         log.info("create jobschedule success: datasource id:{}, job id :{}, cron:{}",  job.getDataSourceId(), jobSchedule.getJobId(),cron);
         return jobid;
-    }
-
-    @Override
-    public int update(JobScheduleUpdate jobScheduleUpdate) throws DataVinesServerException {
-        Long id = jobScheduleUpdate.getId();
-        Long jobid = jobScheduleUpdate.getJobId();
-        JobSchedule jobSchedule = baseMapper.selectById(id);
-        jobSchedule.setStatus(false);
-        Job job = jobMapper.selectById(jobid);
-        Long dataSourceID = job.getDataSourceId();
-        Boolean deljob = quartzExecutor.deleteJob(id, dataSourceID);
-        if(! deljob ){
-            return 0;
-        }
-        baseMapper.updateById(jobSchedule);
-        return 0;
     }
 
     @Override
@@ -144,12 +141,11 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
     public int deleteById(long id) {
         JobSchedule jobSchedule = baseMapper.selectById(id);
         Job job = jobMapper.selectById(jobSchedule.getJobId());
-        baseMapper.deleteById(id);
         Long jobid = job.getId();
         Long dataSourceId = job.getDataSourceId();
 
         Boolean deljob = quartzExecutor.deleteJob(jobid, dataSourceId);
-        if(! deljob ){
+        if (! deljob ) {
             return 0;
         }
         return baseMapper.deleteById(id);
