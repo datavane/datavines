@@ -31,7 +31,7 @@ public class ActualValueExecutor implements ITransformExecutor {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);
         ResultList resultList = SqlUtils.getListFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
-        if(StringUtils.isNotEmpty(outputTable) && !"null".equals(outputTable)) {
+        if (StringUtils.isNotEmpty(outputTable) && !"null".equals(outputTable)) {
             statement.execute("drop view " + outputTable);
         }
         statement.close();

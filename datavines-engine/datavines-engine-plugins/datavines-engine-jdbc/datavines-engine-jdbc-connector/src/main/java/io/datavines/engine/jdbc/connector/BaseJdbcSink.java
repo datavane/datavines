@@ -39,7 +39,7 @@ import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
 public class BaseJdbcSink implements JdbcSink {
 
-    private Logger logger = LoggerFactory.getLogger(BaseJdbcSource.class);
+    private Logger logger = LoggerFactory.getLogger(BaseJdbcSink.class);
 
     private Config config = new Config();
 

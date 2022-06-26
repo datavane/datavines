@@ -30,10 +30,11 @@ public class InvalidateItemsExecutor implements ITransformExecutor {
 
         statement.execute("drop view if exists " + outputTable);
         statement.execute("create view " + outputTable + " as " + sql);
-//        ResultSet resultSet = statement.executeQuery("select * from " + outputTable);
-//        ResultList resultList = SqlUtils.getListFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
+        ResultSet resultSet = statement.executeQuery("select * from " + outputTable +" limit 1000");
+        ResultList resultList = SqlUtils.getListWithHeaderFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
+        //执行文件下载到本地
         statement.close();
-//        resultSet.close();
+        resultSet.close();
         return null;
     }
 }

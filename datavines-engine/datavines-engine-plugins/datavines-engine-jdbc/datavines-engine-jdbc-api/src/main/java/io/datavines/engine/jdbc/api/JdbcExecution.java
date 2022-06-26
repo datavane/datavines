@@ -86,6 +86,8 @@ public class JdbcExecution implements Execution<JdbcSource, JdbcTransform, JdbcS
                     break;
                 case TASK_RESULT:
                     jdbcSink.output(taskResult, jdbcRuntimeEnvironment);
+                case ERROR_DATA:
+
                 default:
                     break;
             }
