@@ -34,8 +34,6 @@ public interface JobScheduleService {
 
     int deleteById(long id);
 
-    int update(JobScheduleUpdate jobScheduleUpdate) throws DataVinesServerException;
-
     JobSchedule getById(long id);
 
     List<JobSchedule> listByJobId(Long JobId);

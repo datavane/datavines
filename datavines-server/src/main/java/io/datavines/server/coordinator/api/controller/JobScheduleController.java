@@ -62,8 +62,8 @@ public class JobScheduleController {
 
     @ApiOperation(value = "update jobschedule, delete quartz")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateJob(@Valid @RequestBody JobScheduleUpdate jobScheduleUpdate) throws DataVinesServerException {
-        return jobScheduleService.update(jobScheduleUpdate);
+    public Object updateJob(@Valid @PathVariable Long id) throws DataVinesServerException {
+        return jobScheduleService.deleteById(id);
     }
 
     @ApiOperation(value = "get list jobschedule by jobid")
