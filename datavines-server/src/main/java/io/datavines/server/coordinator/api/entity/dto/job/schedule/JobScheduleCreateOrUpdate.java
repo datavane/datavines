@@ -17,24 +17,14 @@
 package io.datavines.server.coordinator.api.entity.dto.job.schedule;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Data
-@NotNull(message = "Job Schedule Create cannot be null")
-public class JobScheduleCreate {
+@EqualsAndHashCode(callSuper = true)
+@NotNull(message = "Job Schedule Create Or Update cannot be null")
+public class JobScheduleCreateOrUpdate extends JobScheduleCreate {
 
-    @NotNull(message = "job id cannot be empty")
-    private Long jobId;
-
-    @NotBlank(message = "job schedule type cannot be empty")
-    private String type;
-
-    private MapParam param;
-
-    private LocalDateTime startTime;
-
-    private LocalDateTime endTime;
+    private Long id;
 }
