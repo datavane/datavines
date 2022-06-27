@@ -17,6 +17,8 @@
 package io.datavines.server.coordinator.api.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
@@ -29,16 +31,21 @@ import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.client.NotificationClient;
 import io.datavines.server.coordinator.api.dto.bo.*;
+import io.datavines.server.coordinator.api.dto.vo.SlaJobVo;
+import io.datavines.server.coordinator.api.dto.vo.SlaSenderVo;
 import io.datavines.server.coordinator.api.dto.vo.SlaVo;
 import io.datavines.server.coordinator.repository.entity.Sla;
+import io.datavines.server.coordinator.repository.entity.SlaJob;
 import io.datavines.server.coordinator.repository.entity.SlaNotification;
 import io.datavines.server.coordinator.repository.entity.SlaSender;
 import io.datavines.server.coordinator.repository.service.SlaNotificationService;
 import io.datavines.server.coordinator.repository.service.SlaSenderService;
 import io.datavines.server.coordinator.repository.service.SlaService;
+import io.datavines.server.coordinator.repository.service.SlaJobService;
 import io.datavines.server.utils.ContextHolder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -53,6 +60,7 @@ import java.util.*;
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/sla", produces = MediaType.APPLICATION_JSON_VALUE)
 @RefreshToken
 @Validated
+@Slf4j
 public class SlasController {
 
     @Autowired
@@ -67,6 +75,63 @@ public class SlasController {
     @Autowired
     private NotificationClient client;
 
+    @Autowired
+    private SlaJobService slaJobService;
+
+
+    @ApiOperation(value = "list job")
+    @GetMapping(value = "/job/list")
+    public Object listSlaJob(@RequestParam("slaId") Long id){
+        List<SlaJobVo> list = slaJobService.listSlaJob(id);
+        return list;
+    }
+
+    @ApiOperation(value = "create sla job")
+    @PostMapping(value = "/job", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object createSlaJob(@Valid @RequestBody SlaJobCreate create){
+        LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SlaJob::getSlaId,create.getSlaId());
+        wrapper.eq(SlaJob::getJobId,create.getJobId());
+        SlaJob one = slaJobService.getOne(wrapper);
+        if (Objects.nonNull(one)){
+            log.info("SlaJob has been create {}", create);
+            throw new DataVinesException("SlaJob has been create");
+        }
+        SlaJob slaJob = new SlaJob();
+        slaJob.setSlaId(create.getSlaId());
+        slaJob.setJobId(create.getJobId());
+        slaJob.setCreateBy(ContextHolder.getUserId());
+        slaJob.setUpdateBy(ContextHolder.getUserId());
+        return slaJobService.save(slaJob);
+    }
+
+    @ApiOperation(value = "update sla job")
+    @PutMapping(value = "/job", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object updateSlaJob(@Valid @RequestBody SlaJobUpdate update){
+        LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SlaJob::getSlaId,update.getSlaId());
+        wrapper.eq(SlaJob::getJobId,update.getJobId());
+        SlaJob one = slaJobService.getOne(wrapper);
+        if (Objects.nonNull(one) && !one.getId().equals(update.getId())){
+            log.info("db has slajob {} is same as update slajob {}", one, update);
+            throw new DataVinesException("SlaJob has been exist");
+        }
+        SlaJob slaJob = new SlaJob();
+        slaJob.setSlaId(update.getSlaId());
+        slaJob.setJobId(update.getJobId());
+        slaJob.setId(update.getId());
+        slaJob.setUpdateTime(LocalDateTime.now());
+        slaJob.setUpdateBy(ContextHolder.getUserId());
+        return slaJobService.save(slaJob);
+    }
+
+    @ApiOperation(value = "create sla job")
+    @DeleteMapping(value = "/job/{slaJobId}")
+    public Object deleteSlaJob(@PathVariable("slaJobId") Long  slaJobId){
+        return slaJobService.removeById(slaJobId);
+    }
+
+
     @ApiOperation(value = "test sla")
     @GetMapping(value = "/test/{slaId}")
     public Object test(@PathVariable("slaId") Long slaId){
@@ -79,10 +144,13 @@ public class SlasController {
     }
 
 
-    @ApiOperation(value = "list slas")
-    @GetMapping(value = "/list/{workSpaceId}")
-    public Object listSlas(@PathVariable("workSpaceId") Long workSpaceId){
-        List<SlaVo> slaVoList = slaService.listSlas(workSpaceId);
+    @ApiOperation(value = "page list slas")
+    @GetMapping(value = "/page")
+    public Object listSlas(@RequestParam("workSpaceId") Long workSpaceId,
+                           @RequestParam(value = "searchVal", required = false) String searchVal,
+                           @RequestParam("pageNumber") Integer pageNumber,
+                           @RequestParam("pageSize") Integer pageSize){
+        IPage<SlaVo> slaVoList = slaService.listSlas(workSpaceId, searchVal, pageNumber, pageSize);
         return slaVoList;
     }
 
@@ -90,7 +158,7 @@ public class SlasController {
     @PostMapping( consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createSla(@Valid @RequestBody SlaCreate create){
         String name = create.getName();
-        LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper();
+        LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Sla::getWorkSpaceId, create.getWorkSpaceId());
         wrapper.eq(Sla::getName, name);
         Sla existSla = slaService.getOne(wrapper);
@@ -113,14 +181,16 @@ public class SlasController {
     @ApiOperation(value = "update slas")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object update(@Valid @RequestBody SlaUpdate update){
-        LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper();
+        LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(Sla::getWorkSpaceId, update.getWorkSpaceId());
         wrapper.eq(Sla::getName, update.getName());
         Sla existSla = slaService.getOne(wrapper);
         if (Objects.nonNull(existSla) && !existSla.getId().equals(update.getId())){
+            log.info("db has sla {} is same as update {}", existSla, update);
             throw new DataVinesServerException(ApiStatus.SLAS_ALREADY_EXIST_ERROR, update.getName());
         }
         Sla sla = BeanConvertUtils.convertBean(update, Sla::new);
+        sla.setUpdateBy(ContextHolder.getUserId());
         sla.setUpdateTime(LocalDateTime.now());
         boolean save = slaService.updateById(sla);
         return save;
@@ -148,21 +218,22 @@ public class SlasController {
     }
 
     @ApiOperation(value = "get config param of notification")
-    @GetMapping(value = "/config/{type}")
-    public Object getConfigJson(@PathVariable("type") String type){
+    @GetMapping(value = "/notification/config/{type}")
+    public Object getNotificationConfigJson(@PathVariable("type") String type){
         String json = slaNotificationService.getConfigJson(type);
         return json;
     }
 
 
 
-    @ApiOperation(value = "list sender")
-    @GetMapping(value = "/sender/list/{workSpaceId}")
-    public Object listSenders(@PathVariable("workSpaceId") Long workSpaceId){
-        LambdaQueryWrapper<SlaSender> wrapper = new LambdaQueryWrapper();
-        wrapper.eq(SlaSender::getWorkSpaceId, workSpaceId);
-        List<SlaSender> list = slaSenderService.list(wrapper);
-        return list;
+    @ApiOperation(value = "page list sender")
+    @GetMapping(value = "/sender/page")
+    public Object listSenders(@RequestParam("workSpaceId") Long workSpaceId,
+                              @RequestParam(value = "searchVal", required = false) String searchVal,
+                              @RequestParam("pageNumber") Integer pageNumber,
+                              @RequestParam("pageSize") Integer pageSize){
+        IPage<SlaSenderVo> result = slaSenderService.pageListSender(workSpaceId, searchVal, pageNumber, pageSize);
+        return result;
     }
 
     @ApiOperation(value = "create sender")
@@ -219,6 +290,21 @@ public class SlasController {
         }
         return bean;
     }
+    @ApiOperation(value = "update notification")
+    @PutMapping(value = "/notification")
+    public Object updateNotification(@RequestBody SlaNotificationUpdate update){
+        SlaNotification bean = BeanConvertUtils.convertBean(update, SlaNotification::new);
+        bean.setCreateBy(ContextHolder.getUserId());
+        LocalDateTime now = LocalDateTime.now();
+        bean.setCreateTime(now);
+        bean.setUpdateTime(now);
+        bean.setUpdateBy(ContextHolder.getUserId());
+        boolean success = slaNotificationService.save(bean);
+        if (!success){
+            throw new DataVinesException("update sender error");
+        }
+        return bean;
+    }
     @ApiOperation(value = "delete notification")
     @DeleteMapping(value = "/notification/{id}")
     public Object deleteNotification(@PathVariable("id") Long id){
@@ -226,6 +312,18 @@ public class SlasController {
         return remove;
     }
 
+    @ApiOperation(value = "page list notification")
+    @GetMapping("/notification/page")
+    public Object pageListNotification(@RequestParam("workSpaceId") Long workSpaceId,
+                                   @RequestParam(value = "searchVal", required = false) String searchVal,
+                                   @RequestParam("pageNumber") Integer pageNumber,
+                                   @RequestParam("pageSize") Integer pageSize){
+        LambdaQueryWrapper<SlaNotification> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SlaNotification::getWorkSpaceId, workSpaceId);
+        Page<SlaNotification> page = new Page<>(pageNumber, pageSize);
+        IPage<SlaNotification> result = slaNotificationService.pageListNotification(page, workSpaceId, searchVal);
+        return result;
+    }
 
 
 }

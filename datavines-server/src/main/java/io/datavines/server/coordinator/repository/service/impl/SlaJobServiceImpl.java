@@ -14,10 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.server.coordinator.repository.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.server.coordinator.api.dto.vo.SlaJobVo;
 import io.datavines.server.coordinator.repository.entity.SlaJob;
+import io.datavines.server.coordinator.repository.mapper.SlaJobMapper;
+import io.datavines.server.coordinator.repository.service.SlaJobService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public interface SlasJobService extends IService<SlaJob> {
+import java.util.List;
+
+@Service
+public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> implements SlaJobService {
+
+    @Autowired
+    private SlaJobMapper slaJobMapper;
+
+    @Override
+    public List<SlaJobVo>  listSlaJob(Long slaId) {
+        List<SlaJobVo> res = slaJobMapper.listSlaJob(slaId);
+        return res;
+    }
 }

@@ -399,6 +399,7 @@ CREATE TABLE dv_sla (
     id bigint NOT NULL,
     work_space_id bigint NOT NULL,
     name varchar(255) NOT NULL,
+    description varchar(255) NOT NULL,
     create_by bigint DEFAULT NULL,
     create_time timestamp default current_timestamp,
     update_by bigint DEFAULT NULL,

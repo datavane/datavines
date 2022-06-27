@@ -16,8 +16,13 @@
  */
 package io.datavines.server.coordinator.repository.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.coordinator.api.dto.vo.SlaSenderVo;
 import io.datavines.server.coordinator.repository.entity.SlaSender;
 
 public interface SlaSenderService extends IService<SlaSender> {
+
+    IPage<SlaSenderVo> pageListSender(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize);
 }

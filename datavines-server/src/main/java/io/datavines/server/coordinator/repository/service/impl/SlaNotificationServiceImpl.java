@@ -17,6 +17,8 @@
 package io.datavines.server.coordinator.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.core.utils.BeanConvertUtils;
 import io.datavines.notification.api.entity.SlaConfigMessage;
@@ -92,5 +94,10 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
                 .getPluginLoader(SlasHandlerPlugin.class)
                 .getOrCreatePlugin(type)
                 .getConfigJson();
+    }
+
+    @Override
+    public IPage<SlaNotification> pageListNotification(Page<SlaNotification> page, Long workSpaceId, String searchVal) {
+        return slaNotificationMapper.pageListNotification(page, workSpaceId, searchVal);
     }
 }
