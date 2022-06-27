@@ -14,15 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.server.coordinator.api.dto.vo;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
-import io.datavines.server.coordinator.api.dto.vo.SlaSenderVo;
-import io.datavines.server.coordinator.repository.entity.SlaSender;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-public interface SlaSenderService extends IService<SlaSender> {
+import java.time.LocalDateTime;
 
-    IPage<SlaSenderVo> pageListSender(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize);
+@Data
+@ToString
+@EqualsAndHashCode
+public class SlaSenderVo {
+    private Long id;
+
+    private Long workSpaceId;
+
+    private String type;
+
+    private String name;
+
+    private String updateBy;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime updateTime;
+
 }

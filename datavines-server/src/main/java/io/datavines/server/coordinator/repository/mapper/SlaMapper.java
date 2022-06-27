@@ -17,6 +17,8 @@
 package io.datavines.server.coordinator.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.datavines.server.coordinator.api.dto.vo.SlaVo;
 import io.datavines.server.coordinator.repository.entity.Sla;
 import org.apache.ibatis.annotations.Mapper;
@@ -26,5 +28,5 @@ import java.util.List;
 
 @Mapper
 public interface SlaMapper extends BaseMapper<Sla> {
-    List<SlaVo> listSlas(@Param("workSpaceId") Long workSpaceId);
+    IPage<SlaVo> listSlas(Page page, @Param("workSpaceId") Long workSpaceId, @Param("searchVal")String searchVal);
 }

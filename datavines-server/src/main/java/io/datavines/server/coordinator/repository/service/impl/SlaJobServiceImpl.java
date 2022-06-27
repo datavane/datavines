@@ -14,17 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.mapper;
+package io.datavines.server.coordinator.repository.service.impl;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.server.coordinator.api.dto.vo.SlaJobVo;
 import io.datavines.server.coordinator.repository.entity.SlaJob;
-import org.apache.ibatis.annotations.Mapper;
+import io.datavines.server.coordinator.repository.mapper.SlaJobMapper;
+import io.datavines.server.coordinator.repository.service.SlaJobService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Mapper
-public interface SlaJobMapper extends BaseMapper<SlaJob> {
-    List<SlaJobVo> listSlaJob(Long slaId);
+@Service
+public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> implements SlaJobService {
 
+    @Autowired
+    private SlaJobMapper slaJobMapper;
+
+    @Override
+    public List<SlaJobVo>  listSlaJob(Long slaId) {
+        List<SlaJobVo> res = slaJobMapper.listSlaJob(slaId);
+        return res;
+    }
 }

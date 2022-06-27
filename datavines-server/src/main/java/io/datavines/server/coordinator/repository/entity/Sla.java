@@ -44,6 +44,9 @@ public class Sla {
     @TableField(value = "name")
     private String name;
 
+    @TableField(value = "description")
+    private String description;
+
     @TableField(value = "create_by")
     private Long createBy;
 

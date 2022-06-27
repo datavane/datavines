@@ -17,20 +17,22 @@
 package io.datavines.server.coordinator.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
 import io.datavines.server.coordinator.api.dto.vo.SlaVo;
+import io.datavines.server.coordinator.api.entity.vo.JobVO;
 import io.datavines.server.coordinator.repository.entity.Sla;
 import io.datavines.server.coordinator.repository.entity.SlaJob;
 import io.datavines.server.coordinator.repository.mapper.SlaMapper;
-import io.datavines.server.coordinator.repository.service.SlasJobService;
+import io.datavines.server.coordinator.repository.service.SlaJobService;
 import io.datavines.server.coordinator.repository.service.SlaService;
 import io.datavines.spi.PluginLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -40,11 +42,12 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
     private SlaMapper slaMapper;
 
     @Autowired
-    private SlasJobService slasJobService;
+    private SlaJobService slaJobService;
 
     @Override
-    public List<SlaVo> listSlas(Long workSpaceId) {
-        List<SlaVo> res = slaMapper.listSlas(workSpaceId);
+    public IPage<SlaVo> listSlas(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize) {
+        Page<JobVO> page = new Page<>(pageNumber, pageSize);
+        IPage<SlaVo> res = slaMapper.listSlas(page, workSpaceId, searchVal);
         return res;
     }
 
@@ -54,7 +57,7 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
         boolean removeSlas = removeById(id);
         LambdaQueryWrapper<SlaJob> lambda = new LambdaQueryWrapper<>();
         lambda.eq(SlaJob::getSlaId, id);
-        boolean removeSlasJob = slasJobService.remove(lambda);
+        boolean removeSlasJob = slaJobService.remove(lambda);
         boolean result = removeSlas && removeSlasJob;
         return result;
     }
