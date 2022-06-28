@@ -99,7 +99,6 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             if (! isvalid) {
                 throw new DataVinesServerException(ApiStatus.JOBSCHEDULE_CRON_IS_INVALID_ERROR);
             }
-
             jobSchedule.setCronExpression(cron);
         } else {
             if (jobScheduleList.size() == 0) {

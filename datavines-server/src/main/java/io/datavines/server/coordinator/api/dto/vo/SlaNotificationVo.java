@@ -14,14 +14,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.service.impl;
+package io.datavines.server.coordinator.api.dto.vo;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.datavines.server.coordinator.repository.entity.SlaJob;
-import io.datavines.server.coordinator.repository.mapper.SlaJobMapper;
-import io.datavines.server.coordinator.repository.service.SlasJobService;
-import org.springframework.stereotype.Service;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-@Service
-public class SlasJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> implements SlasJobService {
+import java.time.LocalDateTime;
+
+@Data
+@EqualsAndHashCode
+@ToString
+public class SlaNotificationVo {
+
+    private Long id;
+
+    private Long slaId;
+
+    private Long senderId;
+
+    private String slaName;
+
+    private String senderName;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime updateTime;
+
+    private String updateBy;
 }

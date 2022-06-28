@@ -14,15 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.server.coordinator.api.dto.bo;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.baomidou.mybatisplus.extension.service.IService;
-import io.datavines.server.coordinator.api.dto.vo.SlaSenderVo;
-import io.datavines.server.coordinator.repository.entity.SlaSender;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
-public interface SlaSenderService extends IService<SlaSender> {
-
-    IPage<SlaSenderVo> pageListSender(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize);
+@Data
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class SlaJobUpdate extends SlaJobCreate{
+    private Long id;
 }

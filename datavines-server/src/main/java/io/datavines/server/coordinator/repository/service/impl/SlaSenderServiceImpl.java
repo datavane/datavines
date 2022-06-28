@@ -16,12 +16,28 @@
  */
 package io.datavines.server.coordinator.repository.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.server.coordinator.api.dto.vo.SlaSenderVo;
 import io.datavines.server.coordinator.repository.entity.SlaSender;
 import io.datavines.server.coordinator.repository.mapper.SlaSenderMapper;
 import io.datavines.server.coordinator.repository.service.SlaSenderService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class SlaSenderServiceImpl extends ServiceImpl<SlaSenderMapper, SlaSender> implements SlaSenderService {
+
+    @Autowired
+    private SlaSenderMapper slaSenderMapper;
+
+    @Override
+    public IPage<SlaSenderVo> pageListSender(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize) {
+        Page<Object> page = new Page<>(pageNumber, pageSize);
+        Page<SlaSenderVo> result = slaSenderMapper.pageListSender(page,  workSpaceId, searchVal);
+        return result;
+    }
+
+
 }

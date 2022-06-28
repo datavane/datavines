@@ -14,10 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.server.coordinator.api.dto.vo;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import io.datavines.server.coordinator.repository.entity.SlaJob;
 
-public interface SlasJobService extends IService<SlaJob> {
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+@Data
+@ToString
+@EqualsAndHashCode
+public class SlaJobVo {
+
+    private Long id;
+
+    private Long workSpaceId;
+
+    private Long slaId;
+
+    private Long jobId;
+
+    private String JobName;
+
+    private String updateBy;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private LocalDateTime updateTime;
 }

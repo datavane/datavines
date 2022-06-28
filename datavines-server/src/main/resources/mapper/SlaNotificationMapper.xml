@@ -18,29 +18,28 @@
 
 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.datavines.server.coordinator.repository.mapper.SlaMapper">
+<mapper namespace="io.datavines.server.coordinator.repository.mapper.SlaNotificationMapper">
 
-    <select id="listSlas" resultType="io.datavines.server.coordinator.api.dto.vo.SlaVo" >
-        SELECT sla.id,
-            sla.name,
-            slagroup.jobs,
-            du.username AS creator,
-            sla.update_time
-            FROM dv_sla sla
-        LEFT JOIN
-            (SELECT sla_id,
-            count(job_id) AS jobs
-            FROM dv_sla_job
-            WHERE work_space_id = ${workSpaceId}
-                GROUP BY  sla_id
-            )slagroup
-        ON sla .id = slagroup.sla_id
-        LEFT JOIN
-            dv_user du
-        ON sla.update_by = du.id
+    <select id="pageListNotification" resultType="io.datavines.server.coordinator.api.dto.vo.SlaVo" >
+        SELECT
+            dsn.id,
+            dsn.sla_id,
+            ds.name AS slaName ,
+            dsn.sender_id,
+            dss.name AS senderName,
+            dsn.update_by,
+            dsn.update_time
+        FROM
+            (SELECT *
+            FROM dv_sla_notification
+            WHERE work_space_id = #{workSpaceId}) dsn
+        JOIN dv_sla_sender dss
+            ON dsn.sender_id = dss.id
         <if test="searchVal != null">
-            LOWER(sla.`name`) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
+           AND LOWER(dss.name) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
         </if>
+        JOIN dv_sla ds
+            ON ds.id = dsn.sla_id
     </select>
 
 </mapper>

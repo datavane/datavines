@@ -16,15 +16,26 @@
  */
 package io.datavines.server.coordinator.api.dto.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
 @Data
+@EqualsAndHashCode
+@ToString
 public class SlaVo {
+
     private Long id;
+
     private String name;
+
     private Integer jobs;
+
     private String updater;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private LocalDateTime updateTime;
 }

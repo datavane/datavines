@@ -17,13 +17,18 @@
 package io.datavines.server.coordinator.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.server.coordinator.repository.entity.SlaNotification;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.Set;
 
 @Mapper
 public interface SlaNotificationMapper extends BaseMapper<SlaNotification> {
     Set<SlaConfigMessage> listReceiverMessageBySlaId(Long id);
+
+    IPage<SlaNotification> pageListNotification(Page<SlaNotification> page, @Param("workSpaceId") Long workSpaceId, @Param("searchVal") String searchVal);
 }

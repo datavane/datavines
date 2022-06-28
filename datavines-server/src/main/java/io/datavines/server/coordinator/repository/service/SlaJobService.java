@@ -16,13 +16,13 @@
  */
 package io.datavines.server.coordinator.repository.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
-import io.datavines.server.coordinator.api.dto.vo.SlaSenderVo;
-import io.datavines.server.coordinator.repository.entity.SlaSender;
+import io.datavines.server.coordinator.api.dto.vo.SlaJobVo;
+import io.datavines.server.coordinator.repository.entity.SlaJob;
 
-public interface SlaSenderService extends IService<SlaSender> {
+import java.util.List;
 
-    IPage<SlaSenderVo> pageListSender(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize);
+public interface SlaJobService extends IService<SlaJob> {
+
+    List<SlaJobVo>  listSlaJob(Long slaId);
 }
