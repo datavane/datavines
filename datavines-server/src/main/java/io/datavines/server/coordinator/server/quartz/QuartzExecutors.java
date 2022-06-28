@@ -37,13 +37,7 @@ import java.util.Map;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import org.quartz.CronTrigger;
-import org.quartz.Job;
-import org.quartz.JobDetail;
-import org.quartz.JobKey;
-import org.quartz.Scheduler;
-import org.quartz.SchedulerException;
-import org.quartz.TriggerKey;
+import org.quartz.*;
 import org.quartz.impl.matchers.GroupMatcher;
 
 import org.slf4j.Logger;
@@ -255,6 +249,10 @@ public class QuartzExecutors {
     Instant instant = zonedDateTime.toInstant();
     Date date = Date.from(instant);
     return date;
+  }
+
+  public  boolean isValid(String cronExpression){
+    return CronExpression.isValidExpression(cronExpression);
   }
 
 }
