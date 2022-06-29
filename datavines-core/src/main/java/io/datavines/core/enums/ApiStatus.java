@@ -61,8 +61,8 @@ public enum ApiStatus {
     EXECUTE_SCRIPT_ERROR(12010008, "Execute Script {0} Error", "执行脚本 {0} 错误"),
 
     TASK_NOT_EXIST_ERROR(13010001, "Task {0} Not Exist Error", "任务{0}不存在错误"),
-    TASK_LOG_PATH_NOT_EXIST_ERROR(13010002, "Task {0} Log Path  Not Exist Error", "任务{0}的日志路径不存在错误"),
-    TASK_EXECUTE_HOST_NOT_EXIST_ERROR(13010003, "Task Execute Host {0} Not Exist Error", "任务{0}的执行服务地址不存在错误"),
+    TASK_LOG_PATH_NOT_EXIST_ERROR(13010002, "Task {0} Log Path  Not Exist Error", "任务 {0} 的日志路径不存在错误"),
+    TASK_EXECUTE_HOST_NOT_EXIST_ERROR(13010003, "Task Execute Host {0} Not Exist Error", "任务 {0} 的执行服务地址不存在错误"),
 
     JOB_PARAMETER_IS_NULL_ERROR(14010001, "Job {0} Parameter is Null Error", "作业 {0} 参数为空错误"),
     CREATE_JOB_ERROR(14010002, "Create Job {0} Error", "创建作业 {0} 错误"),
@@ -70,13 +70,15 @@ public enum ApiStatus {
     JOB_EXIST_ERROR(14010004, "Job {0} is Exist error", "作业 {0} 已存在错误"),
     UPDATE_JOB_ERROR(14010005, "Update Job {0} Error", "更新作业 {0} 错误"),
 
-    ADD_QUARTZ_ERROR(14020001, "Create Quartz {0} Error", "创建定时器{0}错误"),
-    JOB_SCHEDULE_PARAMETER_IS_NULL_ERROR(14020002, "JobSchedule {0} Parameter is Null Error", "定时器 {0} 参数为空错误"),
-    JOB_SCHEDULE_TYPE_NOT_VALIDATE_ERROR(14020003, "JobSchedule type {0} is not Validate Error", "定时器类型 {0} 错误"),
-    JOB_SCHEDULE_EXIST_ERROR(14020004, "Job Schedule {0} is Exist error", "作业定时任务 {0} 已存在错误"),
-    CREATE_JOB_SCHEDULE_ERROR(14020005, "Create Job Schedule {0} Error", "创建作业定时任务 {0} 错误"),
-    JOB_SCHEDULE_NOT_EXIST_ERROR(14020006, "Job Schedule {0} is not Exist error", "作业定时任务 {0} 不存在错误"),
-    UPDATE_JOB_SCHEDULE_ERROR(14020007, "Update Job Schedule {0} Error", "更新作业定时任务 {0} 错误"),
+    JOB_SCHEDULE_EXIST_ERROR(14020001, "Job Schedule is Exist error, id must be not null", "作业定时任务已存在,ID 不能为空"),
+    CREATE_JOB_SCHEDULE_ERROR(14020002, "Create Job Schedule {0} Error", "创建作业定时任务 {0} 错误"),
+    JOB_SCHEDULE_NOT_EXIST_ERROR(14020003, "Job Schedule {0} is not Exist error", "作业定时任务 {0} 不存在错误"),
+    UPDATE_JOB_SCHEDULE_ERROR(14020004, "Update Job Schedule {0} Error", "更新作业定时任务 {0} 错误"),
+    ADD_QUARTZ_ERROR(14020005, "Create Quartz {0} Error", "创建定时器 {0} 错误"),
+    JOB_SCHEDULE_PARAMETER_IS_NULL_ERROR(14020006, "JobSchedule {0} Parameter is Null Error", "定时器参数 {0} 为空错误"),
+    JOB_SCHEDULE_TYPE_NOT_VALIDATE_ERROR(14020007, "JobSchedule type {0} is not Validate Error", "定时器类型参数 {0} 错误"),
+    JOB_SCHEDULE_CYCLE_NOT_VALIDATE_ERROR(14020008, "JobSchedule Param Cycle {0} is not Validate Error", "定时器周期参数 {0} 错误"),
+
 
     CREATE_TENANT_ERROR(15010001, "Create Tenant {0} Error", "创建 Linux 用户 {0} 错误"),
     TENANT_NOT_EXIST_ERROR(15010002, "Tenant {0} Not Exist Error", "Linux 用户 {0} 不存在错误"),
@@ -84,7 +86,7 @@ public enum ApiStatus {
     UPDATE_TENANT_ERROR(15010004, "Update Tenant {0} Error", "更新 Linux 用户 {0} 错误"),
 
     CREATE_ENV_ERROR(16010001, "Create Env {0} Error", "创建运行环境参数 {0} 错误"),
-    ENV_NOT_EXIST_ERROR(16010002, "Env {0} Not Exist Error", "运行环境参数{0}不存在错误"),
+    ENV_NOT_EXIST_ERROR(16010002, "Env {0} Not Exist Error", "运行环境参数 {0} 不存在错误"),
     ENV_EXIST_ERROR(16010003, "Env {0} is Exist error", "运行环境参数 {0} 已存在错误"),
     UPDATE_ENV_ERROR(16010004, "Update Env {0} Error", "更新运行环境参数 {0} 错误"),
     SLAS_ALREADY_EXIST_ERROR(14010001, "SLAS {0} Already exist", "SLAS {0} 已经存在"),

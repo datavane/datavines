@@ -51,7 +51,7 @@ public class JobScheduleController {
     @ApiOperation(value = "create or update job schedule")
     @PostMapping(value = "/createOrUpdate",consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createOrUpdateJob(@Valid @RequestBody JobScheduleCreateOrUpdate jobScheduleCreate) throws DataVinesServerException {
-        return jobScheduleService.create(jobScheduleCreate);
+        return jobScheduleService.createOrUpdate(jobScheduleCreate);
     }
 
     @ApiOperation(value = "delete job schedule")

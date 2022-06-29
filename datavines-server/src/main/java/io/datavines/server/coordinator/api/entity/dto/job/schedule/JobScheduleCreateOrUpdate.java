@@ -25,6 +25,5 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @NotNull(message = "Job Schedule Create Or Update cannot be null")
 public class JobScheduleCreateOrUpdate extends JobScheduleCreate {
-
     private Long id;
 }

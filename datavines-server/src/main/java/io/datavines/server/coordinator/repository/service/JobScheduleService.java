@@ -31,9 +31,11 @@ import java.util.List;
 
 public interface JobScheduleService {
 
-    JobSchedule create(JobScheduleCreate jobScheduleCreate) throws DataVinesServerException;
+    JobSchedule createOrUpdate(JobScheduleCreateOrUpdate jobScheduleCreate) throws DataVinesServerException;
 
-    JobSchedule update(JobScheduleUpdate jobScheduleUpdate) throws DataVinesServerException;
+//    JobSchedule create(JobScheduleCreateOrUpdate jobScheduleCreate) throws DataVinesServerException;
+//
+//    JobSchedule update(JobScheduleUpdate jobScheduleUpdate) throws DataVinesServerException;
 
     int deleteById(long id);
 

@@ -37,6 +37,7 @@ import static io.datavines.server.utils.VerificationUtil.verifyIsNeedParam;
 
 @Service
 public class HourCronImpl implements FunCron {
+
     @Override
     public String funcDeal(JobSchedule jobschedule) {
         String param = jobschedule.getParam();
