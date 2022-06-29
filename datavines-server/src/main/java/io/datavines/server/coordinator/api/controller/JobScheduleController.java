@@ -22,6 +22,7 @@ import io.datavines.core.exception.DataVinesServerException;
 
 
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreate;
+import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreateOrUpdate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleUpdate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.service.JobScheduleService;
@@ -47,29 +48,28 @@ public class JobScheduleController {
     @Autowired
     private JobScheduleService jobScheduleService;
 
-    @ApiOperation(value = "create or update jobschedule")
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createJob(@Valid @RequestBody JobScheduleCreate jobScheduleCreate) throws DataVinesServerException {
-
+    @ApiOperation(value = "create or update job schedule")
+    @PostMapping(value = "/createOrUpdate",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object createOrUpdateJob(@Valid @RequestBody JobScheduleCreateOrUpdate jobScheduleCreate) throws DataVinesServerException {
         return jobScheduleService.create(jobScheduleCreate);
     }
 
-    @ApiOperation(value = "delete jobschedule")
-    @DeleteMapping(value = "/{id}")
-    public Object deleteJob(@PathVariable Long id)  {
-        return jobScheduleService.deleteById(id);
-    }
+//    @ApiOperation(value = "delete job schedule")
+//    @DeleteMapping(value = "/{id}")
+//    public Object deleteJob(@PathVariable Long id)  {
+//        return jobScheduleService.deleteById(id);
+//    }
 
-    @ApiOperation(value = "update jobschedule, delete quartz")
-    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateJob(@Valid @PathVariable Long id) throws DataVinesServerException {
-        return jobScheduleService.deleteById(id);
-    }
+//    @ApiOperation(value = "update job schedule, delete quartz")
+//    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
+//    public Object updateJob(@Valid @PathVariable Long id) throws DataVinesServerException {
+//        return jobScheduleService.deleteById(id);
+//    }
 
-    @ApiOperation(value = "get list jobschedule by jobid")
-    @GetMapping(value = "/list/{taskId}")
-    public Object getlistByJobId(@PathVariable Long taskId)  {
-        return jobScheduleService.listByJobId(taskId);
+    @ApiOperation(value = "get list job schedule by jobId")
+    @GetMapping(value = "/{jobId}")
+    public Object getListByJobId(@PathVariable Long jobId)  {
+        return jobScheduleService.getByJobId(jobId);
     }
 
     @ApiOperation(value = "get cron by cycle")

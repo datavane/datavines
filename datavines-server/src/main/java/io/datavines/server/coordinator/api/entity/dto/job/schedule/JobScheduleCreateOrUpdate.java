@@ -14,22 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package io.datavines.server.coordinator.api.entity.dto.job.schedule;
 
-package io.datavines.server.coordinator.repository.mapper;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.datavines.server.coordinator.repository.entity.Job;
-import io.datavines.server.coordinator.repository.entity.JobSchedule;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
+import javax.validation.constraints.NotNull;
 
-import java.util.List;
+@Data
+@EqualsAndHashCode(callSuper = true)
+@NotNull(message = "Job Schedule Create Or Update cannot be null")
+public class JobScheduleCreateOrUpdate extends JobScheduleCreate {
 
-@Mapper
-public interface JobScheduleMapper extends BaseMapper<JobSchedule> {
-
-    @Select("SELECT * from dv_job_schedule WHERE job_id = #{jobId} limit 1")
-    JobSchedule getByJobId(long jobId);
-
+    private Long id;
 }

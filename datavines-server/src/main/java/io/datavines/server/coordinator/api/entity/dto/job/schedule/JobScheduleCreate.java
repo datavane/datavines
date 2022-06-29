@@ -32,7 +32,6 @@ public class JobScheduleCreate {
     @NotBlank(message = "job schedule type cannot be empty")
     private String type;
 
-   // @NotBlank(message = "job schedule param cannot be empty")
     private MapParam param;
 
     private LocalDateTime startTime;
