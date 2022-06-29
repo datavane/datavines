@@ -25,8 +25,8 @@ public enum JobScheduleType {
     /**
      *
      */
-    NORMAL(0, "normal"),
-    CRONTAB(1, "crontab"),
+    CYCLE(0, "cycle"),
+    CRONTAB(1, "cron"),
     NONE(2, "none");
 
     JobScheduleType(int code, String description){

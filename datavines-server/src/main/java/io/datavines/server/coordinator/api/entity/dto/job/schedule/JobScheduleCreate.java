@@ -16,6 +16,7 @@
  */
 package io.datavines.server.coordinator.api.entity.dto.job.schedule;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
@@ -34,7 +35,9 @@ public class JobScheduleCreate {
 
     private MapParam param;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private LocalDateTime startTime;
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private LocalDateTime endTime;
 }

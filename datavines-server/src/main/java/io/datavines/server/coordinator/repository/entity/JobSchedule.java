@@ -50,11 +50,11 @@ public class JobSchedule implements Serializable {
     @TableField(value = "status")
     private boolean status;
 
-    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "start_time")
     private LocalDateTime startTime;
 
-    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "end_time")
     private LocalDateTime endTime;
 

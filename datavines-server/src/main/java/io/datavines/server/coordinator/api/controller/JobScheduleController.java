@@ -20,13 +20,9 @@ import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.exception.DataVinesServerException;
 
-
-import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreateOrUpdate;
-import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleUpdate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.service.JobScheduleService;
-
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,22 +47,10 @@ public class JobScheduleController {
     @ApiOperation(value = "create or update job schedule")
     @PostMapping(value = "/createOrUpdate",consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createOrUpdateJob(@Valid @RequestBody JobScheduleCreateOrUpdate jobScheduleCreate) throws DataVinesServerException {
-        return jobScheduleService.create(jobScheduleCreate);
+        return jobScheduleService.createOrUpdate(jobScheduleCreate);
     }
 
-//    @ApiOperation(value = "delete job schedule")
-//    @DeleteMapping(value = "/{id}")
-//    public Object deleteJob(@PathVariable Long id)  {
-//        return jobScheduleService.deleteById(id);
-//    }
-
-//    @ApiOperation(value = "update job schedule, delete quartz")
-//    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public Object updateJob(@Valid @PathVariable Long id) throws DataVinesServerException {
-//        return jobScheduleService.deleteById(id);
-//    }
-
-    @ApiOperation(value = "get list job schedule by jobId")
+    @ApiOperation(value = "get job schedule by jobId")
     @GetMapping(value = "/{jobId}")
     public Object getListByJobId(@PathVariable Long jobId)  {
         return jobScheduleService.getByJobId(jobId);
