@@ -28,8 +28,8 @@ import java.util.List;
 
 @Mapper
 public interface JobScheduleMapper extends BaseMapper<JobSchedule> {
-    @Select("SELECT * from dv_job_schedule WHERE job_id = #{jobId} ")
-    List<JobSchedule> listByDataJobId(long jobId);
-    @Delete("delete from dv_job_schedule WHERE job_id = #{jobId} ")
-    int deleteFromJobId(long jobId);
+
+    @Select("SELECT * from dv_job_schedule WHERE job_id = #{jobId} limit 1")
+    JobSchedule getByJobId(long jobId);
+
 }

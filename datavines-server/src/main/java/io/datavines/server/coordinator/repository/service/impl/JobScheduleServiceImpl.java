@@ -19,12 +19,10 @@ package io.datavines.server.coordinator.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreate;
-import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleUpdate;
+import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreateOrUpdate;
 import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
@@ -36,6 +34,7 @@ import io.datavines.server.coordinator.server.quartz.ScheduleJob;
 import io.datavines.server.coordinator.server.quartz.StrategyFactory;
 import io.datavines.server.coordinator.server.quartz.cron.FunCron;
 
+import io.datavines.server.enums.JobScheduleType;
 import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -49,7 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Service("JobScheduleService")
+@Service("jobScheduleService")
 public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSchedule>  implements JobScheduleService {
 
     @Autowired
@@ -57,124 +56,180 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
 
     @Autowired
     private JobMapper jobMapper;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
+    public JobSchedule createOrUpdate(JobScheduleCreateOrUpdate jobScheduleCreateOrUpdate) throws DataVinesServerException {
+        if (jobScheduleCreateOrUpdate.getId() != null && jobScheduleCreateOrUpdate.getId() != 0) {
+            return update(jobScheduleCreateOrUpdate);
+        } else {
+            return create(jobScheduleCreateOrUpdate);
+        }
+    }
 
-    public Long create(JobScheduleCreate jobScheduleCreateCreate) throws DataVinesServerException {
-        String cron = "";
-        Long jobid = 0l;
+    private JobSchedule create(JobScheduleCreateOrUpdate jobScheduleCreate) throws DataVinesServerException {
 
-        JobSchedule jobSchedule = new JobSchedule();
-        BeanUtils.copyProperties(jobScheduleCreateCreate, jobSchedule);
-        String type = jobScheduleCreateCreate.getType();
-        MapParam param=jobScheduleCreateCreate.getParam();
+        Long jobId = jobScheduleCreate.getJobId();
+        JobSchedule jobSchedule = baseMapper.selectOne(new QueryWrapper<JobSchedule>().eq("job_id", jobId));
+        if (jobSchedule != null) {
+            throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_EXIST_ERROR, jobSchedule.getId());
+        }
 
+        jobSchedule = new JobSchedule();
+        BeanUtils.copyProperties(jobScheduleCreate, jobSchedule);
         jobSchedule.setCreateBy(ContextHolder.getUserId());
         jobSchedule.setCreateTime(LocalDateTime.now());
         jobSchedule.setUpdateBy(ContextHolder.getUserId());
         jobSchedule.setUpdateTime(LocalDateTime.now());
         jobSchedule.setStatus(true);
-        jobSchedule.setStartTime(jobScheduleCreateCreate.getStartTime());
-        jobSchedule.setEndTime(jobScheduleCreateCreate.getEndTime());
-        if (param != null) {
-            String result1 = JSONUtils.toJsonString(param);
-            jobSchedule.setParam(result1);
-            log.info("get jobSchedule parm:{}", result1);
-        }
-        List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobSchedule.getJobId());
-        if (type == null) {
-            throw new DataVinesServerException(ApiStatus.JOBSCHEDULE_PARAMETER_IS_NULL_ERROR);
-        }
 
-        if(type.equals("cycle")){
-            if (param.getCycle() == null) {
-                throw new DataVinesServerException(ApiStatus.JOBSCHEDULE_PARAMETER_IS_NULL_ERROR);
-            }
-            FunCron api =  StrategyFactory.getByType(param.getCycle());
-            cron = api.funcDeal(jobSchedule);
-            jobSchedule.setCronExpression(cron);
-        } else if (type.equals("cron")) {
-            cron = param.getCrontab();
-            Boolean isvalid = quartzExecutor.isValid(cron);
-            if (! isvalid) {
-                throw new DataVinesServerException(ApiStatus.JOBSCHEDULE_CRON_IS_INVALID_ERROR);
-            }
-            jobSchedule.setCronExpression(cron);
-        } else {
-            if (jobScheduleList.size() == 0) {
-               return 0l;
-            }
-            JobSchedule jobSchedule1= jobScheduleList.get(0);
-            jobid = jobSchedule1.getJobId();
-            Job job = jobMapper.selectById(jobid);
-            Long dataSourceId = job.getDataSourceId();
-            jobSchedule1.setStatus(false);
-            quartzExecutor.deleteJob(jobid, dataSourceId);
-            baseMapper.updateById(jobSchedule1);
-            return jobid;
-        }
-
-        Job job = jobMapper.selectById(jobSchedule.getJobId());
+        updateJobScheduleParam(jobSchedule, jobScheduleCreate.getType(), jobScheduleCreate.getParam());
+        Job job = jobMapper.selectById(jobId);
         if (job == null) {
-            throw new DataVinesServerException(ApiStatus.JOB_NOT_EXIST_ERROR);
+            throw new DataVinesServerException(ApiStatus.JOB_NOT_EXIST_ERROR, jobId);
         } else {
             Long dataSourceId = job.getDataSourceId();
             if (dataSourceId == null) {
                 throw new DataVinesServerException(ApiStatus.DATASOURCE_NOT_EXIST_ERROR);
             }
-            try{
-                quartzExecutor.addJob(ScheduleJob.class, job.getDataSourceId(),  jobSchedule);
-            }catch (Exception e) {
-                throw new DataVinesServerException(ApiStatus.ADD_QUARTZE_ERROR);
+            try {
+                quartzExecutor.addJob(ScheduleJob.class, job.getDataSourceId(), jobSchedule);
+            } catch (Exception e) {
+                throw new DataVinesServerException(ApiStatus.ADD_QUARTZ_ERROR);
+            }
+        }
+
+        if (baseMapper.insert(jobSchedule) <= 0) {
+            log.info("create job schedule fail : {}", jobScheduleCreate);
+            throw new DataVinesServerException(ApiStatus.CREATE_JOB_SCHEDULE_ERROR);
+        }
+        log.info("create job schedule success: datasource id : {}, job id :{}, cronExpression : {}",
+                job.getDataSourceId(),
+                jobSchedule.getJobId(),
+                jobSchedule.getCronExpression());
+
+        return jobSchedule;
+    }
+
+    private JobSchedule update(JobScheduleCreateOrUpdate jobScheduleUpdate) throws DataVinesServerException {
+        JobSchedule jobSchedule = getById(jobScheduleUpdate.getId());
+        if (jobSchedule == null) {
+            throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_NOT_EXIST_ERROR, jobScheduleUpdate.getId());
+        }
+
+        BeanUtils.copyProperties(jobScheduleUpdate, jobSchedule);
+        jobSchedule.setUpdateBy(ContextHolder.getUserId());
+        jobSchedule.setUpdateTime(LocalDateTime.now());
+
+        updateJobScheduleParam(jobSchedule, jobScheduleUpdate.getType(), jobScheduleUpdate.getParam());
+        Long jobId = jobScheduleUpdate.getJobId();
+        Job job = jobMapper.selectById(jobId);
+        if (job == null) {
+            throw new DataVinesServerException(ApiStatus.JOB_NOT_EXIST_ERROR, jobId);
+        } else {
+            Long dataSourceId = job.getDataSourceId();
+            if (dataSourceId == null) {
+                throw new DataVinesServerException(ApiStatus.DATASOURCE_NOT_EXIST_ERROR);
             }
 
+            try {
+                quartzExecutor.deleteJob(jobId, dataSourceId);
+                switch (JobScheduleType.of(jobScheduleUpdate.getType())) {
+                    case CYCLE:
+                    case CRONTAB:
+                        quartzExecutor.addJob(ScheduleJob.class, job.getDataSourceId(), jobSchedule);
+                        break;
+                    case NONE:
+                        break;
+                    default:
+                        throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_TYPE_NOT_VALIDATE_ERROR, jobScheduleUpdate.getType());
+                }
+            } catch (Exception e) {
+                throw new DataVinesServerException(ApiStatus.ADD_QUARTZ_ERROR);
+            }
         }
-        if (jobScheduleList.size() >0 ) {
-            long id= jobScheduleList.get(0).getId();
-            jobSchedule.setId(id);
-            baseMapper.updateById(jobSchedule);
-        } else {
-            baseMapper.insert(jobSchedule);
+
+        if (baseMapper.updateById(jobSchedule) <= 0) {
+            log.info("update job schedule fail : {}", jobScheduleUpdate);
+            throw new DataVinesServerException(ApiStatus.UPDATE_JOB_SCHEDULE_ERROR, jobScheduleUpdate.getId());
         }
-        log.info("create jobschedule success: datasource id:{}, job id :{}, cron:{}",  job.getDataSourceId(), jobSchedule.getJobId(),cron);
-        return jobid;
+
+        return jobSchedule;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int deleteById(long id) {
-        JobSchedule jobSchedule = baseMapper.selectById(id);
+        JobSchedule jobSchedule = getById(id);
         Job job = jobMapper.selectById(jobSchedule.getJobId());
-        Long jobid = job.getId();
+        Long jobId = job.getId();
         Long dataSourceId = job.getDataSourceId();
 
-        Boolean deljob = quartzExecutor.deleteJob(jobid, dataSourceId);
-        if (! deljob ) {
+        Boolean deleteJob = quartzExecutor.deleteJob(jobId, dataSourceId);
+        if (!deleteJob ) {
             return 0;
         }
         return baseMapper.deleteById(id);
     }
 
     @Override
-    public List<JobSchedule> listByJobId(Long jobId) {
-        List<JobSchedule> jobScheduleList = baseMapper.listByDataJobId(jobId);
-        return jobScheduleList;
+    public JobSchedule getByJobId(Long jobId) {
+        return baseMapper.getByJobId(jobId);
     }
 
     @Override
     public JobSchedule getById(long id) {
         return baseMapper.selectById(id);
     }
+
     @Override
     public  List<String> getCron(MapParam mapParam){
-        List<String> listCron=new ArrayList<String>();
-        FunCron api =  StrategyFactory.getByType(mapParam.getCycle());
+        List<String> listCron = new ArrayList<String>();
+        FunCron api = StrategyFactory.getByType(mapParam.getCycle());
         JobSchedule jobSchedule = new JobSchedule();
         String result1 = JSONUtils.toJsonString(mapParam);
         jobSchedule.setParam(result1);
         String cron = api.funcDeal(jobSchedule);
         listCron.add(cron);
-        return  listCron;
+        return listCron;
     }
 
+    private void updateJobScheduleParam(JobSchedule jobSchedule, String type, MapParam param) {
+        String paramStr = JSONUtils.toJsonString(param);
+        switch (JobScheduleType.of(type)){
+            case CYCLE:
+                if (param == null) {
+                    throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_PARAMETER_IS_NULL_ERROR);
+                }
+
+                if (param.getCycle() == null) {
+                    throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_PARAMETER_IS_NULL_ERROR);
+                }
+                jobSchedule.setStatus(true);
+                jobSchedule.setParam(paramStr);
+                FunCron api = StrategyFactory.getByType(param.getCycle());
+                jobSchedule.setCronExpression(api.funcDeal(jobSchedule));
+
+                log.info("job schedule param: {}", paramStr);
+                break;
+            case CRONTAB:
+                if (param == null) {
+                    throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_PARAMETER_IS_NULL_ERROR);
+                }
+
+                Boolean isValid = quartzExecutor.isValid(param.getCrontab());
+                if (!isValid) {
+                    throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_CRON_IS_INVALID_ERROR, param.getCrontab());
+                }
+                jobSchedule.setStatus(true);
+                jobSchedule.setParam(paramStr);
+                jobSchedule.setCronExpression(param.getCrontab());
+                break;
+            case NONE:
+                jobSchedule.setStatus(false);
+                break;
+            default:
+                throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_TYPE_NOT_VALIDATE_ERROR, type);
+        }
+    }
 }

@@ -16,28 +16,14 @@
  */
 package io.datavines.server.coordinator.api.entity.dto.job.schedule;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 
 @Data
-@NotNull(message = "Job Schedule Create cannot be null")
-public class JobScheduleCreate {
-
-    @NotNull(message = "job id cannot be empty")
-    private Long jobId;
-
-    @NotBlank(message = "job schedule type cannot be empty")
-    private String type;
-
-    private MapParam param;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private LocalDateTime startTime;
-
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private LocalDateTime endTime;
+@EqualsAndHashCode(callSuper = true)
+@NotNull(message = "Job Schedule Create Or Update cannot be null")
+public class JobScheduleCreateOrUpdate extends JobScheduleCreate {
+    private Long id;
 }
