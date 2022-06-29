@@ -95,6 +95,10 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
             jobSchedule.setCronExpression(cron);
         } else if (type.equals("cron")) {
             cron = param.getCrontab();
+            Boolean isvalid = quartzExecutor.isValid(cron);
+            if (! isvalid) {
+                throw new DataVinesServerException(ApiStatus.JOBSCHEDULE_CRON_IS_INVALID_ERROR);
+            }
             jobSchedule.setCronExpression(cron);
         } else {
             if (jobScheduleList.size() == 0) {
