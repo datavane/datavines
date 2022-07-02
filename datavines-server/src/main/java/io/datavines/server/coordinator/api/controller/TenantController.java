@@ -62,15 +62,15 @@ public class TenantController {
     }
 
     @ApiOperation(value = "list tenant by user id")
-    @GetMapping(value = "list")
-    public Object listByUserId()  {
-        return tenantService.listByUserId();
+    @GetMapping(value = "list/{workspaceId}")
+    public Object listByUserId(@PathVariable Long workspaceId)  {
+        return tenantService.listByWorkspaceId(workspaceId);
     }
 
     @ApiOperation(value = "list env options by user id")
-    @GetMapping(value = "listOptions")
-    public Object listOptions()  {
-        List<Tenant> tenantList = tenantService.listByUserId();
+    @GetMapping(value = "listOptions/{workspaceId}")
+    public Object listOptions(@PathVariable Long workspaceId)  {
+        List<Tenant> tenantList = tenantService.listByWorkspaceId(workspaceId);
         List<Item> items = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(tenantList)) {
             tenantList.forEach(it -> {

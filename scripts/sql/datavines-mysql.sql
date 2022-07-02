@@ -265,15 +265,18 @@ CREATE TABLE `dv_job` (
     `execute_platform_parameter` text,
     `engine_type` varchar(128) DEFAULT NULL,
     `engine_parameter` text,
+    `error_storage_type` varchar(128) DEFAULT NULL,
+    `error_storage_parameter` text,
     `parameter` text COMMENT '任务参数',
     `retry_times` int(11) DEFAULT NULL COMMENT '重试次数',
     `retry_interval` int(11) DEFAULT NULL COMMENT '重试间隔',
     `timeout` int(11) DEFAULT NULL COMMENT '任务超时时间',
     `timeout_strategy` int(11) DEFAULT NULL COMMENT '超时策略',
-    `tenant_code` varchar(255) DEFAULT NULL COMMENT '代理用户',
-    `create_by` int(11) DEFAULT NULL COMMENT '创建用户id',
+    `tenant_code` bigint(20) DEFAULT NULL COMMENT '代理用户',
+    `env` bigint(20) DEFAULT NULL COMMENT '环境配置',
+    `create_by` bigint(20) DEFAULT NULL COMMENT '创建用户id',
     `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-    `update_by` int(11) DEFAULT NULL COMMENT '更新用户id',
+    `update_by` bigint(20) DEFAULT NULL COMMENT '更新用户id',
     `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`),
     UNIQUE KEY `unique_name` (`name`) USING BTREE
@@ -445,5 +448,32 @@ CREATE TABLE dv_sla_sender(
     update_by bigint DEFAULT NULL,
     update_time timestamp default current_timestamp
 );
+
+DROP TABLE IF EXISTS `dv_env`;
+CREATE TABLE `dv_env` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL COMMENT '服务器环境配置',
+  `env` text NOT NULL,
+  `workspace_id` bigint(20) NOT NULL,
+  `create_by` bigint(20) NOT NULL COMMENT '创建用户id',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_by` bigint(20) NOT NULL COMMENT '更新用户id',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `env_name` (`name`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `dv_tenant`;
+CREATE TABLE `dv_tenant` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tenant` varchar(255) NOT NULL COMMENT 'Linux服务器用户',
+  `workspace_id` bigint(20) NOT NULL,
+  `create_by` bigint(20) NOT NULL COMMENT '创建用户id',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_by` bigint(20) NOT NULL COMMENT '更新用户id',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `tenant_name` (`tenant`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`, `create_time`, `update_time`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');

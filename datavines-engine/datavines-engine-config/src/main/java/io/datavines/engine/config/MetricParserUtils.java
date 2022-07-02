@@ -98,6 +98,8 @@ public class MetricParserUtils {
         config.put(SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult,true));
         config.put(OUTPUT_TABLE, executeSql.getResultTable());
         config.put(INVALIDATE_ITEMS_TABLE, inputParameterValueResult.get(INVALIDATE_ITEMS_TABLE));
+        config.put(METRIC_NAME, inputParameterValueResult.get(METRIC_NAME));
+        config.put(TASK_ID, inputParameterValueResult.get(TASK_ID));
 
         TransformConfig transformerConfig = new TransformConfig(SQL, config);
         transformerConfig.setType(type);

@@ -23,10 +23,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.datavines.common.enums.JobType;
 import io.datavines.common.enums.TimeoutStrategy;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Data
 @TableName("dv_tenant")
 public class Tenant implements Serializable {
 
@@ -37,6 +39,9 @@ public class Tenant implements Serializable {
 
     @TableField(value = "tenant")
     private String tenant;
+
+    @TableField(value = "workspace_id")
+    private Long workspaceId;
 
     @TableField(value = "create_by")
     private Long createBy;
@@ -51,52 +56,4 @@ public class Tenant implements Serializable {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "update_time")
     private LocalDateTime updateTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTenant() {
-        return tenant;
-    }
-
-    public void setTenant(String tenant) {
-        this.tenant = tenant;
-    }
-
-    public Long getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(Long createBy) {
-        this.createBy = createBy;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getUpdateBy() {
-        return updateBy;
-    }
-
-    public void setUpdateBy(Long updateBy) {
-        this.updateBy = updateBy;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
 }

@@ -16,6 +16,7 @@
  */
 package io.datavines.engine.jdbc.transform.sql;
 
+import io.datavines.common.config.Config;
 import io.datavines.engine.jdbc.api.entity.ResultList;
 
 import java.sql.Connection;
@@ -25,7 +26,8 @@ import java.sql.Statement;
 public class ExpectedValueExecutor implements ITransformExecutor {
 
     @Override
-    public ResultList execute(Connection connection, String sql, String outputTable) throws Exception {
+    public ResultList execute(Connection connection, Config config) throws Exception {
+        String sql = config.getString("sql");
 
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);

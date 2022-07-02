@@ -139,7 +139,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
                     case CRONTAB:
                         quartzExecutor.addJob(ScheduleJob.class, job.getDataSourceId(), jobSchedule);
                         break;
-                    case NONE:
+                    case OFFLINE:
                         break;
                     default:
                         throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_TYPE_NOT_VALIDATE_ERROR, jobScheduleUpdate.getType());
@@ -225,7 +225,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
                 jobSchedule.setParam(paramStr);
                 jobSchedule.setCronExpression(param.getCrontab());
                 break;
-            case NONE:
+            case OFFLINE:
                 jobSchedule.setStatus(false);
                 break;
             default:

@@ -16,7 +16,10 @@
  */
 package io.datavines.engine.jdbc.transform.sql;
 
+import io.datavines.common.config.Config;
 import io.datavines.engine.jdbc.api.entity.ResultList;
+import io.datavines.engine.jdbc.api.entity.ResultListWithColumns;
+import io.datavines.engine.jdbc.api.utils.FileUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -25,14 +28,18 @@ import java.sql.Statement;
 public class InvalidateItemsExecutor implements ITransformExecutor {
 
     @Override
-    public ResultList execute(Connection connection, String sql, String outputTable) throws Exception {
-        Statement statement = connection.createStatement();
+    public ResultList execute(Connection connection, Config config) throws Exception {
 
+        String outputTable = config.getString("invalidate_items_table");
+        String sql = config.getString("sql");
+
+        Statement statement = connection.createStatement();
         statement.execute("drop view if exists " + outputTable);
         statement.execute("create view " + outputTable + " as " + sql);
         ResultSet resultSet = statement.executeQuery("select * from " + outputTable +" limit 1000");
-        ResultList resultList = SqlUtils.getListWithHeaderFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
+        ResultListWithColumns resultList = SqlUtils.getListWithHeaderFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins("select * from " + outputTable +" limit 1000"));
         //执行文件下载到本地
+        FileUtils.writeToLocal(resultList,"/tmp/datavines/errordata",config.getString("metric_name").replace("'","") + "_" + config.getString("task_id"));
         statement.close();
         resultSet.close();
         return null;
