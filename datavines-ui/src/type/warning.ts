@@ -1,3 +1,11 @@
+export type TWarnSLATableItem = {
+    id: number,
+    name: string,
+    updateTime: string,
+    updater: string,
+    description: string,
+}
+
 export type TWarnTableItem = {
     id: string | number,
     name: string,

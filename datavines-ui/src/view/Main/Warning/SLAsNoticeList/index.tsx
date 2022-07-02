@@ -10,7 +10,7 @@ export default () => {
     const [activeKey, setActiveKey] = useState('SLAS');
     const intl = useIntl();
     return (
-        <div>
+        <div style={{ paddingTop: 10 }}>
             <Tabs activeKey={activeKey} type="card" onChange={(key) => (setActiveKey(key))}>
                 <TabPane tab="SLAs" key="SLAS">
                     <SLAsList />

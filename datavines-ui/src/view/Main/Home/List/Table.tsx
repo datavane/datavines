@@ -48,7 +48,7 @@ const Index: React.FC<IndexProps> = ({
             render: (text: string) => <div>{text || '--'}</div>,
         },
         {
-            title: '操作',
+            title: intl.formatMessage({ id: 'common_action' }),
             fixed: 'right',
             key: 'right',
             dataIndex: 'right',
@@ -64,7 +64,6 @@ const Index: React.FC<IndexProps> = ({
                     >
                         <a style={{ color: '#f81d22', marginLeft: 10 }}><DeleteOutlined /></a>
                     </Popconfirm>
-
                 </>
             ),
         },
