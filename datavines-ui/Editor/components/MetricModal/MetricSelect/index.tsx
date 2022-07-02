@@ -9,7 +9,7 @@ import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
 import { TDetail, TMetricParameter } from '../type';
 import {
-    CustomSelect, useMount, useContextModal, usePersistFn, IF,
+    CustomSelect, useMount, usePersistFn,
 } from '../../../common';
 
 type InnerProps = {

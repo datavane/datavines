@@ -26,20 +26,20 @@ const Index = ({ form, detail }: InnerProps) => {
         try {
             const $engineList = await $http.get('metric/engine/list');
             setEngineList($engineList || []);
-            if (detail && detail.id) {
-                const paramter = detail.engineParameter || {} as TEngineParameter;
-                form.setFieldsValue({
-                    deployMode: paramter.deployMode,
-                    driverCores: paramter.driverCores,
-                    driverMemory: paramter.driverMemory,
-                    numExecutors: paramter.numExecutors,
-                    executorMemory: paramter.executorMemory,
-                    executorCores: paramter.executorCores,
-                    others: paramter.others,
-                    tenantCode: detail.tenantCode,
-                    env: detail.env,
-                });
-            }
+            // if (detail && detail.id) {
+            const paramter = detail?.engineParameter || {} as TEngineParameter;
+            form.setFieldsValue({
+                deployMode: paramter.deployMode ?? 'cluster',
+                driverCores: paramter.driverCores ?? 1,
+                driverMemory: paramter.driverMemory ?? '512M',
+                numExecutors: paramter.numExecutors ?? 2,
+                executorMemory: paramter.executorMemory ?? '2G',
+                executorCores: paramter.executorCores ?? 2,
+                others: paramter.others ?? '--conf spark.yarn.maxAppAttempts=1',
+                tenantCode: detail?.tenantCode,
+                env: detail?.env,
+            });
+            // }
         } catch (error) {
         }
     });

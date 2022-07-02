@@ -69,7 +69,8 @@ const Login = () => {
                             </Button>
                         </Form.Item>
                         <div className="dv-flex-between">
-                            <a href="#/forgetPwd">{intl.formatMessage({ id: 'forget_password' })}</a>
+                            <span />
+                            {/* <a href="#/forgetPwd">{intl.formatMessage({ id: 'forget_password' })}</a> */}
                             <a href="#/register">{intl.formatMessage({ id: 'register' })}</a>
                         </div>
                     </Form>
