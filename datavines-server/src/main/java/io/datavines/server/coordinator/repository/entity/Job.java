@@ -24,16 +24,18 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.enums.TimeoutStrategy;
 import io.datavines.common.enums.JobType;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Data
 @TableName("dv_job")
 public class Job implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
-    @TableId(type= IdType.AUTO)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
     @TableField(value = "name")
@@ -56,6 +58,12 @@ public class Job implements Serializable {
 
     @TableField(value = "engine_parameter")
     private String engineParameter;
+
+    @TableField(value = "error_storage_type")
+    private String errorStorageType;
+
+    @TableField(value = "error_storage_parameter")
+    private String errorStorageParameter;
 
     @TableField(value = "parameter")
     private String parameter;
@@ -81,166 +89,14 @@ public class Job implements Serializable {
     @TableField(value = "create_by")
     private Long createBy;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "create_time")
     private LocalDateTime createTime;
 
     @TableField(value = "update_by")
     private Long updateBy;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "update_time")
     private LocalDateTime updateTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public JobType getType() {
-        return type;
-    }
-
-    public void setType(JobType type) {
-        this.type = type;
-    }
-
-    public String getExecutePlatformType() {
-        return executePlatformType;
-    }
-
-    public void setExecutePlatformType(String executePlatformType) {
-        this.executePlatformType = executePlatformType;
-    }
-
-    public String getExecutePlatformParameter() {
-        return executePlatformParameter;
-    }
-
-    public void setExecutePlatformParameter(String executePlatformParameter) {
-        this.executePlatformParameter = executePlatformParameter;
-    }
-
-    public String getEngineType() {
-        return engineType;
-    }
-
-    public void setEngineType(String engineType) {
-        this.engineType = engineType;
-    }
-
-    public String getEngineParameter() {
-        return engineParameter;
-    }
-
-    public void setEngineParameter(String engineParameter) {
-        this.engineParameter = engineParameter;
-    }
-
-    public String getParameter() {
-        return parameter;
-    }
-
-    public void setParameter(String parameter) {
-        this.parameter = parameter;
-    }
-
-    public Long getDataSourceId() {
-        return dataSourceId;
-    }
-
-    public void setDataSourceId(Long dataSourceId) {
-        this.dataSourceId = dataSourceId;
-    }
-
-    public Integer getRetryTimes() {
-        return retryTimes;
-    }
-
-    public void setRetryTimes(Integer retryTimes) {
-        this.retryTimes = retryTimes;
-    }
-
-    public Integer getRetryInterval() {
-        return retryInterval;
-    }
-
-    public void setRetryInterval(Integer retryInterval) {
-        this.retryInterval = retryInterval;
-    }
-
-    public Integer getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(Integer timeout) {
-        this.timeout = timeout;
-    }
-
-    public TimeoutStrategy getTimeoutStrategy() {
-        return timeoutStrategy;
-    }
-
-    public void setTimeoutStrategy(TimeoutStrategy timeoutStrategy) {
-        this.timeoutStrategy = timeoutStrategy;
-    }
-
-    public Long getTenantCode() {
-        return tenantCode;
-    }
-
-    public void setTenantCode(Long tenantCode) {
-        this.tenantCode = tenantCode;
-    }
-
-    public Long getEnv() {
-        return env;
-    }
-
-    public void setEnv(Long env) {
-        this.env = env;
-    }
-
-    public Long getCreateBy() {
-        return createBy;
-    }
-
-    public void setCreateBy(Long createBy) {
-        this.createBy = createBy;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public Long getUpdateBy() {
-        return updateBy;
-    }
-
-    public void setUpdateBy(Long updateBy) {
-        this.updateBy = updateBy;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
 }

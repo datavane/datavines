@@ -79,21 +79,20 @@ public class SqlTransform implements JdbcTransform {
 
         ResultList resultList = null;
         try {
-            String outputTable = config.getString("invalidate_items_table");
             String sql = config.getString("sql");
             logger.info("transform sql is: {}", sql);
             switch (TransformType.of(config.getString("plugin_type"))){
                 case INVALIDATE_ITEMS:
-                    resultList = new InvalidateItemsExecutor().execute(env.getSourceConnection(), sql, outputTable);
+                    resultList = new InvalidateItemsExecutor().execute(env.getSourceConnection(), config);
                     break;
                 case ACTUAL_VALUE:
-                    resultList = new ActualValueExecutor().execute(env.getSourceConnection(), sql, outputTable);
+                    resultList = new ActualValueExecutor().execute(env.getSourceConnection(), config);
                     break;
                 case EXPECTED_VALUE_FROM_METADATA_SOURCE:
-                    resultList = new ExpectedValueExecutor().execute(env.getMetadataConnection(), sql, outputTable);
+                    resultList = new ExpectedValueExecutor().execute(env.getMetadataConnection(), config);
                     break;
                 case EXPECTED_VALUE_FROM_SOURCE:
-                    resultList = new ExpectedValueExecutor().execute(env.getSourceConnection(), sql, outputTable);
+                    resultList = new ExpectedValueExecutor().execute(env.getSourceConnection(), config);
                     break;
                 default:
                     break;

@@ -1,0 +1,1 @@
+jdbc-file-sink=io.datavines.engine.jdbc.file.connector.FileSink

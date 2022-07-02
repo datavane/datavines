@@ -175,18 +175,26 @@ CREATE TABLE dv_job (
     name varchar(255) DEFAULT NULL ,
     type int4 NOT NULL DEFAULT '0',
     datasource_id int8 NOT NULL,
+    execute_platform_type varchar(128) DEFAULT NULL,
+    execute_platform_parameter text,
+    engine_type varchar(128) DEFAULT NULL,
+    engine_parameter text,
+    error_storage_type varchar(128) DEFAULT NULL,
+    error_storage_parameter text,
     parameter text ,
     retry_times int4 DEFAULT NULL ,
     retry_interval int4 DEFAULT NULL ,
     timeout int4 DEFAULT NULL ,
     timeout_strategy int4 DEFAULT NULL ,
-    tenant_code varchar(255) DEFAULT NULL ,
-    create_by int4 DEFAULT NULL ,
+    tenant_code int8 DEFAULT NULL ,
+    env int8 DEFAULT NULL ,
+    create_by int8 DEFAULT NULL ,
     create_time timestamp(0) NOT NULL DEFAULT current_timestamp ,
-    update_by int4 DEFAULT NULL ,
+    update_by int8 DEFAULT NULL ,
     update_time timestamp(0) NOT NULL DEFAULT current_timestamp ,
     CONSTRAINT job_pk PRIMARY KEY (id),
     CONSTRAINT job_un UNIQUE (name)
+
 ) ;
 
 DROP TABLE IF EXISTS dv_job_schedule;
@@ -202,7 +210,7 @@ CREATE TABLE dv_job_schedule (
     create_time timestamp(0) DEFAULT NULL,
     update_by int8 DEFAULT NULL,
     update_time timestamp(0) DEFAULT NULL,
-    CONSTRAINT datasource_pk PRIMARY KEY (id),
+    CONSTRAINT job_schedule_pk PRIMARY KEY (id),
     CONSTRAINT datasource_name_un UNIQUE (name)
 );
 
@@ -363,5 +371,31 @@ CREATE TABLE dv_sla_sender(
     update_time timestamp default current_timestamp
 );
 
+DROP TABLE IF EXISTS dv_env;
+CREATE TABLE dv_env (
+    id bigserial NOT NULL,
+    name varchar(255) NOT NULL,
+    env text NOT NULL,
+    workspace_id int8 NOT NULL,
+    create_by int8 DEFAULT NULL,
+    create_time timestamp(0) DEFAULT NULL,
+    update_by int8 DEFAULT NULL,
+    update_time timestamp(0) DEFAULT NULL,
+    CONSTRAINT workspace_pk PRIMARY KEY (id),
+    CONSTRAINT workspace_name_un UNIQUE (name)
+);
+
+DROP TABLE IF EXISTS dv_tenant;
+CREATE TABLE dv_tenant (
+    id bigserial NOT NULL,
+    tenant varchar(255) NOT NULL,
+    workspace_id int8 NOT NULL,
+    create_by int8 DEFAULT NULL,
+    create_time timestamp(0) DEFAULT NULL,
+    update_by int8 DEFAULT NULL,
+    update_time timestamp(0) DEFAULT NULL,
+    CONSTRAINT workspace_pk PRIMARY KEY (id),
+    CONSTRAINT workspace_name_un UNIQUE (name)
+);
 
 INSERT INTO dv_user (id, username, password, email, phone, admin, create_time, update_time) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');

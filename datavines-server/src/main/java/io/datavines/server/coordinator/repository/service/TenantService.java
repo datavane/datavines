@@ -34,6 +34,6 @@ public interface TenantService {
 
     Tenant getById(long id);
 
-    List<Tenant> listByUserId();
+    List<Tenant> listByWorkspaceId(long workspaceId);
 
 }

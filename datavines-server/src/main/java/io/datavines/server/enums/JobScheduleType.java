@@ -27,7 +27,7 @@ public enum JobScheduleType {
      */
     CYCLE(0, "cycle"),
     CRONTAB(1, "cron"),
-    NONE(2, "none");
+    OFFLINE(2, "offline");
 
     JobScheduleType(int code, String description){
         this.code = code;

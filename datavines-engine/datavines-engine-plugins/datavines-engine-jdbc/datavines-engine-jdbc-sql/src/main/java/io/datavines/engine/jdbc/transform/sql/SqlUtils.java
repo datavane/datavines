@@ -16,7 +16,9 @@
  */
 package io.datavines.engine.jdbc.transform.sql;
 
+import io.datavines.engine.jdbc.api.entity.QueryColumn;
 import io.datavines.engine.jdbc.api.entity.ResultList;
+import io.datavines.engine.jdbc.api.entity.ResultListWithColumns;
 import io.datavines.engine.jdbc.api.utils.LoggerFactory;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Alias;
@@ -37,6 +39,35 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 public class SqlUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(SqlUtils.class);
+
+    public static ResultListWithColumns getListWithHeaderFromResultSet(ResultSet rs, Set<String> queryFromsAndJoins) throws SQLException {
+
+        ResultListWithColumns resultListWithColumns = new ResultListWithColumns();
+
+        ResultSetMetaData metaData = rs.getMetaData();
+
+        List<QueryColumn> queryColumns = new ArrayList<>();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            String key = getColumnLabel(queryFromsAndJoins, metaData.getColumnLabel(i));
+            queryColumns.add(new QueryColumn(key, metaData.getColumnTypeName(i),""));
+        }
+        resultListWithColumns.setColumns(queryColumns);
+
+        List<Map<String, Object>> resultList = new ArrayList<>();
+
+        try {
+            while (rs.next()) {
+                resultList.add(getResultObjectMap(rs, metaData, queryFromsAndJoins));
+            }
+        } catch (Throwable e) {
+            logger.error("get result set error: {0}", e);
+        }
+
+        resultListWithColumns.setResultList(resultList);
+
+        rs.close();
+        return resultListWithColumns;
+    }
 
     public static ResultList getListFromResultSet(ResultSet rs, Set<String> queryFromsAndJoins) throws SQLException {
 

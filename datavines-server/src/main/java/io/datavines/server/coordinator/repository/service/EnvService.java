@@ -34,5 +34,5 @@ public interface EnvService {
 
     Env getById(long id);
 
-    List<Env> listByUserId();
+    List<Env> listByWorkspaceId(long workspaceId);
 }

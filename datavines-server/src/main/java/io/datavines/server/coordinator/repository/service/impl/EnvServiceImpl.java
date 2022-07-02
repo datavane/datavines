@@ -83,8 +83,8 @@ public class EnvServiceImpl extends ServiceImpl<EnvMapper,Env> implements EnvSer
     }
 
     @Override
-    public List<Env> listByUserId() {
-        return baseMapper.selectList(new QueryWrapper<Env>().eq("create_by", ContextHolder.getUserId()));
+    public List<Env> listByWorkspaceId(long workspaceId) {
+        return baseMapper.selectList(new QueryWrapper<Env>().eq("workspace_id", workspaceId));
     }
 
     @Override

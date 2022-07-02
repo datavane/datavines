@@ -61,16 +61,16 @@ public class EnvController {
         return envService.deleteById(id);
     }
 
-    @ApiOperation(value = "list env by user id")
-    @GetMapping(value = "list")
-    public Object listByUserId()  {
-        return envService.listByUserId();
+    @ApiOperation(value = "list env by workspace id")
+    @GetMapping(value = "list/{workspaceId}")
+    public Object listByUserId(@PathVariable Long workspaceId)  {
+        return envService.listByWorkspaceId(workspaceId);
     }
 
-    @ApiOperation(value = "list env options by user id")
-    @GetMapping(value = "listOptions")
-    public Object listOptions()  {
-        List<Env> envList = envService.listByUserId();
+    @ApiOperation(value = "list env options by workspace id")
+    @GetMapping(value = "listOptions/{workspaceId}")
+    public Object listOptions(@PathVariable Long workspaceId)  {
+        List<Env> envList = envService.listByWorkspaceId(workspaceId);
         List<Item> items = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(envList)) {
             envList.forEach(it -> {

@@ -83,8 +83,8 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper,Tenant> implemen
     }
 
     @Override
-    public List<Tenant> listByUserId() {
-        return baseMapper.selectList(new QueryWrapper<Tenant>().eq("create_by", ContextHolder.getUserId()));
+    public List<Tenant> listByWorkspaceId(long workspaceId) {
+        return baseMapper.selectList(new QueryWrapper<Tenant>().eq("workspace_id", workspaceId));
     }
 
     @Override
