@@ -84,13 +84,6 @@ const JobsInstance = () => {
             render: (text: string) => <div>{text}</div>,
         },
         {
-            title: intl.formatMessage({ id: 'jobs_updater' }),
-            dataIndex: 'updater',
-            key: 'updater',
-            width: 140,
-            render: (text: string) => <div>{text || '--'}</div>,
-        },
-        {
             title: intl.formatMessage({ id: 'jobs_update_time' }),
             dataIndex: 'updateTime',
             key: 'updateTime',

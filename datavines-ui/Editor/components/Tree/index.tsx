@@ -59,7 +59,7 @@ const Index = ({ getDatabases }: TIndexProps) => {
                         <EditOutlined
                             onClick={(e) => {
                                 e.stopPropagation();
-                                onFieldClick(item.name, tableItem.name);
+                                onFieldClick(item.name, tableItem.name, fieldItem.name);
                             }}
                         />
                         {' '}

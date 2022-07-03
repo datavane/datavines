@@ -48,6 +48,7 @@ const Index: React.FC<IndexProps> = () => {
     const showFormSchemaModal = (record: null | IDataSourceListItem) => {
         const schema: IFormRender = {
             name: 'tenantName',
+            layout: 'vertical',
             meta: [
                 {
                     label: 'name',

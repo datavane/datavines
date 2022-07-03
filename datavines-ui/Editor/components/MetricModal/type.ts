@@ -16,7 +16,9 @@ export type TMetricParameter = {
 export type TParameterItem = {
     metricType?: string;
     expectedType?: string;
-    expected_value?: string;
+    expectedParameter?: {
+        expected_value?: string;
+    },
     result_formula?: string;
     operator?: string;
     threshold?: string;

@@ -49,16 +49,8 @@ const Index: React.FC<IndexProps> = () => {
     const showFormSchemaModal = (record: null | IDataSourceListItem) => {
         const schema: IFormRender = {
             name: 'envName',
+            layout: 'vertical',
             meta: [
-                {
-                    label: 'env',
-                    name: 'env',
-                    rules: [
-                        { required: true },
-                    ],
-                    initialValue: record?.env,
-                    widget: <Input />,
-                },
                 {
                     label: 'name',
                     name: 'name',
@@ -67,6 +59,15 @@ const Index: React.FC<IndexProps> = () => {
                     ],
                     initialValue: record?.name,
                     widget: <Input />,
+                },
+                {
+                    label: 'env',
+                    name: 'env',
+                    rules: [
+                        { required: true },
+                    ],
+                    initialValue: record?.env,
+                    widget: <Input.TextArea rows={3} />,
                 },
             ],
         };
@@ -124,7 +125,7 @@ const Index: React.FC<IndexProps> = () => {
             render: (text: string) => <div>{text}</div>,
         },
         {
-            title: '操作',
+            title: intl.formatMessage({ id: 'common_action' }),
             fixed: 'right',
             key: 'right',
             dataIndex: 'right',

@@ -74,7 +74,7 @@ const Index = () => {
     ];
     return (
         <div className="dv-page-paddinng">
-            <div className="dv-flex-between" style={{ textAlign: 'right', marginBottom: 10 }}>
+            <div className="dv-flex-between" style={{ textAlign: 'right', marginBottom: 10, paddingTop: 10 }}>
                 <GoBack />
                 <Button type="primary" onClick={() => { onSettings(); }}>
                     {intl.formatMessage({ id: 'common_settings' })}

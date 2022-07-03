@@ -27,11 +27,11 @@ const Index = ({ form, detail }: InnerProps) => {
             setExpectedTypeList(res || []);
             if (detail && detail.id) {
                 const {
-                    expectedType, expected_value,
+                    expectedType, expectedParameter,
                 } = detail?.parameterItem || {} as TParameterItem;
                 const options: Record<string, any> = {
                     expectedType,
-                    expected_value,
+                    expected_value: expectedParameter?.expected_value,
                 };
                 form.setFieldsValue(options);
             }
