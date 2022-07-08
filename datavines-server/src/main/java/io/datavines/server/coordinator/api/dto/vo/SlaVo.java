@@ -34,6 +34,8 @@ public class SlaVo {
 
     private Integer jobs;
 
+    private String description;
+
     private String updater;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
