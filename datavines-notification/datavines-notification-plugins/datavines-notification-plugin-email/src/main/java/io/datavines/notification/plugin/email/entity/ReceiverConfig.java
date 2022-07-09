@@ -27,7 +27,7 @@ import java.util.Set;
 @ToString
 public class ReceiverConfig {
 
-    private String receiveType;
-    private String address;
+    private String to;
+    private String cc;
 
 }

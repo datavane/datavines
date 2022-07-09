@@ -22,7 +22,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.coordinator.api.dto.vo.SlaSenderVo;
 import io.datavines.server.coordinator.repository.entity.SlaSender;
 
+import java.util.List;
+
 public interface SlaSenderService extends IService<SlaSender> {
 
     IPage<SlaSenderVo> pageListSender(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize);
+
+    List<SlaSenderVo> listSenders(Long workSpaceId, String searchVal, String type);
 }
