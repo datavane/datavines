@@ -89,15 +89,12 @@ public class EMailSender {
 
     public SlaNotificationResultRecord sendMails(Set<String> receiverSet, Set<String> copyReceiverSet, String subject, String message){
         SlaNotificationResultRecord result = new SlaNotificationResultRecord();
-
         // if there is no receivers && no receiversCc, no need to process
         if (CollectionUtils.isEmpty(receiverSet)) {
             return result;
         }
-
         receiverSet.removeIf(StringUtils::isEmpty);
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-
         // send email
         HtmlEmail email = new HtmlEmail();
         try {
@@ -111,7 +108,6 @@ public class EMailSender {
                     email.addTo(receiver);
                 }
             }
-
             if (CollectionUtils.isNotEmpty(copyReceiverSet)) {
                 //cc
                 for (String receiverCc : copyReceiverSet) {
@@ -122,7 +118,6 @@ public class EMailSender {
             String textMessageContent = getTextTypeMessage(message);
             email.setMsg(textMessageContent);
             email.setSubject(subject);
-
             // send
             email.setDebug(true);
             email.send();
@@ -132,7 +127,6 @@ public class EMailSender {
         } catch (Exception e) {
             log.error("email send error", e);
         }
-
         return result;
     }
 
@@ -179,7 +173,6 @@ public class EMailSender {
                 contents.append(EmailConstants.TR_END);
             }
             return EmailConstants.HTML_HEADER_PREFIX + content + EmailConstants.BODY_HTML_TAIL;
-
         }
         return content;
     }

@@ -236,6 +236,15 @@ public class SlasController {
         return result;
     }
 
+    @ApiOperation(value = " list sender")
+    @GetMapping(value = "/sender/list")
+    public Object listSenders(@RequestParam("workSpaceId") Long workSpaceId,
+                              @RequestParam(value = "type") String type,
+                              @RequestParam(value = "searchVal", required = false) String searchVal){
+        List<SlaSenderVo> result = slaSenderService.listSenders(workSpaceId, searchVal, type);
+        return result;
+    }
+
     @ApiOperation(value = "create sender")
     @PostMapping(value = "/sender",consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createSender(@Valid @RequestBody SlaSenderCreate create){
