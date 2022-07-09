@@ -251,6 +251,8 @@ public class SlasController {
         SlaSender slaSender = BeanConvertUtils.convertBean(create, SlaSender::new);
         LocalDateTime now = LocalDateTime.now();
         slaSender.setCreateTime(now);
+        slaSender.setCreateBy(ContextHolder.getUserId());
+        slaSender.setUpdateBy(ContextHolder.getUserId());
         slaSender.setUpdateTime(now);
         boolean success = slaSenderService.save(slaSender);
         if (!success){
