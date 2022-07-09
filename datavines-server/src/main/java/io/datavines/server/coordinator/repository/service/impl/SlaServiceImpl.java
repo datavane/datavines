@@ -54,11 +54,10 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteById(Long id) {
-        boolean removeSlas = removeById(id);
+        boolean result = removeById(id);
         LambdaQueryWrapper<SlaJob> lambda = new LambdaQueryWrapper<>();
         lambda.eq(SlaJob::getSlaId, id);
-        boolean removeSlasJob = slaJobService.remove(lambda);
-        boolean result = removeSlas && removeSlasJob;
+        slaJobService.remove(lambda);
         return result;
     }
 
