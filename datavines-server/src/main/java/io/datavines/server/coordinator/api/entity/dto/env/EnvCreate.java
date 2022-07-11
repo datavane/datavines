@@ -25,6 +25,9 @@ import javax.validation.constraints.NotNull;
 @NotNull(message = "Env Create cannot be null")
 public class EnvCreate {
 
+    @NotBlank(message = "DataSource workspaceId cannot be empty")
+    private long workspaceId;
+
     @NotBlank(message = "Env name cannot be empty")
     private String name;
 
