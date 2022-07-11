@@ -25,6 +25,9 @@ import javax.validation.constraints.NotNull;
 @NotNull(message = "Tenant Create cannot be null")
 public class TenantCreate {
 
+    @NotBlank(message = "DataSource workspaceId cannot be empty")
+    private long workspaceId;
+
     @NotBlank(message = "Tenant cannot be empty")
     private String tenant;
 }
