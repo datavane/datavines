@@ -97,7 +97,7 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
     }
 
     @Override
-    public IPage<SlaNotification> pageListNotification(Page<SlaNotification> page, Long workSpaceId, String searchVal) {
-        return slaNotificationMapper.pageListNotification(page, workSpaceId, searchVal);
+    public IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, String searchVal) {
+        return slaNotificationMapper.pageListNotification(page, workspaceId, searchVal);
     }
 }

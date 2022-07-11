@@ -20,27 +20,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.datavines.server.coordinator.repository.mapper.SlaSenderMapper">
 
+
+    <sql id="workspaceData">
+        SELECT id,
+        workspace_id,
+        type,
+        config,
+        name,
+        update_by,
+        update_time
+        FROM dv_sla_sender
+        WHERE workspace_id = #{workspaceId}
+    </sql>
+
     <select id="pageListSender" resultType="io.datavines.server.coordinator.api.dto.vo.SlaSenderVo" >
         SELECT dss.id,
-            dss.work_space_id,
+            dss.workspace_id,
             dss.name,
+            dss.config as config,
             dss.type,
             du.username AS update_by,
             dss.update_time
         FROM
-            (SELECT id,
-            work_space_id,
-            type,
-            name,
-            update_by,
-            update_time
-            FROM dv_sla_sender
-            WHERE work_space_id = #{workSpaceId} )dss
-        JOIN dv_user du
+            ( <include refid="workspaceData"/>)dss
+        left JOIN dv_user du
             ON du.id = dss.update_by
         <if test="searchVal != null">
             AND LOWER(dss.name) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
         </if>
+
     </select>
 
 </mapper>

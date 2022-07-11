@@ -28,5 +28,5 @@ import java.util.List;
 
 @Mapper
 public interface SlaMapper extends BaseMapper<Sla> {
-    IPage<SlaVo> listSlas(Page page, @Param("workSpaceId") Long workSpaceId, @Param("searchVal")String searchVal);
+    IPage<SlaVo> listSlas(Page page, @Param("workspaceId") Long workspaceId, @Param("searchVal")String searchVal);
 }

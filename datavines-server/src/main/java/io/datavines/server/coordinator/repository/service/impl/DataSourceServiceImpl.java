@@ -93,9 +93,9 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     }
 
     @Override
-    public IPage<DataSourceVO> getDataSourcePage(String searchVal, Long workSpaceId, Integer pageNumber, Integer pageSize) {
+    public IPage<DataSourceVO> getDataSourcePage(String searchVal, Long workspaceId, Integer pageNumber, Integer pageSize) {
         Page<DataSourceVO> page = new Page<>(pageNumber, pageSize);
-        IPage<DataSourceVO> dataSources = baseMapper.getDataSourcePage(page, searchVal, workSpaceId);
+        IPage<DataSourceVO> dataSources = baseMapper.getDataSourcePage(page, searchVal, workspaceId);
         return dataSources;
     }
 

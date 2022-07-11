@@ -401,7 +401,7 @@ CREATE TABLE `dv_user` (
 DROP TABLE IF EXISTS dv_sla;
 CREATE TABLE dv_sla (
     id bigint primary key auto_increment,
-    work_space_id bigint NOT NULL,
+    workspace_id bigint NOT NULL,
     name varchar(255) NOT NULL,
     description varchar(255) NOT NULL,
     create_by bigint DEFAULT NULL,
@@ -413,7 +413,7 @@ CREATE TABLE dv_sla (
 DROP TABLE IF EXISTS dv_sla_job;
 CREATE TABLE dv_sla_job (
     id bigint primary key auto_increment,
-    work_space_id bigint NOT NULL,
+    workspace_id bigint NOT NULL,
     sla_id bigint NOT NULL,
     job_id bigint NOT NULL,
     create_by bigint DEFAULT NULL,
@@ -426,7 +426,7 @@ DROP TABLE if EXISTS dv_sla_notification;
 CREATE TABLE dv_sla_notification(
     id bigint primary key auto_increment,
     type VARCHAR(40) NOT NULL,
-    work_space_id bigint NOT NULL,
+    workspace_id bigint NOT NULL,
     sla_id bigint NOT NULL,
     sender_id bigint NOT null,
     config text DEFAULT NULL ,
@@ -441,7 +441,7 @@ CREATE TABLE dv_sla_sender(
     id bigint primary key auto_increment,
     type VARCHAR(40) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    work_space_id bigint NOT NULL,
+    workspace_id bigint NOT NULL,
     config text NOT NULL,
     create_by bigint DEFAULT NULL,
     create_time timestamp default current_timestamp,

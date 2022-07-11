@@ -32,7 +32,7 @@
             (SELECT sla_id,
             count(job_id) AS jobs
             FROM dv_sla_job
-            WHERE work_space_id = ${workSpaceId}
+            WHERE workspace_id = ${workspaceId}
                 GROUP BY  sla_id
             )slagroup
         ON sla .id = slagroup.sla_id

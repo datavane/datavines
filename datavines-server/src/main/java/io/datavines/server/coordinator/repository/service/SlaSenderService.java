@@ -26,7 +26,7 @@ import java.util.List;
 
 public interface SlaSenderService extends IService<SlaSender> {
 
-    IPage<SlaSenderVo> pageListSender(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize);
+    IPage<SlaSenderVo> pageListSender(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize);
 
-    List<SlaSenderVo> listSenders(Long workSpaceId, String searchVal, String type);
+    List<SlaSenderVo> listSenders(Long workspaceId, String searchVal, String type);
 }

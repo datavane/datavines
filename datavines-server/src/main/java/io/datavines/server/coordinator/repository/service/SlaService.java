@@ -26,7 +26,7 @@ import java.util.Set;
 
 public interface SlaService extends IService<Sla> {
 
-    IPage<SlaVo> listSlas(Long workSpaceId,String searchVal, Integer pageNumber, Integer pageSize);
+    IPage<SlaVo> listSlas(Long workspaceId,String searchVal, Integer pageNumber, Integer pageSize);
 
     boolean deleteById(Long id);
 

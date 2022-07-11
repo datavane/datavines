@@ -32,5 +32,5 @@ public interface SlaNotificationService extends IService<SlaNotification>{
 
     String getConfigJson(String type);
 
-    IPage<SlaNotification> pageListNotification(Page<SlaNotification> page, Long workSpaceId, String searchVal);
+    IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, String searchVal);
 }

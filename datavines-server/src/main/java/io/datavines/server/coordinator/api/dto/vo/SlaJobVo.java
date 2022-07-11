@@ -32,7 +32,7 @@ public class SlaJobVo {
 
     private Long id;
 
-    private Long workSpaceId;
+    private Long workspaceId;
 
     private Long slaId;
 

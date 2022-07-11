@@ -175,10 +175,10 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
     public String getConfigJson() {
 
 
-        InputParam to = InputParam.newBuilder("address", "to")
+        InputParam to = InputParam.newBuilder("to", "to")
                 .addValidate(Validate.newBuilder().setRequired(true).build())
                 .build();
-        InputParam cc = InputParam.newBuilder("address", "cc")
+        InputParam cc = InputParam.newBuilder("cc", "cc")
                 .addValidate(Validate.newBuilder().setRequired(false).build())
                 .build();
 

@@ -22,5 +22,5 @@ import lombok.Data;
 public class SlaCreate {
     private String name;
     private String description;
-    private Long workSpaceId;
+    private Long workspaceId;
 }

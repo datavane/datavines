@@ -42,7 +42,7 @@ public interface DataSourceService {
 
     List<DataSource> listByWorkSpaceId(long workspaceId);
 
-    IPage<DataSourceVO> getDataSourcePage(String searchVal, Long workSpaceId, Integer pageNumber, Integer pageSize);
+    IPage<DataSourceVO> getDataSourcePage(String searchVal, Long workspaceId, Integer pageNumber, Integer pageSize);
 
     Object getDatabaseList(Long id) throws DataVinesServerException;
 

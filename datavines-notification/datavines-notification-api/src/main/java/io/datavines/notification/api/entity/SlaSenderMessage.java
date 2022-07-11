@@ -31,7 +31,7 @@ public class SlaSenderMessage implements Serializable {
 
     private Long id;
 
-    private Long workSpaceId;
+    private Long workspaceId;
 
     private String type;
 

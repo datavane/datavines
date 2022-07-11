@@ -26,6 +26,6 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface SlaSenderMapper extends BaseMapper<SlaSender> {
     Page<SlaSenderVo> pageListSender(Page page,
-                                     @Param("workSpaceId") Long workSpaceId,
+                                     @Param("workspaceId") Long workspaceId,
                                      @Param("searchVal") String searchVal);
 }
