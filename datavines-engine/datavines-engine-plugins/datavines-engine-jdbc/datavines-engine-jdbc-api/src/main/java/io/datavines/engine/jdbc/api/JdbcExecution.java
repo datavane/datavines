@@ -81,13 +81,15 @@ public class JdbcExecution implements Execution<JdbcSource, JdbcTransform, JdbcS
 
         sinks.forEach(jdbcSink -> {
             switch (SinkType.of(jdbcSink.getConfig().getString(PLUGIN_TYPE))){
+                case ERROR_DATA:
+                    jdbcSink.output(null, jdbcRuntimeEnvironment);
+                    break;
                 case ACTUAL_VALUE:
                     jdbcSink.output(actualValue, jdbcRuntimeEnvironment);
                     break;
                 case TASK_RESULT:
                     jdbcSink.output(taskResult, jdbcRuntimeEnvironment);
-                case ERROR_DATA:
-
+                    break;
                 default:
                     break;
             }

@@ -63,6 +63,12 @@ public class Task implements Serializable {
     @TableField(value = "engine_parameter")
     private String engineParameter;
 
+    @TableField(value = "error_data_storage_type")
+    private String errorDataStorageType;
+
+    @TableField(value = "error_data_storage_parameter")
+    private String errorDataStorageParameter;
+
     /**
      * {@link TaskParameter}
      */

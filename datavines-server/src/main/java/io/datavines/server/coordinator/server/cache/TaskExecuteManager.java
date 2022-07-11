@@ -454,11 +454,14 @@ public class TaskExecuteManager {
         taskRequest.setExecutePlatformParameter(task.getExecutePlatformParameter());
         taskRequest.setEngineType(task.getEngineType());
         taskRequest.setEngineParameter(task.getEngineParameter());
+        taskRequest.setErrorDataStorageType(task.getErrorDataStorageType());
+        taskRequest.setErrorDataStorageParameter(task.getErrorDataStorageParameter());
         Map<String,String> inputParameter = new HashMap<>();
 
-        TaskInfo taskInfo = new TaskInfo(task.getId(),
-                task.getName(),task.getEngineType(),
-                task.getEngineParameter(),taskParameter);
+        TaskInfo taskInfo = new TaskInfo(task.getId(), task.getName(),
+                task.getEngineType(), task.getEngineParameter(),
+                task.getErrorDataStorageType(), task.getErrorDataStorageParameter(),
+                taskParameter);
         DataVinesQualityConfig qualityConfig =
                 DataVinesConfigurationManager.generateConfiguration(inputParameter, taskInfo, DefaultDataSourceInfoUtils.getDefaultConnectionInfo());
 

@@ -24,14 +24,14 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcRuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcSink;
 import io.datavines.engine.jdbc.api.entity.ResultList;
+import io.datavines.engine.jdbc.api.utils.FileUtils;
 import io.datavines.engine.jdbc.api.utils.LoggerFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.io.File;
+import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -57,7 +57,7 @@ public class BaseJdbcSink implements JdbcSink {
 
     @Override
     public CheckResult checkConfig() {
-        List<String> requiredOptions = Arrays.asList("url", "dbtable", "user", "password","sql");
+        List<String> requiredOptions = Arrays.asList("url", "user", "password");
 
         List<String> nonExistsOptions = new ArrayList<>();
         requiredOptions.forEach(x->{
@@ -103,6 +103,9 @@ public class BaseJdbcSink implements JdbcSink {
 
         try {
             switch (SinkType.of(config.getString(PLUGIN_TYPE))){
+                case ERROR_DATA:
+                    sinkErrorData();
+                    break;
                 case ACTUAL_VALUE:
                 case TASK_RESULT:
                     String sql = config.getString("sql");
@@ -126,5 +129,123 @@ public class BaseJdbcSink implements JdbcSink {
 
     private Connection getConnection() {
         return ConnectionUtils.getConnection(config);
+    }
+
+    private String buildCreateTableSql(String tableName, String header) {
+        StringBuilder createTableSql = new StringBuilder();
+        createTableSql.append("CREATE TABLE ").append(tableName).append(" (");
+        String[] headerList = header.split("\001");
+        List<String> columnList = new ArrayList<>();
+        for (String column: headerList) {
+            String[] columnSplit = column.split("@@");
+            if ("VARCHAR".equalsIgnoreCase(columnSplit[1])) {
+                columnList.add(columnSplit[0]+" TEXT NULL");
+            } else {
+                columnList.add(columnSplit[0]+" "+columnSplit[1]+" NULL");
+            }
+
+        }
+        createTableSql.append(String.join(",", columnList));
+        createTableSql.append(" )");
+        return createTableSql.toString();
+    }
+
+    private String buildInsertSql(String tableName, String header) {
+        StringBuilder insertSql = new StringBuilder();
+        insertSql.append("INSERT INTO ").append(tableName).append(" (");
+        String[] headerList = header.split("\001");
+        List<String> columnList = new ArrayList<>();
+        List<String> placeholderList = new ArrayList<>();
+        for (String column: headerList) {
+            String[] columnSplit = column.split("@@");
+            columnList.add(columnSplit[0]);
+            placeholderList.add("?");
+        }
+        insertSql.append(String.join(",", columnList));
+        insertSql.append(" )");
+        insertSql.append(" values(");
+        insertSql.append(String.join(",", placeholderList));
+        insertSql.append(" )");
+        return insertSql.toString();
+    }
+
+    public void sinkErrorData() throws SQLException {
+        //判断错误数据文件是否存在，如果存在则读取第一行数据
+        //获取header生成建表语句
+        //执行drop if exist
+        //执行建表语句
+        //执行批量插入语句
+        String tableName = config.getString("metric_name").replace("'","")
+                            + "_" + config.getString("task_id");
+        String filePath = config.getString("error_data_path") + "/" + tableName + ".csv";
+        logger.info("log file path : {}", filePath);
+        File file = new File(filePath);
+        if (file.exists()) {
+            List<String> headerList = FileUtils.readPartFileContent(filePath,0,1);
+            if (CollectionUtils.isNotEmpty(headerList)) {
+                String header = headerList.get(0);
+                String[] headerTypeList = header.split("\001");
+                Map<Integer,String> typeMap = new HashMap<>();
+                for (int i=0; i<headerTypeList.length; i++) {
+                    String[] columnSplit = headerTypeList[i].split("@@");
+                    typeMap.put(i,columnSplit[1]);
+                }
+                String createTableSql = buildCreateTableSql(tableName, header);
+                Connection connection = getConnection();
+                connection.createStatement().execute(createTableSql);
+                PreparedStatement statement = connection.prepareStatement(buildInsertSql(tableName, header));
+                int skipLine = 1;
+                int limit = 10;
+                List<String> rowList = null;
+                while(CollectionUtils.isNotEmpty(rowList = FileUtils.readPartFileContent(filePath,skipLine,limit))) {
+                    for (String row: rowList) {
+                        String[] rowDataList = row.split("\001");
+                        for (int i=0;i<rowDataList.length;i++) {
+                            String rowContent = "null".equalsIgnoreCase(rowDataList[i]) ? null:rowDataList[i];
+                            try{
+                                switch (typeMap.get(i).toUpperCase()) {
+                                    case "VARCHAR":
+                                    case "TEXT":
+                                        statement.setString(i+1,rowContent);
+                                        break;
+                                    case "BIGINT":
+                                    case "INT":
+                                        if (rowContent != null) {
+                                            statement.setInt(i+1, Integer.valueOf(rowContent));
+                                        } else {
+                                            statement.setInt(i+1, 0);
+                                        }
+
+                                        break;
+                                    case "DATETIME":
+                                        if (!"".equalsIgnoreCase(rowContent)) {
+                                            statement.setString(i+1,rowContent);
+                                        } else {
+                                            statement.setString(i+1,null);
+                                        }
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            } catch (SQLException sqle) {
+                                logger.error("insert data error", sqle);
+                            }
+                        }
+
+                        try {
+                            statement.addBatch();
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    skipLine += limit;
+                }
+
+                statement.executeBatch();
+                statement.close();
+                connection.close();
+            }
+        }
     }
 }

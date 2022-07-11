@@ -265,8 +265,7 @@ CREATE TABLE `dv_job` (
     `execute_platform_parameter` text,
     `engine_type` varchar(128) DEFAULT NULL,
     `engine_parameter` text,
-    `error_storage_type` varchar(128) DEFAULT NULL,
-    `error_storage_parameter` text,
+    `error_data_storage_id` bigint(20) DEFAULT NULL  ,
     `parameter` text COMMENT '任务参数',
     `retry_times` int(11) DEFAULT NULL COMMENT '重试次数',
     `retry_interval` int(11) DEFAULT NULL COMMENT '重试间隔',
@@ -318,6 +317,8 @@ CREATE TABLE `dv_task` (
     `execute_platform_parameter` text,
     `engine_type` varchar(128) DEFAULT NULL,
     `engine_parameter` text,
+    `error_data_storage_type` varchar(128) DEFAULT NULL,
+    `error_data_storage_parameter` text,
     `parameter` text NOT NULL,
     `status` int(11) DEFAULT NULL,
     `retry_times` int(11) DEFAULT NULL COMMENT '重试次数',
@@ -474,6 +475,21 @@ CREATE TABLE `dv_tenant` (
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `tenant_name` (`tenant`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `dv_error_data_storage`;
+CREATE TABLE `dv_error_data_storage` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL COMMENT '服务器环境配置',
+  `type` varchar(255) NOT NULL,
+  `param` text NOT NULL,
+  `workspace_id` bigint(20) NOT NULL,
+  `create_by` int(11) NOT NULL COMMENT '创建用户id',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `update_by` int(11) NOT NULL COMMENT '更新用户id',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_wp_un` (`name`,`workspace_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`, `create_time`, `update_time`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');

@@ -84,6 +84,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     @Autowired
     private TenantMapper tenantMapper;
 
+    @Autowired ErrorDataStorageMapper errorDataStorageMapper;
+
     @Override
     public int update(JobUpdate jobUpdate) {
         Job job = getById(jobUpdate.getId());
@@ -193,6 +195,14 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             tenantStr = tenant.getTenant();
         }
 
+        ErrorDataStorage errorDataStorage = errorDataStorageMapper.selectById(job.getErrorDataStorageId());
+        String errorDataStorageType = "";
+        String errorDataStorageParameter = "";
+        if (errorDataStorage != null) {
+            errorDataStorageType = errorDataStorage.getType();
+            errorDataStorageParameter  = errorDataStorage.getParam();
+        }
+
         for (String param: taskParameterList) {
             // add a task
             job.setId(null);
@@ -202,6 +212,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             task.setParameter(param);
             task.setName(job.getName() + "_task_" + System.currentTimeMillis());
             task.setJobType(job.getType());
+            task.setErrorDataStorageType(errorDataStorageType);
+            task.setErrorDataStorageParameter(errorDataStorageParameter);
             task.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
             task.setTenantCode(tenantStr);
             task.setEnv(envStr);

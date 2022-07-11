@@ -50,7 +50,6 @@ public class CommonPropertyUtils {
     public static final String SERVERS_KEY = "registry.servers.key";
     public static final String SERVERS_KEY_DEFAULT = "/datavines/servers";
 
-
     public static final String REGISTRY_TYPE = "registry.type";
     public static final String REGISTRY_TYPE_DEFAULT = "default";
 
@@ -59,6 +58,9 @@ public class CommonPropertyUtils {
 
     public static final String LOCAL_TMP_WORKDIR = "local.tmp.workdir";
     public static final String LOCAL_TMP_WORKDIR_DEFAULT = "/tmp/datavines";
+
+    public static final String ERROR_DATA_PATH = "error.data.path";
+    public static final String ERROR_DATA_PATH_DEFAULT = "/tmp/datavines/errordata";
 
     private static final Logger logger = LoggerFactory.getLogger(CommonPropertyUtils.class);
 
