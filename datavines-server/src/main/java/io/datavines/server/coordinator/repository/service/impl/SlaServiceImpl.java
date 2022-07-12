@@ -45,9 +45,9 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
     private SlaJobService slaJobService;
 
     @Override
-    public IPage<SlaVo> listSlas(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize) {
+    public IPage<SlaVo> listSlas(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize) {
         Page<JobVO> page = new Page<>(pageNumber, pageSize);
-        IPage<SlaVo> res = slaMapper.listSlas(page, workSpaceId, searchVal);
+        IPage<SlaVo> res = slaMapper.listSlas(page, workspaceId, searchVal);
         return res;
     }
 

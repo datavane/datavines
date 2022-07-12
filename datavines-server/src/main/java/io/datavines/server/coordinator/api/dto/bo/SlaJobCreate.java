@@ -30,4 +30,6 @@ public class SlaJobCreate {
     private Long slaId;
     @NotNull(message = "jobId must not null")
     private Long jobId;
+    @NotNull(message = "workspaceId must not null")
+    private Long workspaceId;
 }

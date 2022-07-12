@@ -38,8 +38,8 @@ public class SlaJob {
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    @TableField(value = "work_space_id")
-    private Long workSpaceId;
+    @TableField(value = "workspace_id")
+    private Long workspaceId;
 
     @TableField(value = "sla_id")
     private Long slaId;

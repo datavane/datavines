@@ -92,6 +92,7 @@ public class SlasController {
         LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SlaJob::getSlaId,create.getSlaId());
         wrapper.eq(SlaJob::getJobId,create.getJobId());
+        wrapper.eq(SlaJob::getWorkspaceId, create.getWorkspaceId());
         SlaJob one = slaJobService.getOne(wrapper);
         if (Objects.nonNull(one)){
             log.info("SlaJob has been create {}", create);
@@ -100,6 +101,7 @@ public class SlasController {
         SlaJob slaJob = new SlaJob();
         slaJob.setSlaId(create.getSlaId());
         slaJob.setJobId(create.getJobId());
+        slaJob.setWorkspaceId(create.getWorkspaceId());
         slaJob.setCreateBy(ContextHolder.getUserId());
         slaJob.setUpdateBy(ContextHolder.getUserId());
         return slaJobService.save(slaJob);
@@ -146,11 +148,11 @@ public class SlasController {
 
     @ApiOperation(value = "page list slas")
     @GetMapping(value = "/page")
-    public Object listSlas(@RequestParam("workSpaceId") Long workSpaceId,
+    public Object listSlas(@RequestParam("workspaceId") Long workspaceId,
                            @RequestParam(value = "searchVal", required = false) String searchVal,
                            @RequestParam("pageNumber") Integer pageNumber,
                            @RequestParam("pageSize") Integer pageSize){
-        IPage<SlaVo> slaVoList = slaService.listSlas(workSpaceId, searchVal, pageNumber, pageSize);
+        IPage<SlaVo> slaVoList = slaService.listSlas(workspaceId, searchVal, pageNumber, pageSize);
         return slaVoList;
     }
 
@@ -159,7 +161,7 @@ public class SlasController {
     public Object createSla(@Valid @RequestBody SlaCreate create){
         String name = create.getName();
         LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Sla::getWorkSpaceId, create.getWorkSpaceId());
+        wrapper.eq(Sla::getWorkspaceId, create.getWorkspaceId());
         wrapper.eq(Sla::getName, name);
         Sla existSla = slaService.getOne(wrapper);
         if (Objects.nonNull(existSla)){
@@ -182,7 +184,7 @@ public class SlasController {
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object update(@Valid @RequestBody SlaUpdate update){
         LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Sla::getWorkSpaceId, update.getWorkSpaceId());
+        wrapper.eq(Sla::getWorkspaceId, update.getWorkspaceId());
         wrapper.eq(Sla::getName, update.getName());
         Sla existSla = slaService.getOne(wrapper);
         if (Objects.nonNull(existSla) && !existSla.getId().equals(update.getId())){
@@ -194,6 +196,13 @@ public class SlasController {
         sla.setUpdateTime(LocalDateTime.now());
         boolean save = slaService.updateById(sla);
         return save;
+    }
+
+    @ApiOperation(value = "get sla")
+    @GetMapping(value = "{slaId}")
+    public Object getSla(@PathVariable Long slaId){
+        Sla sla = slaService.getById(slaId);
+        return sla;
     }
 
     @ApiOperation(value = "delete sla")
@@ -228,20 +237,20 @@ public class SlasController {
 
     @ApiOperation(value = "page list sender")
     @GetMapping(value = "/sender/page")
-    public Object listSenders(@RequestParam("workSpaceId") Long workSpaceId,
+    public Object listSenders(@RequestParam("workspaceId") Long workspaceId,
                               @RequestParam(value = "searchVal", required = false) String searchVal,
                               @RequestParam("pageNumber") Integer pageNumber,
                               @RequestParam("pageSize") Integer pageSize){
-        IPage<SlaSenderVo> result = slaSenderService.pageListSender(workSpaceId, searchVal, pageNumber, pageSize);
+        IPage<SlaSenderVo> result = slaSenderService.pageListSender(workspaceId, searchVal, pageNumber, pageSize);
         return result;
     }
 
     @ApiOperation(value = " list sender")
     @GetMapping(value = "/sender/list")
-    public Object listSenders(@RequestParam("workSpaceId") Long workSpaceId,
+    public Object listSenders(@RequestParam("workspaceId") Long workspaceId,
                               @RequestParam(value = "type") String type,
                               @RequestParam(value = "searchVal", required = false) String searchVal){
-        List<SlaSenderVo> result = slaSenderService.listSenders(workSpaceId, searchVal, type);
+        List<SlaSenderVo> result = slaSenderService.listSenders(workspaceId, searchVal, type);
         return result;
     }
 
@@ -266,7 +275,7 @@ public class SlasController {
     @PutMapping(value = "/sender",consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object updateSender(@Valid @RequestBody SlaSenderUpdate update){
         LambdaQueryWrapper<SlaSender> wrapper = new LambdaQueryWrapper();
-        wrapper.eq(SlaSender::getWorkSpaceId, update.getWorkSpaceId());
+        wrapper.eq(SlaSender::getWorkspaceId, update.getWorkspaceId());
         wrapper.eq(SlaSender::getName, update.getName());
         SlaSender existSlas = slaSenderService.getOne(wrapper);
         if (Objects.nonNull(existSlas) && !existSlas.getId().equals(update.getId())){
@@ -325,14 +334,14 @@ public class SlasController {
 
     @ApiOperation(value = "page list notification")
     @GetMapping("/notification/page")
-    public Object pageListNotification(@RequestParam("workSpaceId") Long workSpaceId,
+    public Object pageListNotification(@RequestParam("workspaceId") Long workspaceId,
                                    @RequestParam(value = "searchVal", required = false) String searchVal,
                                    @RequestParam("pageNumber") Integer pageNumber,
                                    @RequestParam("pageSize") Integer pageSize){
         LambdaQueryWrapper<SlaNotification> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SlaNotification::getWorkSpaceId, workSpaceId);
+        wrapper.eq(SlaNotification::getWorkspaceId, workspaceId);
         Page<SlaNotification> page = new Page<>(pageNumber, pageSize);
-        IPage<SlaNotification> result = slaNotificationService.pageListNotification(page, workSpaceId, searchVal);
+        IPage<SlaNotification> result = slaNotificationService.pageListNotification(page, workspaceId, searchVal);
         return result;
     }
 

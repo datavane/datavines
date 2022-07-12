@@ -29,5 +29,5 @@ public interface DataSourceMapper extends BaseMapper<DataSource> {
 
     IPage<DataSourceVO> getDataSourcePage(Page<DataSourceVO> page,
                                           @Param("searchVal") String searchVal,
-                                          @Param("workSpaceId") Long workSpaceId);
+                                          @Param("workspaceId") Long workspaceId);
 }

@@ -27,7 +27,7 @@ public class SlaNotificationCreate {
 
     private String type;
 
-    private Long workSpaceId;
+    private Long workspaceId;
 
     private Long slasId;
 

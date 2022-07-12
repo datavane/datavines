@@ -20,25 +20,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.datavines.server.coordinator.repository.mapper.SlaNotificationMapper">
 
+    <sql id="workspaceData">
+        SELECT *
+        FROM dv_sla_notification
+        WHERE workspace_id = #{workspaceId}
+    </sql>
+
     <select id="pageListNotification" resultType="io.datavines.server.coordinator.api.dto.vo.SlaVo" >
         SELECT
             dsn.id,
             dsn.sla_id,
             ds.name AS slaName ,
             dsn.sender_id,
+            dns.config as config,
             dss.name AS senderName,
             dsn.update_by,
             dsn.update_time
         FROM
-            (SELECT *
-            FROM dv_sla_notification
-            WHERE work_space_id = #{workSpaceId}) dsn
-        JOIN dv_sla_sender dss
+            (<include refid="workspaceData"/>) dsn
+        left JOIN dv_sla_sender dss
             ON dsn.sender_id = dss.id
         <if test="searchVal != null">
            AND LOWER(dss.name) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
         </if>
-        JOIN dv_sla ds
+        left JOIN dv_sla ds
             ON ds.id = dsn.sla_id
     </select>
 

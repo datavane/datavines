@@ -39,23 +39,23 @@ public class SlaSenderServiceImpl extends ServiceImpl<SlaSenderMapper, SlaSender
     private SlaSenderMapper slaSenderMapper;
 
     @Override
-    public IPage<SlaSenderVo> pageListSender(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize) {
+    public IPage<SlaSenderVo> pageListSender(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize) {
         Page<Object> page = new Page<>(pageNumber, pageSize);
-        Page<SlaSenderVo> result = slaSenderMapper.pageListSender(page,  workSpaceId, searchVal);
+        Page<SlaSenderVo> result = slaSenderMapper.pageListSender(page,  workspaceId, searchVal);
         return result;
     }
 
     @Override
     public List<SlaSenderVo> listSenders(Long workspaceId, String searchVal, String type) {
         LambdaQueryWrapper<SlaSender> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SlaSender::getWorkSpaceId, workspaceId);
+        wrapper.eq(SlaSender::getWorkspaceId, workspaceId);
         if (Objects.nonNull(searchVal)){
             wrapper.like(SlaSender::getName, searchVal);
         }
         wrapper.eq(SlaSender::getType, type);
         List<SlaSender> list = list(wrapper);
         List<SlaSenderVo> result = list.stream()
-                .map(x -> new SlaSenderVo(x.getId(), x.getWorkSpaceId(), x.getType(), x.getName(), null, x.getUpdateTime()))
+                .map(x -> new SlaSenderVo(x.getId(), x.getWorkspaceId(), x.getConfig(), x.getType(), x.getName(), null, x.getUpdateTime()))
                 .collect(Collectors.toList());
         return result;
     }

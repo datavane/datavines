@@ -32,7 +32,9 @@ import java.time.LocalDateTime;
 public class SlaSenderVo {
     private Long id;
 
-    private Long workSpaceId;
+    private Long workspaceId;
+
+    private String config;
 
     private String type;
 

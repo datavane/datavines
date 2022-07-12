@@ -30,7 +30,7 @@ public class SlasReceiverCreate {
 
     private String name;
 
-    private Long workSpaceId;
+    private Long workspaceId;
 
     private String config;
 }

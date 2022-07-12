@@ -32,6 +32,8 @@ public class SlaVo {
 
     private String name;
 
+    private String config;
+
     private Integer jobs;
 
     private String description;

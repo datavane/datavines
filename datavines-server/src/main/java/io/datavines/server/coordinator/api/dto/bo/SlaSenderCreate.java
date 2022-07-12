@@ -24,7 +24,7 @@ import lombok.ToString;
 @ToString
 public class SlaSenderCreate {
 
-    private Long workSpaceId;
+    private Long workspaceId;
 
     private String type;
 
