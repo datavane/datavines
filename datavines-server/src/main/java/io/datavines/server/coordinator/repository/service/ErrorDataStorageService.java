@@ -36,4 +36,6 @@ public interface ErrorDataStorageService {
 
     List<ErrorDataStorage> listByWorkspaceId(long workspaceId);
 
+    String getConfigJson(String type);
+
 }

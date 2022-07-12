@@ -169,7 +169,7 @@ public class BaseJdbcSink implements JdbcSink {
         return insertSql.toString();
     }
 
-    public void sinkErrorData() throws SQLException {
+    private void sinkErrorData() throws SQLException {
         //判断错误数据文件是否存在，如果存在则读取第一行数据
         //获取header生成建表语句
         //执行drop if exist
@@ -195,12 +195,12 @@ public class BaseJdbcSink implements JdbcSink {
                 connection.createStatement().execute(createTableSql);
                 PreparedStatement statement = connection.prepareStatement(buildInsertSql(tableName, header));
                 int skipLine = 1;
-                int limit = 10;
+                int limit = 1000;
                 List<String> rowList = null;
                 while(CollectionUtils.isNotEmpty(rowList = FileUtils.readPartFileContent(filePath,skipLine,limit))) {
                     for (String row: rowList) {
                         String[] rowDataList = row.split("\001");
-                        for (int i=0;i<rowDataList.length;i++) {
+                        for (int i=0; i<rowDataList.length; i++) {
                             String rowContent = "null".equalsIgnoreCase(rowDataList[i]) ? null:rowDataList[i];
                             try{
                                 switch (typeMap.get(i).toUpperCase()) {
@@ -227,8 +227,8 @@ public class BaseJdbcSink implements JdbcSink {
                                     default:
                                         break;
                                 }
-                            } catch (SQLException sqle) {
-                                logger.error("insert data error", sqle);
+                            } catch (SQLException exception) {
+                                logger.error("insert data error", exception);
                             }
                         }
 

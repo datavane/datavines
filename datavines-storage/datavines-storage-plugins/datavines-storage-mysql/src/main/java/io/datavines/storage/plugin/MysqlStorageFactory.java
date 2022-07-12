@@ -9,4 +9,9 @@ public class MysqlStorageFactory implements StorageFactory {
     public StorageConnector getStorageConnector() {
         return new MysqlStorageConnector();
     }
+
+    @Override
+    public String getCategory() {
+        return "jdbc";
+    }
 }

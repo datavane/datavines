@@ -24,6 +24,7 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.spi.PluginLoader;
+import io.datavines.storage.api.StorageFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,13 +59,12 @@ public class JdbcSingleTableMetricBuilder extends BaseJdbcConfigurationBuilder {
 
             Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(taskInfo.getErrorDataStorageParameter(),String.class, Object.class));
             connectorParameterMap.putAll(inputParameter);
-            ConnectorFactory connectorFactory = PluginLoader
-                    .getPluginLoader(ConnectorFactory.class)
+            StorageFactory storageFactory = PluginLoader
+                    .getPluginLoader(StorageFactory.class)
                     .getNewPlugin(taskInfo.getErrorDataStorageType());
 
-            connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
-            errorDataSinkConfig.setPlugin(connectorFactory.getCategory());
-            connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
+            connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
+            errorDataSinkConfig.setPlugin(storageFactory.getCategory());
             connectorParameterMap.put(ERROR_DATA_PATH, CommonPropertyUtils.getString(CommonPropertyUtils.ERROR_DATA_PATH, CommonPropertyUtils.ERROR_DATA_PATH_DEFAULT));
             connectorParameterMap.put(METRIC_NAME, inputParameter.get(METRIC_NAME));
             connectorParameterMap.put(TASK_ID, inputParameter.get(TASK_ID));

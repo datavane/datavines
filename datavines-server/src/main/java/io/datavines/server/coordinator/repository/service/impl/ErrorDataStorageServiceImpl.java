@@ -18,6 +18,7 @@ package io.datavines.server.coordinator.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
 
@@ -28,6 +29,7 @@ import io.datavines.server.coordinator.repository.entity.ErrorDataStorage;
 import io.datavines.server.coordinator.repository.mapper.ErrorDataStorageMapper;
 import io.datavines.server.coordinator.repository.service.ErrorDataStorageService;
 import io.datavines.server.utils.ContextHolder;
+import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -92,6 +94,11 @@ public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMap
     @Override
     public int deleteById(long id) {
         return baseMapper.deleteById(id);
+    }
+
+    @Override
+    public String getConfigJson(String type) {
+        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConnector().getConfigJson();
     }
 
     private boolean isErrorDataStorageExist(String name) {

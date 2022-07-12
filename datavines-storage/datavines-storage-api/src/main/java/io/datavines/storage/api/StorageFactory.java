@@ -6,4 +6,6 @@ import io.datavines.spi.SPI;
 public interface StorageFactory {
 
     StorageConnector getStorageConnector();
+
+    String getCategory();
 }

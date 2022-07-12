@@ -9,11 +9,14 @@ import io.datavines.common.param.form.PropsType;
 import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.props.InputParamsProps;
 import io.datavines.common.param.form.type.InputParam;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.storage.api.StorageConnector;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class MysqlStorageConnector implements StorageConnector {
@@ -82,4 +85,30 @@ public class MysqlStorageConnector implements StorageConnector {
                 .setEmit(null)
                 .build();
     }
+
+    @Override
+    public Map<String, Object> getParamMap(Map<String, Object> parameter) {
+        Map<String,Object> config = new HashMap<>();
+        config.put("table",parameter.get("table"));
+        config.put("user",parameter.get("user"));
+        config.put("password", parameter.get("password"));
+        config.put("url", getUrl(parameter));
+        config.put("driver","com.mysql.jdbc.Driver");
+        return config;
+    }
+
+    private String getUrl(Map<String, Object> parameter) {
+        String url = String.format("jdbc:mysql://%s:%s/%s",
+                parameter.get("host"),
+                parameter.get("port"),
+                parameter.get("database"));
+        String properties = (String)parameter.get("properties");
+        if (StringUtils.isNotEmpty(properties)) {
+            url += "?" + properties;
+        }
+
+        return url;
+    }
+
+
 }

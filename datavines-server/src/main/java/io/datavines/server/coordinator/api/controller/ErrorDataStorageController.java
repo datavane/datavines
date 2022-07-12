@@ -68,6 +68,12 @@ public class ErrorDataStorageController {
         return errorDataStorageService.listByWorkspaceId(workspaceId);
     }
 
+    @ApiOperation(value = "get storage config json")
+    @GetMapping(value = "/config/{type}")
+    public Object getConfigJson(@PathVariable String type){
+        return errorDataStorageService.getConfigJson(type);
+    }
+
     @ApiOperation(value = "get error data storage type list")
     @GetMapping(value = "/type/list")
     public Object getErrorDataStorageTypeList() {
