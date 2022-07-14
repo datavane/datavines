@@ -29,7 +29,7 @@ public class SlaNotificationCreate {
 
     private Long workspaceId;
 
-    private Long slasId;
+    private Long slaId;
 
     private Long senderId;
 

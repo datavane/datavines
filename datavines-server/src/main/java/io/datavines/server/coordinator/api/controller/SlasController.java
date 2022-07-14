@@ -146,7 +146,7 @@ public class SlasController {
     }
 
 
-    @ApiOperation(value = "page list slas")
+    @ApiOperation(value = "page list sla")
     @GetMapping(value = "/page")
     public Object listSlas(@RequestParam("workspaceId") Long workspaceId,
                            @RequestParam(value = "searchVal", required = false) String searchVal,
@@ -175,12 +175,12 @@ public class SlasController {
         sla.setCreateTime(now);
         boolean success = slaService.save(sla);
         if (!success){
-            throw new DataVinesException("create slas error");
+            throw new DataVinesException("create sla error");
         }
         return sla;
     }
 
-    @ApiOperation(value = "update slas")
+    @ApiOperation(value = "update sla")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object update(@Valid @RequestBody SlaUpdate update){
         LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper<>();
