@@ -319,7 +319,7 @@ public class SlasController {
         bean.setCreateTime(now);
         bean.setUpdateTime(now);
         bean.setUpdateBy(ContextHolder.getUserId());
-        boolean success = slaNotificationService.save(bean);
+        boolean success = slaNotificationService.updateById(bean);
         if (!success){
             throw new DataVinesException("update sender error");
         }
