@@ -32,6 +32,8 @@ public class SlaNotificationVo {
 
     private Long slaId;
 
+    private String config;
+
     private Long senderId;
 
     private String slaName;

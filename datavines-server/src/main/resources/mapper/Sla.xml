@@ -20,27 +20,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.datavines.server.coordinator.repository.mapper.SlaMapper">
 
+
+    <sql id="slaJob">
+        SELECT sla_id,
+            count(job_id) AS jobs
+        FROM
+            dv_sla_job
+        WHERE
+            workspace_id = ${workspaceId}
+        GROUP BY
+            sla_id
+    </sql>
     <select id="listSlas" resultType="io.datavines.server.coordinator.api.dto.vo.SlaVo" >
-        SELECT sla.id,
+        SELECT
+            sla.id,
             sla.name,
             sla.description,
-            slagroup.jobs,
+            sj.jobs,
             du.username AS updater,
             sla.update_time
-            FROM dv_sla sla
+        FROM
+            dv_sla sla
         LEFT JOIN
-            (SELECT sla_id,
-            count(job_id) AS jobs
-            FROM dv_sla_job
-            WHERE workspace_id = ${workspaceId}
-                GROUP BY  sla_id
-            )slagroup
-        ON sla .id = slagroup.sla_id
+            ( <include refid="slaJob"/> )sj
+            ON sla.id = sj.sla_id
         LEFT JOIN
             dv_user du
         ON sla.update_by = du.id
         <if test="searchVal != null">
-            AND LOWER(sla.`name`) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
+            WHERE LOWER(sla.name) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
         </if>
     </select>
 

@@ -46,7 +46,7 @@
         left JOIN dv_user du
             ON du.id = dss.update_by
         <if test="searchVal != null">
-            AND LOWER(dss.name) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
+            WHERE LOWER(dss.name) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
         </if>
 
     </select>
