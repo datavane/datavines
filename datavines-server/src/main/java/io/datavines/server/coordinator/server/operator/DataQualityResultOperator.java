@@ -67,20 +67,21 @@ public class DataQualityResultOperator {
     private void checkDqExecuteResult(TaskRequest taskRequest,
                                       TaskResult taskResult) {
         if (isFailure(taskResult)) {
-            DqFailureStrategy dqFailureStrategy = DqFailureStrategy.of(taskResult.getFailureStrategy());
-            if (dqFailureStrategy != null) {
-                taskResult.setState(DqTaskState.FAILURE.getDescription());
-                switch (dqFailureStrategy) {
-                    case NONE:
-                        logger.info("task is failure, do nothing");
-                        break;
-                    case ALERT:
-                        logger.info("task is failure, continue and alert");
-                        break;
-                    default:
-                        break;
-                }
-            }
+            taskResult.setState(DqTaskState.FAILURE.getDescription());
+//            DqFailureStrategy dqFailureStrategy = DqFailureStrategy.of(taskResult.getFailureStrategy());
+//            if (dqFailureStrategy != null) {
+//                taskResult.setState(DqTaskState.FAILURE.getDescription());
+//                switch (dqFailureStrategy) {
+//                    case NONE:
+//                        logger.info("task is failure, do nothing");
+//                        break;
+//                    case ALERT:
+//                        logger.info("task is failure, continue and alert");
+//                        break;
+//                    default:
+//                        break;
+//                }
+//            }
         } else {
             taskResult.setState(DqTaskState.SUCCESS.getDescription());
         }

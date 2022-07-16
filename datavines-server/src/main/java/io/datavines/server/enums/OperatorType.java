@@ -33,20 +33,22 @@ public enum OperatorType {
      * 4-great and equal
      * 5-not equal
      */
-    EQ(0,"eq"),
-    LT(1,"lt"),
-    LTE(2,"lte"),
-    GT(3,"gt"),
-    GTE(4,"gte"),
-    NE(5,"neq");
+    EQ(0,"eq","="),
+    LT(1,"lt","<"),
+    LTE(2,"lte","<="),
+    GT(3,"gt",">"),
+    GTE(4,"gte",">="),
+    NE(5,"neq","!=");
 
-    OperatorType(int code, String description) {
+    OperatorType(int code, String description,String symbol) {
         this.code = code;
         this.description = description;
+        this.symbol = symbol;
     }
 
     private final int code;
     private final String description;
+    private final String symbol;
 
     public int getCode() {
         return code;
@@ -55,6 +57,10 @@ public enum OperatorType {
     @JsonValue
     public String getDescription() {
         return description;
+    }
+
+    public String getSymbol() {
+        return symbol;
     }
 
     private static final Map<Integer, OperatorType> VALUES_MAP = new HashMap<>();

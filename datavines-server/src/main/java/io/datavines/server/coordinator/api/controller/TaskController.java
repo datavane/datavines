@@ -69,7 +69,7 @@ public class TaskController {
     @ApiOperation(value = "get task result")
     @GetMapping(value = "/result/{id}")
     public Object getTaskResultInfo(@PathVariable("id") Long taskId) {
-        return taskResultService.getByTaskId(taskId);
+        return taskResultService.getResultVOByTaskId(taskId);
     }
 
     @ApiOperation(value = "get task page")

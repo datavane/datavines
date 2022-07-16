@@ -24,4 +24,14 @@ public class Diff implements ResultFormula {
     public double getResult(double actualValue, double expectedValue) {
         return Math.abs(actualValue - expectedValue);
     }
+
+    @Override
+    public String getResultFormat() {
+        return "|ActualValue(${actual_value})-ExpectedValue(${expected_value})|";
+    }
+
+    @Override
+    public String getSymbol() {
+        return "Δ";
+    }
 }

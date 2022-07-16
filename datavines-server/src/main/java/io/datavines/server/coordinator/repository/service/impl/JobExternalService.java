@@ -24,6 +24,7 @@ import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.engine.config.DataVinesConfigurationManager;
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.server.coordinator.api.dto.vo.TaskResultVO;
 import io.datavines.server.coordinator.repository.entity.Command;
 import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.coordinator.repository.entity.Task;
