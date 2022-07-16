@@ -18,6 +18,8 @@ package io.datavines.server.coordinator.api.controller;
 
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
+import io.datavines.server.coordinator.api.dto.bo.workspace.InviteUserIntoWorkspace;
+import io.datavines.server.coordinator.api.dto.bo.workspace.RemoveUserOutWorkspace;
 import io.datavines.server.coordinator.api.dto.bo.workspace.WorkSpaceCreate;
 import io.datavines.server.coordinator.api.dto.bo.workspace.WorkSpaceUpdate;
 import io.datavines.server.coordinator.repository.service.WorkSpaceService;
@@ -59,5 +61,17 @@ public class WorkSpaceController {
     @GetMapping(value = "list")
     public Object listByUserId()  {
         return workSpaceService.listByUserId();
+    }
+
+    @ApiOperation(value = "invite user into workspace")
+    @PostMapping(value = "/inviteUser",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object inviteUserIntoWorkspace(@RequestBody InviteUserIntoWorkspace inviteUserIntoWorkspace) throws DataVinesServerException {
+        return workSpaceService.inviteUserIntoWorkspace(inviteUserIntoWorkspace);
+    }
+
+    @ApiOperation(value = "user removed workspace")
+    @DeleteMapping(value = "/removeUser}",consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object removeUser(@RequestBody RemoveUserOutWorkspace removeUserOutWorkspace)  {
+        return workSpaceService.removeUser(removeUserOutWorkspace);
     }
 }

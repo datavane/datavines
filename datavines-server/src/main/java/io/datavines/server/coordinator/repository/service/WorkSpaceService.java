@@ -16,8 +16,11 @@
  */
 package io.datavines.server.coordinator.repository.service;
 
+import io.datavines.server.coordinator.api.dto.bo.workspace.InviteUserIntoWorkspace;
+import io.datavines.server.coordinator.api.dto.bo.workspace.RemoveUserOutWorkspace;
 import io.datavines.server.coordinator.api.dto.bo.workspace.WorkSpaceCreate;
 import io.datavines.server.coordinator.api.dto.bo.workspace.WorkSpaceUpdate;
+import io.datavines.server.coordinator.api.dto.vo.WorkspaceVO;
 import io.datavines.server.coordinator.repository.entity.WorkSpace;
 import io.datavines.core.exception.DataVinesServerException;
 
@@ -31,7 +34,11 @@ public interface WorkSpaceService {
 
     WorkSpace getById(long id);
 
-    List<WorkSpace> listByUserId();
+    List<WorkspaceVO> listByUserId();
 
     int deleteById(long id);
+
+    int inviteUserIntoWorkspace(InviteUserIntoWorkspace inviteUserIntoWorkspace);
+
+    int removeUser(RemoveUserOutWorkspace removeUserOutWorkspace);
 }
