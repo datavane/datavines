@@ -16,8 +16,8 @@
  */
 package io.datavines.server.coordinator.repository.service;
 
-import io.datavines.server.coordinator.api.entity.dto.workspace.WorkSpaceCreate;
-import io.datavines.server.coordinator.api.entity.dto.workspace.WorkSpaceUpdate;
+import io.datavines.server.coordinator.api.dto.bo.workspace.WorkSpaceCreate;
+import io.datavines.server.coordinator.api.dto.bo.workspace.WorkSpaceUpdate;
 import io.datavines.server.coordinator.repository.entity.WorkSpace;
 import io.datavines.core.exception.DataVinesServerException;
 

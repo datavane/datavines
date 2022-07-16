@@ -19,7 +19,7 @@ package io.datavines.server.coordinator.repository.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.core.enums.ApiStatus;
-import io.datavines.server.coordinator.api.entity.dto.user.*;
+import io.datavines.server.coordinator.api.dto.bo.user.*;
 import io.datavines.server.coordinator.repository.entity.User;
 import io.datavines.server.coordinator.repository.entity.WorkSpace;
 import io.datavines.server.coordinator.repository.mapper.UserMapper;

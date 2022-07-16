@@ -18,14 +18,14 @@ package io.datavines.server.coordinator.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.datavines.server.coordinator.api.dto.vo.SlaSenderVo;
+import io.datavines.server.coordinator.api.dto.vo.SlaSenderVO;
 import io.datavines.server.coordinator.repository.entity.SlaSender;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface SlaSenderMapper extends BaseMapper<SlaSender> {
-    Page<SlaSenderVo> pageListSender(Page page,
+    Page<SlaSenderVO> pageListSender(Page page,
                                      @Param("workspaceId") Long workspaceId,
                                      @Param("searchVal") String searchVal);
 }

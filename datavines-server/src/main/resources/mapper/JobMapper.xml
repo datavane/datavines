@@ -24,7 +24,7 @@
         select * from dv_job where datasource_id = #{datasourceId}
     </sql>
 
-    <select id="getJobPage" resultType="io.datavines.server.coordinator.api.entity.vo.JobVO">
+    <select id="getJobPage" resultType="io.datavines.server.coordinator.api.dto.vo.JobVO">
         select p.id, p.name, p.type, u.username as updater, p.update_time from (<include refid="basic_sql"/>) p left join `dv_user` u on u.id = p.create_by
         <where>
             <if test="searchVal != null">

@@ -17,7 +17,7 @@
 package io.datavines.server.coordinator.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.datavines.server.coordinator.api.dto.vo.SlaJobVo;
+import io.datavines.server.coordinator.api.dto.vo.SlaJobVO;
 import io.datavines.server.coordinator.repository.entity.SlaJob;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -25,6 +25,6 @@ import java.util.List;
 
 @Mapper
 public interface SlaJobMapper extends BaseMapper<SlaJob> {
-    List<SlaJobVo> listSlaJob(Long slaId);
+    List<SlaJobVO> listSlaJob(Long slaId);
 
 }

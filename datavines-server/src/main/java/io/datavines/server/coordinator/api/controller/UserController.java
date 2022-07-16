@@ -16,8 +16,8 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
-import io.datavines.server.coordinator.api.entity.dto.user.UserLogin;
-import io.datavines.server.coordinator.api.entity.dto.user.UserRegister;
+import io.datavines.server.coordinator.api.dto.bo.user.UserLogin;
+import io.datavines.server.coordinator.api.dto.bo.user.UserRegister;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;

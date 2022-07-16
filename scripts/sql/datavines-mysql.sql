@@ -265,8 +265,6 @@ CREATE TABLE `dv_job` (
     `execute_platform_parameter` text,
     `engine_type` varchar(128) DEFAULT NULL,
     `engine_parameter` text,
-    `error_storage_type` varchar(128) DEFAULT NULL,
-    `error_storage_parameter` text,
     `parameter` text COMMENT '任务参数',
     `retry_times` int(11) DEFAULT NULL COMMENT '重试次数',
     `retry_interval` int(11) DEFAULT NULL COMMENT '重试间隔',
@@ -400,52 +398,52 @@ CREATE TABLE `dv_user` (
 
 DROP TABLE IF EXISTS dv_sla;
 CREATE TABLE dv_sla (
-    id bigint primary key auto_increment,
-    workspace_id bigint NOT NULL,
+    id bigint(20) primary key auto_increment,
+    workspace_id bigint(20) NOT NULL,
     name varchar(255) NOT NULL,
     description varchar(255) NOT NULL,
-    create_by bigint DEFAULT NULL,
+    create_by bigint(20) DEFAULT NULL,
     create_time timestamp default current_timestamp,
-    update_by bigint DEFAULT NULL,
+    update_by bigint(20) DEFAULT NULL,
     update_time timestamp default current_timestamp
 );
 
 DROP TABLE IF EXISTS dv_sla_job;
 CREATE TABLE dv_sla_job (
-    id bigint primary key auto_increment,
-    workspace_id bigint NOT NULL,
-    sla_id bigint NOT NULL,
-    job_id bigint NOT NULL,
-    create_by bigint DEFAULT NULL,
+    id bigint(20) primary key auto_increment,
+    sla_id bigint(20) NOT NULL,
+    workspace_id bigint(20) NOT NULL,
+    job_id bigint(20) NOT NULL,
+    create_by bigint(20) DEFAULT NULL,
     create_time timestamp default current_timestamp,
-    update_by bigint DEFAULT NULL,
+    update_by bigint(20) DEFAULT NULL,
     update_time timestamp default current_timestamp
 );
 
 DROP TABLE if EXISTS dv_sla_notification;
 CREATE TABLE dv_sla_notification(
-    id bigint primary key auto_increment,
+    id bigint(20) primary key auto_increment,
     type VARCHAR(40) NOT NULL,
-    workspace_id bigint NOT NULL,
-    sla_id bigint NOT NULL,
-    sender_id bigint NOT null,
+    workspace_id bigint(20) NOT NULL,
+    sla_id bigint(20) NOT NULL,
+    sender_id bigint(20) NOT null,
     config text DEFAULT NULL ,
-    create_by bigint DEFAULT NULL,
+    create_by bigint(20) DEFAULT NULL,
     create_time timestamp default current_timestamp,
-    update_by bigint DEFAULT NULL,
+    update_by bigint(20) DEFAULT NULL,
     update_time timestamp default current_timestamp
 );
 
 DROP TABLE if exists dv_sla_sender;
 CREATE TABLE dv_sla_sender(
-    id bigint primary key auto_increment,
+    id bigint(20) primary key auto_increment,
     type VARCHAR(40) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    workspace_id bigint NOT NULL,
+    workspace_id bigint(20) NOT NULL,
     config text NOT NULL,
-    create_by bigint DEFAULT NULL,
+    create_by bigint(20) DEFAULT NULL,
     create_time timestamp default current_timestamp,
-    update_by bigint DEFAULT NULL,
+    update_by bigint(20) DEFAULT NULL,
     update_time timestamp default current_timestamp
 );
 
@@ -477,3 +475,4 @@ CREATE TABLE `dv_tenant` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`, `create_time`, `update_time`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');
+INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1', "admin\'s default", '1', '2022-05-20 23:01:18', '1', '2022-05-20 23:01:21');

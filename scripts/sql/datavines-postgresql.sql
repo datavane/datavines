@@ -179,8 +179,6 @@ CREATE TABLE dv_job (
     execute_platform_parameter text,
     engine_type varchar(128) DEFAULT NULL,
     engine_parameter text,
-    error_storage_type varchar(128) DEFAULT NULL,
-    error_storage_parameter text,
     parameter text ,
     retry_times int4 DEFAULT NULL ,
     retry_interval int4 DEFAULT NULL ,
@@ -319,10 +317,9 @@ CREATE TABLE dv_user (
     CONSTRAINT user_pk PRIMARY KEY (id)
 );
 
-
 DROP TABLE IF EXISTS dv_sla;
 CREATE TABLE dv_sla (
-    id bigint NOT NULL,
+    id bigserial NOT NULL,
     workspace_id bigint NOT NULL,
     name varchar(255) NOT NULL,
     description varchar(255) NOT NULL,
@@ -334,9 +331,9 @@ CREATE TABLE dv_sla (
 
 DROP TABLE IF EXISTS dv_sla_job;
 CREATE TABLE dv_sla_job (
-    id bigint NOT NULL,
-    workspace_id bigint NOT NULL,
+    id bigserial NOT NULL,
     sla_id bigint NOT NULL,
+    workspace_id bigint NOT NULL,
     job_id bigint NOT NULL,
     create_by bigint DEFAULT NULL,
     create_time timestamp default current_timestamp,
@@ -346,7 +343,7 @@ CREATE TABLE dv_sla_job (
 
 DROP TABLE if EXISTS dv_sla_notification;
 CREATE TABLE dv_sla_notification(
-    id bigint NOT NULL,
+    id bigserial NOT NULL,
     type VARCHAR(40) NOT NULL,
     workspace_id bigint NOT NULL,
     sla_id bigint NOT NULL,
@@ -360,7 +357,7 @@ CREATE TABLE dv_sla_notification(
 
 DROP TABLE if exists dv_sla_sender;
 CREATE TABLE dv_sla_sender(
-    id bigint NOT NULL,
+    id bigserial NOT NULL,
     type VARCHAR(40) NOT NULL,
     name VARCHAR(255) NOT NULL,
     workspace_id bigint NOT NULL,
@@ -399,3 +396,4 @@ CREATE TABLE dv_tenant (
 );
 
 INSERT INTO dv_user (id, username, password, email, phone, admin, create_time, update_time) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');
+INSERT INTO `dv_workspace` (id, name, create_by, create_time, update_by, update_time) VALUES ('1', "admin\'s default", '1', '2022-05-20 23:01:18', '1', '2022-05-20 23:01:21');

@@ -20,8 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.datavines.core.utils.BeanConvertUtils;
-import io.datavines.server.coordinator.api.dto.vo.SlaSenderVo;
+import io.datavines.server.coordinator.api.dto.vo.SlaSenderVO;
 import io.datavines.server.coordinator.repository.entity.SlaSender;
 import io.datavines.server.coordinator.repository.mapper.SlaSenderMapper;
 import io.datavines.server.coordinator.repository.service.SlaSenderService;
@@ -39,14 +38,14 @@ public class SlaSenderServiceImpl extends ServiceImpl<SlaSenderMapper, SlaSender
     private SlaSenderMapper slaSenderMapper;
 
     @Override
-    public IPage<SlaSenderVo> pageListSender(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize) {
+    public IPage<SlaSenderVO> pageListSender(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize) {
         Page<Object> page = new Page<>(pageNumber, pageSize);
-        Page<SlaSenderVo> result = slaSenderMapper.pageListSender(page,  workspaceId, searchVal);
+        Page<SlaSenderVO> result = slaSenderMapper.pageListSender(page,  workspaceId, searchVal);
         return result;
     }
 
     @Override
-    public List<SlaSenderVo> listSenders(Long workspaceId, String searchVal, String type) {
+    public List<SlaSenderVO> listSenders(Long workspaceId, String searchVal, String type) {
         LambdaQueryWrapper<SlaSender> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SlaSender::getWorkspaceId, workspaceId);
         if (Objects.nonNull(searchVal)){
@@ -54,8 +53,8 @@ public class SlaSenderServiceImpl extends ServiceImpl<SlaSenderMapper, SlaSender
         }
         wrapper.eq(SlaSender::getType, type);
         List<SlaSender> list = list(wrapper);
-        List<SlaSenderVo> result = list.stream()
-                .map(x -> new SlaSenderVo(x.getId(), x.getWorkspaceId(), x.getConfig(), x.getType(), x.getName(), null, x.getUpdateTime()))
+        List<SlaSenderVO> result = list.stream()
+                .map(x -> new SlaSenderVO(x.getId(), x.getWorkspaceId(), x.getConfig(), x.getType(), x.getName(), null, x.getUpdateTime()))
                 .collect(Collectors.toList());
         return result;
     }

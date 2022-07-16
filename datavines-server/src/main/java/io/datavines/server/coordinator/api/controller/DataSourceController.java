@@ -17,13 +17,13 @@
 package io.datavines.server.coordinator.api.controller;
 
 import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.server.coordinator.api.entity.Item;
+import io.datavines.server.coordinator.api.dto.vo.Item;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
-import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceCreate;
-import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceUpdate;
-import io.datavines.server.coordinator.api.entity.dto.datasource.ExecuteRequest;
+import io.datavines.server.coordinator.api.dto.bo.datasource.DataSourceCreate;
+import io.datavines.server.coordinator.api.dto.bo.datasource.DataSourceUpdate;
+import io.datavines.server.coordinator.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.server.coordinator.repository.service.DataSourceService;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
