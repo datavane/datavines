@@ -33,7 +33,7 @@ import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
-import io.datavines.server.coordinator.api.entity.vo.TaskVO;
+import io.datavines.server.coordinator.api.dto.vo.TaskVO;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.spi.PluginLoader;
 import org.springframework.beans.BeanUtils;
@@ -44,7 +44,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
-import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
+import io.datavines.server.coordinator.api.dto.bo.task.SubmitTask;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.coordinator.repository.entity.Command;

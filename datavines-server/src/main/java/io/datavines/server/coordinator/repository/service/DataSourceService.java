@@ -17,12 +17,12 @@
 package io.datavines.server.coordinator.repository.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.datavines.server.coordinator.api.entity.dto.datasource.ExecuteRequest;
+import io.datavines.server.coordinator.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.TestConnectionRequestParam;
-import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceCreate;
-import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceUpdate;
-import io.datavines.server.coordinator.api.entity.vo.DataSourceVO;
+import io.datavines.server.coordinator.api.dto.bo.datasource.DataSourceCreate;
+import io.datavines.server.coordinator.api.dto.bo.datasource.DataSourceUpdate;
+import io.datavines.server.coordinator.api.dto.vo.DataSourceVO;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.core.exception.DataVinesServerException;
 

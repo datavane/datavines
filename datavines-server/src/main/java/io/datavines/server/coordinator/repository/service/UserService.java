@@ -17,7 +17,7 @@
 package io.datavines.server.coordinator.repository.service;
 
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.server.coordinator.api.entity.dto.user.*;
+import io.datavines.server.coordinator.api.dto.bo.user.*;
 import io.datavines.server.coordinator.repository.entity.User;
 
 public interface UserService {

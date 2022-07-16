@@ -18,15 +18,14 @@ package io.datavines.server.coordinator.repository.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import io.datavines.server.coordinator.api.dto.vo.SlaVo;
+import io.datavines.server.coordinator.api.dto.vo.SlaPageVO;
 import io.datavines.server.coordinator.repository.entity.Sla;
 
-import java.util.List;
 import java.util.Set;
 
 public interface SlaService extends IService<Sla> {
 
-    IPage<SlaVo> listSlas(Long workspaceId,String searchVal, Integer pageNumber, Integer pageSize);
+    IPage<SlaPageVO> listSlas(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize);
 
     boolean deleteById(Long id);
 

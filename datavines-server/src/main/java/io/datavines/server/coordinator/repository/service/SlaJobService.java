@@ -17,12 +17,12 @@
 package io.datavines.server.coordinator.repository.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import io.datavines.server.coordinator.api.dto.vo.SlaJobVo;
+import io.datavines.server.coordinator.api.dto.vo.SlaJobVO;
 import io.datavines.server.coordinator.repository.entity.SlaJob;
 
 import java.util.List;
 
 public interface SlaJobService extends IService<SlaJob> {
 
-    List<SlaJobVo>  listSlaJob(Long slaId);
+    List<SlaJobVO>  listSlaJob(Long slaId);
 }

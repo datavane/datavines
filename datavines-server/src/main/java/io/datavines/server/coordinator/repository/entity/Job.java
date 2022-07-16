@@ -59,12 +59,6 @@ public class Job implements Serializable {
     @TableField(value = "engine_parameter")
     private String engineParameter;
 
-    @TableField(value = "error_storage_type")
-    private String errorStorageType;
-
-    @TableField(value = "error_storage_parameter")
-    private String errorStorageParameter;
-
     @TableField(value = "parameter")
     private String parameter;
 

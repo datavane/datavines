@@ -19,7 +19,7 @@ package io.datavines.server.coordinator.repository.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.datavines.server.coordinator.api.entity.vo.DataSourceVO;
+import io.datavines.server.coordinator.api.dto.vo.DataSourceVO;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

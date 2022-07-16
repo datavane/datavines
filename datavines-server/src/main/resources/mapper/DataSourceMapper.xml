@@ -24,7 +24,7 @@
         select * from dv_datasource where workspace_id = #{workspaceId}
     </sql>
 
-    <select id="getDataSourcePage" resultType="io.datavines.server.coordinator.api.entity.vo.DataSourceVO">
+    <select id="getDataSourcePage" resultType="io.datavines.server.coordinator.api.dto.vo.DataSourceVO">
         select p.id, p.name, p.type, p.param, u.username as updater, p.update_time from (<include refid="basic_sql"/>) p left join `dv_user` u on u.id = p.create_by
         <where>
             <if test="searchVal != null">

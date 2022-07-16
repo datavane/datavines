@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import io.datavines.core.constant.DataVinesConstants;
-import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
+import io.datavines.server.coordinator.api.dto.bo.task.SubmitTask;
 import io.datavines.server.coordinator.repository.service.TaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -71,7 +71,6 @@ public class TaskController {
     public Object getTaskResultInfo(@PathVariable("id") Long taskId) {
         return taskResultService.getByTaskId(taskId);
     }
-
 
     @ApiOperation(value = "get task page")
     @GetMapping(value = "/page")

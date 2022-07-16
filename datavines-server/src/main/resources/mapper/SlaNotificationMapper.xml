@@ -26,7 +26,7 @@
         WHERE workspace_id = #{workspaceId}
     </sql>
 
-    <select id="pageListNotification" resultType="io.datavines.server.coordinator.api.dto.vo.SlaNotificationVo" >
+    <select id="pageListNotification" resultType="io.datavines.server.coordinator.api.dto.vo.SlaNotificationVO" >
         SELECT
             dsn.id,
             dsn.sla_id as sla_id,

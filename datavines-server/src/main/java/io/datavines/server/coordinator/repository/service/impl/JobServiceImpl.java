@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.job.BaseJobParameter;
@@ -30,11 +31,13 @@ import io.datavines.common.entity.job.builder.TaskParameterBuilderFactory;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.coordinator.api.entity.dto.job.JobCreate;
+import io.datavines.server.coordinator.api.dto.bo.job.JobCreate;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
-import io.datavines.server.coordinator.api.entity.dto.job.JobUpdate;
-import io.datavines.server.coordinator.api.entity.vo.JobVO;
+import io.datavines.server.coordinator.api.dto.bo.job.JobUpdate;
+import io.datavines.server.coordinator.api.dto.vo.JobVO;
+import io.datavines.server.coordinator.api.dto.vo.SlaPageVO;
+import io.datavines.server.coordinator.api.dto.vo.SlaVO;
 import io.datavines.server.coordinator.repository.entity.*;
 import io.datavines.server.coordinator.repository.mapper.*;
 import io.datavines.server.coordinator.repository.entity.Command;
@@ -43,6 +46,8 @@ import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.coordinator.repository.mapper.CommandMapper;
 import io.datavines.server.coordinator.repository.mapper.DataSourceMapper;
 import io.datavines.server.coordinator.repository.mapper.TaskMapper;
+import io.datavines.server.coordinator.repository.service.JobService;
+import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.enums.CommandType;
 import io.datavines.common.enums.JobType;
 import io.datavines.server.enums.Priority;
@@ -55,15 +60,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
-import io.datavines.server.coordinator.repository.service.JobService;
-
 import org.springframework.transaction.annotation.Transactional;
-
-import io.datavines.server.coordinator.repository.entity.Job;
-
 
 @Slf4j
 @Service("jobService")
@@ -83,6 +80,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
 
     @Autowired
     private TenantMapper tenantMapper;
+
+    @Autowired
+    private SlaMapper slaMapper;
 
     @Override
     public int update(JobUpdate jobUpdate) {
@@ -156,6 +156,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     public IPage<JobVO> getJobPage(String searchVal, Long dataSourceId, Integer pageNumber, Integer pageSize) {
         Page<JobVO> page = new Page<>(pageNumber, pageSize);
         IPage<JobVO> jobs = baseMapper.getJobPage(page, searchVal, dataSourceId);
+        List<JobVO> jobList = jobs.getRecords();
+        if (CollectionUtils.isNotEmpty(jobList)) {
+            for(JobVO jobVO: jobList) {
+                List<SlaVO> slaList = slaMapper.getSlaByJobId(jobVO.getId());
+                jobVO.setSlaList(slaList);
+            }
+        }
         return jobs;
     }
 
