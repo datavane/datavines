@@ -21,11 +21,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.server.coordinator.api.dto.bo.user.*;
 import io.datavines.server.coordinator.repository.entity.User;
+import io.datavines.server.coordinator.repository.entity.UserWorkspace;
 import io.datavines.server.coordinator.repository.entity.WorkSpace;
 import io.datavines.server.coordinator.repository.mapper.UserMapper;
+import io.datavines.server.coordinator.repository.mapper.UserWorkspaceMapper;
 import io.datavines.server.coordinator.repository.mapper.WorkSpaceMapper;
 import io.datavines.server.coordinator.repository.service.UserService;
 import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.server.utils.ContextHolder;
 import jodd.util.BCrypt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -41,6 +44,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private WorkSpaceMapper workSpaceMapper;
+
+    @Autowired
+    private UserWorkspaceMapper userWorkspaceMapper;
 
     @Override
     public User getByUsername(String username) {
@@ -97,8 +103,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             workSpace.setCreateTime(LocalDateTime.now());
             workSpace.setUpdateBy(user.getId());
             workSpace.setUpdateTime(LocalDateTime.now());
-
             workSpaceMapper.insert(workSpace);
+
+            UserWorkspace userWorkspace = new UserWorkspace();
+            userWorkspace.setUserId(user.getId());
+            userWorkspace.setWorkspaceId(workSpace.getId());
+            userWorkspace.setCreateBy(ContextHolder.getUserId());
+            userWorkspace.setCreateTime(LocalDateTime.now());
+            userWorkspace.setUpdateBy(ContextHolder.getUserId());
+            userWorkspace.setUpdateTime(LocalDateTime.now());
+            userWorkspaceMapper.insert(userWorkspace);
 
             return userBaseInfo;
         } else {

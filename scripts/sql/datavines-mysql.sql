@@ -474,5 +474,18 @@ CREATE TABLE `dv_tenant` (
   UNIQUE KEY `tenant_name` (`tenant`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `dv_user_workspace`;
+CREATE TABLE `dv_user_workspace` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) NOT NULL,
+  `workspace_id` bigint(20) NOT NULL,
+  `create_by` bigint(20) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_by` bigint(20) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`, `create_time`, `update_time`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');
 INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1', "admin\'s default", '1', '2022-05-20 23:01:18', '1', '2022-05-20 23:01:21');
+INSERT INTO `dv_user_workspace` (`id`, `user_id`, `workspace_id`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1', '1', '1', '1', '2022-07-16 20:34:02', '1', '2022-07-16 20:34:02');
