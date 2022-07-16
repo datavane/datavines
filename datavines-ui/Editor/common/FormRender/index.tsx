@@ -78,7 +78,6 @@ const FormItemPropsPickArray = [
 
 export interface IFormRenderItem extends FormItemProps {
     render?: (...args: any[]) => any;
-    visible?: boolean,
     onVisible?: (...args: any[]) => boolean,
     widget?: React.ReactNode
 }
@@ -131,13 +130,32 @@ const FormRender: React.FC<IFormRender> = (props) => {
         if (!widget) {
             return null;
         }
-        return (
-            <React.Fragment key={(element.name || index) as string}>
-                <Form.Item {...formItemProps}>
-                    {widget}
-                </Form.Item>
-            </React.Fragment>
-        );
+        const getFormItem = () => {
+            const Comp = (
+                <React.Fragment key={(element.name || index) as string}>
+                    <Form.Item {...formItemProps}>
+                        {widget}
+                    </Form.Item>
+                </React.Fragment>
+            );
+            if ((element.dependencies || []).length > 0) {
+                return (
+                    <Form.Item noStyle dependencies={element.dependencies || []}>
+                        {() => {
+                            if (typeof element.onVisible === 'function') {
+                                if (element.onVisible()) {
+                                    return Comp;
+                                }
+                                return null;
+                            }
+                            return null;
+                        }}
+                    </Form.Item>
+                );
+            }
+            return Comp;
+        };
+        return getFormItem();
     };
 
     const renderLayout = (elements: any[]) => {

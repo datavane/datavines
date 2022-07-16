@@ -3,6 +3,7 @@ import {
     Input, ModalProps, Form, FormInstance, Radio, message,
 } from 'antd';
 import { useIntl } from 'react-intl';
+import querystring from 'querystring';
 import {
     useModal, useContextModal, useImmutable, FormRender, IFormRenderItem, IFormRender, usePersistFn, useMount, CustomSelect, useLoading,
 } from '@/common';
@@ -17,24 +18,27 @@ type InnerProps = {
 
 const Inner = ({ form }: InnerProps) => {
     const intl = useIntl();
-    const { data: record } = useContextModal();
+    const { data } = useContextModal();
+    const { workspaceId } = useSelector((r) => r.workSpaceReducer);
     const [typeSource, setTypeSource] = useState<{label: string, value: string}[]>([]);
     const [dynamicMeta, setDynamicMeta] = useState<IFormRenderItem[]>([]);
+    const [senderList, setSenderList] = useState<any[]>([]);
     useMount(async () => {
         try {
             const res: string[] = (await $http.get('/sla/plugin/support')) || [];
-            const data = res.map((item) => ({
+            const source = res.map((item) => ({
                 label: item,
                 value: item,
             }));
-            setTypeSource(data);
-            if (record?.id) {
-                await typeChange(record.type);
-                const configObj = record.config ? JSON.parse(record.config) : {};
+            setTypeSource(source);
+            if (data) {
+                const type = data.type || 'email';
+                await typeChange(type);
+                const config = data.config ? JSON.parse(data.config) : {};
                 form?.setFieldsValue({
-                    ...configObj,
-                    type: record.type,
-                    name: record.name,
+                    type,
+                    senderId: data.senderId,
+                    ...config,
                 });
             }
         } catch (error) {
@@ -42,10 +46,16 @@ const Inner = ({ form }: InnerProps) => {
     });
     const typeChange = async (type: string) => {
         try {
-            const res = (await $http.get(`/sla/sender/config/${type}`)) || [];
+            const res = (await $http.get(`/sla/notification/config/${type}`)) || [];
+            const params = {
+                type,
+                workspaceId,
+            };
+            const list = (await $http.get('/sla/sender/list', params)) || [];
+            setSenderList(list);
             if (res) {
-                const data = JSON.parse(res) as NoticeDynamicItem[];
-                setDynamicMeta(data.map((item) => {
+                const $res = JSON.parse(res) as NoticeDynamicItem[];
+                setDynamicMeta($res.map((item) => {
                     const object = {
                         label: item.title,
                         name: item.field,
@@ -82,17 +92,6 @@ const Inner = ({ form }: InnerProps) => {
         },
         meta: [
             {
-                label: intl.formatMessage({ id: 'warn_SLAs_name' }),
-                name: 'name',
-                rules: [
-                    {
-                        required: true,
-                        message: intl.formatMessage({ id: 'common_required_tip' }),
-                    },
-                ],
-                widget: <Input />,
-            },
-            {
                 label: intl.formatMessage({ id: 'warn_SLAs_type' }),
                 name: 'type',
                 rules: [
@@ -107,37 +106,66 @@ const Inner = ({ form }: InnerProps) => {
                     style={{ width: 200 }}
                 />,
             },
+            {
+                label: intl.formatMessage({ id: 'warn_setting_notice_sender' }),
+                name: 'senderId',
+                dependencies: ['type'],
+                rules: [
+                    {
+                        required: true,
+                        message: intl.formatMessage({ id: 'common_required_tip' }),
+                    },
+                ],
+                onVisible() {
+                    const typeValue = form?.getFieldValue('type');
+                    if (typeValue) {
+                        return true;
+                    }
+                    return false;
+                },
+                widget: <CustomSelect
+                    sourceLabelMap="name"
+                    sourceValueMap="id"
+                    source={senderList}
+                    style={{ width: 200 }}
+                />,
+            },
             ...dynamicMeta,
         ],
     };
     return <FormRender {...schema} form={form} />;
 };
 
-export const useCreateWidget = (options: ModalProps) => {
+export const useNotificationFormModal = (options: ModalProps) => {
     const [form] = Form.useForm();
     const intl = useIntl();
     const setLoading = useLoading();
-    const recordRef = useRef<any>(null);
+    const [editInfo, setEditInfo] = useState<any>(null);
+    const editRef = useRef<any>(null);
+    editRef.current = editInfo;
+    const [qs] = useState(querystring.parse(window.location.href.split('?')[1] || ''));
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
     const onOk = usePersistFn(async () => {
         form.validateFields().then(async (values) => {
             try {
                 setLoading(true);
-                const { type, name, ...rest } = values;
+                const { senderId, type, ...rest } = values;
                 const params = {
                     workspaceId,
                     type,
-                    name,
+                    senderId,
+                    slaId: qs.slaId,
                     config: JSON.stringify(rest),
                 };
-                if (recordRef.current?.id) {
-                    await $http.put('/sla/sender', { ...params, id: recordRef.current?.id });
+                if (editRef.current?.id) {
+                    await $http.put('/sla/notification', { ...params, id: editRef.current?.id });
                 } else {
-                    await $http.post('/sla/sender', params);
+                    await $http.post('/sla/notification', params);
                 }
                 message.success(intl.formatMessage({ id: 'common_success' }));
                 hide();
             } catch (error) {
+                console.log(error);
             } finally {
                 setLoading(false);
             }
@@ -146,18 +174,18 @@ export const useCreateWidget = (options: ModalProps) => {
         });
     });
     const {
-        Render, hide, show, ...rest
+        Render, show, hide, ...rest
     } = useModal<any>({
-        title: intl.formatMessage({ id: 'warn_create_widget' }),
+        title: intl.formatMessage({ id: 'warn_setting_notice_add' }),
         onOk,
         width: 600,
         ...(options || {}),
     });
     return {
         Render: useImmutable(() => (<Render><Inner form={form} /></Render>)),
-        show(record: any) {
-            recordRef.current = record;
-            show(record);
+        show(data: any) {
+            setEditInfo(data);
+            show(data);
         },
         ...rest,
     };

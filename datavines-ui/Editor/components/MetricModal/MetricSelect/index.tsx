@@ -8,6 +8,7 @@ import { layoutItem } from '../helper';
 import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
 import { TDetail, TMetricParameter } from '../type';
+import { useEditorContextState } from '../../../store/editor';
 import {
     CustomSelect, useMount, usePersistFn,
 } from '../../../common';
@@ -15,7 +16,7 @@ import {
 type InnerProps = {
     form: FormInstance,
     metricSelectRef: any,
-    id: string,
+    id: any,
     detail: TDetail
 }
 
@@ -29,6 +30,7 @@ const Index = ({
 }: InnerProps) => {
     const intl = useIntl();
     const { $http } = useRequest();
+    const [context] = useEditorContextState();
     const [metricList, setMetricList] = useState([]);
     const requiredRules = useRequiredRule();
     const [databases, setDataBases] = useState([]);
@@ -59,7 +61,6 @@ const Index = ({
         } catch (error) {
         }
     };
-    console.log('detail', detail);
     useMount(async () => {
         try {
             const $metricList = await $http.get('metric/list');
@@ -85,7 +86,6 @@ const Index = ({
             Object.keys(rest).forEach((item) => {
                 options[item] = rest[item];
             });
-            console.log('metric set default', options);
             form.setFieldsValue(options);
         } catch (error) {
 
@@ -189,7 +189,7 @@ const Index = ({
                     )}
                     name="filter"
                 >
-                    <Input.TextArea style={{ marginLeft: -60 }} rows={5} />
+                    <Input.TextArea style={{ marginLeft: context.locale === 'en_US' ? -100 : -62 }} rows={5} />
                 </Form.Item>
             </Col>
         </Row>

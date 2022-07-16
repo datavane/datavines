@@ -28,8 +28,8 @@ const MenuLayout: React.FC<TMainProps> = ({ children, menus, visible = true }) =
             <Layout>
                 <Sider
                     theme="light"
-                    style={{ height: 'calc(100vh - 40px)', overflow: 'auto' }}
-                    width={140}
+                    style={{ height: 'calc(100vh - 50px)', overflow: 'auto' }}
+                    width={180}
                     collapsedWidth={45}
                     trigger={(
                         <div style={{ position: 'absolute', right: 15, fontSize: 16 }}>

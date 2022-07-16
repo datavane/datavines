@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import { useIntl } from 'react-intl';
 import {
-    useModal, useImmutable, usePersistFn, useLoading, useMount,
+    useModal, useImmutable, usePersistFn, useLoading,
 } from '@/common';
 import useRequest from '../../hooks/useRequest';
 import MetricSelect from './MetricSelect';
@@ -35,9 +35,11 @@ const keys = [
     'tenantCode',
     'env',
 ];
-export const MetricConfig = ({ innerRef, id, detail }: InnerProps) => {
+export const MetricConfig = (props: InnerProps) => {
+    const { innerRef, detail } = props;
     const [form] = Form.useForm();
     const metricSelectRef = useRef<any>();
+    const id = props.id || detail?.dataSourceId;
     useImperativeHandle(innerRef, () => ({
         form,
         getValues() {
@@ -50,10 +52,10 @@ export const MetricConfig = ({ innerRef, id, detail }: InnerProps) => {
                         ...(pickProps(values, [...keys])),
                     };
                     if (values.engineType === 'spark') {
-                        params.engineParameter = {
+                        params.engineParameter = JSON.stringify({
                             programType: 'JAVA',
                             ...pickProps(values, ['deployMode', 'driverCores', 'driverMemory', 'numExecutors', 'executorMemory', 'executorCores', 'others']),
-                        };
+                        });
                     }
                     const parameter: any = {
                         ...(pickProps(values, ['metricType', 'expectedType', 'result_formula', 'operator', 'threshold'])),
@@ -81,7 +83,7 @@ export const MetricConfig = ({ innerRef, id, detail }: InnerProps) => {
             <ExpectedValue detail={detail} form={form} />
             <VerifyConfigure detail={detail} form={form} />
             <ActuatorConfigure detail={detail} form={form} />
-            <RunEvnironment form={form} />
+            <RunEvnironment id={id} form={form} />
             <OtherConfig detail={detail} form={form} />
         </Form>
     );

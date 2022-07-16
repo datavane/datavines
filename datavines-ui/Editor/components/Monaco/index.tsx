@@ -1,23 +1,26 @@
-import React, { useRef } from 'react';
+import React, { useRef, useImperativeHandle } from 'react';
 import useEditor from '../../hooks/useEditor';
-import { usePersistFn } from '../../common';
 
-const Editor: React.FC = () => {
+type InnerProps = {
+    monacoRef?: any,
+    style?: React.CSSProperties
+}
+
+const Editor: React.FC<InnerProps> = ({ monacoRef, style }) => {
     const divEl = useRef<any>(null);
-    const onChange = usePersistFn(() => {
-        console.log('monacoEditor', monacoInstance);
-        const $value = getValue();
-        console.log('e', $value);
-    });
-    const { monacoInstance, getValue } = useEditor({
+    const { monacoInstance } = useEditor({
         elRef: divEl,
-        value: 'select * from a.test',
+        // value: 'select * from dv_datasource',
+        value: '',
         language: 'mysql',
-        onChange,
-        tableColumnHints: [['QRTZ_BLOB_TRIGGERS', ['SCHED_NAME', 'BLOB_DATA']]],
+        tableColumnHints: [],
     });
 
-    return <div id="container" className="Editor" style={{ height: 300 }} ref={divEl} />;
+    useImperativeHandle(monacoRef, () => ({
+        getValue: () => monacoInstance?.getValue(),
+    }));
+
+    return <div id="container" className="Editor" style={style} ref={divEl} />;
 };
 
 export default Editor;

@@ -29,7 +29,6 @@ const HeaderRight = () => {
                         ]}
                     />
                 )}
-                // trigger={['click']}
             >
                 <LoginOutlined style={{ fontSize: 14, cursor: 'pointer' }} />
             </Dropdown>

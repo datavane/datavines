@@ -2,23 +2,25 @@ import React, { useState } from 'react';
 import { Table, Form } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
-import queryString from 'querystring';
+import querystring from 'querystring';
 import { TJobsInstanceTableData, TJobsInstanceTableItem } from '@/type/JobsInstance';
 import { Title, SearchForm } from '@/component';
-import { useMount } from '@/common';
+import { useMount, IF } from '@/common';
 import { $http } from '@/http';
 import { defaultRender } from '@/utils/helper';
+import { useLogger } from './useLogger';
 
 const JobsInstance = () => {
     const intl = useIntl();
     const form = Form.useForm()[0];
     const [loading, setLoading] = useState(false);
+    const { Render: RenderLoggerModal, show: showLoggerModal } = useLogger({});
     const [tableData, setTableData] = useState<TJobsInstanceTableData>({ list: [], total: 0 });
     const [pageParams, setPageParams] = useState({
         pageNumber: 1,
         pageSize: 10,
     });
-    const [qs] = useState(queryString.parse(window.location.href.split('?')[1] || ''));
+    const [qs] = useState(querystring.parse(window.location.href.split('?')[1] || ''));
     const getData = async (values: any = null) => {
         try {
             setLoading(true);
@@ -52,22 +54,26 @@ const JobsInstance = () => {
             pageSize,
         });
     };
-    const onStop = (record: TJobsInstanceTableItem) => {
-        console.log(record);
+    const onStop = async (record: TJobsInstanceTableItem) => {
+        try {
+            setLoading(true);
+            await $http.delete(`/task/kill/${record.id}`);
+            getData();
+        } catch (error) {
+        } finally {
+            setLoading(false);
+        }
     };
     const onLog = (record: TJobsInstanceTableItem) => {
-        console.log(record);
-    };
-    const onResult = (record: TJobsInstanceTableItem) => {
-        console.log(record);
+        showLoggerModal(record);
     };
     const columns: ColumnsType<TJobsInstanceTableItem> = [
         {
             title: intl.formatMessage({ id: 'jobs_task_name' }),
             dataIndex: 'name',
             key: 'name',
-            width: 240,
-            render: (text) => defaultRender(text, 240),
+            width: 300,
+            render: (text) => defaultRender(text, 300),
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_type' }),
@@ -98,16 +104,17 @@ const JobsInstance = () => {
             width: 200,
             render: (text: string, record: TJobsInstanceTableItem) => (
                 <>
-                    <a style={{ marginRight: 5 }} onClick={() => { onStop(record); }}>{intl.formatMessage({ id: 'jobs_task_stop_btn' })}</a>
+                    <IF visible={record.status === 'submitted' || record.status === 'running'}>
+                        <a style={{ marginRight: 5 }} onClick={() => { onStop(record); }}>{intl.formatMessage({ id: 'jobs_task_stop_btn' })}</a>
+                    </IF>
                     <a style={{ marginRight: 5 }} onClick={() => { onLog(record); }}>{intl.formatMessage({ id: 'jobs_task_log_btn' })}</a>
-                    <a style={{ marginRight: 5 }} onClick={() => { onResult(record); }}>{intl.formatMessage({ id: 'jobs_task_result_btn' })}</a>
                 </>
             ),
         },
     ];
     return (
         <div className="dv-page-paddinng">
-            <Title isBack>{intl.formatMessage({ id: 'jobs_list' })}</Title>
+            <Title isBack>{intl.formatMessage({ id: 'jobs_task_title' })}</Title>
             <div style={{ paddingTop: '20px' }}>
                 <div className="dv-flex-between">
                     <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
@@ -129,6 +136,7 @@ const JobsInstance = () => {
                     pageSize: pageParams.pageSize,
                 }}
             />
+            <RenderLoggerModal />
         </div>
     );
 };

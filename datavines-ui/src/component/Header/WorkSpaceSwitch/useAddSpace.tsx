@@ -17,7 +17,6 @@ type InnerProps = {
 const Inner = ({ form }: InnerProps) => {
     const intl = useIntl();
     const { data: workspaceId } = useContextModal();
-    console.log('data', workspaceId);
     const { spaceList } = useSelector((r) => r.workSpaceReducer);
     const workspace = spaceList.find((item) => item.id === workspaceId);
     const schema: IFormRender = {
@@ -69,7 +68,6 @@ export const useAddSpace = (options: ModalProps) => {
         Render, hide, show, ...rest
     } = useModal<any>({
         title: intl.formatMessage({ id: 'create_space' }),
-        // width: 640,
         ...(options || {}),
         confirmLoading: loadingRef.current,
         onOk,

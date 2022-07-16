@@ -51,7 +51,6 @@ function App() {
         getData();
     }, { immediate: true });
     const goDetail = usePersistFn((record: IDataSourceListItem) => {
-        console.log('go detial', record);
         history.push(`/main/detail/${record.id}/editor`);
     });
     const onSearch = usePersistFn((values) => {

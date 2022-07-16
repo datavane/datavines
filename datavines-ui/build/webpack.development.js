@@ -37,13 +37,24 @@ module.exports = {
         port: 5000,
         open: true,
         hot: true,
+        // https: true,
         historyApiFallback: true,
         proxy: [
             {
                 context: ['/api'],
                 target,
-                cookieDomainRewrite: host,
+                changeOrigin: true,
+                // cookieDomainRewrite: host,
+                cookieDomainRewrite: 'https://3c60-183-193-191-233.jp.ngrok.io',
             },
+            // {
+            //     context: ['/api/**'],
+            //     target: 'http://b394-14-127-81-48.jp.ngrok.io',
+            //     // secure: false,
+            //     changeOrigin: true,
+            //     cookieDomainRewrite: host,
+            //     // cookieDomainRewrite: 'https://5f87-183-193-191-233.ap.ngrok.io',
+            // },
         ],
     },
     plugins: [

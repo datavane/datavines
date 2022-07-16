@@ -50,7 +50,6 @@ const storageGetByTime = <T = any>(key: string, exp: number): T => {
 const sessionGetByTime = <T = any>(key: string, exp: number): T => {
     const val = sessionStorage.getItem(key);
     const parse = JSON.parse(val as any);
-    console.log(parse);
     if (parse) {
         if ((new Date().getTime() - parse.st) >= exp * 60 * 1000) {
             return undefined as any;

@@ -4,6 +4,7 @@ export default {
     dv_metric_save_run: 'Save run',
     dv_metric_add: 'Add',
     dv_metric_edit: 'Edit',
+    dv_metric_run: 'Run',
     dv_common_operate: 'Actions',
     dv_metric_required_tip: 'Cannot be empty',
     dv_metric_database: 'Database',

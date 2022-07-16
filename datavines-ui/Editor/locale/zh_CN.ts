@@ -5,6 +5,7 @@ export default {
     dv_metric_save_run: '保存运行',
     dv_metric_add: '新增',
     dv_metric_edit: '编辑',
+    dv_metric_run: '运行',
     dv_common_operate: '操作',
     dv_metric_database: '数据库',
     dv_metric_table: '表',

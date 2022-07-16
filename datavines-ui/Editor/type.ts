@@ -47,9 +47,11 @@ export interface IDvEditorProps {
     baseURL: string,
     headers?: Record<string, any>,
     id: number | string | null,
+    workspaceId?: any,
     showMetricConfig?: boolean,
     detail?: TDetail,
     innerRef?: any,
+    locale?: any,
 }
 
 export interface IDvDataBaseItem{
@@ -57,4 +59,26 @@ export interface IDvDataBaseItem{
     name: string,
     type: string,
     children?: IDvDataBaseItem[]
+}
+
+export interface IDvSqlTableColumnItem {
+    name: string;
+    type: string;
+    comment: null;
+}
+
+export interface IDvSqlTableResultItem {
+    id: number;
+    name: string;
+    type: string;
+    param: string;
+    workspace_id: number;
+    create_by: number;
+    create_time: number;
+    update_by: number;
+    update_time: number;
+}
+export interface IDvSqlTable {
+    resultList: IDvSqlTableResultItem[];
+    columns: IDvSqlTableColumnItem[];
 }
