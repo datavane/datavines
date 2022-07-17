@@ -402,6 +402,7 @@ CREATE TABLE `dv_user_workspace` (
     id bigserial NOT NULL,
     user_id int8 NOT NULL,
     workspace_id int8 NOT NULL,
+    role_id int8 NOT NULL,
     create_by int8 DEFAULT NULL,
     create_time timestamp(0) DEFAULT NULL,
     update_by int8 DEFAULT NULL,
@@ -411,4 +412,4 @@ CREATE TABLE `dv_user_workspace` (
 
 INSERT INTO dv_user (id, username, password, email, phone, admin, create_time, update_time) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');
 INSERT INTO dv_workspace (id, name, create_by, create_time, update_by, update_time) VALUES ('1', "admin\'s default", '1', '2022-05-20 23:01:18', '1', '2022-05-20 23:01:21');
-INSERT INTO dv_user_workspace (id, user_id, workspace_id, create_by, create_time, update_by, update_time) VALUES ('1', '1', '1', '1', '2022-07-16 20:34:02', '1', '2022-07-16 20:34:02');
+INSERT INTO dv_user_workspace (id, user_id, workspace_id, role_id, create_by, create_time, update_by, update_time) VALUES ('1', '1', '1', '1', '1', '2022-07-16 20:34:02', '1', '2022-07-16 20:34:02');
