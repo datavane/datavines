@@ -90,8 +90,14 @@ public enum ApiStatus {
     ENV_NOT_EXIST_ERROR(16010002, "Env {0} Not Exist Error", "运行环境参数 {0} 不存在错误"),
     ENV_EXIST_ERROR(16010003, "Env {0} is Exist error", "运行环境参数 {0} 已存在错误"),
     UPDATE_ENV_ERROR(16010004, "Update Env {0} Error", "更新运行环境参数 {0} 错误"),
-    SLAS_ALREADY_EXIST_ERROR(14010001, "SLAS {0} Already exist", "SLAS {0} 已经存在"),
-    SLAS_SENDER_ALREADY_EXIST_ERROR(14020001, "SLAS Sender {0}  Already exist", "SLAS 发送器 {0} 已经存在"),
+
+    CREATE_ERROR_DATA_STORAGE_ERROR(17010001, "Create Error Data Storage {0} Error", "创建错误数据存储 {0} 错误"),
+    ERROR_DATA_STORAGE_NOT_EXIST_ERROR(17010002, "Error Data Storage {0} Not Exist Error", "错误数据存储 {0} 不存在错误"),
+    ERROR_DATA_STORAGE_EXIST_ERROR(17010003, "Error Data Storage {0} is Exist error", "错误数据存储 {0} 已存在错误"),
+    UPDATE_ERROR_DATA_STORAGE_ERROR(17010004, "Update Error Data Storage {0} Error", "更新 错误数据存储 {0} 错误"),
+
+    SLAS_ALREADY_EXIST_ERROR(18010001, "SLAS {0} Already exist", "SLAS {0} 已经存在"),
+    SLAS_SENDER_ALREADY_EXIST_ERROR(18020001, "SLAS Sender {0}  Already exist", "SLAS 发送器 {0} 已经存在"),
     ;
 
     private final int code;

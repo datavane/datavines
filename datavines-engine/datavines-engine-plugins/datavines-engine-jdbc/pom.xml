@@ -35,9 +35,10 @@
         <module>datavines-engine-jdbc-config</module>
         <module>datavines-engine-jdbc-executor</module>
         <module>datavines-engine-jdbc-core</module>
-        <module>datavines-engine-jdbc-sql</module>
+        <module>datavines-engine-jdbc-transform</module>
         <module>datavines-engine-jdbc-connector</module>
-        <module>datavines-engine-jdbc-file-connector</module>
+        <module>datavines-engine-jdbc-connector-file</module>
+
     </modules>
 
 </project>

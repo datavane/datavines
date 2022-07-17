@@ -21,8 +21,8 @@ import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.Md5Utils;
 import io.datavines.connector.api.Executor;
-import io.datavines.connector.plugin.datasource.*;
-import io.datavines.connector.plugin.utils.SqlUtils;
+import io.datavines.common.jdbc.datasource.*;
+import io.datavines.common.jdbc.utils.SqlUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -49,7 +49,7 @@ public abstract class JdbcExecutor implements Executor, IDataSourceInfo {
         return builder.build();
     }
 
-    protected BaseDataSourceInfo getDatasourceInfo(String param) {
+    public BaseDataSourceInfo getDatasourceInfo(String param) {
 
         if (DataSourceInfoManager.getDatasourceInfo(param) == null) {
             String key = Md5Utils.getMd5(param, false);

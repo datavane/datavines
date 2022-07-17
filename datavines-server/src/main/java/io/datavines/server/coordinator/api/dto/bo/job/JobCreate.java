@@ -17,9 +17,11 @@
 package io.datavines.server.coordinator.api.dto.bo.job;
 
 import io.datavines.common.enums.TimeoutStrategy;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 
+@Data
 @NotNull(message = "JobCreate cannot be null")
 public class JobCreate {
 
@@ -54,120 +56,11 @@ public class JobCreate {
 
     private Long env;
 
+    private Long errorDataStorageId;
+
     /**
      * 1:running now, 0:don't run
      */
     private int runningNow;
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public long getDataSourceId() {
-        return dataSourceId;
-    }
-
-    public void setDataSourceId(long dataSourceId) {
-        this.dataSourceId = dataSourceId;
-    }
-
-    public int getTimeout() {
-        return timeout;
-    }
-
-    public void setTimeout(int timeout) {
-        this.timeout = timeout;
-    }
-
-    public TimeoutStrategy getTimeoutStrategy() {
-        return timeoutStrategy;
-    }
-
-    public void setTimeoutStrategy(TimeoutStrategy timeoutStrategy) {
-        this.timeoutStrategy = timeoutStrategy;
-    }
-
-    public String getExecutePlatformType() {
-        return executePlatformType;
-    }
-
-    public void setExecutePlatformType(String executePlatformType) {
-        this.executePlatformType = executePlatformType;
-    }
-
-    public String getExecutePlatformParameter() {
-        return executePlatformParameter;
-    }
-
-    public void setExecutePlatformParameter(String executePlatformParameter) {
-        this.executePlatformParameter = executePlatformParameter;
-    }
-
-    public String getEngineType() {
-        return engineType;
-    }
-
-    public void setEngineType(String engineType) {
-        this.engineType = engineType;
-    }
-
-    public String getEngineParameter() {
-        return engineParameter;
-    }
-
-    public void setEngineParameter(String engineParameter) {
-        this.engineParameter = engineParameter;
-    }
-
-    public Long getTenantCode() {
-        return tenantCode;
-    }
-
-    public void setTenantCode(Long tenantCode) {
-        this.tenantCode = tenantCode;
-    }
-
-    public Integer getRetryTimes() {
-        return retryTimes;
-    }
-
-    public void setRetryTimes(Integer retryTimes) {
-        this.retryTimes = retryTimes;
-    }
-
-    public Integer getRetryInterval() {
-        return retryInterval;
-    }
-
-    public void setRetryInterval(Integer retryInterval) {
-        this.retryInterval = retryInterval;
-    }
-
-    public String getParameter() {
-        return parameter;
-    }
-
-    public void setParameter(String parameter) {
-        this.parameter = parameter;
-    }
-
-    public Long getEnv() {
-        return env;
-    }
-
-    public void setEnv(Long env) {
-        this.env = env;
-    }
-
-    public int getRunningNow() {
-        return runningNow;
-    }
-
-    public void setRunningNow(int runningNow) {
-        this.runningNow = runningNow;
-    }
 }

@@ -36,7 +36,6 @@ import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.server.coordinator.api.dto.bo.job.JobUpdate;
 import io.datavines.server.coordinator.api.dto.vo.JobVO;
-import io.datavines.server.coordinator.api.dto.vo.SlaPageVO;
 import io.datavines.server.coordinator.api.dto.vo.SlaVO;
 import io.datavines.server.coordinator.repository.entity.*;
 import io.datavines.server.coordinator.repository.mapper.*;
@@ -80,6 +79,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
 
     @Autowired
     private TenantMapper tenantMapper;
+
+    @Autowired ErrorDataStorageMapper errorDataStorageMapper;
 
     @Autowired
     private SlaMapper slaMapper;
@@ -200,6 +201,19 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             tenantStr = tenant.getTenant();
         }
 
+        ErrorDataStorage errorDataStorage = errorDataStorageMapper.selectById(job.getErrorDataStorageId());
+        String errorDataStorageType = "";
+        String errorDataStorageParameter = "";
+        if (errorDataStorage != null) {
+            errorDataStorageType = errorDataStorage.getType();
+            errorDataStorageParameter  = errorDataStorage.getParam();
+        } else {
+            if ("jdbc".equalsIgnoreCase(job.getEngineType())) {
+                errorDataStorageType = "local-file";
+                errorDataStorageParameter  = "{\"error_data_file_dir\":\"/tmp/datavines/errordata\"}";
+            }
+        }
+
         for (String param: taskParameterList) {
             // add a task
             job.setId(null);
@@ -209,6 +223,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             task.setParameter(param);
             task.setName(job.getName() + "_task_" + System.currentTimeMillis());
             task.setJobType(job.getType());
+            task.setErrorDataStorageType(errorDataStorageType);
+            task.setErrorDataStorageParameter(errorDataStorageParameter);
+            task.setErrorDataFileName(getErrorDataFileName(job.getParameter()));
             task.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
             task.setTenantCode(tenantStr);
             task.setEnv(envStr);
@@ -254,6 +271,26 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             default:
                 return String.format("%s[%s.%s.%s]%s", "JOB", database, table, column, System.currentTimeMillis());
         }
+    }
+
+    private String getErrorDataFileName(String parameter) {
+        List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
+
+        if (CollectionUtils.isEmpty(jobParameters)) {
+            throw new DataVinesServerException(ApiStatus.JOB_PARAMETER_IS_NULL_ERROR);
+        }
+
+        BaseJobParameter baseJobParameter = jobParameters.get(0);
+        Map<String,Object> metricParameter = baseJobParameter.getMetricParameter();
+        if (MapUtils.isEmpty(metricParameter)) {
+            throw new DataVinesServerException(ApiStatus.JOB_PARAMETER_IS_NULL_ERROR);
+        }
+
+        String database = (String)metricParameter.get("database");
+        String table = (String)metricParameter.get("table");
+        String column = (String)metricParameter.get("column");
+        String metric = baseJobParameter.getMetricType();
+        return String.format("%s_%s_%s_%s_%s", metric.toLowerCase(), database, table, column, System.currentTimeMillis());
     }
 
     private List<String> buildTaskParameter(String jobType, String parameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo) {

@@ -16,6 +16,7 @@
  */
 package io.datavines.server.coordinator.repository.service.impl;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -28,14 +29,19 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.TaskParameter;
+import io.datavines.common.exception.DataVinesException;
+import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.core.enums.ApiStatus;
 import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.coordinator.api.dto.vo.TaskVO;
 import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.spi.PluginLoader;
+import io.datavines.storage.api.StorageFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -213,5 +219,36 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
         if (!resultFormulaPluginSet.contains(resultFormula)) {
             throw new DataVinesServerException(String.format("%s result formula does not supported", metricType));
         }
+    }
+
+    @Override
+    public Object readErrorDataPage(Long taskId, Integer pageNumber, Integer pageSize)  {
+        Task task = getById(taskId);
+        if (task == null) {
+            throw new DataVinesServerException(ApiStatus.TASK_NOT_EXIST_ERROR, taskId);
+        }
+
+        String errorDataStorageType = task.getErrorDataStorageType();
+        String errorDataStorageParameter = task.getErrorDataStorageParameter();
+        String errorDataFileName = task.getErrorDataFileName();
+
+        StorageFactory storageFactory =
+                PluginLoader.getPluginLoader(StorageFactory.class).getOrCreatePlugin(errorDataStorageType);
+
+        ExecuteRequestParam param = new ExecuteRequestParam();
+        param.setType(errorDataStorageType);
+        param.setDataSourceParam(errorDataStorageParameter);
+        param.setScript(errorDataFileName);
+        param.setPageNumber(pageNumber);
+        param.setPageSize(pageSize);
+
+        Object result = null;
+        try {
+            result = storageFactory.getStorageExecutor().executeSyncQuery(param).getResult();
+        } catch (Exception exception) {
+            throw new DataVinesException(exception);
+        }
+
+        return result;
     }
 }

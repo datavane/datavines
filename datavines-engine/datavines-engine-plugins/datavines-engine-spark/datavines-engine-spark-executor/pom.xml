@@ -50,13 +50,19 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-spark-jdbc</artifactId>
+            <artifactId>datavines-engine-spark-connector-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-spark-sql</artifactId>
+            <artifactId>datavines-engine-spark-connector-file</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-spark-transform-sql</artifactId>
             <version>${project.version}</version>
         </dependency>
 

@@ -24,7 +24,6 @@ import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.engine.config.DataVinesConfigurationManager;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.server.coordinator.api.dto.vo.TaskResultVO;
 import io.datavines.server.coordinator.repository.entity.Command;
 import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.coordinator.repository.entity.Task;
@@ -125,9 +124,10 @@ public class JobExternalService {
         taskRequest.setEngineParameter(task.getEngineParameter());
         Map<String,String> inputParameter = new HashMap<>();
 
-        TaskInfo taskInfo = new TaskInfo(task.getId(),
-                                         task.getName(),task.getEngineType(),
-                                         task.getEngineParameter(),taskParameter);
+        TaskInfo taskInfo = new TaskInfo(task.getId(),task.getName(),
+                                         task.getEngineType(),task.getEngineParameter(),
+                                         task.getErrorDataStorageType(),task.getErrorDataStorageParameter(),task.getErrorDataFileName(),
+                                         taskParameter);
         DataVinesQualityConfig qualityConfig =
                 DataVinesConfigurationManager.generateConfiguration(inputParameter, taskInfo, DefaultDataSourceInfoUtils.getDefaultConnectionInfo());
         taskRequest.setApplicationParameter(JSONUtils.toJsonString(qualityConfig));

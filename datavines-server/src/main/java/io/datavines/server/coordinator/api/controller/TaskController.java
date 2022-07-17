@@ -19,6 +19,7 @@ package io.datavines.server.coordinator.api.controller;
 import javax.validation.Valid;
 
 import io.datavines.core.aop.RefreshToken;
+import io.datavines.server.coordinator.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.server.coordinator.repository.service.TaskResultService;
 import io.datavines.core.exception.DataVinesServerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,4 +81,13 @@ public class TaskController {
                        @RequestParam("pageSize") Integer pageSize)  {
         return taskService.getTaskPage(searchVal, jobId, pageNumber, pageSize);
     }
+
+    @ApiOperation(value = "get task error data page")
+    @GetMapping(value = "/errorDataPage")
+    public Object readErrorDataPage(@RequestParam("taskId") Long taskId,
+                       @RequestParam("pageNumber") Integer pageNumber,
+                       @RequestParam("pageSize") Integer pageSize)  {
+        return taskService.readErrorDataPage(taskId, pageNumber, pageSize);
+    }
+
 }

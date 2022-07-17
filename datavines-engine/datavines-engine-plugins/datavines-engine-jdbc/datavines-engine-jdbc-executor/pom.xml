@@ -56,7 +56,13 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-jdbc-sql</artifactId>
+            <artifactId>datavines-engine-jdbc-connector-file</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-jdbc-transform</artifactId>
             <version>${project.version}</version>
         </dependency>
 

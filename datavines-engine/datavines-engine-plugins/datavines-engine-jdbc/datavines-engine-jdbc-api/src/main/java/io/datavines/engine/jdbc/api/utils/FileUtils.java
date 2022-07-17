@@ -25,6 +25,16 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +42,8 @@ import java.util.Map;
 @Slf4j
 public class FileUtils {
 
-    public static void writeToLocal(ResultListWithColumns resultListWithColumns, String directory, String name) {
+    public static void writeToLocal(ResultListWithColumns resultListWithColumns, String directory, String name,boolean needHeader) {
+
         //首先判断文件夹是否存在
 
         BufferedWriter bw = null;
@@ -44,22 +55,25 @@ public class FileUtils {
                 org.apache.commons.io.FileUtils.forceMkdir(localErrorDir);
             }
 
-            bw = new BufferedWriter(new FileWriter(directory + File.separator + name +".csv"));
+            bw = new BufferedWriter(new FileWriter(directory + File.separator + name +".csv",true));
 
             if (resultListWithColumns != null && CollectionUtils.isNotEmpty(resultListWithColumns.getResultList())) {
                 List<QueryColumn> columns = resultListWithColumns.getColumns();
                 List<String> headerList = new ArrayList<>();
                 columns.forEach(header -> {
-                    headerList.add(header.getName());
+                    headerList.add(header.getName()+"@@"+header.getType());
                 });
+                if (needHeader) {
+                    bw.write(String.join("\001",headerList));
+                    bw.newLine();
+                }
 
-                bw.write(String.join("\001",headerList));
-                bw.newLine();
 
                 for(Map<String, Object> row: resultListWithColumns.getResultList()) {
                     List<String> rowDataList = new ArrayList<>();
                     headerList.forEach(header -> {
-                        rowDataList.add((String.valueOf(row.get(header))));
+                        rowDataList.add((String.valueOf(row.get(header.split("@@")[0]))));
+
                     });
                     bw.write(String.join("\001",rowDataList));
                     bw.newLine();
@@ -85,10 +99,17 @@ public class FileUtils {
                 log.error("close buffer writer error {}", ioe);
             }
         }
-//        File errorDataFile = new File(directory + File.separator + name);
+    }
 
-
-
+    public static List<String> readPartFileContent(String filePath,
+                                             int skipLine,
+                                             int limit){
+        try (Stream<String> stream = Files.lines(Paths.get(filePath))) {
+            return stream.skip(skipLine).limit(limit).collect(Collectors.toList());
+        } catch (IOException e) {
+            log.error("read file error",e);
+        }
+        return Collections.emptyList();
 
     }
 }

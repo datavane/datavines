@@ -46,4 +46,5 @@ public interface TaskService {
 
     List<Task> listTaskNotInServerList(List<String> hostList);
 
+    Object readErrorDataPage(Long taskId, Integer pageNumber, Integer pageSize);
 }

@@ -109,9 +109,9 @@ public class DataSourceController {
         return dataSourceService.getConfigJson(type);
     }
 
-    @ApiOperation(value = "get expected value info")
+    @ApiOperation(value = "get connector type list")
     @GetMapping(value = "/type/list")
-    public Object getExpectedValueInfo() {
+    public Object getConnectorTypeList() {
         Set<String> connectorList = PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
         connectorList.forEach(it -> {

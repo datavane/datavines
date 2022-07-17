@@ -21,7 +21,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.enums.TimeoutStrategy;
 import io.datavines.common.enums.JobType;
 import lombok.Data;
@@ -58,6 +57,9 @@ public class Job implements Serializable {
 
     @TableField(value = "engine_parameter")
     private String engineParameter;
+
+    @TableField(value = "error_data_storage_id")
+    private Long errorDataStorageId;
 
     @TableField(value = "parameter")
     private String parameter;

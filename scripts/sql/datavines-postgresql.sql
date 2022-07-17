@@ -179,6 +179,7 @@ CREATE TABLE dv_job (
     execute_platform_parameter text,
     engine_type varchar(128) DEFAULT NULL,
     engine_parameter text,
+    error_data_storage_id int8 DEFAULT NULL,
     parameter text ,
     retry_times int4 DEFAULT NULL ,
     retry_interval int4 DEFAULT NULL ,
@@ -192,7 +193,6 @@ CREATE TABLE dv_job (
     update_time timestamp(0) NOT NULL DEFAULT current_timestamp ,
     CONSTRAINT job_pk PRIMARY KEY (id),
     CONSTRAINT job_un UNIQUE (name)
-
 ) ;
 
 DROP TABLE IF EXISTS dv_job_schedule;
@@ -234,6 +234,9 @@ CREATE TABLE dv_task (
     execute_platform_parameter text,
     engine_type varchar(128) DEFAULT NULL,
     engine_parameter text,
+    error_data_storage_type varchar(128) DEFAULT NULL,
+    error_data_storage_parameter text,
+    error_data_file_name varchar(255) DEFAULT NULL,
     parameter text NOT NULL,
     status int4 DEFAULT NULL,
     retry_times int4 DEFAULT NULL ,
@@ -396,6 +399,21 @@ CREATE TABLE dv_tenant (
     CONSTRAINT workspace_pk PRIMARY KEY (id),
     CONSTRAINT workspace_name_un UNIQUE (name)
 );
+
+DROP TABLE IF EXISTS dv_error_data_storage;
+CREATE TABLE dv_error_data_storage (
+  `id` bigserial NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `param` text NOT NULL,
+  `workspace_id` int8 NOT NULL,
+  `create_by` int8 NOT NULL,
+  `create_time` timestamp(0) DEFAULT NULL,
+  `update_by` int8 NOT NULL,
+  `update_time` timestamp(0) DEFAULT NULL,
+  CONSTRAINT eds_pk PRIMARY KEY (id),
+  CONSTRAINT eds_name_un UNIQUE (name,workspace_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS dv_user_workspace;
 CREATE TABLE `dv_user_workspace` (

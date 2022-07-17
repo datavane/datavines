@@ -60,4 +60,12 @@ public interface SqlMetric {
     Set<String> getConfigSet();
 
     void prepare(Map<String,String> config);
+
+    /**
+     * get issue description
+     * @return issue
+     */
+    default String getIssue() {
+        return "";
+    }
 }

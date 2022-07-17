@@ -29,4 +29,10 @@ public class ListWithQueryColumn implements Serializable {
     private List<Map<String, Object>> resultList = new ArrayList<>();
 
     private List<QueryColumn> columns;
+
+    private int pageNumber;
+
+    private int pageSize;
+
+    private long totalCount;
 }
