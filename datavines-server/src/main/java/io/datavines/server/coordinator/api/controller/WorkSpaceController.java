@@ -70,8 +70,17 @@ public class WorkSpaceController {
     }
 
     @ApiOperation(value = "user removed workspace")
-    @DeleteMapping(value = "/removeUser}",consumes = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(value = "/removeUser",consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object removeUser(@RequestBody RemoveUserOutWorkspace removeUserOutWorkspace)  {
         return workSpaceService.removeUser(removeUserOutWorkspace);
     }
+
+    @ApiOperation(value = "list user by workspace id")
+    @GetMapping(value = "/userPage")
+    public Object listUserByWorkspaceId(@RequestParam("workspaceId") Long workspaceId,
+                                        @RequestParam("pageNumber") Integer pageNumber,
+                                        @RequestParam("pageSize") Integer pageSize)  {
+        return workSpaceService.listUserByWorkspaceId(workspaceId,pageNumber,pageSize);
+    }
+
 }

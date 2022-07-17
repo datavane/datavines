@@ -17,12 +17,15 @@
 package io.datavines.server.coordinator.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.server.coordinator.api.dto.bo.workspace.InviteUserIntoWorkspace;
 import io.datavines.server.coordinator.api.dto.bo.workspace.RemoveUserOutWorkspace;
 import io.datavines.server.coordinator.api.dto.bo.workspace.WorkSpaceCreate;
 import io.datavines.server.coordinator.api.dto.bo.workspace.WorkSpaceUpdate;
+import io.datavines.server.coordinator.api.dto.vo.UserVO;
 import io.datavines.server.coordinator.api.dto.vo.WorkspaceVO;
 import io.datavines.server.coordinator.repository.entity.User;
 import io.datavines.server.coordinator.repository.entity.UserWorkspace;
@@ -68,6 +71,16 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper,WorkSpace>
             throw new DataVinesServerException(ApiStatus.CREATE_WORKSPACE_ERROR, workSpaceCreate.getName());
         }
 
+        UserWorkspace userWorkspace = new UserWorkspace();
+        userWorkspace.setUserId(ContextHolder.getUserId());
+        userWorkspace.setWorkspaceId(workSpace.getId());
+        userWorkspace.setRoleId(1L);
+        userWorkspace.setCreateBy(ContextHolder.getUserId());
+        userWorkspace.setCreateTime(LocalDateTime.now());
+        userWorkspace.setUpdateBy(ContextHolder.getUserId());
+        userWorkspace.setUpdateTime(LocalDateTime.now());
+        userWorkspaceMapper.insert(userWorkspace);
+
         return workSpace.getId();
     }
 
@@ -99,6 +112,13 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper,WorkSpace>
     @Override
     public List<WorkspaceVO> listByUserId() {
         return userWorkspaceMapper.listWorkspaceByUserId(ContextHolder.getUserId());
+    }
+
+    @Override
+    public IPage<UserVO> listUserByWorkspaceId(Long workspaceId, Integer pageNumber, Integer pageSize) {
+        Page<UserVO> page = new Page<>(pageNumber, pageSize);
+        IPage<UserVO> users = userWorkspaceMapper.getWorkspaceUserPage(page, workspaceId);
+        return users;
     }
 
     @Override
@@ -143,7 +163,16 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper,WorkSpace>
 
     @Override
     public int removeUser(RemoveUserOutWorkspace removeUserOutWorkspace) {
-        return userWorkspaceMapper.delete(new QueryWrapper<UserWorkspace>()
-                .eq("user_id",removeUserOutWorkspace.getUserId()).eq("workspace_id", removeUserOutWorkspace.getWorkspaceId()));
+        UserWorkspace userWorkspace = userWorkspaceMapper.selectOne(new QueryWrapper<UserWorkspace>()
+                .eq("user_id",ContextHolder.getUserId()).eq("workspace_id", removeUserOutWorkspace.getWorkspaceId()));
+
+        if (userWorkspace != null &&
+                ( (userWorkspace.getRoleId() != null && userWorkspace.getRoleId() == 1)
+                        || removeUserOutWorkspace.getUserId().equals(ContextHolder.getUserId()))) {
+            return userWorkspaceMapper.delete(new QueryWrapper<UserWorkspace>()
+                    .eq("user_id",removeUserOutWorkspace.getUserId()).eq("workspace_id", removeUserOutWorkspace.getWorkspaceId()));
+        }
+
+        throw new DataVinesServerException(ApiStatus.USER_HAS_NO_AUTHORIZE_TO_REMOVE);
     }
 }

@@ -44,6 +44,9 @@ public class UserWorkspace {
     @TableField(value = "workspace_id")
     private Long workspaceId;
 
+    @TableField(value = "role_id")
+    private Long roleId;
+
     @TableField(value = "create_by")
     private Long createBy;
 

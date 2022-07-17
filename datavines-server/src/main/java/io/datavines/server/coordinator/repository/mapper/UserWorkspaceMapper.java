@@ -18,9 +18,13 @@ package io.datavines.server.coordinator.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.datavines.server.coordinator.api.dto.vo.UserVO;
 import io.datavines.server.coordinator.api.dto.vo.WorkspaceVO;
 import io.datavines.server.coordinator.repository.entity.UserWorkspace;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -28,4 +32,6 @@ import java.util.List;
 public interface UserWorkspaceMapper extends BaseMapper<UserWorkspace> {
 
     List<WorkspaceVO> listWorkspaceByUserId(Long userId);
+
+    IPage<UserVO> getWorkspaceUserPage(Page<UserVO> page, @Param("workspaceId") Long workspaceId);
 }

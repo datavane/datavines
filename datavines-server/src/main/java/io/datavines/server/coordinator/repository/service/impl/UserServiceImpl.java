@@ -108,6 +108,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             UserWorkspace userWorkspace = new UserWorkspace();
             userWorkspace.setUserId(user.getId());
             userWorkspace.setWorkspaceId(workSpace.getId());
+            userWorkspace.setRoleId(1L);
             userWorkspace.setCreateBy(ContextHolder.getUserId());
             userWorkspace.setCreateTime(LocalDateTime.now());
             userWorkspace.setUpdateBy(ContextHolder.getUserId());

@@ -14,12 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.mapper;
+package io.datavines.server.coordinator.api.dto.vo;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.datavines.server.coordinator.repository.entity.WorkSpace;
-import org.apache.ibatis.annotations.Mapper;
+import lombok.Data;
 
-@Mapper
-public interface WorkSpaceMapper extends BaseMapper<WorkSpace> {
+import java.io.Serializable;
+
+@Data
+public class UserVO implements Serializable {
+
+    private static final long serialVersionUID = -1L;
+
+    private Long id;
+
+    private String username;
+
+    private String email;
+
+    private String phone;
 }

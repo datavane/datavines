@@ -51,6 +51,7 @@ public enum ApiStatus {
     WORKSPACE_NOT_EXIST_ERROR(11010003, "WorkSpace {0} is Not Exist Error", "工作空间 {0} 不存在错误"),
     UPDATE_WORKSPACE_ERROR(11010004, "Update WorkSpace {0} Error", "更新工作空间 {0} 错误"),
     USER_IS_IN_WORKSPACE_ERROR(11010005, "User is in Workspace", "用户已经在工作空间错误"),
+    USER_HAS_NO_AUTHORIZE_TO_REMOVE(11010006, "User has no authorize t remove", "用户没有权限移除错误"),
 
     DATASOURCE_EXIST_ERROR(12010001, "DataSource {0} is Exist error", "数据源 {0} 已存在错误"),
     CREATE_DATASOURCE_ERROR(12010002, "Create DataSource {0} Error", "创建数据源 {0} 错误"),
