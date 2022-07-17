@@ -74,7 +74,7 @@ public class TaskResultServiceImpl extends ServiceImpl<TaskResultMapper, TaskRes
                 PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(taskResult.getResultFormula());
         String resultFormulaFormat = resultFormula.getResultFormat()+" ${operator} ${threshold}";
 
-        taskResultVO.setCheckSubject(taskResult.getDatabase()+"."+taskResult.getTable()+"."+taskResult.getColumn());
+        taskResultVO.setCheckSubject(taskResult.getDatabaseName()+"."+taskResult.getTableName()+"."+taskResult.getColumnName());
         taskResultVO.setCheckResult(taskResult.getState());
         taskResultVO.setExpectedType(taskResult.getExpectedType());
         taskResultVO.setMetricName(taskResult.getMetricName());

@@ -19,11 +19,17 @@ package io.datavines.metric.api;
 public class ColumnInfo {
 
     private String name;
+    private String parameterName;
     private boolean needSingleQuotation;
 
     public ColumnInfo(String name, boolean needSingleQuotation) {
+        this(name,needSingleQuotation,name);
+    }
+
+    public ColumnInfo(String name, boolean needSingleQuotation,String parameterName) {
         this.name = name;
         this.needSingleQuotation = needSingleQuotation;
+        this.parameterName = parameterName;
     }
 
     public String getName() {
@@ -32,6 +38,14 @@ public class ColumnInfo {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getParameterName() {
+        return parameterName;
+    }
+
+    public void setParameterName(String parameterName) {
+        this.parameterName = parameterName;
     }
 
     public boolean isNeedSingleQuotation() {

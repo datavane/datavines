@@ -47,14 +47,14 @@ public class TaskResult implements Serializable {
     @TableField(value = "metric_type")
     private String metricType;
 
-    @TableField(value = "database")
-    private String database;
+    @TableField(value = "database_name")
+    private String databaseName;
 
-    @TableField(value = "table")
-    private String table;
+    @TableField(value = "table_name")
+    private String tableName;
 
-    @TableField(value = "column")
-    private String column;
+    @TableField(value = "column_name")
+    private String columnName;
 
     @TableField(value = "actual_value")
     private Double actualValue;
@@ -73,9 +73,6 @@ public class TaskResult implements Serializable {
 
     @TableField(value = "threshold")
     private Double threshold;
-
-    @TableField(value = "failure_strategy")
-    private String failureStrategy;
 
     @TableField(value = "state")
     private String state;
