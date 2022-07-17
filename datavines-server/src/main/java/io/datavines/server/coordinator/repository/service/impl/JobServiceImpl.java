@@ -286,11 +286,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             throw new DataVinesServerException(ApiStatus.JOB_PARAMETER_IS_NULL_ERROR);
         }
 
-        String database = (String)metricParameter.get("database");
-        String table = (String)metricParameter.get("table");
         String column = (String)metricParameter.get("column");
         String metric = baseJobParameter.getMetricType();
-        return String.format("%s_%s_%s_%s_%s", metric.toLowerCase(), database, table, column, System.currentTimeMillis());
+        return String.format("%s_%s_%s", metric.toLowerCase(), column, System.currentTimeMillis());
     }
 
     private List<String> buildTaskParameter(String jobType, String parameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo) {

@@ -72,18 +72,6 @@ public class LocalFileStorageConnector implements StorageConnector {
                 .build();
     }
 
-    private InputParam getInputParamNoValidate(String field, String title, String placeholder, int rows) {
-        return InputParam
-                .newBuilder(field, title)
-                .setProps(new InputParamsProps().setDisabled(false))
-                .setSize(CommonConstants.SMALL)
-                .setType(PropsType.TEXTAREA)
-                .setRows(rows)
-                .setPlaceholder(placeholder)
-                .setEmit(null)
-                .build();
-    }
-
     @Override
     public Map<String, Object> getParamMap(Map<String, Object> parameter) {
         return parameter;
