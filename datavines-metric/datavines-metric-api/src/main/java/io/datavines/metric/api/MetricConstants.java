@@ -26,17 +26,19 @@ public class MetricConstants {
     public static final List<ColumnInfo> ACTUAL_COLUMN_LIST = new ArrayList<>();
 
     static {
+        RESULT_COLUMN_LIST.add(new ColumnInfo("task_id",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_type",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_name",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_dimension",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("task_id",false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("database",true));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("table",true));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("column",true));
         RESULT_COLUMN_LIST.add(new ColumnInfo("actual_value",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("expected_value",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("expected_type",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("result_formula",true));
         RESULT_COLUMN_LIST.add(new ColumnInfo("operator",true));
         RESULT_COLUMN_LIST.add(new ColumnInfo("threshold",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("failure_strategy",true));
         RESULT_COLUMN_LIST.add(new ColumnInfo("create_time",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("update_time",false));
 

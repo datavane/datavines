@@ -40,7 +40,7 @@ public class DataQualityTaskParameterBuilder implements ParameterBuilder {
                 taskParameter.setMetricType(jobParam.getMetricType());
                 Map<String,Object> metricParameters = jobParam.getMetricParameter();
                 String database = (String)metricParameters.get("database");
-                metricParameters.remove("database");
+//                metricParameters.remove("database");
                 taskParameter.setMetricParameter(metricParameters);
                 taskParameter.setExpectedType(jobParam.getExpectedType());
                 taskParameter.setExpectedParameter(jobParam.getExpectedParameter());

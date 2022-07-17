@@ -31,7 +31,7 @@ public class SinkSqlBuilder {
         List<String> columnValueList = new ArrayList<>();
         for (ColumnInfo columnInfo : MetricConstants.RESULT_COLUMN_LIST) {
 
-            columnList.add(columnInfo.getName());
+            columnList.add("`"+columnInfo.getName()+"`");
 
             if (columnInfo.isNeedSingleQuotation()) {
                 columnValueList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getName()+"}"));

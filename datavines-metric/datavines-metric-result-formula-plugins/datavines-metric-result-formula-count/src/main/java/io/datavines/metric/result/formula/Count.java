@@ -24,4 +24,14 @@ public class Count implements ResultFormula {
     public double getResult(double actualValue, double expectedValue) {
         return actualValue;
     }
+
+    @Override
+    public String getResultFormat() {
+        return "ActualValue(${actual_value})";
+    }
+
+    @Override
+    public String getSymbol() {
+        return "#";
+    }
 }

@@ -21,10 +21,12 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+@Data
 @TableName("dv_task_result")
 public class TaskResult implements Serializable {
 
@@ -32,6 +34,9 @@ public class TaskResult implements Serializable {
 
     @TableId(type= IdType.AUTO)
     private Long id;
+
+    @TableField(value = "task_id")
+    private Long taskId;
 
     @TableField(value = "metric_name")
     private String metricName;
@@ -42,8 +47,14 @@ public class TaskResult implements Serializable {
     @TableField(value = "metric_type")
     private String metricType;
 
-    @TableField(value = "task_id")
-    private Long taskId;
+    @TableField(value = "database")
+    private String database;
+
+    @TableField(value = "table")
+    private String table;
+
+    @TableField(value = "column")
+    private String column;
 
     @TableField(value = "actual_value")
     private Double actualValue;
@@ -76,124 +87,4 @@ public class TaskResult implements Serializable {
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "update_time")
     private LocalDateTime updateTime;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getMetricName() {
-        return metricName;
-    }
-
-    public void setMetricName(String metricName) {
-        this.metricName = metricName;
-    }
-
-    public String getMetricDimension() {
-        return metricDimension;
-    }
-
-    public void setMetricDimension(String metricDimension) {
-        this.metricDimension = metricDimension;
-    }
-
-    public String getMetricType() {
-        return metricType;
-    }
-
-    public void setMetricType(String metricType) {
-        this.metricType = metricType;
-    }
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-    public Double getActualValue() {
-        return actualValue;
-    }
-
-    public void setActualValue(Double actualValue) {
-        this.actualValue = actualValue;
-    }
-
-    public Double getExpectedValue() {
-        return expectedValue;
-    }
-
-    public void setExpectedValue(Double expectedValue) {
-        this.expectedValue = expectedValue;
-    }
-
-    public String getExpectedType() {
-        return expectedType;
-    }
-
-    public void setExpectedType(String expectedType) {
-        this.expectedType = expectedType;
-    }
-
-    public String getResultFormula() {
-        return resultFormula;
-    }
-
-    public void setResultFormula(String resultFormula) {
-        this.resultFormula = resultFormula;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public Double getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(Double threshold) {
-        this.threshold = threshold;
-    }
-
-    public String getFailureStrategy() {
-        return failureStrategy;
-    }
-
-    public void setFailureStrategy(String failureStrategy) {
-        this.failureStrategy = failureStrategy;
-    }
-
-    public String getState() {
-        return state;
-    }
-
-    public void setState(String state) {
-        this.state = state;
-    }
-
-    public LocalDateTime getCreateTime() {
-        return createTime;
-    }
-
-    public void setCreateTime(LocalDateTime createTime) {
-        this.createTime = createTime;
-    }
-
-    public LocalDateTime getUpdateTime() {
-        return updateTime;
-    }
-
-    public void setUpdateTime(LocalDateTime updateTime) {
-        this.updateTime = updateTime;
-    }
 }

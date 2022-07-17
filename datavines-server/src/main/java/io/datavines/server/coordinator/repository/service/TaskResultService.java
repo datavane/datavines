@@ -16,6 +16,7 @@
  */
 package io.datavines.server.coordinator.repository.service;
 
+import io.datavines.server.coordinator.api.dto.vo.TaskResultVO;
 import io.datavines.server.coordinator.repository.entity.TaskResult;
 
 public interface TaskResultService {
@@ -30,4 +31,5 @@ public interface TaskResultService {
 
     TaskResult getByTaskId(long taskId);
 
+    TaskResultVO getResultVOByTaskId(long taskId);
 }

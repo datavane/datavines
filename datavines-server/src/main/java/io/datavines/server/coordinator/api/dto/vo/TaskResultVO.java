@@ -14,29 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.metric.result.formula;
+package io.datavines.server.coordinator.api.dto.vo;
 
-import io.datavines.metric.api.ResultFormula;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
-public class Percentage implements ResultFormula {
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
-    @Override
-    public double getResult(double actualValue, double expectedValue) {
-        double result = 0;
-        if (expectedValue > 0) {
-            result = actualValue / expectedValue * 100;
-        }
+@Data
+public class TaskResultVO implements Serializable {
 
-        return result;
-    }
+    private String checkSubject;
 
-    @Override
-    public String getResultFormat() {
-        return "ActualValue(${actual_value})/ExpectedValue(${expected_value}) x 100%";
-    }
+    private String metricName;
 
-    @Override
-    public String getSymbol() {
-        return "%";
-    }
+    private String checkResult;
+
+    private String expectedType;
+
+    private String resultFormulaFormat;
+
 }
