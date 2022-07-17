@@ -48,7 +48,7 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
     private SlaNotificationMapper slaNotificationMapper;
 
     /**
-     * get slas sender and receiver configuration from db by slaId. it will return empty Map if slas not association with sender and receiver
+     * get sla sender and receiver configuration from db by slaId. it will return empty Map if sla not association with sender and receiver
      * @param slaId
      * @return
      */
@@ -71,13 +71,13 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
         HashMap<SlaSenderMessage, Set<SlaConfigMessage>> result = new HashMap<>();
         for(SlaNotification entity: slaNotificationList){
             Long senderId = entity.getSenderId();
-            SlaSenderMessage slasSender = senderMap.get(senderId);
-            Set<SlaConfigMessage> existSet = result.getOrDefault(slasSender, new HashSet<>());
+            SlaSenderMessage slaSender = senderMap.get(senderId);
+            Set<SlaConfigMessage> existSet = result.getOrDefault(slaSender, new HashSet<>());
             SlaConfigMessage configMessage = new SlaConfigMessage();
             configMessage.setType(entity.getType());
             configMessage.setConfig(entity.getConfig());
             existSet.add(configMessage);
-            result.putIfAbsent(slasSender, existSet);
+            result.putIfAbsent(slaSender, existSet);
         }
         return result;
     }
@@ -97,7 +97,7 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
     }
 
     @Override
-    public IPage<SlaNotification> pageListNotification(Page<SlaNotification> page, Long workSpaceId, String searchVal) {
-        return slaNotificationMapper.pageListNotification(page, workSpaceId, searchVal);
+    public IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, String searchVal) {
+        return slaNotificationMapper.pageListNotification(page, workspaceId, searchVal);
     }
 }

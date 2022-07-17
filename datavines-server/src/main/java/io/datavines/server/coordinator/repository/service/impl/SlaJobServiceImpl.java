@@ -17,7 +17,7 @@
 package io.datavines.server.coordinator.repository.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.datavines.server.coordinator.api.dto.vo.SlaJobVo;
+import io.datavines.server.coordinator.api.dto.vo.SlaJobVO;
 import io.datavines.server.coordinator.repository.entity.SlaJob;
 import io.datavines.server.coordinator.repository.mapper.SlaJobMapper;
 import io.datavines.server.coordinator.repository.service.SlaJobService;
@@ -33,8 +33,8 @@ public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> impleme
     private SlaJobMapper slaJobMapper;
 
     @Override
-    public List<SlaJobVo>  listSlaJob(Long slaId) {
-        List<SlaJobVo> res = slaJobMapper.listSlaJob(slaId);
+    public List<SlaJobVO>  listSlaJob(Long slaId) {
+        List<SlaJobVO> res = slaJobMapper.listSlaJob(slaId);
         return res;
     }
 }

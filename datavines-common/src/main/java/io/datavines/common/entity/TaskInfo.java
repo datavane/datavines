@@ -27,6 +27,7 @@ public class TaskInfo {
     private String engineParameter;
     private String errorDataStorageType;
     private String errorDataStorageParameter;
+    private String errorDataFileName;
     private TaskParameter taskParameter;
 
     public TaskInfo() {
@@ -34,7 +35,7 @@ public class TaskInfo {
 
     public TaskInfo(Long id, String name,
                     String engineType, String engineParameter,
-                    String errorDataStorageType, String errorDataStorageParameter,
+                    String errorDataStorageType, String errorDataStorageParameter,String errorDataFileName,
                     TaskParameter taskParameter) {
         this.id = id;
         this.name = name;
@@ -42,6 +43,7 @@ public class TaskInfo {
         this.engineParameter = engineParameter;
         this.errorDataStorageType = errorDataStorageType;
         this.errorDataStorageParameter = errorDataStorageParameter;
+        this.errorDataFileName = errorDataFileName;
         this.taskParameter = taskParameter;
     }
 }

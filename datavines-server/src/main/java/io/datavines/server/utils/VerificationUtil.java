@@ -19,7 +19,7 @@ package io.datavines.server.utils;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.utils.TokenManager;
-import io.datavines.server.coordinator.api.entity.KaptchaResp;
+import io.datavines.server.coordinator.api.dto.vo.KaptchaResp;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
 import io.jsonwebtoken.Claims;

@@ -34,11 +34,11 @@ import java.time.LocalDateTime;
 public class SlaSender {
     private static final long serialVersionUID = -1L;
 
-    @TableId(type = IdType.ASSIGN_ID)
+    @TableId(type = IdType.AUTO)
     private Long id;
 
-    @TableField(value = "work_space_id")
-    private Long workSpaceId;
+    @TableField(value = "workspace_id")
+    private Long workspaceId;
 
     @TableField(value = "type")
     private String type;

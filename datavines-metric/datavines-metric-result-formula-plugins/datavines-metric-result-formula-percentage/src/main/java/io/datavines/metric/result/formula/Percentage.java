@@ -29,4 +29,14 @@ public class Percentage implements ResultFormula {
 
         return result;
     }
+
+    @Override
+    public String getResultFormat() {
+        return "ActualValue(${actual_value})/ExpectedValue(${expected_value}) x 100%";
+    }
+
+    @Override
+    public String getSymbol() {
+        return "%";
+    }
 }

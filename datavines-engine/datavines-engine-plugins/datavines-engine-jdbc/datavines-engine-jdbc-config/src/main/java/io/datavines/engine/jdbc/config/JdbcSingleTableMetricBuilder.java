@@ -63,14 +63,17 @@ public class JdbcSingleTableMetricBuilder extends BaseJdbcConfigurationBuilder {
                     .getPluginLoader(StorageFactory.class)
                     .getNewPlugin(taskInfo.getErrorDataStorageType());
 
-            connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
-            errorDataSinkConfig.setPlugin(storageFactory.getCategory());
-            connectorParameterMap.put(ERROR_DATA_PATH, CommonPropertyUtils.getString(CommonPropertyUtils.ERROR_DATA_PATH, CommonPropertyUtils.ERROR_DATA_PATH_DEFAULT));
-            connectorParameterMap.put(METRIC_NAME, inputParameter.get(METRIC_NAME));
-            connectorParameterMap.put(TASK_ID, inputParameter.get(TASK_ID));
-            errorDataSinkConfig.setConfig(connectorParameterMap);
+            if (storageFactory != null) {
+                connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
+                errorDataSinkConfig.setPlugin(storageFactory.getCategory());
+                connectorParameterMap.put(ERROR_DATA_FILE_NAME, taskInfo.getErrorDataFileName());
+                connectorParameterMap.put(ERROR_DATA_FILE_DIR, inputParameter.get(ERROR_DATA_FILE_DIR));
+                connectorParameterMap.put(METRIC_NAME, inputParameter.get(METRIC_NAME));
+                connectorParameterMap.put(TASK_ID, inputParameter.get(TASK_ID));
+                errorDataSinkConfig.setConfig(connectorParameterMap);
 
-            sinkConfigs.add(errorDataSinkConfig);
+                sinkConfigs.add(errorDataSinkConfig);
+            }
         }
 
         configuration.setSinkParameters(sinkConfigs);

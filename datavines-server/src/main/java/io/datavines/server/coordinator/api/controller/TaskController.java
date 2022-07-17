@@ -19,13 +19,14 @@ package io.datavines.server.coordinator.api.controller;
 import javax.validation.Valid;
 
 import io.datavines.core.aop.RefreshToken;
+import io.datavines.server.coordinator.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.server.coordinator.repository.service.TaskResultService;
 import io.datavines.core.exception.DataVinesServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import io.datavines.core.constant.DataVinesConstants;
-import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
+import io.datavines.server.coordinator.api.dto.bo.task.SubmitTask;
 import io.datavines.server.coordinator.repository.service.TaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -67,11 +68,10 @@ public class TaskController {
     }
 
     @ApiOperation(value = "get task result")
-    @GetMapping(value = "/result/{id}")
-    public Object getTaskResultInfo(@PathVariable("id") Long taskId) {
-        return taskResultService.getByTaskId(taskId);
+    @GetMapping(value = "/result/{taskId}")
+    public Object getTaskResultInfo(@PathVariable("taskId") Long taskId) {
+        return taskResultService.getResultVOByTaskId(taskId);
     }
-
 
     @ApiOperation(value = "get task page")
     @GetMapping(value = "/page")
@@ -81,4 +81,13 @@ public class TaskController {
                        @RequestParam("pageSize") Integer pageSize)  {
         return taskService.getTaskPage(searchVal, jobId, pageNumber, pageSize);
     }
+
+    @ApiOperation(value = "get task error data page")
+    @GetMapping(value = "/errorDataPage")
+    public Object readErrorDataPage(@RequestParam("taskId") Long taskId,
+                       @RequestParam("pageNumber") Integer pageNumber,
+                       @RequestParam("pageSize") Integer pageSize)  {
+        return taskService.readErrorDataPage(taskId, pageNumber, pageSize);
+    }
+
 }

@@ -69,6 +69,9 @@ public class Task implements Serializable {
     @TableField(value = "error_data_storage_parameter")
     private String errorDataStorageParameter;
 
+    @TableField(value = "error_data_file_name")
+    private String errorDataFileName;
+
     /**
      * {@link TaskParameter}
      */

@@ -61,14 +61,14 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
             for(SlaConfigMessage receiver: slaConfigMessageSet){
                 String receiverConfigStr = receiver.getConfig();
                 ReceiverConfig receiverConfig = JSONUtils.parseObject(receiverConfigStr, ReceiverConfig.class);
-                String receiverAddress = receiverConfig.getAddress();
-                String receiveType = receiverConfig.getReceiveType();
-                if ("recipient".equals(receiveType)){
-                    toReceivers.add(receiverAddress);
-                }
-                if("cc".equals(receiveType)){
-                    ccReceivers.add(receiverAddress);
-                }
+                String to = receiverConfig.getTo();
+                String cc = receiverConfig.getCc();
+                String[] toSplit = to.split(",|;");
+                String[] ccSplit = cc.split(",|;");
+                Set<String> toSet = Arrays.stream(toSplit).collect(Collectors.toSet());
+                Set<String> ccSet = Arrays.stream(ccSplit).collect(Collectors.toSet());
+                toReceivers.addAll(toSet);
+                ccReceivers.addAll(ccSet);
             }
             SlaNotificationResultRecord record = eMailSender.sendMails(toReceivers, ccReceivers, subject, message);
             if (record.getStatus().equals(false)){
@@ -174,19 +174,17 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
     @Override
     public String getConfigJson() {
 
-        RadioParam receiverType = RadioParam.newBuilder("receiveType", "receiveType")
-                .addParamsOptions(new ParamsOptions("recipient", "recipient", false))
-                .addParamsOptions(new ParamsOptions("cc", "cc", false))
-                .setValue("recipient")
+
+        InputParam to = InputParam.newBuilder("to", "to")
                 .addValidate(Validate.newBuilder().setRequired(true).build())
                 .build();
-        InputParam address = InputParam.newBuilder("address", "address")
-                .addValidate(Validate.newBuilder().setRequired(true).build())
+        InputParam cc = InputParam.newBuilder("cc", "cc")
+                .addValidate(Validate.newBuilder().setRequired(false).build())
                 .build();
 
         List<PluginParams> paramsList = new ArrayList<>();
-        paramsList.add(receiverType);
-        paramsList.add(address);
+        paramsList.add(to);
+        paramsList.add(cc);
 
 
         ObjectMapper mapper = new ObjectMapper();

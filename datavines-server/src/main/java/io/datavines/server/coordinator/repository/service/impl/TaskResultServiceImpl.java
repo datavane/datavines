@@ -16,12 +16,20 @@
  */
 package io.datavines.server.coordinator.repository.service.impl;
 
+import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.metric.api.ResultFormula;
+import io.datavines.server.coordinator.api.dto.vo.TaskResultVO;
+import io.datavines.server.enums.OperatorType;
+import io.datavines.spi.PluginLoader;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.server.coordinator.repository.entity.TaskResult;
 import io.datavines.server.coordinator.repository.mapper.TaskResultMapper;
 import io.datavines.server.coordinator.repository.service.TaskResultService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Service("taskResultService")
 public class TaskResultServiceImpl extends ServiceImpl<TaskResultMapper, TaskResult>  implements TaskResultService {
@@ -49,6 +57,29 @@ public class TaskResultServiceImpl extends ServiceImpl<TaskResultMapper, TaskRes
 
     @Override
     public TaskResult getByTaskId(long taskId) {
-        return baseMapper.getOne(taskId);
+        return baseMapper.selectOne(new QueryWrapper<TaskResult>().eq("task_id", taskId));
+    }
+
+    @Override
+    public TaskResultVO getResultVOByTaskId(long taskId) {
+        TaskResultVO taskResultVO = new TaskResultVO();
+        Map<String,String> parameters = new HashMap<>();
+        TaskResult taskResult = baseMapper.getOne(taskId);
+        parameters.put("actual_value",taskResult.getActualValue()+"");
+        parameters.put("expected_value",taskResult.getExpectedValue()+"");
+        parameters.put("threshold",taskResult.getThreshold()+"");
+        parameters.put("operator",OperatorType.of(taskResult.getOperator()).getSymbol());
+
+        ResultFormula resultFormula =
+                PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(taskResult.getResultFormula());
+        String resultFormulaFormat = resultFormula.getResultFormat()+" ${operator} ${threshold}";
+
+        taskResultVO.setCheckSubject(taskResult.getDatabaseName()+"."+taskResult.getTableName()+"."+taskResult.getColumnName());
+        taskResultVO.setCheckResult(taskResult.getState());
+        taskResultVO.setExpectedType(taskResult.getExpectedType());
+        taskResultVO.setMetricName(taskResult.getMetricName());
+        taskResultVO.setResultFormulaFormat(PlaceholderUtils.replacePlaceholders(resultFormulaFormat, parameters, true));
+
+        return taskResultVO;
     }
 }

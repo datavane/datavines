@@ -18,8 +18,6 @@ package io.datavines.server.coordinator.server.cache;
 
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.sift.SiftingAppender;
-import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.core.Appender;
 import io.datavines.common.CommonConstants;
 import io.datavines.common.config.Configurations;
 import io.datavines.common.config.DataVinesQualityConfig;
@@ -460,7 +458,7 @@ public class TaskExecuteManager {
 
         TaskInfo taskInfo = new TaskInfo(task.getId(), task.getName(),
                 task.getEngineType(), task.getEngineParameter(),
-                task.getErrorDataStorageType(), task.getErrorDataStorageParameter(),
+                task.getErrorDataStorageType(), task.getErrorDataStorageParameter(),task.getErrorDataFileName(),
                 taskParameter);
         DataVinesQualityConfig qualityConfig =
                 DataVinesConfigurationManager.generateConfiguration(inputParameter, taskInfo, DefaultDataSourceInfoUtils.getDefaultConnectionInfo());

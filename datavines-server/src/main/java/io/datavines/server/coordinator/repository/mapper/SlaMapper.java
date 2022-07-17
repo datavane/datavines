@@ -19,7 +19,8 @@ package io.datavines.server.coordinator.repository.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.datavines.server.coordinator.api.dto.vo.SlaVo;
+import io.datavines.server.coordinator.api.dto.vo.SlaPageVO;
+import io.datavines.server.coordinator.api.dto.vo.SlaVO;
 import io.datavines.server.coordinator.repository.entity.Sla;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -28,5 +29,7 @@ import java.util.List;
 
 @Mapper
 public interface SlaMapper extends BaseMapper<Sla> {
-    IPage<SlaVo> listSlas(Page page, @Param("workSpaceId") Long workSpaceId, @Param("searchVal")String searchVal);
+    IPage<SlaPageVO> listSlas(Page page, @Param("workspaceId") Long workspaceId, @Param("searchVal")String searchVal);
+
+    List<SlaVO> getSlaByJobId(@Param("jobId") Long jobId);
 }

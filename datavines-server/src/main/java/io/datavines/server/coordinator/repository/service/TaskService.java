@@ -19,8 +19,8 @@ package io.datavines.server.coordinator.repository.service;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.datavines.server.coordinator.api.entity.dto.task.SubmitTask;
-import io.datavines.server.coordinator.api.entity.vo.TaskVO;
+import io.datavines.server.coordinator.api.dto.bo.task.SubmitTask;
+import io.datavines.server.coordinator.api.dto.vo.TaskVO;
 import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.core.exception.DataVinesServerException;
 
@@ -46,4 +46,5 @@ public interface TaskService {
 
     List<Task> listTaskNotInServerList(List<String> hostList);
 
+    Object readErrorDataPage(Long taskId, Integer pageNumber, Integer pageSize);
 }

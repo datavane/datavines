@@ -27,5 +27,9 @@ public class ExecuteRequestParam extends ConnectorRequestParam {
 
     private String variables;
 
-    private long limit = 1000;
+    private int limit = 1000;
+
+    private int pageNumber = 0;
+
+    private int pageSize = 0;
 }

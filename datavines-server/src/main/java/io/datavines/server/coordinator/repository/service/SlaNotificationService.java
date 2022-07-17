@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Set;
 
 public interface SlaNotificationService extends IService<SlaNotification>{
-    Map<SlaSenderMessage, Set<SlaConfigMessage>> getSlasNotificationConfigurationBySlasId(Long slasId);
+    Map<SlaSenderMessage, Set<SlaConfigMessage>> getSlasNotificationConfigurationBySlasId(Long slaId);
 
     String getConfigJson(String type);
 
-    IPage<SlaNotification> pageListNotification(Page<SlaNotification> page, Long workSpaceId, String searchVal);
+    IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, String searchVal);
 }

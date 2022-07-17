@@ -175,9 +175,8 @@ public class BaseJdbcSink implements JdbcSink {
         //执行drop if exist
         //执行建表语句
         //执行批量插入语句
-        String tableName = config.getString("metric_name").replace("'","")
-                            + "_" + config.getString("task_id");
-        String filePath = config.getString("error_data_path") + "/" + tableName + ".csv";
+        String tableName = config.getString("error_data_file_name");
+        String filePath = config.getString("error_data_file_dir") + "/" + tableName + ".csv";
         logger.info("log file path : {}", filePath);
         File file = new File(filePath);
         if (file.exists()) {

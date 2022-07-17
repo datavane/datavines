@@ -21,14 +21,14 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import io.datavines.server.coordinator.api.entity.dto.datasource.ExecuteRequest;
+import io.datavines.server.coordinator.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.*;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.ApiStatus;
-import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceCreate;
-import io.datavines.server.coordinator.api.entity.dto.datasource.DataSourceUpdate;
-import io.datavines.server.coordinator.api.entity.vo.DataSourceVO;
+import io.datavines.server.coordinator.api.dto.bo.datasource.DataSourceCreate;
+import io.datavines.server.coordinator.api.dto.bo.datasource.DataSourceUpdate;
+import io.datavines.server.coordinator.api.dto.vo.DataSourceVO;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.server.coordinator.repository.mapper.DataSourceMapper;
 import io.datavines.server.coordinator.repository.service.DataSourceService;
@@ -93,9 +93,9 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     }
 
     @Override
-    public IPage<DataSourceVO> getDataSourcePage(String searchVal, Long workSpaceId, Integer pageNumber, Integer pageSize) {
+    public IPage<DataSourceVO> getDataSourcePage(String searchVal, Long workspaceId, Integer pageNumber, Integer pageSize) {
         Page<DataSourceVO> page = new Page<>(pageNumber, pageSize);
-        IPage<DataSourceVO> dataSources = baseMapper.getDataSourcePage(page, searchVal, workSpaceId);
+        IPage<DataSourceVO> dataSources = baseMapper.getDataSourcePage(page, searchVal, workspaceId);
         return dataSources;
     }
 

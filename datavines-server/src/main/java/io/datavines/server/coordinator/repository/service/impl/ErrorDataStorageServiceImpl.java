@@ -22,8 +22,8 @@ import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
 
-import io.datavines.server.coordinator.api.entity.dto.storage.ErrorDataStorageCreate;
-import io.datavines.server.coordinator.api.entity.dto.storage.ErrorDataStorageUpdate;
+import io.datavines.server.coordinator.api.dto.bo.storage.ErrorDataStorageCreate;
+import io.datavines.server.coordinator.api.dto.bo.storage.ErrorDataStorageUpdate;
 import io.datavines.server.coordinator.repository.entity.ErrorDataStorage;
 
 import io.datavines.server.coordinator.repository.mapper.ErrorDataStorageMapper;

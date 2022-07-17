@@ -179,8 +179,7 @@ CREATE TABLE dv_job (
     execute_platform_parameter text,
     engine_type varchar(128) DEFAULT NULL,
     engine_parameter text,
-    error_storage_type varchar(128) DEFAULT NULL,
-    error_storage_parameter text,
+    error_data_storage_id int8 DEFAULT NULL,
     parameter text ,
     retry_times int4 DEFAULT NULL ,
     retry_interval int4 DEFAULT NULL ,
@@ -194,7 +193,6 @@ CREATE TABLE dv_job (
     update_time timestamp(0) NOT NULL DEFAULT current_timestamp ,
     CONSTRAINT job_pk PRIMARY KEY (id),
     CONSTRAINT job_un UNIQUE (name)
-
 ) ;
 
 DROP TABLE IF EXISTS dv_job_schedule;
@@ -236,6 +234,9 @@ CREATE TABLE dv_task (
     execute_platform_parameter text,
     engine_type varchar(128) DEFAULT NULL,
     engine_parameter text,
+    error_data_storage_type varchar(128) DEFAULT NULL,
+    error_data_storage_parameter text,
+    error_data_file_name varchar(255) DEFAULT NULL,
     parameter text NOT NULL,
     status int4 DEFAULT NULL,
     retry_times int4 DEFAULT NULL ,
@@ -262,17 +263,19 @@ CREATE TABLE dv_task (
 DROP TABLE IF EXISTS dv_task_result;
 CREATE TABLE dv_task_result (
     id bigserial NOT NULL,
+    task_id int8 DEFAULT NULL,
     metric_type varchar(255) DEFAULT NULL,
     metric_dimension varchar(255) DEFAULT NULL,
     metric_name varchar(255) DEFAULT NULL,
-    task_id int8 DEFAULT NULL,
+    database_name varchar(255) DEFAULT NULL,
+    table_name varchar(255) DEFAULT NULL,
+    column_name varchar(255) DEFAULT NULL,
     actual_value float8 DEFAULT NULL,
     expected_value float8 DEFAULT NULL,
     expected_type varchar(255) DEFAULT NULL,
     result_formula varchar(255) DEFAULT NULL,
     operator varchar(255) DEFAULT NULL,
     threshold float8 DEFAULT NULL,
-    failure_strategy varchar(255) DEFAULT NULL,
     state varchar(255) NOT NULL DEFAULT 'none',
     create_time timestamp(0) DEFAULT NULL,
     update_time timestamp(0) DEFAULT NULL,
@@ -319,11 +322,10 @@ CREATE TABLE dv_user (
     CONSTRAINT user_pk PRIMARY KEY (id)
 );
 
-
 DROP TABLE IF EXISTS dv_sla;
 CREATE TABLE dv_sla (
-    id bigint NOT NULL,
-    work_space_id bigint NOT NULL,
+    id bigserial NOT NULL,
+    workspace_id bigint NOT NULL,
     name varchar(255) NOT NULL,
     description varchar(255) NOT NULL,
     create_by bigint DEFAULT NULL,
@@ -334,9 +336,9 @@ CREATE TABLE dv_sla (
 
 DROP TABLE IF EXISTS dv_sla_job;
 CREATE TABLE dv_sla_job (
-    id bigint NOT NULL,
-    work_space_id bigint NOT NULL,
+    id bigserial NOT NULL,
     sla_id bigint NOT NULL,
+    workspace_id bigint NOT NULL,
     job_id bigint NOT NULL,
     create_by bigint DEFAULT NULL,
     create_time timestamp default current_timestamp,
@@ -346,9 +348,9 @@ CREATE TABLE dv_sla_job (
 
 DROP TABLE if EXISTS dv_sla_notification;
 CREATE TABLE dv_sla_notification(
-    id bigint NOT NULL,
+    id bigserial NOT NULL,
     type VARCHAR(40) NOT NULL,
-    work_space_id bigint NOT NULL,
+    workspace_id bigint NOT NULL,
     sla_id bigint NOT NULL,
     sender_id bigint NOT null,
     config text DEFAULT NULL ,
@@ -360,10 +362,10 @@ CREATE TABLE dv_sla_notification(
 
 DROP TABLE if exists dv_sla_sender;
 CREATE TABLE dv_sla_sender(
-    id bigint NOT NULL,
+    id bigserial NOT NULL,
     type VARCHAR(40) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    work_space_id bigint NOT NULL,
+    workspace_id bigint NOT NULL,
     config text NOT NULL,
     create_by bigint DEFAULT NULL,
     create_time timestamp default current_timestamp,
@@ -398,4 +400,34 @@ CREATE TABLE dv_tenant (
     CONSTRAINT workspace_name_un UNIQUE (name)
 );
 
+DROP TABLE IF EXISTS dv_error_data_storage;
+CREATE TABLE dv_error_data_storage (
+  `id` bigserial NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `type` varchar(255) NOT NULL,
+  `param` text NOT NULL,
+  `workspace_id` int8 NOT NULL,
+  `create_by` int8 NOT NULL,
+  `create_time` timestamp(0) DEFAULT NULL,
+  `update_by` int8 NOT NULL,
+  `update_time` timestamp(0) DEFAULT NULL,
+  CONSTRAINT eds_pk PRIMARY KEY (id),
+  CONSTRAINT eds_name_un UNIQUE (name,workspace_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS dv_user_workspace;
+CREATE TABLE `dv_user_workspace` (
+    id bigserial NOT NULL,
+    user_id int8 NOT NULL,
+    workspace_id int8 NOT NULL,
+    role_id int8 NOT NULL,
+    create_by int8 DEFAULT NULL,
+    create_time timestamp(0) DEFAULT NULL,
+    update_by int8 DEFAULT NULL,
+    update_time timestamp(0) DEFAULT NULL,
+    CONSTRAINT user_workspace_pk PRIMARY KEY (id)
+);
+
 INSERT INTO dv_user (id, username, password, email, phone, admin, create_time, update_time) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');
+INSERT INTO dv_workspace (id, name, create_by, create_time, update_by, update_time) VALUES ('1', "admin\'s default", '1', '2022-05-20 23:01:18', '1', '2022-05-20 23:01:21');
+INSERT INTO dv_user_workspace (id, user_id, workspace_id, role_id, create_by, create_time, update_by, update_time) VALUES ('1', '1', '1', '1', '1', '2022-07-16 20:34:02', '1', '2022-07-16 20:34:02');

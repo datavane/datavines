@@ -28,7 +28,7 @@ const CustomSelect = ({
         <Select value={value} onChange={onChange} {...selectParams}>
             {
                 (source || []).map((item, index) => {
-                    const key = item.value || index;
+                    const key = item.key || `${index}_${item.value}_${item.label}`;
                     let label = item[sourceLabelMap!] || item.label;
                     const isHtml = typeof label === 'string' && label[0] === '<';
                     if (isHtml) {

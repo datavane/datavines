@@ -19,11 +19,8 @@ package io.datavines.server.coordinator.repository.service;
 
 
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreate;
-import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleCreateOrUpdate;
-import io.datavines.server.coordinator.api.entity.dto.job.schedule.JobScheduleUpdate;
-import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
-import io.datavines.server.coordinator.repository.entity.Job;
+import io.datavines.server.coordinator.api.dto.bo.job.schedule.JobScheduleCreateOrUpdate;
+import io.datavines.server.coordinator.api.dto.bo.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
 
 

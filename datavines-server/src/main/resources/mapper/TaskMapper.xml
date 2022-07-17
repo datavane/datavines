@@ -24,7 +24,7 @@
         select * from dv_task where job_id = #{jobId}
     </sql>
 
-    <select id="getTaskPage" resultType="io.datavines.server.coordinator.api.entity.vo.TaskVO">
+    <select id="getTaskPage" resultType="io.datavines.server.coordinator.api.dto.vo.TaskVO">
         select p.id, p.name, p.job_type, p.status, p.update_time from (<include refid="basic_sql"/>) p
         <where>
             <if test="searchVal != null">

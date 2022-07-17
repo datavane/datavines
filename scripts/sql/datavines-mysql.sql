@@ -193,10 +193,6 @@ CREATE TABLE `QRTZ_SIMPROP_TRIGGERS` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- ----------------------------
--- Records of QRTZ_SIMPROP_TRIGGERS
--- ----------------------------
-
--- ----------------------------
 -- Table structure for QRTZ_TRIGGERS
 -- ----------------------------
 DROP TABLE IF EXISTS `QRTZ_TRIGGERS`;
@@ -265,7 +261,7 @@ CREATE TABLE `dv_job` (
     `execute_platform_parameter` text,
     `engine_type` varchar(128) DEFAULT NULL,
     `engine_parameter` text,
-    `error_data_storage_id` bigint(20) DEFAULT NULL  ,
+    `error_data_storage_id` bigint(20) DEFAULT NULL,
     `parameter` text COMMENT '任务参数',
     `retry_times` int(11) DEFAULT NULL COMMENT '重试次数',
     `retry_interval` int(11) DEFAULT NULL COMMENT '重试间隔',
@@ -319,6 +315,7 @@ CREATE TABLE `dv_task` (
     `engine_parameter` text,
     `error_data_storage_type` varchar(128) DEFAULT NULL,
     `error_data_storage_parameter` text,
+    `error_data_file_name` varchar(255) DEFAULT NULL,
     `parameter` text NOT NULL,
     `status` int(11) DEFAULT NULL,
     `retry_times` int(11) DEFAULT NULL COMMENT '重试次数',
@@ -344,17 +341,19 @@ CREATE TABLE `dv_task` (
 
 CREATE TABLE `dv_task_result` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `task_id` bigint(20) DEFAULT NULL,
     `metric_type` varchar(255) DEFAULT NULL,
     `metric_dimension` varchar(255) DEFAULT NULL,
     `metric_name` varchar(255) DEFAULT NULL,
-    `task_id` bigint(20) DEFAULT NULL,
+    `database_name` varchar(255) DEFAULT NULL,
+    `table_name` varchar(255) DEFAULT NULL,
+    `column_name` varchar(255) DEFAULT NULL,
     `actual_value` double DEFAULT NULL,
     `expected_value` double DEFAULT NULL,
     `expected_type` varchar(255) DEFAULT NULL,
     `result_formula` varchar(255) DEFAULT NULL,
     `operator` varchar(255) DEFAULT NULL,
     `threshold` double DEFAULT NULL,
-    `failure_strategy` varchar(255) DEFAULT NULL,
     `state` varchar(255) NOT NULL DEFAULT 'none',
     `create_time` datetime DEFAULT NULL,
     `update_time` datetime DEFAULT NULL,
@@ -401,52 +400,52 @@ CREATE TABLE `dv_user` (
 
 DROP TABLE IF EXISTS dv_sla;
 CREATE TABLE dv_sla (
-    id bigint NOT NULL,
-    work_space_id bigint NOT NULL,
+    id bigint(20) primary key auto_increment,
+    workspace_id bigint(20) NOT NULL,
     name varchar(255) NOT NULL,
     description varchar(255) NOT NULL,
-    create_by bigint DEFAULT NULL,
+    create_by bigint(20) DEFAULT NULL,
     create_time timestamp default current_timestamp,
-    update_by bigint DEFAULT NULL,
+    update_by bigint(20) DEFAULT NULL,
     update_time timestamp default current_timestamp
 );
 
 DROP TABLE IF EXISTS dv_sla_job;
 CREATE TABLE dv_sla_job (
-    id bigint NOT NULL,
-    work_space_id bigint NOT NULL,
-    sla_id bigint NOT NULL,
-    job_id bigint NOT NULL,
-    create_by bigint DEFAULT NULL,
+    id bigint(20) primary key auto_increment,
+    sla_id bigint(20) NOT NULL,
+    workspace_id bigint(20) NOT NULL,
+    job_id bigint(20) NOT NULL,
+    create_by bigint(20) DEFAULT NULL,
     create_time timestamp default current_timestamp,
-    update_by bigint DEFAULT NULL,
+    update_by bigint(20) DEFAULT NULL,
     update_time timestamp default current_timestamp
 );
 
 DROP TABLE if EXISTS dv_sla_notification;
 CREATE TABLE dv_sla_notification(
-    id bigint NOT NULL,
+    id bigint(20) primary key auto_increment,
     type VARCHAR(40) NOT NULL,
-    work_space_id bigint NOT NULL,
-    sla_id bigint NOT NULL,
-    sender_id bigint NOT null,
+    workspace_id bigint(20) NOT NULL,
+    sla_id bigint(20) NOT NULL,
+    sender_id bigint(20) NOT null,
     config text DEFAULT NULL ,
-    create_by bigint DEFAULT NULL,
+    create_by bigint(20) DEFAULT NULL,
     create_time timestamp default current_timestamp,
-    update_by bigint DEFAULT NULL,
+    update_by bigint(20) DEFAULT NULL,
     update_time timestamp default current_timestamp
 );
 
 DROP TABLE if exists dv_sla_sender;
 CREATE TABLE dv_sla_sender(
-    id bigint NOT NULL,
+    id bigint(20) primary key auto_increment,
     type VARCHAR(40) NOT NULL,
     name VARCHAR(255) NOT NULL,
-    work_space_id bigint NOT NULL,
+    workspace_id bigint(20) NOT NULL,
     config text NOT NULL,
-    create_by bigint DEFAULT NULL,
+    create_by bigint(20) DEFAULT NULL,
     create_time timestamp default current_timestamp,
-    update_by bigint DEFAULT NULL,
+    update_by bigint(20) DEFAULT NULL,
     update_time timestamp default current_timestamp
 );
 
@@ -480,7 +479,7 @@ CREATE TABLE `dv_tenant` (
 DROP TABLE IF EXISTS `dv_error_data_storage`;
 CREATE TABLE `dv_error_data_storage` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL COMMENT '服务器环境配置',
+  `name` varchar(255) NOT NULL,
   `type` varchar(255) NOT NULL,
   `param` text NOT NULL,
   `workspace_id` bigint(20) NOT NULL,
@@ -492,4 +491,19 @@ CREATE TABLE `dv_error_data_storage` (
   UNIQUE KEY `name_wp_un` (`name`,`workspace_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `dv_user_workspace`;
+CREATE TABLE `dv_user_workspace` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `user_id` bigint(20) NOT NULL,
+  `workspace_id` bigint(20) NOT NULL,
+  `role_id` bigint(20) NOT NULL,
+  `create_by` bigint(20) DEFAULT NULL,
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_by` bigint(20) DEFAULT NULL,
+  `update_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`, `create_time`, `update_time`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');
+INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1', "admin\'s default", '1', '2022-05-20 23:01:18', '1', '2022-05-20 23:01:21');
+INSERT INTO `dv_user_workspace` (`id`, `user_id`, `workspace_id`, `role_id`,`create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1', '1', '1', '1','1', '2022-07-16 20:34:02', '1', '2022-07-16 20:34:02');

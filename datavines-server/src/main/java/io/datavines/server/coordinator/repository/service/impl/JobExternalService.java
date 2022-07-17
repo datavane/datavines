@@ -126,8 +126,8 @@ public class JobExternalService {
 
         TaskInfo taskInfo = new TaskInfo(task.getId(),task.getName(),
                                          task.getEngineType(),task.getEngineParameter(),
-                task.getErrorDataStorageType(),task.getErrorDataStorageParameter(),
-                taskParameter);
+                                         task.getErrorDataStorageType(),task.getErrorDataStorageParameter(),task.getErrorDataFileName(),
+                                         taskParameter);
         DataVinesQualityConfig qualityConfig =
                 DataVinesConfigurationManager.generateConfiguration(inputParameter, taskInfo, DefaultDataSourceInfoUtils.getDefaultConnectionInfo());
         taskRequest.setApplicationParameter(JSONUtils.toJsonString(qualityConfig));

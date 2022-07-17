@@ -59,8 +59,8 @@ public class CommonPropertyUtils {
     public static final String LOCAL_TMP_WORKDIR = "local.tmp.workdir";
     public static final String LOCAL_TMP_WORKDIR_DEFAULT = "/tmp/datavines";
 
-    public static final String ERROR_DATA_PATH = "error.data.path";
-    public static final String ERROR_DATA_PATH_DEFAULT = "/tmp/datavines/errordata";
+    public static final String ERROR_DATA_FILE_DIR = "error.data.file_dir";
+    public static final String ERROR_DATA_FILE_DIR_DEFAULT = "/tmp/datavines/errordata";
 
     private static final Logger logger = LoggerFactory.getLogger(CommonPropertyUtils.class);
 

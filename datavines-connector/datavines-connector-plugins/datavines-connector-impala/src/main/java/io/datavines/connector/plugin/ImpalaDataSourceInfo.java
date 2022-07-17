@@ -16,9 +16,8 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.connector.plugin.datasource.BaseDataSourceInfo;
-import io.datavines.connector.plugin.datasource.ConnectionInfo;
-import org.apache.commons.lang3.StringUtils;
+import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
+import io.datavines.common.jdbc.datasource.ConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -90,6 +90,7 @@ public class JdbcExecution implements Execution<JdbcSource, JdbcTransform, JdbcS
                 case TASK_RESULT:
                     jdbcSink.output(taskResult, jdbcRuntimeEnvironment);
                     break;
+
                 default:
                     break;
             }

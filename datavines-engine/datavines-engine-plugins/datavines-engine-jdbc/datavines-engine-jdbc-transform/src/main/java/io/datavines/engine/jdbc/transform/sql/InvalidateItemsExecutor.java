@@ -46,13 +46,13 @@ public class InvalidateItemsExecutor implements ITransformExecutor {
 
         if (count > 0) {
             //根据行数进行分页查询。分批写到文件里面
-            int pageSize = 5;
-            int totalPage = count/pageSize;
+            int pageSize = 1000;
+            int totalPage = count/pageSize + count%pageSize>0 ? 1:0;
             for (int i=0; i<totalPage; i++) {
                 ResultSet resultSet = statement.executeQuery("select * from " + outputTable +" limit "+(i * pageSize) + "," + pageSize);
                 ResultListWithColumns resultList = SqlUtils.getListWithHeaderFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins("select * from " + outputTable));
                 //执行文件下载到本地
-                FileUtils.writeToLocal(resultList,"/tmp/datavines/errordata",config.getString("metric_name").replace("'","") + "_" + config.getString("task_id"),i==0);
+                FileUtils.writeToLocal(resultList,config.getString("error_data_file_dir"),config.getString("error_data_file_name"),i==0);
                 resultSet.close();
             }
         }

@@ -16,10 +16,8 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.param.ConnectorResponse;
-import io.datavines.common.param.TestConnectionRequestParam;
-import io.datavines.connector.plugin.datasource.BaseDataSourceInfo;
-import io.datavines.connector.plugin.datasource.ConnectionInfo;
+import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
+import io.datavines.common.jdbc.datasource.ConnectionInfo;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;

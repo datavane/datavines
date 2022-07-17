@@ -21,8 +21,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
-import io.datavines.server.coordinator.api.dto.vo.SlaVo;
-import io.datavines.server.coordinator.api.entity.vo.JobVO;
+import io.datavines.server.coordinator.api.dto.vo.SlaPageVO;
+import io.datavines.server.coordinator.api.dto.vo.JobVO;
 import io.datavines.server.coordinator.repository.entity.Sla;
 import io.datavines.server.coordinator.repository.entity.SlaJob;
 import io.datavines.server.coordinator.repository.mapper.SlaMapper;
@@ -45,20 +45,19 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
     private SlaJobService slaJobService;
 
     @Override
-    public IPage<SlaVo> listSlas(Long workSpaceId, String searchVal, Integer pageNumber, Integer pageSize) {
+    public IPage<SlaPageVO> listSlas(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize) {
         Page<JobVO> page = new Page<>(pageNumber, pageSize);
-        IPage<SlaVo> res = slaMapper.listSlas(page, workSpaceId, searchVal);
+        IPage<SlaPageVO> res = slaMapper.listSlas(page, workspaceId, searchVal);
         return res;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteById(Long id) {
-        boolean removeSlas = removeById(id);
+        boolean result = removeById(id);
         LambdaQueryWrapper<SlaJob> lambda = new LambdaQueryWrapper<>();
         lambda.eq(SlaJob::getSlaId, id);
-        boolean removeSlasJob = slaJobService.remove(lambda);
-        boolean result = removeSlas && removeSlasJob;
+        slaJobService.remove(lambda);
         return result;
     }
 

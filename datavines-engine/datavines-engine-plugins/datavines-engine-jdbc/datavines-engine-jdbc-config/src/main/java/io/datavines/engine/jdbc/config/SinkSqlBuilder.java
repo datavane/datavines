@@ -31,10 +31,10 @@ public class SinkSqlBuilder {
         List<String> columnValueList = new ArrayList<>();
         for (ColumnInfo columnInfo : MetricConstants.RESULT_COLUMN_LIST) {
 
-            columnList.add(columnInfo.getName());
+            columnList.add("`"+columnInfo.getName()+"`");
 
             if (columnInfo.isNeedSingleQuotation()) {
-                columnValueList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getName()+"}"));
+                columnValueList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getParameterName()+"}"));
             } else {
                 columnValueList.add("${"+columnInfo.getName()+"}");
             }

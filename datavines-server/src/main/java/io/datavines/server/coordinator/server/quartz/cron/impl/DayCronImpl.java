@@ -20,7 +20,7 @@ import com.cronutils.model.definition.CronDefinitionBuilder;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.coordinator.api.entity.dto.job.schedule.MapParam;
+import io.datavines.server.coordinator.api.dto.bo.job.schedule.MapParam;
 import io.datavines.server.coordinator.repository.entity.JobSchedule;
 import io.datavines.server.coordinator.server.quartz.StrategyFactory;
 import io.datavines.server.coordinator.server.quartz.cron.FunCron;

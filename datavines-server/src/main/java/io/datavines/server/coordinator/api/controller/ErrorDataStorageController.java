@@ -16,12 +16,12 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
-import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
-import io.datavines.server.coordinator.api.entity.Item;
-import io.datavines.server.coordinator.api.entity.dto.storage.ErrorDataStorageCreate;
-import io.datavines.server.coordinator.api.entity.dto.storage.ErrorDataStorageUpdate;
+
+import io.datavines.server.coordinator.api.dto.bo.storage.ErrorDataStorageCreate;
+import io.datavines.server.coordinator.api.dto.bo.storage.ErrorDataStorageUpdate;
+import io.datavines.server.coordinator.api.dto.vo.Item;
 import io.datavines.server.coordinator.repository.service.ErrorDataStorageService;
 import io.datavines.spi.PluginLoader;
 import io.datavines.storage.api.StorageFactory;

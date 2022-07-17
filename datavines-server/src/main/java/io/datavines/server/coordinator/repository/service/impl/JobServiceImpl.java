@@ -23,6 +23,7 @@ import java.util.Map;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.job.BaseJobParameter;
@@ -30,11 +31,12 @@ import io.datavines.common.entity.job.builder.TaskParameterBuilderFactory;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.coordinator.api.entity.dto.job.JobCreate;
+import io.datavines.server.coordinator.api.dto.bo.job.JobCreate;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
-import io.datavines.server.coordinator.api.entity.dto.job.JobUpdate;
-import io.datavines.server.coordinator.api.entity.vo.JobVO;
+import io.datavines.server.coordinator.api.dto.bo.job.JobUpdate;
+import io.datavines.server.coordinator.api.dto.vo.JobVO;
+import io.datavines.server.coordinator.api.dto.vo.SlaVO;
 import io.datavines.server.coordinator.repository.entity.*;
 import io.datavines.server.coordinator.repository.mapper.*;
 import io.datavines.server.coordinator.repository.entity.Command;
@@ -43,6 +45,8 @@ import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.coordinator.repository.mapper.CommandMapper;
 import io.datavines.server.coordinator.repository.mapper.DataSourceMapper;
 import io.datavines.server.coordinator.repository.mapper.TaskMapper;
+import io.datavines.server.coordinator.repository.service.JobService;
+import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.enums.CommandType;
 import io.datavines.common.enums.JobType;
 import io.datavines.server.enums.Priority;
@@ -55,15 +59,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
-import io.datavines.server.coordinator.repository.service.JobService;
-
 import org.springframework.transaction.annotation.Transactional;
-
-import io.datavines.server.coordinator.repository.entity.Job;
-
 
 @Slf4j
 @Service("jobService")
@@ -85,6 +81,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     private TenantMapper tenantMapper;
 
     @Autowired ErrorDataStorageMapper errorDataStorageMapper;
+
+    @Autowired
+    private SlaMapper slaMapper;
 
     @Override
     public int update(JobUpdate jobUpdate) {
@@ -158,6 +157,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     public IPage<JobVO> getJobPage(String searchVal, Long dataSourceId, Integer pageNumber, Integer pageSize) {
         Page<JobVO> page = new Page<>(pageNumber, pageSize);
         IPage<JobVO> jobs = baseMapper.getJobPage(page, searchVal, dataSourceId);
+        List<JobVO> jobList = jobs.getRecords();
+        if (CollectionUtils.isNotEmpty(jobList)) {
+            for(JobVO jobVO: jobList) {
+                List<SlaVO> slaList = slaMapper.getSlaByJobId(jobVO.getId());
+                jobVO.setSlaList(slaList);
+            }
+        }
         return jobs;
     }
 
@@ -201,6 +207,11 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         if (errorDataStorage != null) {
             errorDataStorageType = errorDataStorage.getType();
             errorDataStorageParameter  = errorDataStorage.getParam();
+        } else {
+            if ("jdbc".equalsIgnoreCase(job.getEngineType())) {
+                errorDataStorageType = "local-file";
+                errorDataStorageParameter  = "{\"error_data_file_dir\":\"/tmp/datavines/errordata\"}";
+            }
         }
 
         for (String param: taskParameterList) {
@@ -214,6 +225,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             task.setJobType(job.getType());
             task.setErrorDataStorageType(errorDataStorageType);
             task.setErrorDataStorageParameter(errorDataStorageParameter);
+            task.setErrorDataFileName(getErrorDataFileName(job.getParameter()));
             task.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
             task.setTenantCode(tenantStr);
             task.setEnv(envStr);
@@ -259,6 +271,26 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             default:
                 return String.format("%s[%s.%s.%s]%s", "JOB", database, table, column, System.currentTimeMillis());
         }
+    }
+
+    private String getErrorDataFileName(String parameter) {
+        List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
+
+        if (CollectionUtils.isEmpty(jobParameters)) {
+            throw new DataVinesServerException(ApiStatus.JOB_PARAMETER_IS_NULL_ERROR);
+        }
+
+        BaseJobParameter baseJobParameter = jobParameters.get(0);
+        Map<String,Object> metricParameter = baseJobParameter.getMetricParameter();
+        if (MapUtils.isEmpty(metricParameter)) {
+            throw new DataVinesServerException(ApiStatus.JOB_PARAMETER_IS_NULL_ERROR);
+        }
+
+        String database = (String)metricParameter.get("database");
+        String table = (String)metricParameter.get("table");
+        String column = (String)metricParameter.get("column");
+        String metric = baseJobParameter.getMetricType();
+        return String.format("%s_%s_%s_%s_%s", metric.toLowerCase(), database, table, column, System.currentTimeMillis());
     }
 
     private List<String> buildTaskParameter(String jobType, String parameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo) {

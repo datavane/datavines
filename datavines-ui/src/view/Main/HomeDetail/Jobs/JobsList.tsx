@@ -22,6 +22,9 @@ const Jobs = () => {
     const match = useRouteMatch();
     const { Render: RenderJobsModal, show: showJobsModal } = useAddEditJobsModal({
         title: intl.formatMessage({ id: 'jobs_tabs_title' }),
+        afterClose() {
+            getData();
+        },
     });
     const [tableData, setTableData] = useState<TJobsTableData>({ list: [], total: 0 });
     const [pageParams, setPageParams] = useState({

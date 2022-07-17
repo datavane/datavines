@@ -22,4 +22,8 @@ import io.datavines.spi.SPI;
 public interface ResultFormula {
 
     double getResult(double actualValue, double expectedValue);
+
+    String getResultFormat();
+
+    String getSymbol();
 }
