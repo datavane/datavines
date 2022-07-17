@@ -78,7 +78,7 @@ spring:
       on-profile: mysql
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/datavines?useUnicode=true&characterEncoding=UTF-8&useSSL=false
+    url: jdbc:mysql://127.0.0.1:3306/datavines1?useUnicode=true&characterEncoding=UTF-8&useSSL=false
     username: root
     password: 123456
   quartz:

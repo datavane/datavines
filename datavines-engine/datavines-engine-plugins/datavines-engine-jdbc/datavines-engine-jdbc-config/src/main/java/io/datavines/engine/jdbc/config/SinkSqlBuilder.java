@@ -34,7 +34,7 @@ public class SinkSqlBuilder {
             columnList.add("`"+columnInfo.getName()+"`");
 
             if (columnInfo.isNeedSingleQuotation()) {
-                columnValueList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getName()+"}"));
+                columnValueList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getParameterName()+"}"));
             } else {
                 columnValueList.add("${"+columnInfo.getName()+"}");
             }
