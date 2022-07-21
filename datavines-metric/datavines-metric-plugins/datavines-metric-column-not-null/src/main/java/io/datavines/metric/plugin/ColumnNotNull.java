@@ -35,6 +35,11 @@ public class ColumnNotNull extends BaseSingleTableColumn {
     }
 
     @Override
+    public String getZhName() {
+        return "不为空检查";
+    }
+
+    @Override
     public MetricDimension getDimension() {
         return MetricDimension.EFFECTIVENESS;
     }
@@ -57,10 +62,4 @@ public class ColumnNotNull extends BaseSingleTableColumn {
         }
         super.prepare(config);
     }
-
-    @Override
-    public Set<String> getConfigSet() {
-        return configSet;
-    }
-
 }

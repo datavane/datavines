@@ -22,6 +22,7 @@ import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
 
+import io.datavines.core.utils.LanguageUtils;
 import io.datavines.server.coordinator.api.dto.bo.storage.ErrorDataStorageCreate;
 import io.datavines.server.coordinator.api.dto.bo.storage.ErrorDataStorageUpdate;
 import io.datavines.server.coordinator.repository.entity.ErrorDataStorage;
@@ -30,6 +31,7 @@ import io.datavines.server.coordinator.repository.mapper.ErrorDataStorageMapper;
 import io.datavines.server.coordinator.repository.service.ErrorDataStorageService;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
+import io.datavines.storage.api.StorageFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -98,7 +100,7 @@ public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMap
 
     @Override
     public String getConfigJson(String type) {
-        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConnector().getConfigJson();
+        return PluginLoader.getPluginLoader(StorageFactory.class).getOrCreatePlugin(type).getStorageConnector().getConfigJson(!LanguageUtils.isZhContext());
     }
 
     private boolean isErrorDataStorageExist(String name) {

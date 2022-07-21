@@ -21,6 +21,16 @@ import io.datavines.metric.api.ResultFormula;
 public class Count implements ResultFormula {
 
     @Override
+    public String getName() {
+        return "ActualValue";
+    }
+
+    @Override
+    public String getZhName() {
+        return "实际值";
+    }
+
+    @Override
     public double getResult(double actualValue, double expectedValue) {
         return actualValue;
     }

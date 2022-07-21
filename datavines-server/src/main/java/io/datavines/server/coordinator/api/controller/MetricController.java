@@ -16,7 +16,9 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
+import io.datavines.core.utils.LanguageUtils;
 import io.datavines.engine.api.engine.EngineExecutor;
+import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 @Api(value = "metric", tags = "metric", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -45,8 +48,11 @@ public class MetricController {
         Set<String> metricList = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
         metricList.forEach(it -> {
-            Item item = new Item(it,it);
-            items.add(item);
+            SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
+            if (sqlMetric != null) {
+                Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
+                items.add(item);
+            }
         });
 
         return items;
@@ -58,13 +64,13 @@ public class MetricController {
     public Object getMetricConfig(@PathVariable("name") String name) {
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name);
         if (sqlMetric != null) {
-            Set<String> resultSet = sqlMetric.getConfigSet();
+            Map<String, ConfigItem> resultSet = sqlMetric.getConfigMap();
             resultSet.remove("table");
             resultSet.remove("column");
             resultSet.remove("filter");
             List<Item> items = new ArrayList<>();
-            resultSet.forEach(it -> {
-                Item item = new Item(it,it);
+            resultSet.forEach((k,v) -> {
+                Item item = new Item(v.getLabel(!LanguageUtils.isZhContext()),k);
                 items.add(item);
             });
             return items;
@@ -79,8 +85,11 @@ public class MetricController {
         Set<String> expectedValueList = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
         expectedValueList.forEach(it -> {
-            Item item = new Item(it,it);
-            items.add(item);
+            ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(it);
+            if (expectedValue != null) {
+                Item item = new Item(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()),it);
+                items.add(item);
+            }
         });
 
         return items;
@@ -105,8 +114,11 @@ public class MetricController {
         Set<String> resultFormulaTypeList = PluginLoader.getPluginLoader(ResultFormula.class).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
         resultFormulaTypeList.forEach(it -> {
-            Item item = new Item(it,it);
-            items.add(item);
+            ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(it);
+            if (resultFormula != null) {
+                Item item = new Item(resultFormula.getNameByLanguage(!LanguageUtils.isZhContext()),it);
+                items.add(item);
+            }
         });
 
         return items;

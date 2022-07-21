@@ -28,6 +28,11 @@ public class Last7DayAvg implements ExpectedValue {
     }
 
     @Override
+    public String getZhName() {
+        return "最近7天均值";
+    }
+
+    @Override
     public String getType() {
         return "last_7d_avg";
     }

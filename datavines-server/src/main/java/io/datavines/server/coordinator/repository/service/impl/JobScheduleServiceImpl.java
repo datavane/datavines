@@ -43,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -93,7 +94,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
                 throw new DataVinesServerException(ApiStatus.DATASOURCE_NOT_EXIST_ERROR);
             }
             try {
-                quartzExecutor.addJob(ScheduleJob.class, job.getDataSourceId(), jobSchedule);
+                addScheduleJob(jobScheduleCreate, jobSchedule, job);
             } catch (Exception e) {
                 throw new DataVinesServerException(ApiStatus.ADD_QUARTZ_ERROR);
             }
@@ -109,6 +110,19 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
                 jobSchedule.getCronExpression());
 
         return jobSchedule;
+    }
+
+    private void addScheduleJob(JobScheduleCreateOrUpdate jobScheduleCreate, JobSchedule jobSchedule, Job job) throws ParseException {
+        switch (JobScheduleType.of(jobScheduleCreate.getType())) {
+            case CYCLE:
+            case CRONTAB:
+                quartzExecutor.addJob(ScheduleJob.class, job.getDataSourceId(), jobSchedule);
+                break;
+            case OFFLINE:
+                break;
+            default:
+                throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_TYPE_NOT_VALIDATE_ERROR, jobScheduleCreate.getType());
+        }
     }
 
     private JobSchedule update(JobScheduleCreateOrUpdate jobScheduleUpdate) throws DataVinesServerException {
@@ -134,16 +148,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
 
             try {
                 quartzExecutor.deleteJob(jobId, dataSourceId);
-                switch (JobScheduleType.of(jobScheduleUpdate.getType())) {
-                    case CYCLE:
-                    case CRONTAB:
-                        quartzExecutor.addJob(ScheduleJob.class, job.getDataSourceId(), jobSchedule);
-                        break;
-                    case OFFLINE:
-                        break;
-                    default:
-                        throw new DataVinesServerException(ApiStatus.JOB_SCHEDULE_TYPE_NOT_VALIDATE_ERROR, jobScheduleUpdate.getType());
-                }
+                addScheduleJob(jobScheduleUpdate, jobSchedule, job);
             } catch (Exception e) {
                 throw new DataVinesServerException(ApiStatus.ADD_QUARTZ_ERROR);
             }

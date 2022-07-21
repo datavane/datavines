@@ -16,22 +16,26 @@
  */
 package io.datavines.metric.plugin;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.api.SqlMetric;
+import org.apache.commons.collections4.MapUtils;
 
 public class CustomSql implements SqlMetric {
 
     @Override
     public String getName() {
         return "custom_sql";
+    }
+
+    @Override
+    public String getZhName() {
+        return "自定义SQL";
     }
 
     @Override
@@ -60,8 +64,8 @@ public class CustomSql implements SqlMetric {
     }
 
     @Override
-    public Set<String> getConfigSet() {
-        return Collections.emptySet();
+    public Map<String, ConfigItem> getConfigMap() {
+        return new HashMap<>(0);
     }
 
     @Override

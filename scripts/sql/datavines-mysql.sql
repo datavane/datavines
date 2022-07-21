@@ -280,9 +280,9 @@ CREATE TABLE `dv_job` (
 CREATE TABLE `dv_job_schedule` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `type` varchar(255) NOT NULL,
-    `param` text NOT NULL,
+    `param` text DEFAULT NULL,
     `job_id` bigint(20) NOT NULL,
-    `cron_expression` varchar(255) NOT NULL,
+    `cron_expression` varchar(255) DEFAULT NULL,
     `status` tinyint(1) DEFAULT NULL,
     `start_time` datetime DEFAULT NULL,
     `end_time` datetime DEFAULT NULL,

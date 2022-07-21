@@ -28,6 +28,11 @@ public class MonthlyAvg implements ExpectedValue {
     }
 
     @Override
+    public String getZhName() {
+        return "月均值";
+    }
+
+    @Override
     public String getType() {
         return "monthly_avg";
     }

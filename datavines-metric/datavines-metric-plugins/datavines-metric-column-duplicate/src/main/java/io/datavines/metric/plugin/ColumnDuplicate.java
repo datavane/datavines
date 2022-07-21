@@ -35,6 +35,11 @@ public class ColumnDuplicate extends BaseSingleTableColumn {
     }
 
     @Override
+    public String getZhName() {
+        return "重复值检测";
+    }
+
+    @Override
     public MetricDimension getDimension() {
         return MetricDimension.UNIQUENESS;
     }
@@ -60,10 +65,5 @@ public class ColumnDuplicate extends BaseSingleTableColumn {
             invalidateItemsSql.append(" group by ${column} having count(1) > 1");
         }
 
-    }
-
-    @Override
-    public Set<String> getConfigSet() {
-        return configSet;
     }
 }

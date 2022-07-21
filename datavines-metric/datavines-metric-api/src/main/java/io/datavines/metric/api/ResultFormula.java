@@ -21,6 +21,14 @@ import io.datavines.spi.SPI;
 @SPI
 public interface ResultFormula {
 
+    String getName();
+
+    String getZhName();
+
+    default String getNameByLanguage(boolean isEn) {
+        return isEn ? getName() : getZhName();
+    }
+
     double getResult(double actualValue, double expectedValue);
 
     String getResultFormat();

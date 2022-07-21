@@ -28,6 +28,11 @@ public class Last30DayAvg implements ExpectedValue {
     }
 
     @Override
+    public String getZhName() {
+        return "最近30天均值";
+    }
+
+    @Override
     public String getType() {
         return "last_30d_avg";
     }

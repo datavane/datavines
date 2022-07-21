@@ -21,6 +21,16 @@ import io.datavines.metric.api.ResultFormula;
 public class DiffPercentage implements ResultFormula {
 
     @Override
+    public String getName() {
+        return "|ActualValue-ExpectedValue|/ExpectedValue*100%";
+    }
+
+    @Override
+    public String getZhName() {
+        return "|实际值-期望值|/期望值*100%";
+    }
+
+    @Override
     public double getResult(double actualValue, double expectedValue) {
         double result = 0;
         if (expectedValue > 0) {

@@ -37,6 +37,7 @@ import io.datavines.server.coordinator.repository.service.WorkSpaceService;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -163,6 +164,12 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper,WorkSpace>
 
     @Override
     public int removeUser(RemoveUserOutWorkspace removeUserOutWorkspace) {
+        List<UserWorkspace> userWorkspaceList = userWorkspaceMapper.selectList(new QueryWrapper<UserWorkspace>().eq("user_id", removeUserOutWorkspace.getUserId()));
+
+        if (CollectionUtils.isNotEmpty(userWorkspaceList) && userWorkspaceList.size() == 1) {
+            throw new DataVinesServerException(ApiStatus.USER_HAS_ONLY_ONE_WORKSPACE);
+        }
+
         UserWorkspace userWorkspace = userWorkspaceMapper.selectOne(new QueryWrapper<UserWorkspace>()
                 .eq("user_id",ContextHolder.getUserId()).eq("workspace_id", removeUserOutWorkspace.getWorkspaceId()));
 

@@ -29,6 +29,12 @@ public interface ExpectedValue {
      */
     String getName();
 
+    String getZhName();
+
+    default String getNameByLanguage(boolean isEn) {
+        return isEn ? getType() : getZhName();
+    }
+
     /**
      * get value type
      * @return String

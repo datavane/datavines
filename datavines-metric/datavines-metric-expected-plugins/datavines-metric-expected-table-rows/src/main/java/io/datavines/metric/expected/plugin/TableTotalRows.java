@@ -31,6 +31,11 @@ public class TableTotalRows implements ExpectedValue {
     }
 
     @Override
+    public String getZhName() {
+        return "表总行数";
+    }
+
+    @Override
     public String getType() {
         return "table_total_rows";
     }

@@ -46,6 +46,7 @@ import io.datavines.server.utils.ContextHolder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -85,45 +86,37 @@ public class SlaController {
         return list;
     }
 
-    @ApiOperation(value = "create sla job")
-    @PostMapping(value = "/job", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createSlaJob(@Valid @RequestBody SlaJobCreate create){
-        LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SlaJob::getSlaId,create.getSlaId());
-        wrapper.eq(SlaJob::getJobId,create.getJobId());
-        wrapper.eq(SlaJob::getWorkspaceId, create.getWorkspaceId());
-        SlaJob one = slaJobService.getOne(wrapper);
-        if (Objects.nonNull(one)){
-            log.info("SlaJob has been create {}", create);
-            throw new DataVinesException("SlaJob has been create");
-        }
-        SlaJob slaJob = new SlaJob();
-        slaJob.setSlaId(create.getSlaId());
-        slaJob.setJobId(create.getJobId());
-        slaJob.setWorkspaceId(create.getWorkspaceId());
-        slaJob.setCreateBy(ContextHolder.getUserId());
-        slaJob.setUpdateBy(ContextHolder.getUserId());
-        return slaJobService.save(slaJob);
-    }
+    @ApiOperation(value = "create or update sla job")
+    @PostMapping(value = "/job/createOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object createOrUpdateSlaJob(@Valid @RequestBody SlaJobCreateOrUpdate createOrUpdate){
+        SlaJob slaJob = null;
+        if (createOrUpdate.getId() != null) {
+            slaJob = slaJobService.getById(createOrUpdate.getId());
+            if (slaJob != null) {
+                BeanUtils.copyProperties(createOrUpdate, slaJob);
+                slaJob.setUpdateBy(ContextHolder.getUserId());
+                slaJob.setUpdateTime(LocalDateTime.now());
+                return slaJobService.updateById(slaJob);
+            } else {
+                throw new DataVinesServerException(ApiStatus.SLA_JOB_IS_NOT_EXIST_ERROR, createOrUpdate.getId());
+            }
+        } else {
+            LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(SlaJob::getJobId,createOrUpdate.getJobId());
+            wrapper.eq(SlaJob::getWorkspaceId, createOrUpdate.getWorkspaceId());
+            SlaJob one = slaJobService.getOne(wrapper);
+            if (Objects.nonNull(one)){
+                log.info("SlaJob has been create {}", createOrUpdate);
+                throw new DataVinesException("SlaJob has been create");
+            }
 
-    @ApiOperation(value = "update sla job")
-    @PutMapping(value = "/job", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateSlaJob(@Valid @RequestBody SlaJobUpdate update){
-        LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SlaJob::getSlaId,update.getSlaId());
-        wrapper.eq(SlaJob::getJobId,update.getJobId());
-        SlaJob one = slaJobService.getOne(wrapper);
-        if (Objects.nonNull(one) && !one.getId().equals(update.getId())){
-            log.info("db has slajob {} is same as update slajob {}", one, update);
-            throw new DataVinesException("SlaJob has been exist");
+            slaJob = new SlaJob();
+            BeanUtils.copyProperties(createOrUpdate, slaJob);
+            slaJob.setCreateBy(ContextHolder.getUserId());
+            slaJob.setUpdateBy(ContextHolder.getUserId());
+            slaJob.setUpdateTime(LocalDateTime.now());
+            return slaJobService.save(slaJob);
         }
-        SlaJob slaJob = new SlaJob();
-        slaJob.setSlaId(update.getSlaId());
-        slaJob.setJobId(update.getJobId());
-        slaJob.setId(update.getId());
-        slaJob.setUpdateTime(LocalDateTime.now());
-        slaJob.setUpdateBy(ContextHolder.getUserId());
-        return slaJobService.save(slaJob);
     }
 
     @ApiOperation(value = "create sla job")
@@ -162,7 +155,7 @@ public class SlaController {
         wrapper.eq(Sla::getName, name);
         Sla existSla = slaService.getOne(wrapper);
         if (Objects.nonNull(existSla)){
-            throw new DataVinesServerException(ApiStatus.SLAS_ALREADY_EXIST_ERROR, name);
+            throw new DataVinesServerException(ApiStatus.SLA_ALREADY_EXIST_ERROR, name);
         }
         Sla sla = BeanConvertUtils.convertBean(create, Sla::new);
         sla.setCreateBy(ContextHolder.getUserId());
@@ -186,7 +179,7 @@ public class SlaController {
         Sla existSla = slaService.getOne(wrapper);
         if (Objects.nonNull(existSla) && !existSla.getId().equals(update.getId())){
             log.info("db has sla {} is same as update {}", existSla, update);
-            throw new DataVinesServerException(ApiStatus.SLAS_ALREADY_EXIST_ERROR, update.getName());
+            throw new DataVinesServerException(ApiStatus.SLA_ALREADY_EXIST_ERROR, update.getName());
         }
         Sla sla = BeanConvertUtils.convertBean(update, Sla::new);
         sla.setUpdateBy(ContextHolder.getUserId());
@@ -273,7 +266,7 @@ public class SlaController {
         wrapper.eq(SlaSender::getName, update.getName());
         SlaSender existSlas = slaSenderService.getOne(wrapper);
         if (Objects.nonNull(existSlas) && !existSlas.getId().equals(update.getId())){
-            throw new DataVinesServerException(ApiStatus.SLAS_ALREADY_EXIST_ERROR, update.getName());
+            throw new DataVinesServerException(ApiStatus.SLA_ALREADY_EXIST_ERROR, update.getName());
         }
         SlaSender sender = BeanConvertUtils.convertBean(update, SlaSender::new);
         sender.setUpdateTime(LocalDateTime.now());

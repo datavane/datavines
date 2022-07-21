@@ -16,13 +16,11 @@
  */
 package io.datavines.metric.plugin;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.api.SqlMetric;
@@ -32,6 +30,11 @@ public class MultiTableAccuracy implements SqlMetric {
     @Override
     public String getName() {
         return "MultiTableAccuracy";
+    }
+
+    @Override
+    public String getZhName() {
+        return "跨表准确性检查";
     }
 
     @Override
@@ -70,8 +73,8 @@ public class MultiTableAccuracy implements SqlMetric {
     }
 
     @Override
-    public Set<String> getConfigSet() {
-        return Collections.emptySet();
+    public Map<String, ConfigItem> getConfigMap() {
+        return new HashMap<>();
     }
 
     @Override

@@ -51,7 +51,8 @@ public enum ApiStatus {
     WORKSPACE_NOT_EXIST_ERROR(11010003, "WorkSpace {0} is Not Exist Error", "工作空间 {0} 不存在错误"),
     UPDATE_WORKSPACE_ERROR(11010004, "Update WorkSpace {0} Error", "更新工作空间 {0} 错误"),
     USER_IS_IN_WORKSPACE_ERROR(11010005, "User is in Workspace", "用户已经在工作空间错误"),
-    USER_HAS_NO_AUTHORIZE_TO_REMOVE(11010006, "User has no authorize t remove", "用户没有权限移除错误"),
+    USER_HAS_NO_AUTHORIZE_TO_REMOVE(11010006, "User has no authorize to remove", "用户没有权限移除错误"),
+    USER_HAS_ONLY_ONE_WORKSPACE(11010007, "User has only one Workspace, can not exist", "用户只有一个工作空间，无法移除或退出"),
 
     DATASOURCE_EXIST_ERROR(12010001, "DataSource {0} is Exist error", "数据源 {0} 已存在错误"),
     CREATE_DATASOURCE_ERROR(12010002, "Create DataSource {0} Error", "创建数据源 {0} 错误"),
@@ -96,8 +97,9 @@ public enum ApiStatus {
     ERROR_DATA_STORAGE_EXIST_ERROR(17010003, "Error Data Storage {0} is Exist error", "错误数据存储 {0} 已存在错误"),
     UPDATE_ERROR_DATA_STORAGE_ERROR(17010004, "Update Error Data Storage {0} Error", "更新 错误数据存储 {0} 错误"),
 
-    SLAS_ALREADY_EXIST_ERROR(18010001, "SLAS {0} Already exist", "SLAS {0} 已经存在"),
-    SLAS_SENDER_ALREADY_EXIST_ERROR(18020001, "SLAS Sender {0}  Already exist", "SLAS 发送器 {0} 已经存在"),
+    SLA_ALREADY_EXIST_ERROR(18010001, "SLAS {0} Already exist", "SLAS {0} 已经存在"),
+    SLA_SENDER_ALREADY_EXIST_ERROR(18020001, "SLAS Sender {0}  Already exist", "SLAS 发送器 {0} 已经存在"),
+    SLA_JOB_IS_NOT_EXIST_ERROR(18010003, "SLA job {0} is not exist", "SLA job {0} 存在"),
     ;
 
     private final int code;

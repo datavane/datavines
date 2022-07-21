@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import io.datavines.core.utils.LanguageUtils;
 import io.datavines.server.coordinator.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.*;
@@ -190,6 +191,6 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
     @Override
     public String getConfigJson(String type) {
-        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConnector().getConfigJson();
+        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConnector().getConfigJson(!LanguageUtils.isZhContext());
     }
 }

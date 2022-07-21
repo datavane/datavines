@@ -34,7 +34,6 @@ import java.util.Locale;
 
 import static io.datavines.core.constant.DataVinesConstants.LOCALE_LANGUAGE_COOKIE;
 
-
 @Configuration
 public class WebMvcConfig extends WebMvcConfigurationSupport {
 

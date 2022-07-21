@@ -14,34 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.api.dto.vo;
+package io.datavines.core.utils;
 
+import org.springframework.context.i18n.LocaleContextHolder;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+import java.util.Locale;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+public class LanguageUtils {
 
-@Data
-@ToString
-@EqualsAndHashCode
-public class SlaJobVO {
-
-    private Long id;
-
-    private Long workspaceId;
-
-    private Long slaId;
-
-    private Long jobId;
-
-    private String jobName;
-
-    private String updateBy;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime updateTime;
+    public static boolean isZhContext() {
+        return Locale.SIMPLIFIED_CHINESE.getLanguage().equals(LocaleContextHolder.getLocale().getLanguage());
+    }
 }
