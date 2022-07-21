@@ -16,6 +16,7 @@
  */
 package io.datavines.metric.plugin;
 
+import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
@@ -27,13 +28,19 @@ public class ColumnValueBetween extends BaseSingleTableColumn {
 
     public ColumnValueBetween(){
         super();
-        configSet.add("min");
-        configSet.add("max");
+
+        configMap.put("min",new ConfigItem("min", "最小值", "min"));
+        configMap.put("max",new ConfigItem("max", "最大值", "max"));
     }
 
     @Override
     public String getName() {
         return "column_value_between";
+    }
+
+    @Override
+    public String getZhName() {
+        return "值范围检查";
     }
 
     @Override
@@ -63,10 +70,5 @@ public class ColumnValueBetween extends BaseSingleTableColumn {
         }
 
         super.prepare(config);
-    }
-
-    @Override
-    public Set<String> getConfigSet() {
-        return configSet;
     }
 }

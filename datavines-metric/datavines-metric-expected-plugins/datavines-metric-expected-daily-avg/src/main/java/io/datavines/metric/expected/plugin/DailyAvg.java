@@ -28,6 +28,11 @@ public class DailyAvg implements ExpectedValue {
     }
 
     @Override
+    public String getZhName() {
+        return "日均值";
+    }
+
+    @Override
     public String getType() {
         return "daily_avg";
     }

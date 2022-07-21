@@ -16,6 +16,7 @@
  */
 package io.datavines.metric.plugin;
 
+import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
@@ -27,7 +28,7 @@ public class ColumnNotInEnums extends BaseSingleTableColumn {
 
     public ColumnNotInEnums(){
         super();
-        configSet.add("enum_list");
+        configMap.put("enum_list",new ConfigItem("enum_list", "枚举值列表", "enum_list"));
 
         requiredOptions.add("enum_list");
     }
@@ -35,6 +36,11 @@ public class ColumnNotInEnums extends BaseSingleTableColumn {
     @Override
     public String getName() {
         return "column_not_in_enums";
+    }
+
+    @Override
+    public String getZhName() {
+        return "枚举值[不在]检查";
     }
 
     @Override
@@ -60,8 +66,4 @@ public class ColumnNotInEnums extends BaseSingleTableColumn {
         super.prepare(config);
     }
 
-    @Override
-    public Set<String> getConfigSet() {
-        return configSet;
-    }
 }

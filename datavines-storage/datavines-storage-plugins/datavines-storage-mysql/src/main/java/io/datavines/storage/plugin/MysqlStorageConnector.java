@@ -38,23 +38,35 @@ import java.util.Map;
 public class MysqlStorageConnector implements StorageConnector {
 
     @Override
-    public String getConfigJson() {
-        InputParam host = getInputParam("host", "地址", "请填入连接地址", 1, Validate.newBuilder()
-                .setRequired(true).setMessage("请填入连接地址")
-                .build());
-        InputParam port = getInputParam("port", "端口", "请填入端口号", 1, Validate.newBuilder()
-                .setRequired(true).setMessage("请填入端口号")
-                .build());
-        InputParam database = getInputParam("database", "数据库", "请填入数据库", 1, Validate.newBuilder()
-                .setRequired(true).setMessage("请填入数据库")
-                .build());
-        InputParam user = getInputParam("user", "用户名", "请填入用户名", 1, Validate.newBuilder()
-                .setRequired(true).setMessage("请填入用户名")
-                .build());
-        InputParam password = getInputParam("password", "密码", "请填入密码", 1, Validate.newBuilder()
-                .setRequired(true).setMessage("请填入密码")
-                .build());
-        InputParam properties = getInputParamNoValidate("properties", "参数", "请填入参数，格式为key=value&key1=value1", 2);
+    public String getConfigJson(boolean isEn) {
+        InputParam host = getInputParam("host",
+                isEn ? "host" : "地址",
+                isEn ? "please enter host ip" : "请填入连接地址", 1, Validate.newBuilder()
+                        .setRequired(true).setMessage(isEn ? "please enter host ip" : "请填入连接地址")
+                        .build());
+        InputParam port = getInputParam("port",
+                isEn ? "port" : "端口",
+                isEn ? "please enter port" : "请填入端口号", 1, Validate.newBuilder()
+                        .setRequired(true).setMessage(isEn ? "please enter port" : "请填入端口号")
+                        .build());
+        InputParam database = getInputParam("database",
+                isEn ? "database" : "数据库",
+                isEn ? "please enter database" : "请填入数据库", 1, Validate.newBuilder()
+                        .setRequired(true).setMessage(isEn ? "please enter database" : "请填入数据库")
+                        .build());
+        InputParam user = getInputParam("user",
+                isEn ? "user" : "用户名",
+                isEn ? "please enter user" : "请填入用户名", 1, Validate.newBuilder()
+                        .setRequired(true).setMessage(isEn ? "please enter user" : "请填入用户名")
+                        .build());
+        InputParam password = getInputParam("password",
+                isEn ? "password" : "密码",
+                isEn ? "please enter password" : "请填入密码", 1, Validate.newBuilder()
+                        .setRequired(true).setMessage(isEn ? "please enter password" : "请填入密码")
+                        .build());
+        InputParam properties = getInputParamNoValidate("properties",
+                isEn ? "properties" : "参数",
+                isEn ? "please enter properties,like key=value&key1=value1" : "请填入参数，格式为key=value&key1=value1", 2);
 
         List<PluginParams> params = new ArrayList<>();
         params.add(host);

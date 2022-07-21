@@ -14,34 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.api.dto.vo;
+package io.datavines.metric.api;
 
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+public class ConfigItem {
 
-@Data
-@ToString
-@EqualsAndHashCode
-public class SlaJobVO {
+    private String esLabel;
 
-    private Long id;
+    private String zhLabel;
 
-    private Long workspaceId;
+    private String key;
 
-    private Long slaId;
+    public ConfigItem(String esLabel, String zhLabel, String key) {
+        this.esLabel = esLabel;
+        this.zhLabel = zhLabel;
+        this.key = key;
+    }
 
-    private Long jobId;
+    public String getKey() {
+        return key;
+    }
 
-    private String jobName;
-
-    private String updateBy;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime updateTime;
+    public String getLabel(boolean isEn) {
+        return isEn ? esLabel : zhLabel;
+    }
 }

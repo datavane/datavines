@@ -199,8 +199,9 @@ DROP TABLE IF EXISTS dv_job_schedule;
 CREATE TABLE dv_job_schedule (
     id bigserial NOT NULL ,
     type varchar(255) NOT NULL,
-    param text NOT NULL,
+    param text DEFAULT NULL,
     job_id int8 NOT NULL,
+    cron_expression varchar(255) DEFAULT NULL,
     status int2 NOT NULL DEFAULT 1,
     start_time timestamp(0) DEFAULT NULL,
     end_time timestamp(0) DEFAULT NULL,

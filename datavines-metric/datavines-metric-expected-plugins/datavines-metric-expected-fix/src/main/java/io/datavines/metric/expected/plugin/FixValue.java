@@ -28,6 +28,11 @@ public class FixValue implements ExpectedValue {
     }
 
     @Override
+    public String getZhName() {
+        return "固定值";
+    }
+
+    @Override
     public String getType() {
         return "fix_value";
     }

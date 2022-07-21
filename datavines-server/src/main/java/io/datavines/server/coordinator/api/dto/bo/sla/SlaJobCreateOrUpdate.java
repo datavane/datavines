@@ -14,34 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.api.dto.vo;
+package io.datavines.server.coordinator.api.dto.bo.sla;
 
-
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 @Data
-@ToString
-@EqualsAndHashCode
-public class SlaJobVO {
-
+@ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
+public class SlaJobCreateOrUpdate extends SlaJobCreate{
     private Long id;
-
-    private Long workspaceId;
-
-    private Long slaId;
-
-    private Long jobId;
-
-    private String jobName;
-
-    private String updateBy;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private LocalDateTime updateTime;
 }

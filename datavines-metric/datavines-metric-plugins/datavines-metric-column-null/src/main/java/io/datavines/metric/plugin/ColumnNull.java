@@ -35,6 +35,11 @@ public class ColumnNull extends BaseSingleTableColumn {
     }
 
     @Override
+    public String getZhName() {
+        return "为空检查";
+    }
+
+    @Override
     public MetricDimension getDimension() {
         return MetricDimension.COMPLETENESS;
     }
@@ -55,10 +60,5 @@ public class ColumnNull extends BaseSingleTableColumn {
             filters.add("(${column} is null )");
         }
         super.prepare(config);
-    }
-
-    @Override
-    public Set<String> getConfigSet() {
-        return configSet;
     }
 }

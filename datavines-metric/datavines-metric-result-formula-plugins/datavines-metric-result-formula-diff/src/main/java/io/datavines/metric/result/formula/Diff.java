@@ -21,6 +21,16 @@ import io.datavines.metric.api.ResultFormula;
 public class Diff implements ResultFormula {
 
     @Override
+    public String getName() {
+        return "|ActualValue-ExpectedValue|";
+    }
+
+    @Override
+    public String getZhName() {
+        return "|实际值-期望值|";
+    }
+
+    @Override
     public double getResult(double actualValue, double expectedValue) {
         return Math.abs(actualValue - expectedValue);
     }

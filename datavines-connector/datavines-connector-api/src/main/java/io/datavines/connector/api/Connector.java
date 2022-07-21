@@ -62,7 +62,7 @@ public interface Connector {
      * get frontend config json
      * @return String
      */
-    default String getConfigJson() {
+    default String getConfigJson(boolean isEn) {
         return null;
     }
 

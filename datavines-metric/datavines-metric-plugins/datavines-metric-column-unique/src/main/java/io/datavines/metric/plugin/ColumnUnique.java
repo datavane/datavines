@@ -35,6 +35,11 @@ public class ColumnUnique extends BaseSingleTableColumn {
     }
 
     @Override
+    public String getZhName() {
+        return "唯一性检查";
+    }
+
+    @Override
     public MetricDimension getDimension() {
         return MetricDimension.UNIQUENESS;
     }
@@ -60,10 +65,5 @@ public class ColumnUnique extends BaseSingleTableColumn {
             invalidateItemsSql.append(" group by ${column} having count(1) = 1");
         }
 
-    }
-
-    @Override
-    public Set<String> getConfigSet() {
-        return configSet;
     }
 }

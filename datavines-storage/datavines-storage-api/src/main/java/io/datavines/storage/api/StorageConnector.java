@@ -20,7 +20,7 @@ import java.util.Map;
 
 public interface StorageConnector {
 
-    String getConfigJson();
+    String getConfigJson(boolean isEn);
 
     Map<String,Object> getParamMap(Map<String, Object> parameter);
 }

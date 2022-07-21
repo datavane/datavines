@@ -19,6 +19,7 @@ package io.datavines.metric.plugin;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
+import io.datavines.metric.api.ConfigItem;
 
 import java.util.Map;
 import java.util.Set;
@@ -27,16 +28,19 @@ public class ColumnMatchRegex extends BaseSingleTableColumn {
 
     public ColumnMatchRegex(){
         super();
-        configSet.add("regexp");
-        configSet.add("column");
 
+        configMap.put("regexp",new ConfigItem("regexp", "正则表达式", "regexp"));
         requiredOptions.add("regexp");
-        requiredOptions.add("column");
     }
 
     @Override
     public String getName() {
         return "column_match_regex";
+    }
+
+    @Override
+    public String getZhName() {
+        return "正则表达式[匹配]检查";
     }
 
     @Override
@@ -61,10 +65,5 @@ public class ColumnMatchRegex extends BaseSingleTableColumn {
             filters.add(" ${column} ${regex_key} '${regexp}'");
         }
         super.prepare(config);
-    }
-
-    @Override
-    public Set<String> getConfigSet() {
-        return configSet;
     }
 }

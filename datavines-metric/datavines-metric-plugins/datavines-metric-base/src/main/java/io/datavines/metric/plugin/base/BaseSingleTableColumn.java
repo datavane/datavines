@@ -16,12 +16,20 @@
  */
 package io.datavines.metric.plugin.base;
 
+import io.datavines.metric.api.ConfigItem;
+
+import java.util.Map;
+
 public abstract class BaseSingleTableColumn extends BaseSingleTable {
 
     public BaseSingleTableColumn() {
         super();
-        configSet.add("column");
+        configMap.put("column",new ConfigItem("column", "列名", "column"));
         requiredOptions.add("column");
     }
 
+    @Override
+    public Map<String, ConfigItem> getConfigMap() {
+        return configMap;
+    }
 }

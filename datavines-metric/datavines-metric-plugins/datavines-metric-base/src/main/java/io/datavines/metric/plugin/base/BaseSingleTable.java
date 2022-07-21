@@ -19,6 +19,7 @@ package io.datavines.metric.plugin.base;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.ConfigChecker;
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.SqlMetric;
 
 import java.util.*;
@@ -31,13 +32,13 @@ public abstract class BaseSingleTable implements SqlMetric {
 
     protected List<String> filters = new ArrayList<>();
 
-    protected Set<String> configSet = new HashSet<>();
+    protected HashMap<String,ConfigItem> configMap = new HashMap<>();
 
     protected Set<String> requiredOptions = new HashSet<>();
 
     public BaseSingleTable() {
-        configSet.add("table");
-        configSet.add("filter");
+        configMap.put("table",new ConfigItem("table", "表名", "table"));
+        configMap.put("filter",new ConfigItem("filter", "过滤条件", "filter"));
 
         requiredOptions.add("table");
     }

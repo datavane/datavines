@@ -38,9 +38,11 @@ import java.util.Map;
 public class LocalFileStorageConnector implements StorageConnector {
 
     @Override
-    public String getConfigJson() {
-        InputParam errorDataFileDir = getInputParam("error_data_file_dir", "目录路径", "请填入目录路径", 1, Validate.newBuilder()
-                .setRequired(true).setMessage("请填入目录路径")
+    public String getConfigJson(boolean isEn) {
+        InputParam errorDataFileDir = getInputParam("error_data_file_dir",
+                isEn ? "file dir" : "目录路径",
+                isEn ? "please enter file dir" : "请填入目录路径", 1, Validate.newBuilder()
+                .setRequired(true).setMessage(isEn ? "please enter file dir" : "请填入目录路径")
                 .build());
 
         List<PluginParams> params = new ArrayList<>();
