@@ -59,8 +59,8 @@ const Index = ({ form, id }: InnerProps) => {
     });
     const render = () => (
         <Title title={intl.formatMessage({ id: 'dv_metric_run_env_config' })}>
-            <Row gutter={10}>
-                <Col span={10}>
+            <Row gutter={30}>
+                <Col span={12}>
                     <Form.Item
                         {...layoutItem}
                         label={intl.formatMessage({ id: 'dv_metric_linux_user' })}
@@ -74,7 +74,7 @@ const Index = ({ form, id }: InnerProps) => {
                         />
                     </Form.Item>
                 </Col>
-                <Col span={2}>
+                <Col span={1}>
                     <Setting
                         onClick={() => {
                             showTenant({
@@ -85,7 +85,7 @@ const Index = ({ form, id }: InnerProps) => {
                         }}
                     />
                 </Col>
-                <Col span={10}>
+                <Col span={12}>
                     <Form.Item
                         {...layoutItem}
                         label={intl.formatMessage({ id: 'dv_metric_env_config' })}
@@ -99,7 +99,7 @@ const Index = ({ form, id }: InnerProps) => {
                         />
                     </Form.Item>
                 </Col>
-                <Col span={2}>
+                <Col span={1}>
                     <Setting
                         onClick={() => {
                             showEnv({

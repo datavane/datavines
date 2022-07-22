@@ -27,8 +27,10 @@ export default {
     common_updater: '更新人',
     common_back: '返回',
 
-    '/main/home': '数据源',
-    '/main/warning': '告警',
+    '/main/home': '数据源管理',
+    '/main/warning': '告警管理',
+    '/main/userManage': '用户管理',
+    '/main/errorDataManage': '错误数据管理',
     '/main/detail/:id/editor': '数据开发',
     '/main/detail/:id/jobs': '作业管理',
     '/main/detail/:id/tasks': '结果管理',
@@ -55,6 +57,7 @@ export default {
     new_password_text: '新密码',
     confirm_password_text: '确认密码',
     login_password_text: '登录密码',
+    password_tip: '密码必须包含大写字母、小写字母、数字、 特殊字符',
     userName_text: '用户名',
     email_text: '邮箱',
     verification_code_text: '图形验证码',
@@ -85,8 +88,19 @@ export default {
     jobs_task_type: '任务类型',
     jobs_task_status: '任务状态',
     jobs_task_stop_btn: '停止',
+    jobs_task_result: '结果',
+    jobs_task_error_data: '错误数据',
+    jobs_task_error_data_view: '查看错误数据',
     jobs_task_log_btn: '查看日志',
     jobs_task_result_btn: '查看结果',
+
+    jobs_task_check_result: '检查结果',
+    jobs_task_check_subject: '检查对象',
+    jobs_task_check_rule: '检查规则',
+    jobs_task_check_expectVal_type: '期望值类型',
+    jobs_task_check_formula: '校验公式',
+    jobs_task_check_explain: '说明',
+    jobs_task_check_explain_text: '当校验公式的结果为真，那么检查结果为失败，反之亦然',
 
     jobs_tabs_title: '数据质量检查作业',
     jobs_tabs_config: '作业配置',
@@ -149,10 +163,14 @@ export default {
     warn_monitor_tip: '用于监控{{data}}相关数据的SLAs',
 
     workspace_name: '空间名称',
+    workspace_exit: '退出空间',
+    workspace_exit_tip: '确定退出空间？',
     workspace_add: '创建',
     workspace_edit: '编辑空间',
     workspace_delete: '删除空间',
     workspace_delete_tip: '确定删除当前空间？',
+
+    workspace_user_invite: '邀请用户',
 
     datasource: '数据源',
     datasource_modal_add_title: '新增数据源',
@@ -170,4 +188,8 @@ export default {
     job_log_refresh: '刷新',
     job_log_download: '下载',
     job_log_fullScreen: '全屏',
+
+    error_create_btn: '创建错误数据存储',
+    error_table_store_name: '存储名称',
+    error_table_store_type: '存储类型',
 };

@@ -17,7 +17,7 @@ const EditorData = () => {
         },
     }), [workspaceId]);
     return (
-        <div style={{ height: 'calc(100vh - 60px)', background: '#fff' }}>
+        <div style={{ height: 'calc(100vh - 70px)', background: '#fff' }}>
             <DvEditor {...editorParams} locale={locale} id={params.id} />
         </div>
     );

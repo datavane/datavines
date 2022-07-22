@@ -14,7 +14,7 @@ export default {
     dv_metric_input: '输入',
     dv_metric_maxValue: '最大值',
     dv_metric_minValue: '最小值',
-    dv_metric_verify_formula: '结果公示',
+    dv_metric_verify_formula: '结果公式',
     dv_metric_verify_compare: '比较符',
     dv_metric_verify_threshold: '阈值',
     dv_metric_condition: '过滤条件',
@@ -48,4 +48,6 @@ export default {
     dv_metric_other_timeout_strategy_retry: '重试',
     dv_metric_other_timeout_strategy_alert: '告警',
     dv_metric_other_config_second: '秒',
+    dv_metric_error_store_config: '错误数据存储配置',
+    dv_metric_error_store_engine: '错误数据存储引擎',
 };

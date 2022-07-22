@@ -59,7 +59,7 @@ const Index = ({ form, detail }: InnerProps) => {
                     <Radio value="local">local</Radio>
                 </Radio.Group>
             </Form.Item>
-            <Row gutter={20}>
+            <Row gutter={30}>
                 <Col span={12}>
                     <Form.Item
                         {...layoutActuatorItem}
@@ -124,7 +124,7 @@ const Index = ({ form, detail }: InnerProps) => {
     return (
         <Title title={intl.formatMessage({ id: 'dv_metric_title_actuator_configure' })}>
             <Row>
-                <Col span={24} style={{ display: 'flex' }}>
+                <Col span={12} style={{ display: 'flex' }}>
                     <Form.Item
                         {...layoutItem}
                         label=""

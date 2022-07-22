@@ -92,6 +92,8 @@ const Inner = ({ innerRef }: InnerProps) => {
     if (loading) {
         return <Spin spinning={loading} />;
     }
+    const slaId = (data?.record?.slaList || [])[0]?.id;
+    console.log('slaId', data, slaId);
     return (
         <div>
             <Tabs
@@ -122,7 +124,7 @@ const Inner = ({ innerRef }: InnerProps) => {
                     <IF visible={jobId}><Schedule jobId={jobId} /></IF>
                 </TabPane>
                 <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_SLA' })} key="SLA">
-                    <IF visible={jobId}><SelectSLAsComponent jobId={jobId} id={+(data?.slaId || 0)} /></IF>
+                    <IF visible={jobId}><SelectSLAsComponent jobId={jobId} id={slaId} /></IF>
                 </TabPane>
             </Tabs>
         </div>

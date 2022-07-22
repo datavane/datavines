@@ -48,4 +48,6 @@ export default {
     dv_metric_other_timeout_strategy_retry: 'Retry',
     dv_metric_other_timeout_strategy_alert: 'Alert',
     dv_metric_other_config_second: 'S',
+    dv_metric_error_store_config: 'Bad data storage configuration',
+    dv_metric_error_store_engine: 'Error data storage engine',
 };

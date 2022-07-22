@@ -46,18 +46,19 @@ export default React.memo(() => {
             goBack();
         }
     };
-    const renderSelect = (disabled = false) => (
+    const renderSelect = () => (
         <CustomSelect
             showSearch
             style={{
                 width: 150,
-                height: 32,
-                lineHeight: 32,
-                fontSize: 12,
-                position: 'relative',
-                verticalAlign: 'middle',
+                height: 30,
+                display: 'flex',
+                // lineHeight: '30px',
+                // fontSize: 12,
+                // position: 'relative',
+                // verticalAlign: 'middle',
             }}
-            disabled={disabled}
+            // disabled={disabled}
             size="small"
             placeholder={intl.formatMessage({ id: 'header_top_search_msg' })}
             optionFilterProp="children"
@@ -71,15 +72,15 @@ export default React.memo(() => {
     );
     return (
         <>
-            <span className="main-color" style={{ fontSize: 18 }}>DataVines</span>
+            <span className="main-color" style={{ fontSize: 18, fontWeight: 700, marginRight: 20 }}>DataVines</span>
             <IF visible={isDetailPage}>
                 <a onClick={goBack} style={{ fontSize: 14, marginLeft: 20 }}>{intl.formatMessage({ id: 'common_back' })}</a>
-                <div className="dv-header__work-space">
-                    {renderSelect(true)}
+                <div className="dv-header__work-space" style={{ paddingRight: 0 }}>
+                    {renderSelect()}
                 </div>
             </IF>
             <IF visible={!isDetailPage}>
-                <span className="main-color" style={{ fontSize: 14, marginLeft: 20 }}>{intl.formatMessage({ id: 'datasource' })}</span>
+                {/* <span className="main-color" style={{ fontSize: 14, marginLeft: 20 }}>{intl.formatMessage({ id: 'datasource' })}</span> */}
                 <div className="dv-header__work-space">
                     {renderSelect()}
                     <Dropdown
@@ -119,7 +120,13 @@ export default React.memo(() => {
                         <EllipsisOutlined
                             onClick={onEllips}
                             style={{
-                                fontSize: 14, cursor: 'pointer', color: '#000', marginRight: 5,
+                                fontSize: 14,
+                                cursor: 'pointer',
+                                color: '#000',
+                                right: 5,
+                                position: 'absolute',
+                                top: '50%',
+                                transform: 'translateY(-50%)',
                             }}
                         />
                     </Dropdown>
@@ -131,11 +138,11 @@ export default React.memo(() => {
                     }}
                     style={{
                         marginLeft: 10,
-                        height: 30,
-                        borderRadius: '15px',
+                        height: 32,
+                        borderRadius: '16px',
                         display: 'inline-block',
                         verticalAlign: 'middle',
-                        marginTop: -2,
+                        marginTop: 10,
                     }}
                 >
                     {intl.formatMessage({ id: 'workspace_add' })}

@@ -5,11 +5,10 @@ import {
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { EyeOutlined } from '@ant-design/icons';
 import { TWarnSLATableItem } from '@/type/warning';
 import { useCreateSLAs } from './hooks/CreateSLAs';
 import { useMount, Popconfirm } from '@/common';
-import { Title, SearchForm } from '@/component';
+import { SearchForm } from '@/component';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
 
@@ -126,7 +125,7 @@ const Index = () => {
             width: 100,
             render: (text: string, record: TWarnSLATableItem) => (
                 <>
-                    <a onClick={() => { onEdit(record); }}><EyeOutlined /></a>
+                    <a onClick={() => { onEdit(record); }}>{intl.formatMessage({ id: 'common_edit' })}</a>
                     <Popconfirm
                         onClick={() => onDelete(record.id)}
                     />
@@ -161,7 +160,6 @@ const Index = () => {
                     size: 'small',
                     total: tableData.total,
                     showSizeChanger: true,
-                    defaultPageSize: 20,
                     current: pageParams.pageNumber,
                     pageSize: pageParams.pageSize,
                 }}

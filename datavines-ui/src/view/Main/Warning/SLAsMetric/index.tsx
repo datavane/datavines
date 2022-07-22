@@ -23,7 +23,7 @@ const Index = () => {
         },
     });
     const [qs] = useState<any>(querystring.parse(window.location.href.split('?')[1] || ''));
-    const [tableData, setTableData] = useState<TWarnMetricTableData>({ list: [{ id: 1, name: '123' }], total: 0 });
+    const [tableData, setTableData] = useState<TWarnMetricTableData>({ list: [], total: 0 });
     const [pageParams, setPageParams] = useState({
         pageNo: 1,
         pageSize: 10,
@@ -139,7 +139,6 @@ const Index = () => {
                     size: 'small',
                     total: tableData.total,
                     showSizeChanger: true,
-                    defaultPageSize: 20,
                     current: pageParams.pageNo,
                     pageSize: pageParams.pageSize,
                 }}

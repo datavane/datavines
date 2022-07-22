@@ -1,22 +1,19 @@
 import React, { useState } from 'react';
 import {
-    Table, Button, Form, message,
+    Table, Button, message,
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
-import { EyeOutlined } from '@ant-design/icons';
 import { TWarnTableData, TWarnTableItem } from '@/type/warning';
-import { useCreateWidget } from './hooks/CreateWidget';
+import { useAddErrorManage } from './useAddErrorManage';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
-import { SearchForm } from '@/component';
 import { useMount, Popconfirm } from '@/common';
 
 const Index = () => {
     const intl = useIntl();
-    const form = Form.useForm()[0];
     const [loading, setLoading] = useState(false);
-    const { Render: RenderWidgetModal, show } = useCreateWidget({
+    const { Render: RenderAddErrorModal, show } = useAddErrorManage({
         afterClose() {
             getData();
         },
@@ -33,30 +30,18 @@ const Index = () => {
             pageSize,
         });
     };
-    const getData = async (values: any = null) => {
+    const getData = async () => {
         try {
             setLoading(true);
-            const params = {
-                workspaceId,
-                ...pageParams,
-                ...(values || form.getFieldsValue()),
-            };
-            const res = (await $http.get('/sla/sender/page', params)) || [];
+            const res = (await $http.get(`/errorDataStorage/list/${workspaceId}`)) || [];
             setTableData({
-                list: res?.records || [],
-                total: res?.total || 0,
+                list: res || [],
+                total: (res || []).length,
             });
         } catch (error) {
         } finally {
             setLoading(false);
         }
-    };
-    const onSearch = (_values: any) => {
-        setPageParams({ ...pageParams, pageNumber: 1 });
-        getData({
-            ..._values,
-            pageNumber: 1,
-        });
     };
     useMount(() => {
         getData();
@@ -81,13 +66,13 @@ const Index = () => {
     };
     const columns: ColumnsType<TWarnTableItem> = [
         {
-            title: intl.formatMessage({ id: 'warn_widget_name' }),
+            title: intl.formatMessage({ id: 'error_table_store_name' }),
             dataIndex: 'name',
             key: 'name',
             render: (text: string) => <div>{text}</div>,
         },
         {
-            title: intl.formatMessage({ id: 'common_type' }),
+            title: intl.formatMessage({ id: 'error_table_store_type' }),
             dataIndex: 'type',
             key: 'type',
             render: (text: string) => <div>{text}</div>,
@@ -109,7 +94,7 @@ const Index = () => {
             fixed: 'right',
             key: 'right',
             dataIndex: 'right',
-            width: 100,
+            width: 160,
             render: (text: string, record: TWarnTableItem) => (
                 <>
                     <a onClick={() => { onEdit(record); }}>{intl.formatMessage({ id: 'common_edit' })}</a>
@@ -124,10 +109,10 @@ const Index = () => {
         <div className="dv-page-paddinng">
             <div style={{ paddingTop: '20px' }}>
                 <div className="dv-flex-between">
-                    <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
+                    <span />
                     <div style={{ textAlign: 'right', marginBottom: 10 }}>
                         <Button type="primary" onClick={() => { show(null); }}>
-                            {intl.formatMessage({ id: 'warn_create_widget' })}
+                            {intl.formatMessage({ id: 'error_create_btn' })}
                         </Button>
                     </div>
                 </div>
@@ -147,7 +132,7 @@ const Index = () => {
                     pageSize: pageParams.pageSize,
                 }}
             />
-            <RenderWidgetModal />
+            <RenderAddErrorModal />
         </div>
     );
 };

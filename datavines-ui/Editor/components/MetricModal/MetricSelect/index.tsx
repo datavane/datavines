@@ -74,13 +74,17 @@ const Index = ({
             if (database && table) {
                 await getCloumn(database, table);
             }
+            const metricType = detail?.parameterItem?.metricType;
+            if (metricType) {
+                await getConfigsName(metricType);
+            }
             setDataBases($databases || []);
             setMetricList($metricList || []);
             const options: Record<string, any> = {
                 database,
                 table,
                 column,
-                metricType: detail?.parameterItem?.metricType,
+                metricType,
                 filter,
             };
             Object.keys(rest).forEach((item) => {
@@ -88,7 +92,6 @@ const Index = ({
             });
             form.setFieldsValue(options);
         } catch (error) {
-
         }
     });
 
@@ -133,66 +136,68 @@ const Index = ({
         </Form.Item>
     );
     return (
-        <Row gutter={30}>
-            <Col span={12}>
-                <Form.Item
-                    {...layoutItem}
-                    label="Metric"
-                    name="metricType"
-                    rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_placeholder' }) }]}
-                >
-                    <CustomSelect
-                        source={metricList}
-                        sourceValueMap="key"
-                        onChange={getConfigsName}
-                    />
-                </Form.Item>
-                <Form.Item
-                    {...layoutItem}
-                    label={intl.formatMessage({ id: 'dv_metric_database' })}
-                    name="database"
-                    rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
-                >
-                    <CustomSelect onChange={databasesChange} allowClear source={databases} sourceValueMap="name" />
-                </Form.Item>
-                <Form.Item
-                    {...layoutItem}
-                    label={intl.formatMessage({ id: 'dv_metric_table' })}
-                    name="table"
-                    rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
-                >
-                    <CustomSelect onChange={tableChange} allowClear source={tables} sourceValueMap="name" />
-                </Form.Item>
-                <Form.Item noStyle dependencies={['table']}>
-                    {() => {
-                        const value = form.getFieldValue('table');
-                        if (!value) {
-                            return null;
-                        }
-                        return renderColumn();
-                    }}
-                </Form.Item>
-                {
-                    configsName.map((item) => <React.Fragment key={item.key}>{dynamicRender(item)}</React.Fragment>)
-                }
-            </Col>
-            <Col span={12}>
-                <div style={{ paddingTop: 20 }} />
-                <Form.Item
-                    className="dv-editor__condition"
-                    colon={false}
-                    label={(
-                        <div>
-                            {intl.formatMessage({ id: 'dv_metric_condition' })}
-                            :
-                        </div>
-                    )}
-                    name="filter"
-                >
-                    <Input.TextArea style={{ marginLeft: context.locale === 'en_US' ? -100 : -62 }} rows={5} />
-                </Form.Item>
-            </Col>
-        </Row>
+        <div style={{ padding: '0 10px' }}>
+            <Row gutter={30}>
+                <Col span={12}>
+                    <Form.Item
+                        {...layoutItem}
+                        label="Metric"
+                        name="metricType"
+                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_placeholder' }) }]}
+                    >
+                        <CustomSelect
+                            source={metricList}
+                            sourceValueMap="key"
+                            onChange={getConfigsName}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        {...layoutItem}
+                        label={intl.formatMessage({ id: 'dv_metric_database' })}
+                        name="database"
+                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
+                    >
+                        <CustomSelect onChange={databasesChange} allowClear source={databases} sourceValueMap="name" />
+                    </Form.Item>
+                    <Form.Item
+                        {...layoutItem}
+                        label={intl.formatMessage({ id: 'dv_metric_table' })}
+                        name="table"
+                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
+                    >
+                        <CustomSelect onChange={tableChange} allowClear source={tables} sourceValueMap="name" />
+                    </Form.Item>
+                    <Form.Item noStyle dependencies={['table']}>
+                        {() => {
+                            const value = form.getFieldValue('table');
+                            if (!value) {
+                                return null;
+                            }
+                            return renderColumn();
+                        }}
+                    </Form.Item>
+                    {
+                        configsName.map((item) => <React.Fragment key={item.key}>{dynamicRender(item)}</React.Fragment>)
+                    }
+                </Col>
+                <Col span={12}>
+                    <div style={{ paddingTop: 20 }} />
+                    <Form.Item
+                        className="dv-editor__condition"
+                        colon={false}
+                        label={(
+                            <div>
+                                {intl.formatMessage({ id: 'dv_metric_condition' })}
+                                :
+                            </div>
+                        )}
+                        name="filter"
+                    >
+                        <Input.TextArea style={{ marginLeft: context.locale === 'en_US' ? -100 : -62 }} rows={5} />
+                    </Form.Item>
+                </Col>
+            </Row>
+        </div>
     );
 };
 

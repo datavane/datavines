@@ -29,6 +29,8 @@ export default {
 
     '/main/home': 'DataSource',
     '/main/warning': 'Warning',
+    '/main/userManage': 'User',
+    '/main/errorDataManage': 'Error data',
     '/main/detail/:id/editor': 'Data',
     '/main/detail/:id/jobs': 'Jobs',
     '/main/detail/:id/tasks': 'Results',
@@ -55,6 +57,7 @@ export default {
     new_password_text: 'New password',
     confirm_password_text: 'Confirm password',
     login_password_text: ' Login password',
+    password_tip: 'The password must contain uppercase letters, lowercase letters, numbers, and special characters',
     userName_text: 'Username',
     email_text: 'Email ',
     verification_code_text: 'sverification Code',
@@ -85,8 +88,19 @@ export default {
     jobs_task_type: 'Task type',
     jobs_task_status: 'Task status',
     jobs_task_stop_btn: 'Stop',
+    jobs_task_result: 'Result',
+    jobs_task_error_data: 'Error',
+    jobs_task_error_data_view: 'View error data',
     jobs_task_log_btn: 'Log',
     jobs_task_result_btn: 'Result',
+
+    jobs_task_check_result: 'Check the result',
+    jobs_task_check_subject: 'Check object',
+    jobs_task_check_rule: 'Check rule',
+    jobs_task_check_expectVal_type: 'Expected value type',
+    jobs_task_check_formula: 'Calibration formula',
+    jobs_task_check_explain: 'Explain',
+    jobs_task_check_explain_text: 'When the result of the check formula is true, the check result is failed, and vice versa',
 
     jobs_tabs_title: 'Data quality inspection',
     jobs_tabs_config: 'Job configuration',
@@ -149,10 +163,14 @@ export default {
     warn_monitor_tip: 'SLAs for monitoring {{data}} related data',
 
     workspace_name: 'Name',
+    workspace_exit: 'Exit space',
+    workspace_exit_tip: 'Are you sure to exit the space?',
     workspace_add: 'Create space',
     workspace_edit: 'Edit space',
     workspace_delete: 'Delete space',
     workspace_delete_tip: 'Are you sure to delete the current space?',
+
+    workspace_user_invite: 'Invite user',
 
     datasource: 'Datasource',
     datasource_modal_add_title: 'New data source',
@@ -170,4 +188,8 @@ export default {
     job_log_refresh: 'Refresh',
     job_log_download: 'Download',
     job_log_fullScreen: 'Full screen',
+
+    error_create_btn: 'Create error data store',
+    error_table_store_name: 'Storage name',
+    error_table_store_type: 'Storage type',
 };

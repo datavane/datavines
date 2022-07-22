@@ -153,7 +153,6 @@ const Index = () => {
                     size: 'small',
                     total: tableData.total,
                     showSizeChanger: true,
-                    defaultPageSize: 20,
                     current: pageParams.pageNumber,
                     pageSize: pageParams.pageSize,
                 }}

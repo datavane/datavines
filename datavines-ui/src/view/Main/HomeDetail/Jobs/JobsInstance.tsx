@@ -9,11 +9,15 @@ import { useMount, IF } from '@/common';
 import { $http } from '@/http';
 import { defaultRender } from '@/utils/helper';
 import { useLogger } from './useLogger';
+import { useInstanceErrorDataModal } from './useInstanceErrorDataModal';
+import { useInstanceResult } from './useInstanceResult';
 
 const JobsInstance = () => {
     const intl = useIntl();
     const form = Form.useForm()[0];
     const [loading, setLoading] = useState(false);
+    const { Render: RenderErrorDataModal, show: showErrorDataModal } = useInstanceErrorDataModal({});
+    const { Render: RenderResultModal, show: showResultModal } = useInstanceResult({});
     const { Render: RenderLoggerModal, show: showLoggerModal } = useLogger({});
     const [tableData, setTableData] = useState<TJobsInstanceTableData>({ list: [], total: 0 });
     const [pageParams, setPageParams] = useState({
@@ -67,6 +71,14 @@ const JobsInstance = () => {
     const onLog = (record: TJobsInstanceTableItem) => {
         showLoggerModal(record);
     };
+    const onResult = (record: TJobsInstanceTableItem) => {
+        console.log(record);
+        showResultModal(record);
+    };
+    const onErrorData = (record: TJobsInstanceTableItem) => {
+        console.log(record);
+        showErrorDataModal(record);
+    };
     const columns: ColumnsType<TJobsInstanceTableItem> = [
         {
             title: intl.formatMessage({ id: 'jobs_task_name' }),
@@ -101,13 +113,15 @@ const JobsInstance = () => {
             fixed: 'right',
             key: 'right',
             dataIndex: 'right',
-            width: 200,
+            width: 240,
             render: (text: string, record: TJobsInstanceTableItem) => (
                 <>
                     <IF visible={record.status === 'submitted' || record.status === 'running'}>
                         <a style={{ marginRight: 5 }} onClick={() => { onStop(record); }}>{intl.formatMessage({ id: 'jobs_task_stop_btn' })}</a>
                     </IF>
                     <a style={{ marginRight: 5 }} onClick={() => { onLog(record); }}>{intl.formatMessage({ id: 'jobs_task_log_btn' })}</a>
+                    <a style={{ marginRight: 5 }} onClick={() => { onResult(record); }}>{intl.formatMessage({ id: 'jobs_task_result' })}</a>
+                    <a style={{ marginRight: 5 }} onClick={() => { onErrorData(record); }}>{intl.formatMessage({ id: 'jobs_task_error_data' })}</a>
                 </>
             ),
         },
@@ -131,12 +145,13 @@ const JobsInstance = () => {
                     size: 'small',
                     total: tableData.total,
                     showSizeChanger: true,
-                    defaultPageSize: 20,
                     current: pageParams.pageNumber,
                     pageSize: pageParams.pageSize,
                 }}
             />
             <RenderLoggerModal />
+            <RenderErrorDataModal />
+            <RenderResultModal />
         </div>
     );
 };

@@ -9,6 +9,7 @@ import { FormRender, IFormRender } from '@/common';
 import { useVerificationCode } from '@/hooks';
 import { PWD_REG, EMAIL_REG, CODE_REG } from '@/utils/constants';
 import { $http } from '@/http';
+import { GoBack } from '@/component';
 import './index.less';
 
 const Index = () => {
@@ -43,7 +44,15 @@ const Index = () => {
                 widget: <Input placeholder={`${inputTip}${userNameText}`} />,
             },
             {
-                label: passwordText,
+                label: (
+                    <>
+                        {passwordText}
+                        {' '}
+                        (
+                        {intl.formatMessage({ id: 'password_tip' })}
+                        )
+                    </>
+                ),
                 name: 'password',
                 rules: [
                     { required: true, message: `${passwordText}${requiredTop}` },
@@ -121,7 +130,18 @@ const Index = () => {
         } catch (error) {}
     };
     return (
-        <div className="dv-gray-bg">
+        <div className="dv-gray-bg" style={{ position: 'relative' }}>
+            <GoBack
+                style={{
+                    position: 'absolute',
+                    left: 15,
+                    top: 15,
+                    fontSize: 16,
+                }}
+            >
+                {intl.formatMessage({ id: 'common_back' })}
+
+            </GoBack>
             <div className="dv-register-title dv-margin-auto">
                 {intl.formatMessage({ id: 'register_title' })}
             </div>

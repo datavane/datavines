@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
 import {
-    Table, Button, Form, message,
+    Table, Button, message,
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
-import { EyeOutlined } from '@ant-design/icons';
-import { TWarnTableData, TWarnTableItem } from '@/type/warning';
-import { useCreateWidget } from './hooks/CreateWidget';
+import { TUserItem } from '@/type/User';
+import { useAddUser } from './useAddUser';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
-import { SearchForm } from '@/component';
 import { useMount, Popconfirm } from '@/common';
 
 const Index = () => {
     const intl = useIntl();
-    const form = Form.useForm()[0];
     const [loading, setLoading] = useState(false);
-    const { Render: RenderWidgetModal, show } = useCreateWidget({
+    const { Render: RenderWidgetModal, show } = useAddUser({
         afterClose() {
             getData();
         },
     });
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
-    const [tableData, setTableData] = useState<TWarnTableData>({ list: [], total: 0 });
+    const [tableData, setTableData] = useState<{list: TUserItem[], total: number}>({ list: [], total: 0 });
     const [pageParams, setPageParams] = useState({
         pageNumber: 1,
         pageSize: 10,
@@ -33,15 +30,14 @@ const Index = () => {
             pageSize,
         });
     };
-    const getData = async (values: any = null) => {
+    const getData = async () => {
         try {
             setLoading(true);
             const params = {
                 workspaceId,
                 ...pageParams,
-                ...(values || form.getFieldsValue()),
             };
-            const res = (await $http.get('/sla/sender/page', params)) || [];
+            const res = (await $http.get('/workspace/userPage', params)) || [];
             setTableData({
                 list: res?.records || [],
                 total: res?.total || 0,
@@ -51,23 +47,19 @@ const Index = () => {
             setLoading(false);
         }
     };
-    const onSearch = (_values: any) => {
-        setPageParams({ ...pageParams, pageNumber: 1 });
-        getData({
-            ..._values,
-            pageNumber: 1,
-        });
-    };
     useMount(() => {
         getData();
     });
-    const onEdit = (record: TWarnTableItem) => {
-        show(record);
-    };
+    // const onEdit = (record: TUserItem) => {
+    //     show(record);
+    // };
     const onDelete = async (id: any) => {
         try {
             setLoading(true);
-            const res = await $http.delete(`sla/sender/${id}`);
+            const res = await $http.delete('/workspace/removeUser', {
+                userId: id,
+                workspaceId,
+            });
             if (res) {
                 getData();
                 message.success(intl.formatMessage({ id: 'common_success' }));
@@ -79,30 +71,24 @@ const Index = () => {
             setLoading(false);
         }
     };
-    const columns: ColumnsType<TWarnTableItem> = [
+    const columns: ColumnsType<TUserItem> = [
         {
-            title: intl.formatMessage({ id: 'warn_widget_name' }),
-            dataIndex: 'name',
-            key: 'name',
+            title: intl.formatMessage({ id: 'userName_text' }),
+            dataIndex: 'username',
+            key: 'username',
             render: (text: string) => <div>{text}</div>,
         },
         {
-            title: intl.formatMessage({ id: 'common_type' }),
-            dataIndex: 'type',
-            key: 'type',
+            title: intl.formatMessage({ id: 'email_text' }),
+            dataIndex: 'email',
+            key: 'email',
             render: (text: string) => <div>{text}</div>,
         },
         {
-            title: intl.formatMessage({ id: 'common_updater' }),
-            dataIndex: 'updateBy',
-            key: 'updateBy',
+            title: intl.formatMessage({ id: 'phone_text' }),
+            dataIndex: 'phonne',
+            key: 'phonne',
             render: (text: string) => <div>{text || '--'}</div>,
-        },
-        {
-            title: intl.formatMessage({ id: 'warn_update_time' }),
-            dataIndex: 'updateTime',
-            key: 'updateTime',
-            render: (text: string) => <div>{text}</div>,
         },
         {
             title: intl.formatMessage({ id: 'common_action' }),
@@ -110,9 +96,8 @@ const Index = () => {
             key: 'right',
             dataIndex: 'right',
             width: 100,
-            render: (text: string, record: TWarnTableItem) => (
+            render: (text: string, record: TUserItem) => (
                 <>
-                    <a onClick={() => { onEdit(record); }}>{intl.formatMessage({ id: 'common_edit' })}</a>
                     <Popconfirm
                         onClick={() => onDelete(record.id)}
                     />
@@ -124,15 +109,15 @@ const Index = () => {
         <div className="dv-page-paddinng">
             <div style={{ paddingTop: '20px' }}>
                 <div className="dv-flex-between">
-                    <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
+                    <span />
                     <div style={{ textAlign: 'right', marginBottom: 10 }}>
                         <Button type="primary" onClick={() => { show(null); }}>
-                            {intl.formatMessage({ id: 'warn_create_widget' })}
+                            {intl.formatMessage({ id: 'workspace_user_invite' })}
                         </Button>
                     </div>
                 </div>
             </div>
-            <Table<TWarnTableItem>
+            <Table<TUserItem>
                 loading={loading}
                 size="middle"
                 rowKey="id"

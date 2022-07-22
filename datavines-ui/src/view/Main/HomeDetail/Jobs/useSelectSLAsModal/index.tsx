@@ -31,10 +31,9 @@ const SelectSLAs = ({ innerRef, jobId, id }: InnerProps) => {
                         ...values,
                     };
                     if (id) {
-                        await $http.put('/sla/job', { ...params, id });
-                    } else {
-                        await $http.post('/sla/job', params);
+                        params.id = id;
                     }
+                    await $http.post('/sla/job/createOrUpdate', params);
                     message.success(intl.formatMessage({ id: 'common_success' }));
                 } catch (error) {
                     console.log(error);

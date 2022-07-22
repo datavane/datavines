@@ -40,6 +40,7 @@ export type TDetail = null | {
     id?: number;
     name?: string;
     type?: string;
+    errorDataStorageId?: any;
     dataSourceId?: number;
     executePlatformType?: string;
     executePlatformParameter?: string;

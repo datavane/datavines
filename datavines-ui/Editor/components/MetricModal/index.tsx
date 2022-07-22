@@ -14,6 +14,7 @@ import ActuatorConfigure from './ActuatorConfigure';
 import RunEvnironment from './RunEvnironment';
 import OtherConfig from './OtherConfig';
 import { pickProps } from './helper';
+import ErrorDataStoreConfig from './ErrorDataStoreConfig';
 import { TDetail } from './type';
 
 type InnerProps = {
@@ -34,6 +35,7 @@ const keys = [
     'timeoutStrategy',
     'tenantCode',
     'env',
+    'errorDataStorageId',
 ];
 export const MetricConfig = (props: InnerProps) => {
     const { innerRef, detail } = props;
@@ -70,6 +72,7 @@ export const MetricConfig = (props: InnerProps) => {
                         };
                     }
                     params.parameter = JSON.stringify([parameter]);
+                    console.log('params', params);
                     resolve(params);
                 }).catch((error) => {
                     reject(error);
@@ -85,6 +88,7 @@ export const MetricConfig = (props: InnerProps) => {
             <ActuatorConfigure detail={detail} form={form} />
             <RunEvnironment id={id} form={form} />
             <OtherConfig detail={detail} form={form} />
+            <ErrorDataStoreConfig detail={detail} form={form} />
         </Form>
     );
 };
