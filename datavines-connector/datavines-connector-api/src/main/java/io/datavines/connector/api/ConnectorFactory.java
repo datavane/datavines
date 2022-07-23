@@ -32,4 +32,6 @@ public interface ConnectorFactory {
     ConnectorParameterConverter getConnectorParameterConverter();
 
     Executor getExecutor();
+
+    TypeConverter getTypeConverter();
 }

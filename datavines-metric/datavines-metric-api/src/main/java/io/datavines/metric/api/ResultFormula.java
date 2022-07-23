@@ -31,7 +31,7 @@ public interface ResultFormula {
 
     double getResult(double actualValue, double expectedValue);
 
-    String getResultFormat();
+    String getResultFormat(boolean isEn);
 
     String getSymbol();
 }

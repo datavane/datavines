@@ -277,7 +277,7 @@ CREATE TABLE dv_task_result (
     result_formula varchar(255) DEFAULT NULL,
     operator varchar(255) DEFAULT NULL,
     threshold float8 DEFAULT NULL,
-    state varchar(255) NOT NULL DEFAULT 'none',
+    state int2 NOT NULL DEFAULT 0,
     create_time timestamp(0) DEFAULT NULL,
     update_time timestamp(0) DEFAULT NULL,
     CONSTRAINT task_result_pk PRIMARY KEY (id)
@@ -295,7 +295,7 @@ CREATE TABLE dv_datasource (
     update_by int8 DEFAULT NULL,
     update_time timestamp(0) DEFAULT NULL,
     CONSTRAINT datasource_pk PRIMARY KEY (id),
-    CONSTRAINT datasource_name_un UNIQUE (name)
+    CONSTRAINT datasource_name_un UNIQUE (name,workspace_id)
 );
 
 DROP TABLE IF EXISTS dv_workspace;

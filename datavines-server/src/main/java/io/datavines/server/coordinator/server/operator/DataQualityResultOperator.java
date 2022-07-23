@@ -67,7 +67,7 @@ public class DataQualityResultOperator {
     private void checkDqExecuteResult(TaskRequest taskRequest,
                                       TaskResult taskResult) {
         if (isFailure(taskResult)) {
-            taskResult.setState(DqTaskState.FAILURE.getDescription());
+            taskResult.setState(DqTaskState.FAILURE.getCode());
 //            DqFailureStrategy dqFailureStrategy = DqFailureStrategy.of(taskResult.getFailureStrategy());
 //            if (dqFailureStrategy != null) {
 //                taskResult.setState(DqTaskState.FAILURE.getDescription());
@@ -83,7 +83,7 @@ public class DataQualityResultOperator {
 //                }
 //            }
         } else {
-            taskResult.setState(DqTaskState.SUCCESS.getDescription());
+            taskResult.setState(DqTaskState.SUCCESS.getCode());
         }
 
         jobExternalService.updateTaskResult(taskResult);

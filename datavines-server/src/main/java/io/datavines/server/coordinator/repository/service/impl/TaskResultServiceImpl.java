@@ -16,11 +16,26 @@
  */
 package io.datavines.server.coordinator.repository.service.impl;
 
+import io.datavines.common.entity.TaskParameter;
+import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.core.utils.LanguageUtils;
+import io.datavines.metric.api.ConfigItem;
+import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
+import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.coordinator.api.dto.vo.TaskResultVO;
+import io.datavines.server.coordinator.repository.entity.Job;
+import io.datavines.server.coordinator.repository.entity.Task;
+import io.datavines.server.coordinator.repository.mapper.TaskMapper;
+import io.datavines.server.coordinator.repository.service.JobService;
+import io.datavines.server.coordinator.repository.service.TaskService;
+import io.datavines.server.enums.DqTaskState;
 import io.datavines.server.enums.OperatorType;
 import io.datavines.spi.PluginLoader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -28,11 +43,16 @@ import io.datavines.server.coordinator.repository.entity.TaskResult;
 import io.datavines.server.coordinator.repository.mapper.TaskResultMapper;
 import io.datavines.server.coordinator.repository.service.TaskResultService;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @Service("taskResultService")
 public class TaskResultServiceImpl extends ServiceImpl<TaskResultMapper, TaskResult>  implements TaskResultService {
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private JobService jobService;
 
     @Override
     public long insert(TaskResult taskResult) {
@@ -70,14 +90,47 @@ public class TaskResultServiceImpl extends ServiceImpl<TaskResultMapper, TaskRes
         parameters.put("threshold",taskResult.getThreshold()+"");
         parameters.put("operator",OperatorType.of(taskResult.getOperator()).getSymbol());
 
+        Task task = taskService.getById(taskId);
+        if (!Objects.isNull(task)) {
+            Job job = jobService.getById(task.getJobId());
+            List<TaskParameter> taskParameterList = JSONUtils.toList(job.getParameter(),TaskParameter.class);
+            for (TaskParameter taskParameter : taskParameterList) {
+                if (taskParameter != null) {
+                    SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(taskParameter.getMetricType());
+                    Map<String,ConfigItem> configMap = sqlMetric.getConfigMap();
+                    Map<String,Object> paramMap = new HashMap<>();
+                    String uniqueName = taskParameter.getMetricType() + "."
+                            + taskParameter.getMetricParameter().get("database")+ "."
+                            + taskParameter.getMetricParameter().get("table")+ "."
+                            + taskParameter.getMetricParameter().get("column");
+
+                    String taskResultUniqueName = taskResult.getMetricName()+ "."
+                            + taskResult.getDatabaseName() + "."
+                            + taskResult.getTableName() + "."
+                            + taskResult.getColumnName();
+
+                    if (uniqueName.equalsIgnoreCase(taskResultUniqueName)) {
+                        configMap.entrySet().stream().filter(x->{
+                            return !("column".equalsIgnoreCase(x.getKey()) || "table".equalsIgnoreCase(x.getKey()) || "filter".equalsIgnoreCase(x.getKey()));
+                        }).forEach(config -> {
+                            paramMap.put(config.getValue().getLabel(!LanguageUtils.isZhContext()), taskParameter.getMetricParameter().get(config.getKey()));
+                        });
+                        taskResultVO.setMetricParameter(paramMap);
+                    }
+                }
+            }
+        }
+
         ResultFormula resultFormula =
                 PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(taskResult.getResultFormula());
-        String resultFormulaFormat = resultFormula.getResultFormat()+" ${operator} ${threshold}";
+        String resultFormulaFormat = resultFormula.getResultFormat(!LanguageUtils.isZhContext())+" ${operator} ${threshold}";
 
         taskResultVO.setCheckSubject(taskResult.getDatabaseName()+"."+taskResult.getTableName()+"."+taskResult.getColumnName());
-        taskResultVO.setCheckResult(taskResult.getState());
-        taskResultVO.setExpectedType(taskResult.getExpectedType());
-        taskResultVO.setMetricName(taskResult.getMetricName());
+        taskResultVO.setCheckResult(DqTaskState.of(taskResult.getState()).getDescription(!LanguageUtils.isZhContext()));
+        ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(taskResult.getExpectedType());
+        taskResultVO.setExpectedType(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()));
+        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(taskResult.getMetricName());
+        taskResultVO.setMetricName(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()));
         taskResultVO.setResultFormulaFormat(PlaceholderUtils.replacePlaceholders(resultFormulaFormat, parameters, true));
 
         return taskResultVO;

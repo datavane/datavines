@@ -23,7 +23,6 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
-import io.datavines.metric.api.MetricConstants;
 
 import io.datavines.spi.PluginLoader;
 
@@ -31,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.config.ConfigConstants.*;
+import static io.datavines.engine.api.ConfigConstants.*;
 
 public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurationBuilder {
 

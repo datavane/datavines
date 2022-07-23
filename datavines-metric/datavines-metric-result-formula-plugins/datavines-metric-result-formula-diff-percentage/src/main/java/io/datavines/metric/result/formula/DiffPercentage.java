@@ -22,7 +22,7 @@ public class DiffPercentage implements ResultFormula {
 
     @Override
     public String getName() {
-        return "|ActualValue-ExpectedValue|/ExpectedValue*100%";
+        return "|Actual-Expected|/Expected*100%";
     }
 
     @Override
@@ -41,8 +41,9 @@ public class DiffPercentage implements ResultFormula {
     }
 
     @Override
-    public String getResultFormat() {
-        return "|ActualValue(${actual_value})-ExpectedValue(${expected_value})|/ExpectedValue(${expected_value}) x 100%";
+    public String getResultFormat(boolean isEn) {
+        return isEn? "|Actual(${actual_value})-Expected(${expected_value})|/Expected(${expected_value}) x 100%" :
+                "|实际值(${actual_value})-期望值(${expected_value})|/期望值(${expected_value}) x 100%";
     }
 
     @Override

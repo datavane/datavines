@@ -82,6 +82,4 @@ public class SensitiveDataConverter extends MessageConverter {
 
         return sb.toString();
     }
-
-
 }

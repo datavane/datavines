@@ -21,7 +21,7 @@ import io.datavines.connector.api.ConnectorParameterConverter;
 import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.Executor;
 
-public class MysqlConnectorFactory extends JdbcConnectorFactory {
+public class MysqlConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public ConnectorParameterConverter getConnectorParameterConverter() {

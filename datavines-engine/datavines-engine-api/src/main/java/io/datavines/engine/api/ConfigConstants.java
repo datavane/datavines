@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.config;
+package io.datavines.engine.api;
 
 public class ConfigConstants {
 
@@ -23,6 +23,7 @@ public class ConfigConstants {
     public static final String TABLE = "table";
     public static final String FILTER = "filter";
     public static final String COLUMN = "column";
+    public static final String SRC_CONNECTOR_TYPE = "src_connector_type";
     public static final String TARGET_CONNECTOR_TYPE = "target_connector_type";
     public static final String TARGET_DATASOURCE_ID = "target_datasource_id";
     public static final String TARGET_TABLE = "target_table";
@@ -86,4 +87,8 @@ public class ConfigConstants {
      * date format of yyyy-MM-dd HH:mm:ss
      */
     public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+
+    public static final String S001 = "\001";
+
+    public static final String DOUBLE_AT = "@@";
 }

@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.config.ConfigConstants.*;
+import static io.datavines.engine.api.ConfigConstants.*;
 
 public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfigurationBuilder {
 

@@ -16,7 +16,6 @@
  */
 package io.datavines.server.coordinator.repository.service.impl;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;

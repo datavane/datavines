@@ -56,7 +56,7 @@ public class NminuteCronImpl implements FunCron {
                 .withMonth(always())
                 .withDoM(always())
                 .withHour(always())
-                .withMinute(every(on(minute),nminute))
+                .withMinute(every(on(nminute),minute))
                 .withSecond(on (0))
                 .instance();
         return cron.asString();

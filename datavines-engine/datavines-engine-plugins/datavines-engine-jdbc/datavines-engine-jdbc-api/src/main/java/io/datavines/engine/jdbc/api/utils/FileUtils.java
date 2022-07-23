@@ -16,6 +16,7 @@
  */
 package io.datavines.engine.jdbc.api.utils;
 
+import io.datavines.connector.api.TypeConverter;
 import io.datavines.engine.jdbc.api.entity.QueryColumn;
 import io.datavines.engine.jdbc.api.entity.ResultListWithColumns;
 import lombok.extern.slf4j.Slf4j;
@@ -35,16 +36,17 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import static io.datavines.engine.api.ConfigConstants.DOUBLE_AT;
+import static io.datavines.engine.api.ConfigConstants.S001;
 
 @Slf4j
 public class FileUtils {
 
-    public static void writeToLocal(ResultListWithColumns resultListWithColumns, String directory, String name,boolean needHeader) {
-
-        //首先判断文件夹是否存在
+    public static void writeToLocal(ResultListWithColumns resultListWithColumns,
+                                    String directory,
+                                    String name,
+                                    boolean needHeader,
+                                    TypeConverter typeConverter) {
 
         BufferedWriter bw = null;
         try {
@@ -61,21 +63,20 @@ public class FileUtils {
                 List<QueryColumn> columns = resultListWithColumns.getColumns();
                 List<String> headerList = new ArrayList<>();
                 columns.forEach(header -> {
-                    headerList.add(header.getName()+"@@"+header.getType());
+                    headerList.add(header.getName() + DOUBLE_AT + typeConverter.convert(header.getType()));
                 });
                 if (needHeader) {
-                    bw.write(String.join("\001",headerList));
+                    bw.write(String.join(S001,headerList));
                     bw.newLine();
                 }
-
 
                 for(Map<String, Object> row: resultListWithColumns.getResultList()) {
                     List<String> rowDataList = new ArrayList<>();
                     headerList.forEach(header -> {
-                        rowDataList.add((String.valueOf(row.get(header.split("@@")[0]))));
+                        rowDataList.add((String.valueOf(row.get(header.split(DOUBLE_AT)[0]))));
 
                     });
-                    bw.write(String.join("\001",rowDataList));
+                    bw.write(String.join(S001,rowDataList));
                     bw.newLine();
                 }
                 bw.flush();

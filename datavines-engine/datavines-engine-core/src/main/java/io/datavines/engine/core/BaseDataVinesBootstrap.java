@@ -72,7 +72,7 @@ public abstract class BaseDataVinesBootstrap {
     }
 
     @SafeVarargs
-    private final void checkConfig(List<? extends Component>... components) {
+    private final void checkConfig(List<? extends Component>... components) throws Exception{
         boolean configValid = true;
         for (List<? extends Component> componentList : components) {
             for (Component component : componentList) {
@@ -91,7 +91,7 @@ public abstract class BaseDataVinesBootstrap {
 
                 if (!configValid) {
                     // invalid configuration
-                    System.exit(-1);
+                    throw new Exception("config is invalid , please check the config");
                 }
             }
         }

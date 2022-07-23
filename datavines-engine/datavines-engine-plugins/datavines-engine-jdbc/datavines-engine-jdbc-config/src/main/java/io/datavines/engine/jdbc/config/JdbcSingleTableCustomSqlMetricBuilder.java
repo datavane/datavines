@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.config.ConfigConstants.*;
+import static io.datavines.engine.api.ConfigConstants.*;
 
 public class JdbcSingleTableCustomSqlMetricBuilder extends JdbcSingleTableMetricBuilder {
 

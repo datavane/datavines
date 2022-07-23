@@ -41,8 +41,6 @@ public class TaskParameter {
 
     private double threshold = 0;
 
-    private String failureStrategy = "none";
-
     public ConnectorParameter getSrcConnectorParameter() {
         return srcConnectorParameter;
     }
@@ -113,13 +111,5 @@ public class TaskParameter {
 
     public void setThreshold(double threshold) {
         this.threshold = threshold;
-    }
-
-    public String getFailureStrategy() {
-        return failureStrategy;
-    }
-
-    public void setFailureStrategy(String failureStrategy) {
-        this.failureStrategy = failureStrategy;
     }
 }

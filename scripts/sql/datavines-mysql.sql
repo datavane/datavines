@@ -354,7 +354,7 @@ CREATE TABLE `dv_task_result` (
     `result_formula` varchar(255) DEFAULT NULL,
     `operator` varchar(255) DEFAULT NULL,
     `threshold` double DEFAULT NULL,
-    `state` varchar(255) NOT NULL DEFAULT 'none',
+    `state` int(2) NOT NULL DEFAULT 0,
     `create_time` datetime DEFAULT NULL,
     `update_time` datetime DEFAULT NULL,
     PRIMARY KEY (`id`)
@@ -371,7 +371,7 @@ CREATE TABLE `dv_datasource` (
     `update_by` bigint(20) DEFAULT NULL,
     `update_time` datetime DEFAULT NULL,
     PRIMARY KEY (`id`),
-    UNIQUE KEY `datasource_un` (`name`)
+    UNIQUE KEY `datasource_un` (`name`,`workspace_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `dv_workspace` (

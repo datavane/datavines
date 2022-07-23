@@ -35,6 +35,17 @@
             <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-api</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-connector-all</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
     </dependencies>
 
 

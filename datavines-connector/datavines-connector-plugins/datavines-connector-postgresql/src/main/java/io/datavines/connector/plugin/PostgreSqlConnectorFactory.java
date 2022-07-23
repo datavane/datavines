@@ -21,7 +21,7 @@ import io.datavines.connector.api.ConnectorParameterConverter;
 import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.Executor;
 
-public class PostgreSqlConnectorFactory extends JdbcConnectorFactory {
+public class PostgreSqlConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public ConnectorParameterConverter getConnectorParameterConverter() {

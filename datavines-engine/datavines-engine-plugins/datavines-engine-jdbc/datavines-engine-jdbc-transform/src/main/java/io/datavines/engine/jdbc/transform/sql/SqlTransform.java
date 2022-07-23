@@ -19,6 +19,7 @@ package io.datavines.engine.jdbc.transform.sql;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
 import io.datavines.common.config.enums.TransformType;
+import io.datavines.engine.api.ConfigConstants;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcRuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcTransform;
@@ -29,6 +30,9 @@ import org.slf4j.Logger;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static io.datavines.engine.api.ConfigConstants.SQL;
+import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
 public class SqlTransform implements JdbcTransform {
 
@@ -50,7 +54,7 @@ public class SqlTransform implements JdbcTransform {
 
     @Override
     public CheckResult checkConfig() {
-        List<String> requiredOptions = Arrays.asList("sql", "plugin_type");
+        List<String> requiredOptions = Arrays.asList(SQL, PLUGIN_TYPE);
 
         List<String> nonExistsOptions = new ArrayList<>();
         requiredOptions.forEach(x->{
@@ -79,9 +83,10 @@ public class SqlTransform implements JdbcTransform {
 
         ResultList resultList = null;
         try {
-            String sql = config.getString("sql");
-            logger.info("transform sql is: {}", sql);
-            switch (TransformType.of(config.getString("plugin_type"))){
+            String sql = config.getString(SQL);
+            String pluginType = config.getString(PLUGIN_TYPE);
+            logger.info("transform sql is: {}, transform_type is : {}", sql, pluginType);
+            switch (TransformType.of(pluginType)){
                 case INVALIDATE_ITEMS:
                     resultList = new InvalidateItemsExecutor().execute(env.getSourceConnection(), config);
                     break;

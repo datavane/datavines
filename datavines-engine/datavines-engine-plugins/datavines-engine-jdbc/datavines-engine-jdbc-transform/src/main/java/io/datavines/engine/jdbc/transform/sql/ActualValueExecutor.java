@@ -24,19 +24,22 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import static io.datavines.engine.api.ConfigConstants.INVALIDATE_ITEMS_TABLE;
+import static io.datavines.engine.api.ConfigConstants.SQL;
+
 public class ActualValueExecutor implements ITransformExecutor {
 
     @Override
     public ResultList execute(Connection connection, Config config) throws Exception {
 
-        String outputTable = config.getString("invalidate_items_table");
-        String sql = config.getString("sql");
+        String outputTable = config.getString(INVALIDATE_ITEMS_TABLE);
+        String sql = config.getString(SQL);
 
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);
         ResultList resultList = SqlUtils.getListFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
         if (StringUtils.isNotEmpty(outputTable) && !"null".equals(outputTable)) {
-            statement.execute("drop view " + outputTable);
+            statement.execute("DROP VIEW " + outputTable);
         }
         statement.close();
         resultSet.close();

@@ -38,7 +38,6 @@
         <module>datavines-engine-jdbc-transform</module>
         <module>datavines-engine-jdbc-connector</module>
         <module>datavines-engine-jdbc-connector-file</module>
-
     </modules>
 
 </project>

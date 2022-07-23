@@ -16,12 +16,9 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Executor;
-import io.datavines.connector.api.ResponseConverter;
+import io.datavines.connector.api.*;
 
-public abstract class JdbcConnectorFactory implements ConnectorFactory {
+public abstract class AbstractJdbcConnectorFactory implements ConnectorFactory {
 
     @Override
     public String getCategory() {
@@ -36,5 +33,10 @@ public abstract class JdbcConnectorFactory implements ConnectorFactory {
     @Override
     public ConnectorParameterConverter getConnectorParameterConverter() {
         return new JdbcConnectorParameterConverter();
+    }
+
+    @Override
+    public TypeConverter getTypeConverter() {
+        return new JdbcTypeConverter();
     }
 }

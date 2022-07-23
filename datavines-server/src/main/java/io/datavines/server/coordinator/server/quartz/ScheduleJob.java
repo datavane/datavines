@@ -61,7 +61,7 @@ public class ScheduleJob implements org.quartz.Job {
 
         JobDataMap dataMap = context.getJobDetail().getJobDataMap();
 
-        Long jobId = dataMap.getLong(DataVinesConstants.DATASOURCE_ID);
+        Long jobId = dataMap.getLong(DataVinesConstants.JOB_ID);
 
         LocalDateTime scheduleTime = DateUtils.date2LocalDateTime(context.getScheduledFireTime());
         LocalDateTime fireTime = DateUtils.date2LocalDateTime(context.getFireTime());

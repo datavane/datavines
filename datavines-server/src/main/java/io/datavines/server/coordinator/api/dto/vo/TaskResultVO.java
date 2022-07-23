@@ -16,11 +16,10 @@
  */
 package io.datavines.server.coordinator.api.dto.vo;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.Map;
 
 @Data
 public class TaskResultVO implements Serializable {
@@ -28,6 +27,8 @@ public class TaskResultVO implements Serializable {
     private String checkSubject;
 
     private String metricName;
+
+    private Map<String,Object> metricParameter;
 
     private String checkResult;
 
