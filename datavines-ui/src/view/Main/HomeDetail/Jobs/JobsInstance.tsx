@@ -25,12 +25,12 @@ const JobsInstance = () => {
         pageSize: 10,
     });
     const [qs] = useState(querystring.parse(window.location.href.split('?')[1] || ''));
-    const getData = async (values: any = null) => {
+    const getData = async (values?: any, $pageParams?: any) => {
         try {
             setLoading(true);
             const res = (await $http.get('/task/page', {
                 jobId: qs.jobId,
-                ...pageParams,
+                ...($pageParams || pageParams),
                 ...(values || form.getFieldsValue()),
             })) || [];
             setTableData({
@@ -54,6 +54,10 @@ const JobsInstance = () => {
     };
     const onChange = ({ current, pageSize }: any) => {
         setPageParams({
+            pageNumber: current,
+            pageSize,
+        });
+        getData(null, {
             pageNumber: current,
             pageSize,
         });

@@ -7,7 +7,7 @@ type TProps = {
 
 const ContentLayout: React.FC<TProps> = ({ height, style, children }) => (
     <div style={{
-        height: height || 'calc(100vh - 61px)',
+        height: height || 'calc(100vh - 70px)',
         backgroundColor: '#fff',
         overflowY: 'auto',
         ...(style || {}),

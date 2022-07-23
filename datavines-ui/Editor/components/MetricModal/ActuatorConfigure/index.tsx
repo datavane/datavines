@@ -122,7 +122,7 @@ const Index = ({ form, detail }: InnerProps) => {
         </>
     );
     return (
-        <Title title={intl.formatMessage({ id: 'dv_metric_title_actuator_configure' })}>
+        <Title title={intl.formatMessage({ id: 'dv_metric_title_actuator_engine' })}>
             <Row>
                 <Col span={12} style={{ display: 'flex' }}>
                     <Form.Item

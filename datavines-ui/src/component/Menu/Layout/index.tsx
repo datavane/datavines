@@ -28,7 +28,7 @@ const MenuLayout: React.FC<TMainProps> = ({ children, menus, visible = true }) =
             <Layout>
                 <Sider
                     theme="light"
-                    style={{ height: 'calc(100vh - 50px)', overflow: 'auto' }}
+                    style={{ height: 'calc(100vh - 60px)', overflow: 'auto', borderTop: '1px solid #f0f0f0' }}
                     width={180}
                     collapsedWidth={45}
                     trigger={(

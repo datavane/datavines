@@ -50,15 +50,10 @@ export default React.memo(() => {
         <CustomSelect
             showSearch
             style={{
-                width: 150,
+                width: 240,
                 height: 30,
                 display: 'flex',
-                // lineHeight: '30px',
-                // fontSize: 12,
-                // position: 'relative',
-                // verticalAlign: 'middle',
             }}
-            // disabled={disabled}
             size="small"
             placeholder={intl.formatMessage({ id: 'header_top_search_msg' })}
             optionFilterProp="children"
@@ -75,12 +70,11 @@ export default React.memo(() => {
             <span className="main-color" style={{ fontSize: 18, fontWeight: 700, marginRight: 20 }}>DataVines</span>
             <IF visible={isDetailPage}>
                 <a onClick={goBack} style={{ fontSize: 14, marginLeft: 20 }}>{intl.formatMessage({ id: 'common_back' })}</a>
-                <div className="dv-header__work-space" style={{ paddingRight: 0 }}>
+                {/* <div className="dv-header__work-space" style={{ paddingRight: 0 }}>
                     {renderSelect()}
-                </div>
+                </div> */}
             </IF>
             <IF visible={!isDetailPage}>
-                {/* <span className="main-color" style={{ fontSize: 14, marginLeft: 20 }}>{intl.formatMessage({ id: 'datasource' })}</span> */}
                 <div className="dv-header__work-space">
                     {renderSelect()}
                     <Dropdown
@@ -139,7 +133,6 @@ export default React.memo(() => {
                     style={{
                         marginLeft: 10,
                         height: 32,
-                        borderRadius: '16px',
                         display: 'inline-block',
                         verticalAlign: 'middle',
                         marginTop: 10,

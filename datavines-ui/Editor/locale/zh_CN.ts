@@ -22,7 +22,7 @@ export default {
     dv_metric_expected_value_type: '期望值类型',
     dv_metric_title_expected_value: '期望值配置',
     dv_metric_title_verify_configure: '校验配置',
-    dv_metric_title_actuator_configure: '执行器配置',
+    dv_metric_title_actuator_engine: '执行器引擎',
     editor_dv_metric_select_placeholder: '请选择指标!',
     editor_dv_metric_select_databases: '请选择数据库!',
     editor_dv_metric_select_table: '请选择表!',

@@ -319,7 +319,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                     }
                     return (
                         <Row>
-                            <Col span={6}>
+                            <Col style={{ display: 'inline-block' }}>
                                 <Form.Item
                                     label={intl.formatMessage({ id: 'jobs_schedule_obtain_time' })}
                                     name="startTime"
@@ -328,21 +328,20 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                                 >
                                     {Date}
                                 </Form.Item>
+
                             </Col>
-                            <span style={{ marginRight: 60 }}>
+                            <span style={{ margin: '5px 10px 0px' }}>
                                 {getIntl('jobs_schedule_time_to')}
                             </span>
-                            <Col span={6}>
-                                <Form.Item
-                                    label=""
-                                    name="endTime"
-                                    initialValue={detail?.endTime ? moment(detail?.endTime) : get100Years()}
-                                    rules={requiredRule}
-                                    style={{ marginLeft: -20 }}
-                                >
-                                    {Date}
-                                </Form.Item>
-                            </Col>
+                            <Form.Item
+                                label=""
+                                name="endTime"
+                                initialValue={detail?.endTime ? moment(detail?.endTime) : get100Years()}
+                                rules={requiredRule}
+                                style={{ display: 'inline-block' }}
+                            >
+                                {Date}
+                            </Form.Item>
                         </Row>
                     );
                 }}

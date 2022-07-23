@@ -167,10 +167,11 @@ const Index = ({
                     >
                         <CustomSelect onChange={tableChange} allowClear source={tables} sourceValueMap="name" />
                     </Form.Item>
-                    <Form.Item noStyle dependencies={['table']}>
+                    <Form.Item noStyle dependencies={['table', 'metricType']}>
                         {() => {
                             const value = form.getFieldValue('table');
-                            if (!value) {
+                            const metricTypeValue = form.getFieldValue('metricType');
+                            if (!value || metricTypeValue === 'custom_sql') {
                                 return null;
                             }
                             return renderColumn();

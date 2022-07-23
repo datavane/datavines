@@ -22,7 +22,7 @@ export default {
     dv_metric_expected_value_type: 'Expected value type',
     dv_metric_title_expected_value: 'Expected value configuration',
     dv_metric_title_verify_configure: 'Verify configuration',
-    dv_metric_title_actuator_configure: 'Actuator configuration',
+    dv_metric_title_actuator_engine: 'Actuator engine',
     editor_dv_metric_select_placeholder: 'Please select metric!',
     editor_dv_metric_select_databases: 'Please select databases!',
     editor_dv_metric_select_table: 'Please select table!',

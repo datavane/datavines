@@ -93,7 +93,6 @@ const Inner = ({ innerRef }: InnerProps) => {
         return <Spin spinning={loading} />;
     }
     const slaId = (data?.record?.slaList || [])[0]?.id;
-    console.log('slaId', data, slaId);
     return (
         <div>
             <Tabs

@@ -133,12 +133,13 @@ export const useMetricModal = () => {
                         intl.formatMessage({ id: 'dv_config_text' })
                     }
                 </span>
-                <span style={{ marginRight: 20 }}>
+                <span style={{ marginRight: 20, marginTop: -8 }}>
                     <Button type="primary" onClick={onSave}>{intl.formatMessage({ id: 'dv_metric_save' })}</Button>
                     <Button type="primary" onClick={onSaveRun} style={{ marginLeft: 12 }}>{intl.formatMessage({ id: 'dv_metric_save_run' })}</Button>
                 </span>
             </div>
         ),
+        className: 'dv-modal-fullscreen',
         width: 900,
         afterClose() {
             setId('');
