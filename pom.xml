@@ -239,6 +239,12 @@
 
             <dependency>
                 <groupId>io.datavines</groupId>
+                <artifactId>datavines-connector-all</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
                 <artifactId>datavines-common</artifactId>
                 <version>${project.version}</version>
             </dependency>

@@ -14,32 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.plugin;
+package io.datavines.connector.api;
 
-import io.datavines.connector.api.Connector;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Dialect;
-import io.datavines.connector.api.Executor;
+import io.datavines.common.enums.DataType;
 
-public class ImpalaConnectorFactory extends AbstractJdbcConnectorFactory {
+public interface TypeConverter {
 
-    @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new ImpalaConnectorParameterConverter();
-    }
+    DataType convert(String originType);
 
-    @Override
-    public Dialect getDialect() {
-        return new ImpalaDialect();
-    }
-
-    @Override
-    public Connector getConnector() {
-        return new ImpalaConnector();
-    }
-
-    @Override
-    public Executor getExecutor() {
-        return new ImpalaExecutor();
-    }
+    String convertToOriginType(DataType dataType);
 }

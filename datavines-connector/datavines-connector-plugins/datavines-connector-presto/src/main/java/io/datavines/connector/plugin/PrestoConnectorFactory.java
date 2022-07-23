@@ -21,7 +21,7 @@ import io.datavines.connector.api.ConnectorParameterConverter;
 import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.Executor;
 
-public class PrestoConnectorFactory extends JdbcConnectorFactory{
+public class PrestoConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public ConnectorParameterConverter getConnectorParameterConverter() {

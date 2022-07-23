@@ -19,10 +19,8 @@ package io.datavines.engine.jdbc.config;
 import io.datavines.common.config.SinkConfig;
 import io.datavines.common.config.enums.SinkType;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
-import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.spi.PluginLoader;
 import io.datavines.storage.api.StorageFactory;
 
@@ -31,7 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.config.ConfigConstants.*;
+import static io.datavines.engine.api.ConfigConstants.*;
 import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public class JdbcSingleTableMetricBuilder extends BaseJdbcConfigurationBuilder {
@@ -69,6 +67,7 @@ public class JdbcSingleTableMetricBuilder extends BaseJdbcConfigurationBuilder {
                 connectorParameterMap.put(ERROR_DATA_FILE_NAME, taskInfo.getErrorDataFileName());
                 connectorParameterMap.put(ERROR_DATA_FILE_DIR, inputParameter.get(ERROR_DATA_FILE_DIR));
                 connectorParameterMap.put(METRIC_NAME, inputParameter.get(METRIC_NAME));
+                connectorParameterMap.put(SRC_CONNECTOR_TYPE, inputParameter.get(SRC_CONNECTOR_TYPE));
                 connectorParameterMap.put(TASK_ID, inputParameter.get(TASK_ID));
                 errorDataSinkConfig.setConfig(connectorParameterMap);
 

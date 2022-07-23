@@ -34,12 +34,4 @@
         <module>datavines-connector-api</module>
         <module>datavines-connector-plugins</module>
     </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-common</artifactId>
-        </dependency>
-    </dependencies>
-
 </project>

@@ -24,7 +24,7 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.config.BaseDataQualityConfigurationBuilder;
-import io.datavines.engine.config.ConfigConstants;
+import io.datavines.engine.api.ConfigConstants;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
@@ -35,7 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.config.ConfigConstants.*;
+import static io.datavines.engine.api.ConfigConstants.*;
 
 public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfigurationBuilder {
 
@@ -68,6 +68,7 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
             connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
             inputParameter.put(REGEX_KEY, connectorFactory.getDialect().getRegexKey());
             inputParameter.put(NOT_REGEX_KEY, connectorFactory.getDialect().getNotRegexKey());
+            inputParameter.put(SRC_CONNECTOR_TYPE, srcConnectorParameter.getType());
 
             sourceConfig.setPlugin(connectorFactory.getCategory());
             sourceConfig.setConfig(connectorParameterMap);

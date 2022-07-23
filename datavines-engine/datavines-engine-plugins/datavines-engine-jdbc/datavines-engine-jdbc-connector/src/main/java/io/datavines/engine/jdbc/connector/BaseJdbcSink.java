@@ -19,22 +19,30 @@ package io.datavines.engine.jdbc.connector;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
 import io.datavines.common.config.enums.SinkType;
+import io.datavines.common.enums.DataType;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.connector.api.TypeConverter;
+import io.datavines.engine.api.ConfigConstants;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcRuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcSink;
 import io.datavines.engine.jdbc.api.entity.ResultList;
 import io.datavines.engine.jdbc.api.utils.FileUtils;
 import io.datavines.engine.jdbc.api.utils.LoggerFactory;
+import io.datavines.spi.PluginLoader;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.datavines.engine.api.ConfigConstants.*;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
 public class BaseJdbcSink implements JdbcSink {
@@ -108,9 +116,9 @@ public class BaseJdbcSink implements JdbcSink {
                     break;
                 case ACTUAL_VALUE:
                 case TASK_RESULT:
-                    String sql = config.getString("sql");
+                    String sql = config.getString(SQL);
                     sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
-                    logger.info("execute output sql : {}", sql);
+                    logger.info("execute" + config.getString(PLUGIN_TYPE) + "output sql : {}", sql);
                     executeInsert(sql, env);
                     break;
                 default:
@@ -132,32 +140,32 @@ public class BaseJdbcSink implements JdbcSink {
     }
 
     private String buildCreateTableSql(String tableName, String header) {
+
+        TypeConverter typeConverter = PluginLoader.getPluginLoader(ConnectorFactory.class)
+                .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE))
+                .getTypeConverter();
         StringBuilder createTableSql = new StringBuilder();
         createTableSql.append("CREATE TABLE ").append(tableName).append(" (");
-        String[] headerList = header.split("\001");
+        String[] headerList = header.split(S001);
         List<String> columnList = new ArrayList<>();
         for (String column: headerList) {
-            String[] columnSplit = column.split("@@");
-            if ("VARCHAR".equalsIgnoreCase(columnSplit[1])) {
-                columnList.add(columnSplit[0]+" TEXT NULL");
-            } else {
-                columnList.add(columnSplit[0]+" "+columnSplit[1]+" NULL");
-            }
-
+            String[] columnSplit = column.split(DOUBLE_AT);
+            columnList.add(columnSplit[0]+" "+typeConverter.convertToOriginType(DataType.valueOf(columnSplit[1]))+" NULL");
         }
         createTableSql.append(String.join(",", columnList));
         createTableSql.append(" )");
+        logger.info("error data create table sql : {}", createTableSql.toString());
         return createTableSql.toString();
     }
 
     private String buildInsertSql(String tableName, String header) {
         StringBuilder insertSql = new StringBuilder();
         insertSql.append("INSERT INTO ").append(tableName).append(" (");
-        String[] headerList = header.split("\001");
+        String[] headerList = header.split(S001);
         List<String> columnList = new ArrayList<>();
         List<String> placeholderList = new ArrayList<>();
         for (String column: headerList) {
-            String[] columnSplit = column.split("@@");
+            String[] columnSplit = column.split(DOUBLE_AT);
             columnList.add(columnSplit[0]);
             placeholderList.add("?");
         }
@@ -175,18 +183,18 @@ public class BaseJdbcSink implements JdbcSink {
         //执行drop if exist
         //执行建表语句
         //执行批量插入语句
-        String tableName = config.getString("error_data_file_name");
-        String filePath = config.getString("error_data_file_dir") + "/" + tableName + ".csv";
+        String tableName = config.getString(ERROR_DATA_FILE_NAME);
+        String filePath = config.getString(ERROR_DATA_FILE_DIR) + "/" + tableName + ".csv";
         logger.info("log file path : {}", filePath);
         File file = new File(filePath);
         if (file.exists()) {
             List<String> headerList = FileUtils.readPartFileContent(filePath,0,1);
             if (CollectionUtils.isNotEmpty(headerList)) {
                 String header = headerList.get(0);
-                String[] headerTypeList = header.split("\001");
+                String[] headerTypeList = header.split(S001);
                 Map<Integer,String> typeMap = new HashMap<>();
                 for (int i=0; i<headerTypeList.length; i++) {
-                    String[] columnSplit = headerTypeList[i].split("@@");
+                    String[] columnSplit = headerTypeList[i].split(DOUBLE_AT);
                     typeMap.put(i,columnSplit[1]);
                 }
                 String createTableSql = buildCreateTableSql(tableName, header);
@@ -198,30 +206,82 @@ public class BaseJdbcSink implements JdbcSink {
                 List<String> rowList = null;
                 while(CollectionUtils.isNotEmpty(rowList = FileUtils.readPartFileContent(filePath,skipLine,limit))) {
                     for (String row: rowList) {
-                        String[] rowDataList = row.split("\001");
+                        String[] rowDataList = row.split(S001);
                         for (int i=0; i<rowDataList.length; i++) {
-                            String rowContent = "null".equalsIgnoreCase(rowDataList[i]) ? null:rowDataList[i];
+                            String rowContent = "null".equalsIgnoreCase(rowDataList[i]) ? null : rowDataList[i];
                             try{
-                                switch (typeMap.get(i).toUpperCase()) {
-                                    case "VARCHAR":
-                                    case "TEXT":
-                                        statement.setString(i+1,rowContent);
+                                switch (DataType.valueOf(typeMap.get(i))) {
+                                    case NULL_TYPE:
+                                        statement.setNull(i+1, 0);
                                         break;
-                                    case "BIGINT":
-                                    case "INT":
-                                        if (rowContent != null) {
+                                    case BOOLEAN_TYPE:
+                                        statement.setBoolean(i+1, Boolean.valueOf(rowContent));
+                                        break;
+                                    case BYTE_TYPE:
+                                        if (StringUtils.isNotEmpty(rowContent)) {
+                                            statement.setByte(i+1, Byte.valueOf(rowContent));
+                                        } else {
+                                            statement.setByte(i+1,Byte.valueOf(""));
+                                        }
+                                        break;
+                                    case SHORT_TYPE:
+                                        if (StringUtils.isNotEmpty(rowContent)) {
+                                            statement.setShort(i+1, Short.valueOf(rowContent));
+                                        } else {
+                                            statement.setShort(i+1, Short.valueOf("0"));
+                                        }
+                                        break;
+                                    case INT_TYPE :
+                                        if (StringUtils.isNotEmpty(rowContent)) {
                                             statement.setInt(i+1, Integer.valueOf(rowContent));
                                         } else {
                                             statement.setInt(i+1, 0);
                                         }
-
                                         break;
-                                    case "DATETIME":
-                                        if (!"".equalsIgnoreCase(rowContent)) {
+                                    case LONG_TYPE:
+                                        if (StringUtils.isNotEmpty(rowContent)) {
+                                            statement.setLong(i+1, Long.valueOf(rowContent));
+                                        } else {
+                                            statement.setLong(i+1, 0);
+                                        }
+                                        break;
+                                    case FLOAT_TYPE:
+                                        if (StringUtils.isNotEmpty(rowContent)) {
+                                            statement.setLong(i+1, Long.valueOf(rowContent));
+                                        } else {
+                                            statement.setLong(i+1, 0);
+                                        }
+                                        break;
+                                    case DOUBLE_TYPE:
+                                        if (StringUtils.isNotEmpty(rowContent)) {
+                                            statement.setLong(i+1, Long.valueOf(rowContent));
+                                        } else {
+                                            statement.setLong(i+1, 0);
+                                        }
+                                        break;
+                                    case TIME_TYPE:
+                                    case DATE_TYPE:
+                                    case TIMESTAMP_TYPE:
+                                        if (StringUtils.isNotEmpty(rowContent)) {
                                             statement.setString(i+1,rowContent);
                                         } else {
                                             statement.setString(i+1,null);
                                         }
+                                        break;
+                                    case STRING_TYPE :
+                                        statement.setString(i+1, rowContent);
+                                        break;
+                                    case BYTES_TYPE:
+                                        statement.setBytes(i+1, String.valueOf(rowContent).getBytes());
+                                        break;
+                                    case BIG_DECIMAL_TYPE:
+                                        if (StringUtils.isNotEmpty(rowContent)) {
+                                            statement.setBigDecimal(i+1, new BigDecimal(rowContent));
+                                        } else {
+                                            statement.setBigDecimal(i+1, null);
+                                        }
+                                        break;
+                                    case OBJECT:
                                         break;
                                     default:
                                         break;
@@ -245,6 +305,8 @@ public class BaseJdbcSink implements JdbcSink {
                 statement.close();
                 connection.close();
             }
+
+            file.delete();
         }
     }
 }

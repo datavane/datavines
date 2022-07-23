@@ -228,6 +228,7 @@ public class QuartzExecutors {
    */
   public static Map<String, Object> buildDataMap(Long dataSourceId, JobSchedule schedule) {
     Map<String, Object> dataMap = Maps.newHashMap();
+    dataMap.put(DataVinesConstants.JOB_ID, schedule.getJobId());
     dataMap.put(DataVinesConstants.DATASOURCE_ID, dataSourceId);
     dataMap.put(DataVinesConstants.SCHEDULE_ID, schedule.getId());
     dataMap.put(DataVinesConstants.SCHEDULE, JSONUtils.toJsonString(schedule));

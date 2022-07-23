@@ -16,10 +16,7 @@
  */
 package io.datavines.server.coordinator.repository.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.datavines.common.enums.TimeoutStrategy;
 import io.datavines.common.enums.JobType;
@@ -49,16 +46,16 @@ public class Job implements Serializable {
     @TableField(value = "execute_platform_type")
     private String executePlatformType;
 
-    @TableField(value = "execute_platform_parameter")
+    @TableField(value = "execute_platform_parameter",updateStrategy = FieldStrategy.IGNORED)
     private String executePlatformParameter;
 
     @TableField(value = "engine_type")
     private String engineType;
 
-    @TableField(value = "engine_parameter")
+    @TableField(value = "engine_parameter",updateStrategy = FieldStrategy.IGNORED)
     private String engineParameter;
 
-    @TableField(value = "error_data_storage_id")
+    @TableField(value = "error_data_storage_id",updateStrategy = FieldStrategy.IGNORED)
     private Long errorDataStorageId;
 
     @TableField(value = "parameter")
@@ -76,10 +73,10 @@ public class Job implements Serializable {
     @TableField(value = "timeout_strategy")
     private TimeoutStrategy timeoutStrategy;
 
-    @TableField(value = "tenant_code")
+    @TableField(value = "tenant_code",updateStrategy = FieldStrategy.IGNORED)
     private Long tenantCode;
 
-    @TableField(value = "env")
+    @TableField(value = "env",updateStrategy = FieldStrategy.IGNORED)
     private Long env;
 
     @TableField(value = "create_by")

@@ -22,7 +22,7 @@ public class Count implements ResultFormula {
 
     @Override
     public String getName() {
-        return "ActualValue";
+        return "Actual";
     }
 
     @Override
@@ -36,8 +36,8 @@ public class Count implements ResultFormula {
     }
 
     @Override
-    public String getResultFormat() {
-        return "ActualValue(${actual_value})";
+    public String getResultFormat(boolean isEn) {
+        return isEn ? "Actual(${actual_value})" : "实际值(${actual_value})";
     }
 
     @Override

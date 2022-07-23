@@ -30,5 +30,11 @@
 
     <artifactId>datavines-connector-api</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-common</artifactId>
+        </dependency>
+    </dependencies>
 
 </project>

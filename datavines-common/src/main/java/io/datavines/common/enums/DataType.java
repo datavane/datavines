@@ -14,32 +14,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.plugin;
+package io.datavines.common.enums;
 
-import io.datavines.connector.api.Connector;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Dialect;
-import io.datavines.connector.api.Executor;
+import java.util.HashMap;
 
-public class ImpalaConnectorFactory extends AbstractJdbcConnectorFactory {
+public enum DataType {
+    /**
+     *
+     */
+    NULL_TYPE,
+    BOOLEAN_TYPE,
+    BYTE_TYPE,
+    SHORT_TYPE,
+    INT_TYPE,
+    LONG_TYPE,
+    FLOAT_TYPE,
+    DOUBLE_TYPE,
+    TIME_TYPE,
+    DATE_TYPE,
+    TIMESTAMP_TYPE,
+    STRING_TYPE,
+    BYTES_TYPE,
+    BIG_DECIMAL_TYPE,
+    OBJECT;
 
-    @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new ImpalaConnectorParameterConverter();
+    private static final HashMap<String, DataType> DATA_TYPE_MAP = new HashMap<>();
+
+    static {
+        for (DataType dataType: DataType.values()){
+            DATA_TYPE_MAP.put(dataType.name(), dataType);
+        }
     }
 
-    @Override
-    public Dialect getDialect() {
-        return new ImpalaDialect();
-    }
-
-    @Override
-    public Connector getConnector() {
-        return new ImpalaConnector();
-    }
-
-    @Override
-    public Executor getExecutor() {
-        return new ImpalaExecutor();
+    public static DataType of(String dataType){
+        if(DATA_TYPE_MAP.containsKey(dataType)){
+            return DATA_TYPE_MAP.get(dataType);
+        }
+        throw new IllegalArgumentException("invalid data type : " + dataType);
     }
 }

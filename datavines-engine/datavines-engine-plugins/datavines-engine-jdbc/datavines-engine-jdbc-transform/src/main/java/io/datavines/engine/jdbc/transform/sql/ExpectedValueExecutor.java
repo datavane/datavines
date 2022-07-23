@@ -23,11 +23,13 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import static io.datavines.engine.api.ConfigConstants.SQL;
+
 public class ExpectedValueExecutor implements ITransformExecutor {
 
     @Override
     public ResultList execute(Connection connection, Config config) throws Exception {
-        String sql = config.getString("sql");
+        String sql = config.getString(SQL);
 
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);

@@ -30,17 +30,19 @@ public enum DqTaskState {
      * 1-success
      * 2-failure
      */
-    NONE(0,"none"),
-    SUCCESS(1,"success"),
-    FAILURE(2,"failure");
+    NONE(0, "none", "默认"),
+    SUCCESS(1, "success", "成功"),
+    FAILURE(2, "failure", "失败");
 
-    DqTaskState(int code, String description) {
+    DqTaskState(int code, String description,String zhDescription) {
         this.code = code;
         this.description = description;
+        this.zhDescription = zhDescription;
     }
 
     private final int code;
     private final String description;
+    private final String zhDescription;
 
     public int getCode() {
         return code;
@@ -49,6 +51,14 @@ public enum DqTaskState {
     @JsonValue
     public String getDescription() {
         return description;
+    }
+
+    public String getZhDescription() {
+        return zhDescription;
+    }
+
+    public String getDescription(boolean isEn) {
+        return isEn ? description : zhDescription;
     }
 
     private static final Map<Integer, DqTaskState> VALUES_MAP = new HashMap<>();

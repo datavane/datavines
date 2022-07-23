@@ -20,6 +20,7 @@ package io.datavines.server.coordinator.repository.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -86,43 +87,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     private SlaMapper slaMapper;
 
     @Override
-    public int update(JobUpdate jobUpdate) {
-        Job job = getById(jobUpdate.getId());
-        if ( job == null) {
-            throw new DataVinesServerException(ApiStatus.JOB_NOT_EXIST_ERROR, jobUpdate.getId());
-        }
-
-        BeanUtils.copyProperties(jobUpdate, job);
-        job.setName(getJobName(jobUpdate.getType(), jobUpdate.getParameter()));
-        job.setUpdateBy(ContextHolder.getUserId());
-        job.setUpdateTime(LocalDateTime.now());
-
-        if (baseMapper.updateById(job) <= 0) {
-            log.info("update workspace fail : {}", jobUpdate);
-            throw new DataVinesServerException(ApiStatus.UPDATE_JOB_ERROR, job.getName());
-        }
-
-        return 1;
-    }
-
-    @Override
-    public Job getById(long id) {
-        return baseMapper.selectById(id);
-    }
-
-    @Override
-    public List<Job> listByDataSourceId(Long dataSourceId) {
-        return baseMapper.listByDataSourceId(dataSourceId);
-    }
-
-    @Override
-    public int deleteById(long id) {
-        return baseMapper.deleteById(id);
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
-
     public long create(JobCreate jobCreate) throws DataVinesServerException{
 
         // 需要对参数进行校验，判断插件类型是否存在
@@ -151,6 +116,45 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         }
 
         return jobId;
+    }
+
+    @Override
+    public int update(JobUpdate jobUpdate) {
+        Job job = getById(jobUpdate.getId());
+        if ( job == null) {
+            throw new DataVinesServerException(ApiStatus.JOB_NOT_EXIST_ERROR, jobUpdate.getId());
+        }
+
+        BeanUtils.copyProperties(jobUpdate, job);
+        job.setName(getJobName(jobUpdate.getType(), jobUpdate.getParameter()));
+        job.setUpdateBy(ContextHolder.getUserId());
+        job.setUpdateTime(LocalDateTime.now());
+
+        if (baseMapper.updateById(job) <= 0) {
+            log.info("update workspace fail : {}", jobUpdate);
+            throw new DataVinesServerException(ApiStatus.UPDATE_JOB_ERROR, job.getName());
+        }
+
+        if(jobUpdate.getRunningNow() == 1) {
+            executeJob(job, null);
+        }
+
+        return 1;
+    }
+
+    @Override
+    public Job getById(long id) {
+        return baseMapper.selectById(id);
+    }
+
+    @Override
+    public List<Job> listByDataSourceId(Long dataSourceId) {
+        return baseMapper.listByDataSourceId(dataSourceId);
+    }
+
+    @Override
+    public int deleteById(long id) {
+        return baseMapper.deleteById(id);
     }
 
     @Override

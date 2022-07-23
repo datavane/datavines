@@ -22,13 +22,12 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.config.entity.MappingColumn;
-import io.datavines.metric.api.MetricConstants;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.config.ConfigConstants.*;
+import static io.datavines.engine.api.ConfigConstants.*;
 
 public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfigurationBuilder {
 

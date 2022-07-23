@@ -22,7 +22,7 @@ public class Diff implements ResultFormula {
 
     @Override
     public String getName() {
-        return "|ActualValue-ExpectedValue|";
+        return "|Actual-Expected|";
     }
 
     @Override
@@ -36,8 +36,8 @@ public class Diff implements ResultFormula {
     }
 
     @Override
-    public String getResultFormat() {
-        return "|ActualValue(${actual_value})-ExpectedValue(${expected_value})|";
+    public String getResultFormat(boolean isEn) {
+        return isEn? "|Actual(${actual_value})-Expected(${expected_value})|" : "|实际值(${actual_value})-期望值(${expected_value})|";
     }
 
     @Override
