@@ -43,6 +43,18 @@ public class Job implements Serializable {
     @TableField(value = "datasource_id")
     private Long dataSourceId;
 
+    @TableField(value = "schema_name")
+    private String schemaName;
+
+    @TableField(value = "table_name")
+    private String tableName;
+
+    @TableField(value = "column_name")
+    private String columnName;
+
+    @TableField(value = "metric_type")
+    private String metricType;
+
     @TableField(value = "execute_platform_type")
     private String executePlatformType;
 

@@ -28,7 +28,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>datavines-metric-custom-sql</artifactId>
+    <artifactId>datavines-metric-custom-aggregate-sql</artifactId>
 
 
 </project>

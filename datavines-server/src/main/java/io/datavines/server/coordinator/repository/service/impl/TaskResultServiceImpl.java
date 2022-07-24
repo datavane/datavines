@@ -125,9 +125,10 @@ public class TaskResultServiceImpl extends ServiceImpl<TaskResultMapper, TaskRes
                 PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(taskResult.getResultFormula());
         String resultFormulaFormat = resultFormula.getResultFormat(!LanguageUtils.isZhContext())+" ${operator} ${threshold}";
 
-        taskResultVO.setCheckSubject(taskResult.getDatabaseName()+"."+taskResult.getTableName()+"."+taskResult.getColumnName());
+        taskResultVO.setCheckSubject(taskResult.getDatabaseName() + "." + taskResult.getTableName() + "." + taskResult.getColumnName());
         taskResultVO.setCheckResult(DqTaskState.of(taskResult.getState()).getDescription(!LanguageUtils.isZhContext()));
-        ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(taskResult.getExpectedType());
+        ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(task.getEngineType() + "_" + taskResult.getExpectedType());
+
         taskResultVO.setExpectedType(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()));
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(taskResult.getMetricName());
         taskResultVO.setMetricName(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()));

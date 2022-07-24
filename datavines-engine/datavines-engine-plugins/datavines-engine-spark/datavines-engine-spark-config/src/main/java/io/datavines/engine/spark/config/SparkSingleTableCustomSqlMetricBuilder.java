@@ -41,7 +41,7 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
         //get custom execute sql
         transformExecuteSqlList.add(getCustomExecuteSql(inputParameter));
         //get expected value sql
-        String expectedType = taskParameter.getExpectedType();
+        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
         expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);

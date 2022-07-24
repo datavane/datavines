@@ -49,6 +49,7 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
     @Override
     public void init(Map<String, String> inputParameter, TaskInfo taskInfo, ConnectionInfo connectionInfo) {
         this.inputParameter = inputParameter;
+        this.inputParameter.put(COLUMN, "");
         this.taskInfo = taskInfo;
         this.taskParameter = taskInfo.getTaskParameter();
         this.connectionInfo = connectionInfo;
@@ -140,6 +141,8 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
         if (StringUtils.isNotEmpty(sql)) {
             actualValueConfigMap.put(SQL, sql);
         }
+
+        actualValueConfigMap.put(EXPECTED_VALUE, expectedValue.getName().replace(expectedValue.getOutputTable()+".", ""));
 
         return actualValueConfigMap;
     }

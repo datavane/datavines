@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public class JdbcSingleTableCustomSqlMetricBuilder extends JdbcSingleTableMetricBuilder {
 
@@ -44,18 +45,23 @@ public class JdbcSingleTableCustomSqlMetricBuilder extends JdbcSingleTableMetric
         MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
 
         List<TransformConfig> transformConfigs = new ArrayList<>();
-        //get custom execute sql
-        MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                getCustomExecuteSql(inputParameter), TransformType.ACTUAL_VALUE.getDescription());
+        //get custom aggregate sql
+        MetricParserUtils.setTransformerConfig(
+                inputParameter,
+                transformConfigs,
+                getCustomExecuteSql(inputParameter),
+                TransformType.ACTUAL_VALUE.getDescription());
 
         // get expected value transform sql
-        String expectedType = taskParameter.getExpectedType();
+        String expectedType = taskInfo.getEngineType() + "_" +taskParameter.getExpectedType();
         expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);
 
         ExecuteSql expectedValueExecuteSql =
                 new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
+
+        inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
 
         if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
             inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
@@ -73,6 +79,6 @@ public class JdbcSingleTableCustomSqlMetricBuilder extends JdbcSingleTableMetric
 
     private ExecuteSql getCustomExecuteSql(Map<String, String> inputParameterValueResult) {
         inputParameterValueResult.put(ACTUAL_TABLE, inputParameterValueResult.get(TABLE));
-        return new ExecuteSql(inputParameterValueResult.get(ACTUAL_EXECUTE_SQL), inputParameterValueResult.get(TABLE));
+        return new ExecuteSql(inputParameterValueResult.get(ACTUAL_AGGREGATE_SQL), inputParameterValueResult.get(TABLE));
     }
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -32,6 +33,8 @@ import io.datavines.common.entity.job.builder.TaskParameterBuilderFactory;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.metric.api.ExpectedValue;
+import io.datavines.metric.api.ResultFormula;
 import io.datavines.server.coordinator.api.dto.bo.job.JobCreate;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
@@ -53,6 +56,7 @@ import io.datavines.common.enums.JobType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.utils.ContextHolder;
 
+import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -81,7 +85,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     @Autowired
     private TenantMapper tenantMapper;
 
-    @Autowired ErrorDataStorageMapper errorDataStorageMapper;
+    @Autowired
+    private ErrorDataStorageMapper errorDataStorageMapper;
 
     @Autowired
     private SlaMapper slaMapper;
@@ -99,7 +104,12 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         Job job = new Job();
         BeanUtils.copyProperties(jobCreate, job);
 
+        List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
+        setJobAttribute(job, jobParameters);
         job.setName(getJobName(jobCreate.getType(), jobCreate.getParameter()));
+        if (getByKeyAttribute(job)) {
+            throw new DataVinesServerException(ApiStatus.JOB_EXIST_ERROR, job.getName());
+        }
         job.setType(JobType.of(jobCreate.getType()));
         job.setCreateBy(ContextHolder.getUserId());
         job.setCreateTime(LocalDateTime.now());
@@ -118,6 +128,17 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         return jobId;
     }
 
+    private boolean getByKeyAttribute(Job job) {
+         List<Job> list = baseMapper.selectList(new QueryWrapper<Job>()
+                .eq("name",job.getName())
+                .eq("schema_name",job.getSchemaName())
+                .eq("table_name",job.getTableName())
+                .eq("column_name",job.getColumnName())
+        );
+
+         return CollectionUtils.isNotEmpty(list);
+    }
+
     @Override
     public int update(JobUpdate jobUpdate) {
         Job job = getById(jobUpdate.getId());
@@ -126,6 +147,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         }
 
         BeanUtils.copyProperties(jobUpdate, job);
+        List<BaseJobParameter> jobParameters = JSONUtils.toList(jobUpdate.getParameter(), BaseJobParameter.class);
+        setJobAttribute(job, jobParameters);
         job.setName(getJobName(jobUpdate.getType(), jobUpdate.getParameter()));
         job.setUpdateBy(ContextHolder.getUserId());
         job.setUpdateTime(LocalDateTime.now());
@@ -140,6 +163,16 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         }
 
         return 1;
+    }
+
+    private void setJobAttribute(Job job, List<BaseJobParameter> jobParameters) {
+        if (CollectionUtils.isNotEmpty(jobParameters)) {
+            BaseJobParameter jobParameter = jobParameters.get(0);
+            job.setSchemaName((String)jobParameter.getMetricParameter().get("database"));
+            job.setTableName((String)jobParameter.getMetricParameter().get("table"));
+            job.setColumnName((String)jobParameter.getMetricParameter().get("column"));
+            job.setMetricType(jobParameter.getMetricType());
+        }
     }
 
     @Override
@@ -262,6 +295,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
             throw new DataVinesServerException(ApiStatus.JOB_PARAMETER_IS_NULL_ERROR);
         }
 
+        ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(baseJobParameter.getResultFormula());
+
         String database = (String)metricParameter.get("database");
         String table = (String)metricParameter.get("table");
         String column = (String)metricParameter.get("column");
@@ -269,9 +304,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         switch (JobType.of(jobType)) {
             case DATA_QUALITY:
                 String metric = baseJobParameter.getMetricType();
-                return String.format("%s[%s.%s.%s]%s", metric.toUpperCase(), database, table, column, System.currentTimeMillis());
+                return String.format("%s(%s)", metric.toUpperCase(), resultFormula.getSymbol());
             case DATA_PROFILE:
-                return String.format("%s[%s.%s.%s]%s", "DATA_PROFILE", database, table, column, System.currentTimeMillis());
+                return String.format("%s(%s.%s)", "DATA_PROFILE", database, table);
             default:
                 return String.format("%s[%s.%s.%s]%s", "JOB", database, table, column, System.currentTimeMillis());
         }

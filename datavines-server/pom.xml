@@ -345,7 +345,7 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-metric-custom-sql</artifactId>
+            <artifactId>datavines-metric-custom-aggregate-sql</artifactId>
             <version>${project.version}</version>
         </dependency>
 

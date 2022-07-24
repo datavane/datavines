@@ -118,20 +118,25 @@ public class MetricParserUtils {
         Map<String,String> newInputParameterValue = new HashMap<>(inputParameterValue);
 
         newInputParameterValue.remove(METRIC_TYPE);
-        newInputParameterValue.remove(METRIC_NAME);
+//        newInputParameterValue.remove(METRIC_NAME);
+        newInputParameterValue.remove(METRIC_DIMENSION);
         newInputParameterValue.remove(CREATE_TIME);
         newInputParameterValue.remove(UPDATE_TIME);
         newInputParameterValue.remove(TASK_ID);
         newInputParameterValue.remove(RESULT_FORMULA);
         newInputParameterValue.remove(OPERATOR);
         newInputParameterValue.remove(THRESHOLD);
-        newInputParameterValue.remove(FAILURE_STRATEGY);
         newInputParameterValue.remove(DATA_TIME);
-        newInputParameterValue.remove(ERROR_OUTPUT_PATH);
+        newInputParameterValue.remove(ERROR_DATA_FILE_NAME);
+        newInputParameterValue.remove(ERROR_DATA_FILE_DIR);
         newInputParameterValue.remove(EXPECTED_TYPE);
         newInputParameterValue.remove(EXPECTED_NAME);
         newInputParameterValue.remove(EXPECTED_TABLE);
         newInputParameterValue.remove(INVALIDATE_ITEMS_TABLE);
+        newInputParameterValue.remove(SRC_CONNECTOR_TYPE);
+        newInputParameterValue.remove(ACTUAL_TABLE);
+        newInputParameterValue.remove(REGEX_KEY);
+        newInputParameterValue.remove(NOT_REGEX_KEY);
 
         StringBuilder sb = new StringBuilder();
         for (String value : newInputParameterValue.values()) {

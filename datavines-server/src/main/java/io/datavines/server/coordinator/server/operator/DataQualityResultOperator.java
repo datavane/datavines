@@ -96,9 +96,14 @@ public class DataQualityResultOperator {
      */
     private boolean isFailure(TaskResult taskResult) {
 
-        double actualValue = taskResult.getActualValue();
-        double expectedValue = taskResult.getExpectedValue();
-        double threshold = taskResult.getThreshold();
+        Double actualValue = taskResult.getActualValue();
+        Double expectedValue = null;
+        if (taskResult.getExpectedValue() == null) {
+            expectedValue = taskResult.getActualValue();
+        } else {
+            expectedValue = taskResult.getExpectedValue();
+        }
+        Double threshold = taskResult.getThreshold();
 
         OperatorType operatorType = OperatorType.of(taskResult.getOperator());
 
@@ -107,7 +112,7 @@ public class DataQualityResultOperator {
         return getCompareResult(operatorType, resultFormula.getResult(actualValue, expectedValue), threshold);
     }
 
-    private boolean getCompareResult(OperatorType operatorType, double srcValue, double targetValue) {
+    private boolean getCompareResult(OperatorType operatorType, Double srcValue, Double targetValue) {
         BigDecimal src = BigDecimal.valueOf(srcValue);
         BigDecimal target = BigDecimal.valueOf(targetValue);
         switch (operatorType) {

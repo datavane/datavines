@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
+import static io.datavines.engine.api.EngineConstants.TYPE;
+
 public class ConfigParser {
 
     private static final Logger logger = LoggerFactory.getLogger(ConfigParser.class);
@@ -69,7 +72,7 @@ public class ConfigParser {
                 .getPluginLoader(RuntimeEnvironment.class)
                 .getNewPlugin(envConfig.getEngine());
         Config config = new Config(envConfig.getConfig());
-        config.put("type",envConfig.getType());
+        config.put(TYPE, envConfig.getType());
         env.setConfig(config);
         env.prepare();
         return env;
@@ -86,7 +89,7 @@ public class ConfigParser {
             Component component = PluginLoader
                     .getPluginLoader(Component.class)
                     .getNewPlugin(pluginName);
-            sourceConfig.getConfig().put("plugin_type",sourceConfig.getType());
+            sourceConfig.getConfig().put(PLUGIN_TYPE, sourceConfig.getType());
             component.setConfig(new Config(sourceConfig.getConfig()));
             sourcePluginList.add(component);
         });
@@ -100,7 +103,7 @@ public class ConfigParser {
             Component component = PluginLoader
                     .getPluginLoader(Component.class)
                     .getNewPlugin(pluginName);
-            sinkConfig.getConfig().put("plugin_type", sinkConfig.getType());
+            sinkConfig.getConfig().put(PLUGIN_TYPE, sinkConfig.getType());
             component.setConfig(new Config(sinkConfig.getConfig()));
             sinkPluginList.add(component);
         });
@@ -114,7 +117,7 @@ public class ConfigParser {
             Component component = PluginLoader
                     .getPluginLoader(Component.class)
                     .getNewPlugin(pluginName);
-            transformConfig.getConfig().put("plugin_type", transformConfig.getType());
+            transformConfig.getConfig().put(PLUGIN_TYPE, transformConfig.getType());
             component.setConfig(new Config(transformConfig.getConfig()));
             transformPluginList.add(component);
         });

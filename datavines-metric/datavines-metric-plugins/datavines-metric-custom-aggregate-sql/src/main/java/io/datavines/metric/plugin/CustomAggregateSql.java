@@ -19,6 +19,7 @@ package io.datavines.metric.plugin;
 import java.util.*;
 
 import io.datavines.common.config.CheckResult;
+import io.datavines.common.config.ConfigChecker;
 import io.datavines.common.entity.ExecuteSql;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
@@ -26,16 +27,28 @@ import io.datavines.metric.api.MetricType;
 import io.datavines.metric.api.SqlMetric;
 import org.apache.commons.collections4.MapUtils;
 
-public class CustomSql implements SqlMetric {
+public class CustomAggregateSql implements SqlMetric {
+
+    private Set<String> requiredOptions = new HashSet<>();
+
+    private HashMap<String,ConfigItem> configMap = new HashMap<>();
+
+    public CustomAggregateSql() {
+        configMap.put("table",new ConfigItem("table", "表名", "table"));
+        configMap.put("actual_aggregate_sql", new ConfigItem("actual_aggregate_sql","自定义聚合SQL","actual_aggregate_sql"));
+
+        requiredOptions.add("actual_aggregate_sql");
+        requiredOptions.add("table");
+    }
 
     @Override
     public String getName() {
-        return "custom_sql";
+        return "custom_aggregate_sql";
     }
 
     @Override
     public String getZhName() {
-        return "自定义SQL";
+        return "自定义聚合SQL";
     }
 
     @Override
@@ -55,7 +68,7 @@ public class CustomSql implements SqlMetric {
 
     @Override
     public CheckResult validateConfig(Map<String, Object> config) {
-        return new CheckResult(true,"");
+        return ConfigChecker.checkConfig(config, requiredOptions);
     }
 
     @Override
@@ -65,7 +78,7 @@ public class CustomSql implements SqlMetric {
 
     @Override
     public Map<String, ConfigItem> getConfigMap() {
-        return new HashMap<>(0);
+        return configMap;
     }
 
     @Override
