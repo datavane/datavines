@@ -175,6 +175,10 @@ CREATE TABLE dv_job (
     name varchar(255) DEFAULT NULL ,
     type int4 NOT NULL DEFAULT '0',
     datasource_id int8 NOT NULL,
+    schema_name varchar(128) DEFAULT NULL,
+    table_name varchar(128) DEFAULT NULL,
+    column_name varchar(128) DEFAULT NULL,
+    metric_type varchar(128) DEFAULT NULL,
     execute_platform_type varchar(128) DEFAULT NULL,
     execute_platform_parameter text,
     engine_type varchar(128) DEFAULT NULL,
@@ -192,7 +196,7 @@ CREATE TABLE dv_job (
     update_by int8 DEFAULT NULL ,
     update_time timestamp(0) NOT NULL DEFAULT current_timestamp ,
     CONSTRAINT job_pk PRIMARY KEY (id),
-    CONSTRAINT job_un UNIQUE (name)
+    CONSTRAINT job_un UNIQUE (name,schema_name,table_name,column_name)
 ) ;
 
 DROP TABLE IF EXISTS dv_job_schedule;
