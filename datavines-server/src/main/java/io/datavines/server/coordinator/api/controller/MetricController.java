@@ -31,10 +31,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Api(value = "metric", tags = "metric", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
@@ -58,16 +55,12 @@ public class MetricController {
         return items;
     }
 
-
     @ApiOperation(value = "get metric info")
     @GetMapping(value = "/configs/{name}")
     public Object getMetricConfig(@PathVariable("name") String name) {
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name);
         if (sqlMetric != null) {
             Map<String, ConfigItem> resultSet = sqlMetric.getConfigMap();
-            resultSet.remove("table");
-            resultSet.remove("column");
-            resultSet.remove("filter");
             List<Item> items = new ArrayList<>();
             resultSet.forEach((k,v) -> {
                 Item item = new Item(v.getLabel(!LanguageUtils.isZhContext()),k);
@@ -83,9 +76,14 @@ public class MetricController {
     @GetMapping(value = "/expectedValue/list")
     public Object getExpectedTypeList() {
         Set<String> expectedValueList = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
-        List<Item> items = new ArrayList<>();
+        Set<String> afterFilterSet = new HashSet<>();
         expectedValueList.forEach(it -> {
-            ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(it);
+            afterFilterSet.add(it.replace("jdbc_", "").replace("spark_",""));
+        });
+
+        List<Item> items = new ArrayList<>();
+        afterFilterSet.forEach(it -> {
+            ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin("jdbc_" + it);
             if (expectedValue != null) {
                 Item item = new Item(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()),it);
                 items.add(item);

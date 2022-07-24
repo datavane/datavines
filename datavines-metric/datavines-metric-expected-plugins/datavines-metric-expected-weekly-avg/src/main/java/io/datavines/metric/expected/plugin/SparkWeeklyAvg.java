@@ -20,31 +20,31 @@ import io.datavines.metric.api.ExpectedValue;
 
 import java.util.Map;
 
-public class MonthlyAvg implements ExpectedValue {
+public class SparkWeeklyAvg implements ExpectedValue {
 
     @Override
     public String getName() {
-        return "monthly_range.monthly_avg";
-    }
-
-    @Override
-    public String getZhName() {
-        return "月均值";
+        return "weekly_range.weekly_avg";
     }
 
     @Override
     public String getType() {
-        return "monthly_avg";
+        return "weekly_avg";
+    }
+
+    @Override
+    public String getZhName() {
+        return "周均值";
     }
 
     @Override
     public String getExecuteSql() {
-        return "select round(avg(actual_value),2) as monthly_avg from dv_actual_values where data_time >= date_format(curdate(), '%Y-%m-01') and data_time < date_add(date_format(${data_time},'%Y-%m-%d'),interval 1 DAY) and unique_code = ${unique_code}";
+        return "select round(avg(actual_value),2) as weekly_avg from dv_actual_values where  data_time >= date_trunc('WEEK', ${data_time}) and data_time < date_add(date_trunc('day', ${data_time}),1) and unique_code = ${unique_code}";
     }
 
     @Override
     public String getOutputTable() {
-        return "monthly_range";
+        return "weekly_range";
     }
 
     @Override

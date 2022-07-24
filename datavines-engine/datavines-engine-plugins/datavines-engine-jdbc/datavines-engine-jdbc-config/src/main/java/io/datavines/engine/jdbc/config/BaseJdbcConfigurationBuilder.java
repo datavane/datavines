@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfigurationBuilder {
 
@@ -99,7 +100,7 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
             sourceConfigs.add(sourceConfig);
         }
 
-        String expectedType = taskParameter.getExpectedType();
+        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
         if (StringUtils.isEmpty(expectedType)) {
             return sourceConfigs;
         }
@@ -135,13 +136,16 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
                 inputParameter, transformConfigs,
                 sqlMetric.getInvalidateItems(), TransformType.INVALIDATE_ITEMS.getDescription());
 
-        MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                sqlMetric.getActualValue(), TransformType.ACTUAL_VALUE.getDescription());
+        MetricParserUtils.setTransformerConfig(
+                inputParameter,
+                transformConfigs,
+                sqlMetric.getActualValue(),
+                TransformType.ACTUAL_VALUE.getDescription());
 
         inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
 
         // get expected value transform sql
-        String expectedType = taskParameter.getExpectedType();
+        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
         expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);
@@ -152,6 +156,8 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
         if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
             inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
         }
+
+        inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
 
         if (expectedValue.isNeedDefaultDatasource()) {
             MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,

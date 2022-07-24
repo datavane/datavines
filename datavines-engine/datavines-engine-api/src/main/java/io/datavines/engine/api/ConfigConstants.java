@@ -31,6 +31,7 @@ public class ConfigConstants {
     public static final String TARGET_COLUMN = "target_column";
     public static final String ACTUAL_NAME = "actual_name";
     public static final String ACTUAL_EXECUTE_SQL = "actual_execute_sql";
+    public static final String ACTUAL_AGGREGATE_SQL = "actual_aggregate_sql";
     public static final String EXPECTED_NAME = "expected_name";
     public static final String EXPECTED_TYPE = "expected_type";
     public static final String EXPECTED_TABLE = "expected_table";

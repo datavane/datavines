@@ -33,6 +33,12 @@ public class JobVO implements Serializable {
 
     private String name;
 
+    private String schemaName;
+
+    private String tableName;
+
+    private String columnName;
+
     private JobType type;
 
     private String updater;

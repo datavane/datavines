@@ -31,7 +31,7 @@ import java.util.function.Consumer;
 
 public class ShellCommandProcess extends BaseCommandProcess {
 
-    public static final String SH = "sh";
+    private static final String SH = "sh";
 
     public ShellCommandProcess(Consumer<List<String>> logHandler,
                                Logger logger,

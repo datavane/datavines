@@ -1,1 +1,2 @@
-daily_avg=io.datavines.metric.expected.plugin.DailyAvg
+jdbc_daily_avg=io.datavines.metric.expected.plugin.DailyAvg
+spark_daily_avg=io.datavines.metric.expected.plugin.SparkDailyAvg

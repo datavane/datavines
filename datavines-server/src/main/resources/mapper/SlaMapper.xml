@@ -40,7 +40,7 @@
             du.username AS updater,
             sla.update_time
         FROM
-            dv_sla sla
+            dv_sla sla WHERE workspace_id = ${workspaceId}
         LEFT JOIN
             ( <include refid="slaJob"/> )sj
             ON sla.id = sj.sla_id

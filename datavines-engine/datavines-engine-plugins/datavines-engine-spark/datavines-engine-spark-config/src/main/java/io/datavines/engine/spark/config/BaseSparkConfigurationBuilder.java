@@ -126,7 +126,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
         inputParameter.put(INVALIDATE_ITEMS_TABLE, sqlMetric.getInvalidateItems().getResultTable());
 
         // get expected value transform sql
-        String expectedType = taskParameter.getExpectedType();
+        String expectedType = taskInfo.getEngineType() + "_" +taskParameter.getExpectedType();
         expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);

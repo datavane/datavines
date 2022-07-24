@@ -16,9 +16,12 @@
  */
 package io.datavines.common.entity.job;
 
+import lombok.Data;
+
 import javax.validation.constraints.NotNull;
 import java.util.Map;
 
+@Data
 @NotNull(message = "TaskParameter cannot be null")
 public class BaseJobParameter {
 
@@ -35,60 +38,4 @@ public class BaseJobParameter {
     private String operator = "gt";
 
     private double threshold = 0;
-
-    public String getMetricType() {
-        return metricType;
-    }
-
-    public void setMetricType(String metricType) {
-        this.metricType = metricType;
-    }
-
-    public Map<String, Object> getMetricParameter() {
-        return metricParameter;
-    }
-
-    public void setMetricParameter(Map<String, Object> metricParameter) {
-        this.metricParameter = metricParameter;
-    }
-
-    public String getExpectedType() {
-        return expectedType;
-    }
-
-    public void setExpectedType(String expectedType) {
-        this.expectedType = expectedType;
-    }
-
-    public Map<String, Object> getExpectedParameter() {
-        return expectedParameter;
-    }
-
-    public void setExpectedParameter(Map<String, Object> expectedParameter) {
-        this.expectedParameter = expectedParameter;
-    }
-
-    public String getResultFormula() {
-        return resultFormula;
-    }
-
-    public void setResultFormula(String resultFormula) {
-        this.resultFormula = resultFormula;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public double getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(double threshold) {
-        this.threshold = threshold;
-    }
 }

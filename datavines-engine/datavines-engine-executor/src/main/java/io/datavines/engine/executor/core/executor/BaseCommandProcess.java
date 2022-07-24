@@ -48,7 +48,7 @@ public abstract class BaseCommandProcess {
     /**
      *  log handler
      */
-    protected Consumer<List<String>> logHandler;
+    private Consumer<List<String>> logHandler;
 
     /**
      * execution job
@@ -65,7 +65,7 @@ public abstract class BaseCommandProcess {
     /**
      *  log list
      */
-    protected final List<String> logBuffer;
+    private final List<String> logBuffer;
 
     public BaseCommandProcess(Consumer<List<String>> logHandler,
                               Logger logger,
@@ -158,11 +158,11 @@ public abstract class BaseCommandProcess {
     private int getProcessId(Process process){
         int processId = 0;
 
-        try{
+        try {
             Field field = process.getClass().getDeclaredField(EngineConstants.PID);
             field.setAccessible(true);
             processId = field.getInt(process);
-        }catch (Throwable e){
+        } catch (Throwable e) {
             logger.error(e.getMessage(),e);
         }
 

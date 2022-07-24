@@ -39,7 +39,7 @@ public class Last7DayAvg implements ExpectedValue {
 
     @Override
     public String getExecuteSql() {
-        return "select round(avg(actual_value),2) as last_7d_avg from actual_values where data_time >= date_add(date_trunc('day', ${data_time}),-7) and  data_time <date_trunc('day', ${data_time}) and unique_code = ${unique_code}";
+        return "select round(avg(actual_value),2) as last_7d_avg from dv_actual_values where data_time >= date_sub(date_format(${data_time},'%Y-%m-%d'),interval 7 DAY) and  data_time < date_add(date_format(${data_time},'%Y-%m-%d'),interval 1 DAY) and unique_code = ${unique_code}";
     }
 
     @Override

@@ -53,7 +53,7 @@ public class EMailSender {
     private String mailUseStartTLS;
     private String mailUseSSL;
     private String sslTrust;
-    private String mustNotNull = " must not be null";
+    private String mustNotNull = "must not be null";
 
     public EMailSender(SlaSenderMessage senderMessage) {
 
@@ -131,7 +131,7 @@ public class EMailSender {
     }
 
     private Session getSession() {
-        // support multilple email format
+        // support multiple email format
         MailcapCommandMap mc = (MailcapCommandMap) CommandMap.getDefaultCommandMap();
         mc.addMailcap("text/html;; x-java-content-handler=com.sun.mail.handlers.text_html");
         mc.addMailcap("text/xml;; x-java-content-handler=com.sun.mail.handlers.text_xml");
@@ -161,7 +161,6 @@ public class EMailSender {
         session.addProvider(new SMTPProvider());
         return session;
     }
-
 
     private String getTextTypeMessage(String content) {
         if (StringUtils.isNotEmpty(content)) {

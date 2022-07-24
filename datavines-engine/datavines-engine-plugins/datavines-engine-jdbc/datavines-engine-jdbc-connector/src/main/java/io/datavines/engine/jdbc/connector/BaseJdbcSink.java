@@ -102,6 +102,12 @@ public class BaseJdbcSink implements JdbcSink {
                 if(item != null) {
                     item.getResultList().forEach(x -> {
                         x.forEach((k,v) -> {
+                            String expectedValue = config.getString(EXPECTED_VALUE);
+                            if (StringUtils.isNotEmpty(expectedValue)) {
+                                if (expectedValue.equals(k)) {
+                                    inputParameter.put(EXPECTED_VALUE, String.valueOf(v));
+                                }
+                            }
                             inputParameter.put(k, String.valueOf(v));
                         });
                     });
@@ -118,7 +124,7 @@ public class BaseJdbcSink implements JdbcSink {
                 case TASK_RESULT:
                     String sql = config.getString(SQL);
                     sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
-                    logger.info("execute" + config.getString(PLUGIN_TYPE) + "output sql : {}", sql);
+                    logger.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
                     executeInsert(sql, env);
                     break;
                 default:

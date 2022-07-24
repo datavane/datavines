@@ -23,7 +23,6 @@ public class EmailConstants {
         throw new IllegalStateException(EmailConstants.class.getName());
     }
 
-
     public static final String XLS_FILE_PATH = "xls.file.path";
 
     public static final String MAIL_TRANSPORT_PROTOCOL = "mail.transport.protocol";

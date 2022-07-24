@@ -30,14 +30,12 @@ import java.util.List;
 import java.util.Map;
 
 import static io.datavines.engine.api.ConfigConstants.*;
-import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public class JdbcSingleTableMetricBuilder extends BaseJdbcConfigurationBuilder {
 
     @Override
     public void buildSinkConfigs() throws DataVinesException {
 
-        inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
         List<SinkConfig> sinkConfigs = new ArrayList<>();
         //get the actual value storage parameter
         SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SinkSqlBuilder.getActualValueSql(), "dv_actual_values");

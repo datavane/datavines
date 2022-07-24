@@ -29,5 +29,4 @@ public class ReceiverConfig {
 
     private String to;
     private String cc;
-
 }
