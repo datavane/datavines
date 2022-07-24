@@ -128,6 +128,7 @@ public class TaskResultServiceImpl extends ServiceImpl<TaskResultMapper, TaskRes
         taskResultVO.setCheckSubject(taskResult.getDatabaseName() + "." + taskResult.getTableName() + "." + taskResult.getColumnName());
         taskResultVO.setCheckResult(DqTaskState.of(taskResult.getState()).getDescription(!LanguageUtils.isZhContext()));
         ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(task.getEngineType() + "_" + taskResult.getExpectedType());
+
         taskResultVO.setExpectedType(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()));
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(taskResult.getMetricName());
         taskResultVO.setMetricName(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()));

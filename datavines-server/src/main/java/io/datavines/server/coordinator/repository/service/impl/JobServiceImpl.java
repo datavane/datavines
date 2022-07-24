@@ -103,14 +103,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
 
         Job job = new Job();
         BeanUtils.copyProperties(jobCreate, job);
+
         List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
         setJobAttribute(job, jobParameters);
         job.setName(getJobName(jobCreate.getType(), jobCreate.getParameter()));
-
         if (getByKeyAttribute(job)) {
             throw new DataVinesServerException(ApiStatus.JOB_EXIST_ERROR, job.getName());
         }
-
         job.setType(JobType.of(jobCreate.getType()));
         job.setCreateBy(ContextHolder.getUserId());
         job.setCreateTime(LocalDateTime.now());
