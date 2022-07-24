@@ -60,7 +60,7 @@ export const MetricConfig = (props: InnerProps) => {
                         });
                     }
                     const parameter: any = {
-                        ...(pickProps(values, ['metricType', 'expectedType', 'result_formula', 'operator', 'threshold'])),
+                        ...(pickProps(values, ['metricType', 'expectedType', 'resultFormula', 'operator', 'threshold'])),
                         metricParameter: {
                             ...(pickProps(values, ['database', 'table', 'column', 'filter'])),
                             ...(metricSelectRef.current.getDynamicValues()),

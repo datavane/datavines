@@ -31,10 +31,10 @@ const Index = ({ form, detail }: InnerProps) => {
             setResultFormula($resultFormula || []);
             if (detail && detail.id) {
                 const {
-                    result_formula, operator, threshold,
+                    resultFormula, operator, threshold,
                 } = detail?.parameterItem || {} as TParameterItem;
                 const options: Record<string, any> = {
-                    result_formula,
+                    resultFormula,
                     operator,
                     threshold,
                 };
@@ -62,7 +62,7 @@ const Index = ({ form, detail }: InnerProps) => {
                     <Form.Item
                         {...layoutItem}
                         label={intl.formatMessage({ id: 'dv_metric_verify_formula' })}
-                        name="result_formula"
+                        name="resultFormula"
                         rules={[...requiredRule]}
                     >
                         <CustomSelect

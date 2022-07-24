@@ -45,7 +45,7 @@ module.exports = {
                 target,
                 changeOrigin: true,
                 // cookieDomainRewrite: host,
-                cookieDomainRewrite: 'https://0c4f-183-193-189-215.jp.ngrok.io',
+                cookieDomainRewrite: 'https://9997-183-193-189-215.jp.ngrok.io',
             },
             // {
             //     context: ['/api/**'],

@@ -283,7 +283,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                             </Form.Item>
 
                             <Form.Item
-                                label={intl.formatMessage({ id: 'jobs_schedule_express' })}
+                                label={<span style={{ marginLeft: 11 }}>{intl.formatMessage({ id: 'jobs_schedule_express' })}</span>}
                                 name=" "
                                 initialValue={undefined}
                             >

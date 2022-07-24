@@ -134,7 +134,7 @@ const Index = () => {
         },
     ];
     return (
-        <div className="dv-page-paddinng">
+        <div>
             <div style={{ paddingTop: '20px' }}>
                 <div className="dv-flex-between">
                     <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />

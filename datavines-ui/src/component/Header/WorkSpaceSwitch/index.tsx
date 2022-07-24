@@ -69,7 +69,7 @@ export default React.memo(() => {
         <>
             <span className="main-color" style={{ fontSize: 18, fontWeight: 700, marginRight: 20 }}>DataVines</span>
             <IF visible={isDetailPage}>
-                <a onClick={goBack} style={{ fontSize: 14, marginLeft: 20 }}>{intl.formatMessage({ id: 'common_back' })}</a>
+                <a onClick={goBack} style={{ marginLeft: 20 }}>{intl.formatMessage({ id: 'common_back' })}</a>
                 {/* <div className="dv-header__work-space" style={{ paddingRight: 0 }}>
                     {renderSelect()}
                 </div> */}

@@ -11,6 +11,7 @@ import {
 import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
 import { TDetail, TEngineParameter } from '../type';
+import './index.less';
 
 type InnerProps = {
     form: FormInstance,
@@ -123,11 +124,11 @@ const Index = ({ form, detail }: InnerProps) => {
     );
     return (
         <Title title={intl.formatMessage({ id: 'dv_metric_title_actuator_engine' })}>
-            <Row>
-                <Col span={12} style={{ display: 'flex' }}>
+            <Row gutter={30}>
+                <Col span={12}>
                     <Form.Item
                         {...layoutItem}
-                        label=""
+                        label={<span>{intl.formatMessage({ id: 'dv_metric_title_actuator_engine_config' })}</span>}
                         name="engineType"
                         initialValue="jdbc"
                         rules={[...requiredRule]}

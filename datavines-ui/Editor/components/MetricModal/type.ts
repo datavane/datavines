@@ -19,7 +19,7 @@ export type TParameterItem = {
     expectedParameter?: {
         expected_value?: string;
     },
-    result_formula?: string;
+    resultFormula?: string;
     operator?: string;
     threshold?: string;
     metricParameter: TMetricParameter;

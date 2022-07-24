@@ -23,6 +23,7 @@ export default {
     dv_metric_title_expected_value: '期望值配置',
     dv_metric_title_verify_configure: '校验配置',
     dv_metric_title_actuator_engine: '执行器引擎',
+    dv_metric_title_actuator_engine_config: '执行引擎配置',
     editor_dv_metric_select_placeholder: '请选择指标!',
     editor_dv_metric_select_databases: '请选择数据库!',
     editor_dv_metric_select_table: '请选择表!',
