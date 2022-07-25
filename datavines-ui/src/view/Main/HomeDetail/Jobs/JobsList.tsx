@@ -6,15 +6,18 @@ import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { TJobsTableData, TJobsTableItem } from '@/type/Jobs';
-import { useScheduleModal } from './useScheduleModal';
 import { Title, SearchForm } from '@/component';
-import { useMount } from '@/common';
+import { useWatch } from '@/common';
 import { $http } from '@/http';
 import { defaultRender } from '@/utils/helper';
 import { useAddEditJobsModal } from './useAddEditJobsModal';
+import { useSelectSLAsModal } from './useSelectSLAsModal';
 
-const Jobs = () => {
-    const { Render: RenderSchedule, show: showSchedule } = useScheduleModal({});
+type TJobs = {
+    datasourceId?: any,
+}
+
+const Jobs = ({ datasourceId }: TJobs) => {
     const intl = useIntl();
     const form = Form.useForm()[0];
     const [loading, setLoading] = useState(false);
@@ -22,6 +25,11 @@ const Jobs = () => {
     const match = useRouteMatch();
     const { Render: RenderJobsModal, show: showJobsModal } = useAddEditJobsModal({
         title: intl.formatMessage({ id: 'jobs_tabs_title' }),
+        afterClose() {
+            getData();
+        },
+    });
+    const { Render: RenderSLAsModal, show: showSLAsModal } = useSelectSLAsModal({
         afterClose() {
             getData();
         },
@@ -35,7 +43,7 @@ const Jobs = () => {
         try {
             setLoading(true);
             const res = (await $http.get('/job/page', {
-                datasourceId: (match.params as any).id,
+                datasourceId: datasourceId || (match.params as any).id,
                 ...pageParams,
                 ...(values || form.getFieldsValue()),
             })) || [];
@@ -48,15 +56,11 @@ const Jobs = () => {
             setLoading(false);
         }
     };
-    useMount(() => {
+    useWatch([pageParams], () => {
         getData();
-    });
-    const onSearch = (_values: any) => {
+    }, { immediate: true });
+    const onSearch = () => {
         setPageParams({ ...pageParams, pageNumber: 1 });
-        getData({
-            ..._values,
-            pageNumber: 1,
-        });
     };
     const onChange = ({ current, pageSize }: any) => {
         setPageParams({
@@ -75,12 +79,7 @@ const Jobs = () => {
             setLoading(false);
         }
     };
-    const onSchedule = (record: TJobsTableItem) => {
-        console.log(record);
-        showSchedule({ record });
-    };
     const onEdit = (record: TJobsTableItem) => {
-        console.log(record);
         showJobsModal({
             id: (match.params as any).id,
             record,
@@ -97,23 +96,47 @@ const Jobs = () => {
             setLoading(false);
         }
     };
+    const onSLAs = (record: TJobsTableItem) => {
+        showSLAsModal(record);
+    };
     const onViewInstance = (record: TJobsTableItem) => {
-        console.log(record, match);
         history.push(`${match.url}/instance?jobId=${record.id}`);
     };
+    // @ts-ignore
     const columns: ColumnsType<TJobsTableItem> = [
         {
             title: intl.formatMessage({ id: 'jobs_name' }),
             dataIndex: 'name',
             key: 'name',
             width: 160,
-            render: (text) => defaultRender(text, 300),
+            render: (text: any) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'dv_metric_database' }),
+            dataIndex: 'schemaName',
+            key: 'schemaName',
+            width: 200,
+            render: (text: string) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'dv_metric_table' }),
+            dataIndex: 'tableName',
+            key: 'tableName',
+            width: 200,
+            render: (text: string) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'dv_metric_column' }),
+            dataIndex: 'columnName',
+            key: 'columnName',
+            width: 200,
+            render: (text: string) => defaultRender(text, 200),
         },
         {
             title: intl.formatMessage({ id: 'jobs_type' }),
             dataIndex: 'type',
             key: 'type',
-            width: 200,
+            width: 160,
             render: (text: string) => <div>{text}</div>,
         },
         {
@@ -135,11 +158,10 @@ const Jobs = () => {
             fixed: 'right',
             key: 'right',
             dataIndex: 'right',
-            width: 240,
-            render: (text: string, record: TJobsTableItem) => (
-                <div className="dv-jobs">
-                    <a style={{ marginRight: 5 }} onClick={() => { onRun(record); }}>{intl.formatMessage({ id: 'jobs_run' })}</a>
-                    <a style={{ marginRight: 5 }} onClick={() => { onEdit(record); }}>{intl.formatMessage({ id: 'common_edit' })}</a>
+            width: 260,
+            render: (text: string, record: TJobsTableItem) => {
+                const editComp = <a style={{ marginRight: 5 }} onClick={() => { onEdit(record); }}>{intl.formatMessage({ id: 'common_edit' })}</a>;
+                const deleteComp = (
                     <Popconfirm
                         title={intl.formatMessage({ id: 'common_delete_tip' })}
                         onConfirm={() => { onDelete(record); }}
@@ -148,9 +170,17 @@ const Jobs = () => {
                     >
                         <a>{intl.formatMessage({ id: 'common_delete' })}</a>
                     </Popconfirm>
-                    <a style={{ marginLeft: 5 }} onClick={() => { onViewInstance(record); }}>{intl.formatMessage({ id: 'jobs_view' })}</a>
-                </div>
-            ),
+                );
+                return (
+                    <div className="dv-jobs">
+                        <a style={{ marginRight: 5 }} onClick={() => { onRun(record); }}>{intl.formatMessage({ id: 'jobs_run' })}</a>
+                        {editComp}
+                        {deleteComp}
+                        {/* <a style={{ marginLeft: 5 }} onClick={() => { onSLAs(record); }}>SLAs</a> */}
+                        <a style={{ marginLeft: 5 }} onClick={() => { onViewInstance(record); }}>{intl.formatMessage({ id: 'jobs_view' })}</a>
+                    </div>
+                );
+            },
         },
     ];
     return (
@@ -159,13 +189,12 @@ const Jobs = () => {
             <div style={{ paddingTop: '20px' }}>
                 <div className="dv-flex-between">
                     <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
+
                     <div>
                         <Button
                             type="primary"
                             style={{ marginRight: 15 }}
                             onClick={() => {
-                                console.log('点击');
-                                // show(null);
                                 showJobsModal({
                                     id: (match.params as any).id,
                                     record: null,
@@ -189,13 +218,12 @@ const Jobs = () => {
                     size: 'small',
                     total: tableData.total,
                     showSizeChanger: true,
-                    defaultPageSize: 20,
                     current: pageParams.pageNumber,
                     pageSize: pageParams.pageSize,
                 }}
             />
-            <RenderSchedule />
             <RenderJobsModal />
+            <RenderSLAsModal />
         </div>
     );
 };

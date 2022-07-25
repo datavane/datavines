@@ -8,12 +8,15 @@ body, html {
 
 // theme variable
 :root {
-    --main-color: #1890ff;
-    --primary-color: #8eabde;
-    --primary-bg-color: #162a48;
-    --primary-sub-color: #c1ddf8;
+    --main-color: #4D8BFF;
+    --primary-color: #4D8BFF;
+    --primary-bg-color: #4D8BFF;
+    --primary-sub-color: #4D8BFF;
 }
 
+.main-color {
+    color: var(--main-color);
+}
 
 .dv-form-gray {
     color: #aaa;
@@ -33,7 +36,7 @@ body, html {
 }
 .dv-page-paddinng {
     width: 100%;
-    height: calc(100vh - 60px);
+    height: calc(100vh - 70px);
     padding: 0 10px;
     background-color: #fff;
     overflow: auto;
@@ -41,24 +44,15 @@ body, html {
 
 // global modal
 
-.dv-modal-fullscreen {
-    width: 100% !important;
-    height: 100vh;
-    top: 0;
-    bottom: 0;
-    left: 0px;
-    right: 0;
-    max-width: 100vw;
-    .ant-tabs-nav-scroll {
-        text-align: center;
-    }
-    .ant-modal-content {
-        height: 100vh;
-        border-radius: 0;
-    }
-    .ant-modal-body {
-        overflow: auto;
-        height: calc(100vh - 55px);
-        padding-top: 10px;
-    }
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: #bdbdbd;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #999;
 }

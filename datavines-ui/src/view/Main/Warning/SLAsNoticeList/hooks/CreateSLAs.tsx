@@ -1,30 +1,29 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useImperativeHandle } from 'react';
 import {
     Input, ModalProps, Form, FormInstance, message,
 } from 'antd';
 import { useIntl } from 'react-intl';
 import {
-    useModal, useImmutable, FormRender, IFormRender, usePersistFn, useLoading, useContextModal,
+    useModal, useImmutable, FormRender, IFormRender, usePersistFn, useLoading,
 } from '@/common';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
 import { TWarnSLATableItem } from '@/type/warning';
 
 type InnerProps = {
-    form: FormInstance | undefined
+    form: FormInstance,
+    detail?: TWarnSLATableItem | null,
+    innerRef?: any
 }
 
-const Inner = ({ form }: InnerProps) => {
+export const CreateSLAsComponent = ({ form, detail, innerRef }: InnerProps) => {
     const intl = useIntl();
-    const { data } = useContextModal<TWarnSLATableItem>();
-    console.log('data', data);
+    const setBodyLoading = useLoading();
+    const { workspaceId } = useSelector((r) => r.workSpaceReducer);
     const schema: IFormRender = {
         name: 'sla-form',
         labelCol: { span: 6 },
         wrapperCol: { span: 18 },
-        onFinish(values) {
-            console.log('yes', values);
-        },
         formItemProps: {
             style: { marginBottom: 10 },
         },
@@ -32,7 +31,7 @@ const Inner = ({ form }: InnerProps) => {
             {
                 label: intl.formatMessage({ id: 'warn_SLAs_name' }),
                 name: 'name',
-                initialValue: data?.name,
+                initialValue: detail?.name,
                 rules: [
                     {
                         required: true,
@@ -44,7 +43,7 @@ const Inner = ({ form }: InnerProps) => {
             {
                 label: intl.formatMessage({ id: 'common_desc' }),
                 name: 'description',
-                initialValue: data?.description,
+                initialValue: detail?.description,
                 rules: [
                     {
                         required: true,
@@ -55,38 +54,46 @@ const Inner = ({ form }: InnerProps) => {
             },
         ],
     };
+    useImperativeHandle(innerRef, () => ({
+        saveUpdate(hide?: () => any) {
+            form.validateFields().then(async (values) => {
+                try {
+                    setBodyLoading(true);
+                    const params = {
+                        workspaceId,
+                        ...values,
+                    };
+                    if (detail && detail.id) {
+                        await $http.put('/sla', { ...params, id: detail.id });
+                    } else {
+                        await $http.post('/sla', params);
+                    }
+                    message.success(intl.formatMessage({ id: 'common_success' }));
+                    if (hide) {
+                        hide();
+                    }
+                } catch (error) {
+                } finally {
+                    setBodyLoading(false);
+                }
+            }).catch((err) => {
+                console.log(err);
+            });
+        },
+    }));
     return <FormRender {...schema} form={form} />;
 };
 
 export const useCreateSLAs = (options: ModalProps) => {
     const [form] = Form.useForm();
     const intl = useIntl();
-    const setLoading = useLoading();
+    const innerRef = useRef<any>();
+    const [editInfo, setEditInfo] = useState<TWarnSLATableItem | null>(null);
     const editRef = useRef<TWarnSLATableItem | null>(null);
-    const { workspaceId } = useSelector((r) => r.workSpaceReducer);
+    editRef.current = editInfo;
+
     const onOk = usePersistFn(async () => {
-        form.validateFields().then(async (values) => {
-            console.log('values', values);
-            try {
-                setLoading(true);
-                const params = {
-                    workSpaceId: workspaceId,
-                    ...values,
-                };
-                if (editRef.current) {
-                    await $http.put('/sla', { ...params, id: editRef.current.id });
-                } else {
-                    await $http.post('/sla', params);
-                }
-                message.success(intl.formatMessage({ id: 'common_success' }));
-                hide();
-            } catch (error) {
-            } finally {
-                setLoading(false);
-            }
-        }).catch((err) => {
-            console.log(err);
-        });
+        innerRef.current.saveUpdate(hide);
     });
     const {
         Render, hide, show, ...rest
@@ -96,9 +103,9 @@ export const useCreateSLAs = (options: ModalProps) => {
         ...(options || {}),
     });
     return {
-        Render: useImmutable(() => (<Render><Inner form={form} /></Render>)),
+        Render: useImmutable(() => (<Render><CreateSLAsComponent innerRef={innerRef} form={form} detail={editRef.current} /></Render>)),
         show(data: TWarnSLATableItem | null) {
-            editRef.current = data;
+            setEditInfo(data);
             show(data);
         },
         ...rest,

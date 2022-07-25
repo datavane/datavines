@@ -15,7 +15,6 @@ module.exports = {
         filename: 'js/[name].[fullhash:8].js',
         chunkFilename: 'js/[name].[chunkhash:8].js',
     },
-    externals: {},
     optimization: {
         minimize: true,
         minimizer: [

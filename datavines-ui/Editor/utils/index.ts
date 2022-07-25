@@ -21,6 +21,7 @@ export const editorLoaderScript = (config: IMonacoConfig): Promise<boolean> => n
 export const loadEditorMainModule = async (config: IMonacoConfig) => new Promise(async (resolve, reject) => {
     try {
         await editorLoaderScript(config);
+        console.log('(window as any).require', (window as any).require);
         (window as any).require.config(config);
         (window as any).require(
             ['vs/editor/editor.main'],
@@ -28,10 +29,15 @@ export const loadEditorMainModule = async (config: IMonacoConfig) => new Promise
                 resolve(monaco);
             },
             (error: Error) => {
+                console.log('33333', error);
                 reject(error);
+            },
+            () => {
+                console.log('123');
             },
         );
     } catch (error) {
+        console.log('3333333333', error);
         reject(error);
     }
 });

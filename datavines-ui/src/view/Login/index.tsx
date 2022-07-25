@@ -10,6 +10,7 @@ import { DV_STORAGE_LOGIN } from 'src/utils/constants';
 import { useHistory } from 'react-router-dom';
 import { SwitchLanguage } from '@/component';
 import { $http } from '@/http';
+import { useCommonActions } from '@/store';
 
 type TLoginValues = {
     username: string,
@@ -17,6 +18,7 @@ type TLoginValues = {
 }
 
 const Login = () => {
+    const { setIsDetailPage } = useCommonActions();
     const [loading, setLoading] = useState(false);
     const [form] = Form.useForm();
     const intl = useIntl();
@@ -29,6 +31,7 @@ const Login = () => {
                 ...(res.data),
                 token: res.token,
             });
+            setIsDetailPage(false);
             history.push('/main/home');
         } catch (error: any) {
         } finally {
@@ -40,31 +43,32 @@ const Login = () => {
             <div className="dv-login__switch-language"><SwitchLanguage /></div>
             <div className="dv-login-containner">
                 <div className="dv-login-wrap">
-                    <div className="dv-login-title">DataVince</div>
+                    <div className="dv-login-title main-color">DataVines</div>
                     <Form
                         form={form}
+                        layout="vertical"
                         name="dv-login"
                         onFinish={onFinish}
                     >
                         <Form.Item
-                            label=""
+                            label={<span style={{ fontSize: 14 }}>{intl.formatMessage({ id: 'userName_text' })}</span>}
                             name="username"
                             style={{ marginBottom: 15 }}
                             rules={[{ required: true, message: intl.formatMessage({ id: 'login_username_msg' }) }]}
                         >
-                            <Input style={{ width: 320 }} size="large" prefix={<UserOutlined />} />
+                            <Input style={{ height: 50 }} size="large" prefix={<UserOutlined />} />
                         </Form.Item>
 
                         <Form.Item
-                            label=""
+                            label={<span style={{ fontSize: 14 }}>{intl.formatMessage({ id: 'password_text' })}</span>}
                             name="password"
                             style={{ marginBottom: 15 }}
                             rules={[{ required: true, message: intl.formatMessage({ id: 'login_password_msg' }) }]}
                         >
-                            <Input.Password style={{ width: 320 }} size="large" prefix={<LockOutlined />} />
+                            <Input.Password style={{ height: 50 }} size="large" prefix={<LockOutlined />} />
                         </Form.Item>
                         <Form.Item>
-                            <Button loading={loading} style={{ width: 320 }} size="large" type="primary" htmlType="submit">
+                            <Button loading={loading} style={{ width: '100%' }} size="large" type="primary" htmlType="submit">
                                 {intl.formatMessage({ id: 'login_btn_text' })}
                             </Button>
                         </Form.Item>

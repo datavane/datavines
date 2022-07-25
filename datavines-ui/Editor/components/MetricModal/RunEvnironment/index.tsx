@@ -11,15 +11,18 @@ import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
 import { useTenantModal } from './useTenantModal';
 import { useEnvModal } from './useEnvModal';
+import { useEditorContextState } from '../../../store/editor';
 
 type InnerProps = {
-    form: FormInstance
+    form: FormInstance,
+    id: any,
 }
 
 const Setting = ({ ...rest }) => <div style={{ paddingTop: 5, cursor: 'pointer' }} {...rest}><SettingOutlined /></div>;
 
-const Index = ({ form }: InnerProps) => {
+const Index = ({ form, id }: InnerProps) => {
     const intl = useIntl();
+    const [context] = useEditorContextState();
     const { $http } = useRequest();
     const [tenantCodeList, setTenantCodeList] = useState([]);
     const [envList, setEnvList] = useState([]);
@@ -38,14 +41,14 @@ const Index = ({ form }: InnerProps) => {
     });
     const getTenantList = async () => {
         try {
-            const tenantListOptions = await $http.get('tenant/listOptions');
+            const tenantListOptions = await $http.get(`tenant/listOptions/${context.workspaceId}`);
             setTenantCodeList(tenantListOptions || []);
         } catch (error) {
         }
     };
     const getEnvList = async () => {
         try {
-            const envListOptions = await $http.get('env/listOptions');
+            const envListOptions = await $http.get(`env/listOptions/${context.workspaceId}`);
             setEnvList(envListOptions || []);
         } catch (error) {
         }
@@ -56,8 +59,8 @@ const Index = ({ form }: InnerProps) => {
     });
     const render = () => (
         <Title title={intl.formatMessage({ id: 'dv_metric_run_env_config' })}>
-            <Row gutter={10}>
-                <Col span={10}>
+            <Row gutter={30}>
+                <Col span={12}>
                     <Form.Item
                         {...layoutItem}
                         label={intl.formatMessage({ id: 'dv_metric_linux_user' })}
@@ -71,16 +74,18 @@ const Index = ({ form }: InnerProps) => {
                         />
                     </Form.Item>
                 </Col>
-                <Col span={2}>
+                <Col span={1}>
                     <Setting
                         onClick={() => {
                             showTenant({
+                                id,
+                                workspaceId: context.workspaceId,
                                 currentValue: form.getFieldValue('tenantCode'),
                             });
                         }}
                     />
                 </Col>
-                <Col span={10}>
+                <Col span={12}>
                     <Form.Item
                         {...layoutItem}
                         label={intl.formatMessage({ id: 'dv_metric_env_config' })}
@@ -94,10 +99,12 @@ const Index = ({ form }: InnerProps) => {
                         />
                     </Form.Item>
                 </Col>
-                <Col span={2}>
+                <Col span={1}>
                     <Setting
                         onClick={() => {
                             showEnv({
+                                id,
+                                workspaceId: context.workspaceId,
                                 currentValue: form.getFieldValue('env'),
                             });
                         }}

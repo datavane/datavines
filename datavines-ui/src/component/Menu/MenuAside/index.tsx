@@ -68,7 +68,6 @@ const MenuAside: React.FC<TMenuAside> = ({ menus, history }) => {
                 selectedKeys={activeKeys}
                 mode="inline"
                 onClick={clickMenuItem}
-                // theme="dark"
                 items={$munus}
             />
         </div>

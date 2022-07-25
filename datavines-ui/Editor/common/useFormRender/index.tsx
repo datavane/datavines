@@ -16,7 +16,6 @@ type InnerProps = {
 
 const Inner = ({ innerRef }: InnerProps) => {
     const { data } = useContextModal();
-    console.log('data', data);
     const [form] = Form.useForm();
     const schema = (data?.schema || {}) as IFormRender;
     useImperativeHandle(innerRef, () => ({

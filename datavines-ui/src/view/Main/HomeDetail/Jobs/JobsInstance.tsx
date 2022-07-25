@@ -2,29 +2,35 @@ import React, { useState } from 'react';
 import { Table, Form } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
-import queryString from 'querystring';
+import querystring from 'querystring';
 import { TJobsInstanceTableData, TJobsInstanceTableItem } from '@/type/JobsInstance';
 import { Title, SearchForm } from '@/component';
-import { useMount } from '@/common';
+import { useMount, IF } from '@/common';
 import { $http } from '@/http';
 import { defaultRender } from '@/utils/helper';
+import { useLogger } from './useLogger';
+import { useInstanceErrorDataModal } from './useInstanceErrorDataModal';
+import { useInstanceResult } from './useInstanceResult';
 
 const JobsInstance = () => {
     const intl = useIntl();
     const form = Form.useForm()[0];
     const [loading, setLoading] = useState(false);
+    const { Render: RenderErrorDataModal, show: showErrorDataModal } = useInstanceErrorDataModal({});
+    const { Render: RenderResultModal, show: showResultModal } = useInstanceResult({});
+    const { Render: RenderLoggerModal, show: showLoggerModal } = useLogger({});
     const [tableData, setTableData] = useState<TJobsInstanceTableData>({ list: [], total: 0 });
     const [pageParams, setPageParams] = useState({
         pageNumber: 1,
         pageSize: 10,
     });
-    const [qs] = useState(queryString.parse(window.location.href.split('?')[1] || ''));
-    const getData = async (values: any = null) => {
+    const [qs] = useState(querystring.parse(window.location.href.split('?')[1] || ''));
+    const getData = async (values?: any, $pageParams?: any) => {
         try {
             setLoading(true);
             const res = (await $http.get('/task/page', {
                 jobId: qs.jobId,
-                ...pageParams,
+                ...($pageParams || pageParams),
                 ...(values || form.getFieldsValue()),
             })) || [];
             setTableData({
@@ -51,23 +57,39 @@ const JobsInstance = () => {
             pageNumber: current,
             pageSize,
         });
+        getData(null, {
+            pageNumber: current,
+            pageSize,
+        });
     };
-    const onStop = (record: TJobsInstanceTableItem) => {
-        console.log(record);
+    const onStop = async (record: TJobsInstanceTableItem) => {
+        try {
+            setLoading(true);
+            await $http.delete(`/task/kill/${record.id}`);
+            getData();
+        } catch (error) {
+        } finally {
+            setLoading(false);
+        }
     };
     const onLog = (record: TJobsInstanceTableItem) => {
-        console.log(record);
+        showLoggerModal(record);
     };
     const onResult = (record: TJobsInstanceTableItem) => {
         console.log(record);
+        showResultModal(record);
+    };
+    const onErrorData = (record: TJobsInstanceTableItem) => {
+        console.log(record);
+        showErrorDataModal(record);
     };
     const columns: ColumnsType<TJobsInstanceTableItem> = [
         {
             title: intl.formatMessage({ id: 'jobs_task_name' }),
             dataIndex: 'name',
             key: 'name',
-            width: 240,
-            render: (text) => defaultRender(text, 240),
+            width: 300,
+            render: (text) => defaultRender(text, 300),
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_type' }),
@@ -95,19 +117,22 @@ const JobsInstance = () => {
             fixed: 'right',
             key: 'right',
             dataIndex: 'right',
-            width: 200,
+            width: 240,
             render: (text: string, record: TJobsInstanceTableItem) => (
                 <>
-                    <a style={{ marginRight: 5 }} onClick={() => { onStop(record); }}>{intl.formatMessage({ id: 'jobs_task_stop_btn' })}</a>
+                    <IF visible={record.status === 'submitted' || record.status === 'running'}>
+                        <a style={{ marginRight: 5 }} onClick={() => { onStop(record); }}>{intl.formatMessage({ id: 'jobs_task_stop_btn' })}</a>
+                    </IF>
                     <a style={{ marginRight: 5 }} onClick={() => { onLog(record); }}>{intl.formatMessage({ id: 'jobs_task_log_btn' })}</a>
-                    <a style={{ marginRight: 5 }} onClick={() => { onResult(record); }}>{intl.formatMessage({ id: 'jobs_task_result_btn' })}</a>
+                    <a style={{ marginRight: 5 }} onClick={() => { onResult(record); }}>{intl.formatMessage({ id: 'jobs_task_result' })}</a>
+                    <a style={{ marginRight: 5 }} onClick={() => { onErrorData(record); }}>{intl.formatMessage({ id: 'jobs_task_error_data' })}</a>
                 </>
             ),
         },
     ];
     return (
         <div className="dv-page-paddinng">
-            <Title isBack>{intl.formatMessage({ id: 'jobs_list' })}</Title>
+            <Title isBack>{intl.formatMessage({ id: 'jobs_task_title' })}</Title>
             <div style={{ paddingTop: '20px' }}>
                 <div className="dv-flex-between">
                     <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
@@ -124,11 +149,13 @@ const JobsInstance = () => {
                     size: 'small',
                     total: tableData.total,
                     showSizeChanger: true,
-                    defaultPageSize: 20,
                     current: pageParams.pageNumber,
                     pageSize: pageParams.pageSize,
                 }}
             />
+            <RenderLoggerModal />
+            <RenderErrorDataModal />
+            <RenderResultModal />
         </div>
     );
 };

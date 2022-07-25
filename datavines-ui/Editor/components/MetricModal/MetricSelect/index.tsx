@@ -8,14 +8,15 @@ import { layoutItem } from '../helper';
 import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
 import { TDetail, TMetricParameter } from '../type';
+import { useEditorContextState } from '../../../store/editor';
 import {
-    CustomSelect, useMount, usePersistFn,
+    CustomSelect, useMount, usePersistFn, IF,
 } from '../../../common';
 
 type InnerProps = {
     form: FormInstance,
     metricSelectRef: any,
-    id: string,
+    id: any,
     detail: TDetail
 }
 
@@ -29,12 +30,14 @@ const Index = ({
 }: InnerProps) => {
     const intl = useIntl();
     const { $http } = useRequest();
+    const [context] = useEditorContextState();
     const [metricList, setMetricList] = useState([]);
     const requiredRules = useRequiredRule();
     const [databases, setDataBases] = useState([]);
     const [tables, setTables] = useState([]);
     const [columns, setColumns] = useState([]);
     const [configsName, setConfigsName] = useState<dynamicConfigItem[]>([]);
+    const [configsMap, setConfigsMap] = useState<Record<string, dynamicConfigItem>>({});
 
     useImperativeHandle(metricSelectRef, () => ({
         getDynamicValues() {
@@ -59,7 +62,6 @@ const Index = ({
         } catch (error) {
         }
     };
-    console.log('detail', detail);
     useMount(async () => {
         try {
             const $metricList = await $http.get('metric/list');
@@ -73,29 +75,41 @@ const Index = ({
             if (database && table) {
                 await getCloumn(database, table);
             }
+            const metricType = detail?.parameterItem?.metricType;
+            if (metricType) {
+                await getConfigsName(metricType);
+            }
             setDataBases($databases || []);
             setMetricList($metricList || []);
             const options: Record<string, any> = {
                 database,
                 table,
                 column,
-                metricType: detail?.parameterItem?.metricType,
+                metricType,
                 filter,
             };
             Object.keys(rest).forEach((item) => {
                 options[item] = rest[item];
             });
-            console.log('metric set default', options);
             form.setFieldsValue(options);
         } catch (error) {
-
         }
     });
 
     const getConfigsName = usePersistFn(async (val) => {
         try {
-            const res = await $http.get(`metric/configs/${val}`);
-            setConfigsName(res || []);
+            const res = await $http.get<dynamicConfigItem[]>(`metric/configs/${val}`);
+            const $configMaps: Record<string, dynamicConfigItem> = {};
+            const $res: dynamicConfigItem[] = [];
+            (res || []).forEach((item) => {
+                if (['table', 'column', 'filter'].includes(item.key)) {
+                    $configMaps[item.key] = item;
+                    return;
+                }
+                $res.push(item);
+            });
+            setConfigsMap($configMaps);
+            setConfigsName($res);
         } catch (error) {
         }
     });
@@ -133,66 +147,73 @@ const Index = ({
         </Form.Item>
     );
     return (
-        <Row gutter={30}>
-            <Col span={12}>
-                <Form.Item
-                    {...layoutItem}
-                    label="Metric"
-                    name="metricType"
-                    rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_placeholder' }) }]}
-                >
-                    <CustomSelect
-                        source={metricList}
-                        sourceValueMap="key"
-                        onChange={getConfigsName}
-                    />
-                </Form.Item>
-                <Form.Item
-                    {...layoutItem}
-                    label={intl.formatMessage({ id: 'dv_metric_database' })}
-                    name="database"
-                    rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
-                >
-                    <CustomSelect onChange={databasesChange} allowClear source={databases} sourceValueMap="name" />
-                </Form.Item>
-                <Form.Item
-                    {...layoutItem}
-                    label={intl.formatMessage({ id: 'dv_metric_table' })}
-                    name="table"
-                    rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
-                >
-                    <CustomSelect onChange={tableChange} allowClear source={tables} sourceValueMap="name" />
-                </Form.Item>
-                <Form.Item noStyle dependencies={['table']}>
-                    {() => {
-                        const value = form.getFieldValue('table');
-                        if (!value) {
-                            return null;
-                        }
-                        return renderColumn();
-                    }}
-                </Form.Item>
-                {
-                    configsName.map((item) => <React.Fragment key={item.key}>{dynamicRender(item)}</React.Fragment>)
-                }
-            </Col>
-            <Col span={12}>
-                <div style={{ paddingTop: 20 }} />
-                <Form.Item
-                    className="dv-editor__condition"
-                    colon={false}
-                    label={(
-                        <div>
-                            {intl.formatMessage({ id: 'dv_metric_condition' })}
-                            :
-                        </div>
-                    )}
-                    name="filter"
-                >
-                    <Input.TextArea style={{ marginLeft: -60 }} rows={5} />
-                </Form.Item>
-            </Col>
-        </Row>
+        <div style={{ padding: '0 10px' }}>
+            <Row gutter={30}>
+                <Col span={12}>
+                    <Form.Item
+                        {...layoutItem}
+                        label="Metric"
+                        name="metricType"
+                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_placeholder' }) }]}
+                    >
+                        <CustomSelect
+                            source={metricList}
+                            sourceValueMap="key"
+                            onChange={getConfigsName}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        {...layoutItem}
+                        label={intl.formatMessage({ id: 'dv_metric_database' })}
+                        name="database"
+                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
+                    >
+                        <CustomSelect onChange={databasesChange} allowClear source={databases} sourceValueMap="name" />
+                    </Form.Item>
+                    <IF visible={!!configsMap.table}>
+                        <Form.Item
+                            {...layoutItem}
+                            label={configsMap.table?.label || intl.formatMessage({ id: 'dv_metric_table' })}
+                            name="table"
+                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
+                        >
+                            <CustomSelect onChange={tableChange} allowClear source={tables} sourceValueMap="name" />
+                        </Form.Item>
+                    </IF>
+                    <Form.Item noStyle dependencies={['table', 'metricType']}>
+                        {() => {
+                            const value = form.getFieldValue('table');
+                            if (!value || !configsMap.column) {
+                                return null;
+                            }
+                            return renderColumn();
+                        }}
+                    </Form.Item>
+                    {
+                        configsName.map((item) => <React.Fragment key={item.key}>{dynamicRender(item)}</React.Fragment>)
+                    }
+                </Col>
+                <Col span={12}>
+                    <IF visible={!!configsMap.filter}>
+                        <div style={{ paddingTop: 20 }} />
+                        <Form.Item
+                            className="dv-editor__condition"
+                            colon={false}
+                            label={(
+                                <div>
+                                    {intl.formatMessage({ id: 'dv_metric_condition' })}
+                                    :
+                                </div>
+                            )}
+                            name="filter"
+                        >
+                            <Input.TextArea style={{ marginLeft: context.locale === 'en_US' ? -100 : -62 }} rows={5} />
+                        </Form.Item>
+                    </IF>
+
+                </Col>
+            </Row>
+        </div>
     );
 };
 

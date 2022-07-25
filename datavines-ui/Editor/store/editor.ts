@@ -2,17 +2,21 @@ import { IMonacoConfig, IDvDataBaseItem } from '../type';
 import createStore from './createStore';
 
 type TEditor = {
+    workspaceId: any,
     monacoConfig: IMonacoConfig,
     id: string | number | null,
     headers: Record<string, any>,
     databases: IDvDataBaseItem[],
     baseURL: string,
+    locale: any,
 }
 
 const initState: TEditor = {
     monacoConfig: { paths: { vs: '' } },
+    workspaceId: null,
     headers: {},
     databases: [],
+    locale: '',
     baseURL: '',
     id: null,
 };

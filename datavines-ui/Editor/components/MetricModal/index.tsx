@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import { useIntl } from 'react-intl';
 import {
-    useModal, useImmutable, usePersistFn, useLoading, useMount,
+    useModal, useImmutable, usePersistFn, useLoading,
 } from '@/common';
 import useRequest from '../../hooks/useRequest';
 import MetricSelect from './MetricSelect';
@@ -14,6 +14,7 @@ import ActuatorConfigure from './ActuatorConfigure';
 import RunEvnironment from './RunEvnironment';
 import OtherConfig from './OtherConfig';
 import { pickProps } from './helper';
+import ErrorDataStoreConfig from './ErrorDataStoreConfig';
 import { TDetail } from './type';
 
 type InnerProps = {
@@ -34,10 +35,13 @@ const keys = [
     'timeoutStrategy',
     'tenantCode',
     'env',
+    'errorDataStorageId',
 ];
-export const MetricConfig = ({ innerRef, id, detail }: InnerProps) => {
+export const MetricConfig = (props: InnerProps) => {
+    const { innerRef, detail } = props;
     const [form] = Form.useForm();
     const metricSelectRef = useRef<any>();
+    const id = props.id || detail?.dataSourceId;
     useImperativeHandle(innerRef, () => ({
         form,
         getValues() {
@@ -50,13 +54,13 @@ export const MetricConfig = ({ innerRef, id, detail }: InnerProps) => {
                         ...(pickProps(values, [...keys])),
                     };
                     if (values.engineType === 'spark') {
-                        params.engineParameter = {
+                        params.engineParameter = JSON.stringify({
                             programType: 'JAVA',
                             ...pickProps(values, ['deployMode', 'driverCores', 'driverMemory', 'numExecutors', 'executorMemory', 'executorCores', 'others']),
-                        };
+                        });
                     }
                     const parameter: any = {
-                        ...(pickProps(values, ['metricType', 'expectedType', 'result_formula', 'operator', 'threshold'])),
+                        ...(pickProps(values, ['metricType', 'expectedType', 'resultFormula', 'operator', 'threshold'])),
                         metricParameter: {
                             ...(pickProps(values, ['database', 'table', 'column', 'filter'])),
                             ...(metricSelectRef.current.getDynamicValues()),
@@ -68,6 +72,7 @@ export const MetricConfig = ({ innerRef, id, detail }: InnerProps) => {
                         };
                     }
                     params.parameter = JSON.stringify([parameter]);
+                    console.log('params', params);
                     resolve(params);
                 }).catch((error) => {
                     reject(error);
@@ -81,8 +86,9 @@ export const MetricConfig = ({ innerRef, id, detail }: InnerProps) => {
             <ExpectedValue detail={detail} form={form} />
             <VerifyConfigure detail={detail} form={form} />
             <ActuatorConfigure detail={detail} form={form} />
-            <RunEvnironment form={form} />
+            <RunEvnironment id={id} form={form} />
             <OtherConfig detail={detail} form={form} />
+            <ErrorDataStoreConfig detail={detail} form={form} />
         </Form>
     );
 };
@@ -127,12 +133,13 @@ export const useMetricModal = () => {
                         intl.formatMessage({ id: 'dv_config_text' })
                     }
                 </span>
-                <span style={{ marginRight: 20 }}>
+                <span style={{ marginRight: 20, marginTop: -8 }}>
                     <Button type="primary" onClick={onSave}>{intl.formatMessage({ id: 'dv_metric_save' })}</Button>
                     <Button type="primary" onClick={onSaveRun} style={{ marginLeft: 12 }}>{intl.formatMessage({ id: 'dv_metric_save_run' })}</Button>
                 </span>
             </div>
         ),
+        className: 'dv-modal-fullscreen',
         width: 900,
         afterClose() {
             setId('');

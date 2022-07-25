@@ -31,7 +31,6 @@ const Index = (props: IndexProps) => {
                         onPressEnter={() => {
                             $onSearch();
                         }}
-                        allowClear
                         onSearch={$onSearch}
                     />
                 </Form.Item>

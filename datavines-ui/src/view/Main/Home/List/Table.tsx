@@ -55,14 +55,14 @@ const Index: React.FC<IndexProps> = ({
             width: 100,
             render: (text: string, record: IDataSourceListItem) => (
                 <>
-                    <a onClick={() => { onEdit(record); }}><EyeOutlined /></a>
+                    <a onClick={() => { onEdit(record); }}>{intl.formatMessage({ id: 'common_edit' })}</a>
                     <Popconfirm
                         title={intl.formatMessage({ id: 'common_delete_tip' })}
                         onConfirm={() => { onDelete(record); }}
                         okText={intl.formatMessage({ id: 'common_Ok' })}
                         cancelText={intl.formatMessage({ id: 'common_Cancel' })}
                     >
-                        <a style={{ color: '#f81d22', marginLeft: 10 }}><DeleteOutlined /></a>
+                        <a style={{ color: '#f81d22', marginLeft: 10 }}>{intl.formatMessage({ id: 'common_delete' })}</a>
                     </Popconfirm>
                 </>
             ),
@@ -85,7 +85,6 @@ const Index: React.FC<IndexProps> = ({
                 size: 'small',
                 total: tableData.total,
                 showSizeChanger: true,
-                defaultPageSize: 20,
                 current: pageParams.pageNumber,
                 pageSize: pageParams.pageSize,
             }}

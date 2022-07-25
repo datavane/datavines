@@ -1,18 +1,21 @@
 import React, { useState } from 'react';
-import { Table, Button, message } from 'antd';
+import {
+    Table, Button, message, Form,
+} from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
-import { EyeOutlined } from '@ant-design/icons';
 import { TWarnSLATableItem } from '@/type/warning';
 import { useCreateSLAs } from './hooks/CreateSLAs';
 import { useMount, Popconfirm } from '@/common';
+import { SearchForm } from '@/component';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
 
 const Index = () => {
     const [loading, setLoading] = useState(false);
     const intl = useIntl();
+    const form = Form.useForm()[0];
     const history = useHistory();
     const match = useRouteMatch();
     const { Render: RenderSLASModal, show } = useCreateSLAs({
@@ -23,34 +26,45 @@ const Index = () => {
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
     const [tableData, setTableData] = useState<{ list: TWarnSLATableItem[], total: number}>({ list: [], total: 0 });
     const [pageParams, setPageParams] = useState({
-        pageNo: 1,
+        pageNumber: 1,
         pageSize: 10,
     });
     const onChange = ({ current, pageSize }: any) => {
         setPageParams({
-            pageNo: current,
+            pageNumber: current,
             pageSize,
         });
     };
-    const getData = async () => {
+    const getData = async (values: any = null) => {
         try {
             setLoading(true);
-            const res = (await $http.get(`/sla/list/${workspaceId}`)) || [];
+            const params = {
+                workspaceId,
+                ...pageParams,
+                ...(values || form.getFieldsValue()),
+            };
+            const res = (await $http.get('/sla/page', params)) || [];
             setTableData({
-                list: res || [],
-                total: res.length || 0,
+                list: res?.records || [],
+                total: res?.total || 0,
             });
         } catch (error) {
         } finally {
             setLoading(false);
         }
     };
+    const onSearch = (_values: any) => {
+        setPageParams({ ...pageParams, pageNumber: 1 });
+        getData({
+            ..._values,
+            pageNumber: 1,
+        });
+    };
     useMount(() => {
         getData();
     });
     const onGoMonitor = (record: TWarnSLATableItem) => {
-        console.log(record, match);
-        history.push(`${match.path}/SLAs?name=${record.name}&id=${record.id}`);
+        history.push(`${match.path}/SLAs?slaName=${decodeURIComponent(record.name as string)}&slaId=${record.id}`);
     };
     const onEdit = (record: TWarnSLATableItem) => {
         show(record);
@@ -58,13 +72,9 @@ const Index = () => {
     const onDelete = async (id: number) => {
         try {
             setLoading(true);
-            const res = await $http.delete(`/sla/${id}`);
-            if (res) {
-                getData();
-                message.success(intl.formatMessage({ id: 'common_success' }));
-            } else {
-                message.success(intl.formatMessage({ id: 'common_fail' }));
-            }
+            await $http.delete(`/sla/${id}`);
+            getData();
+            message.success(intl.formatMessage({ id: 'common_success' }));
         } catch (error) {
         } finally {
             setLoading(false);
@@ -72,35 +82,40 @@ const Index = () => {
     };
     const columns: ColumnsType<TWarnSLATableItem> = [
         {
-            title: intl.formatMessage({ id: 'warn_SLAs_name' }),
+            title: intl.formatMessage({ id: 'sla_name' }),
             dataIndex: 'name',
             key: 'name',
-            render: (text: string, record) => (
-                <a onClick={() => {
-                    onGoMonitor(record);
-                }}
-                >
-                    {text}
-                </a>
-            ),
+            render: (text: string, record) => {
+                if (!text) {
+                    return null;
+                }
+                return (
+                    <a onClick={() => {
+                        onGoMonitor(record);
+                    }}
+                    >
+                        {text}
+                    </a>
+                );
+            },
         },
         {
-            title: 'Metric',
-            dataIndex: 'metric',
-            key: 'metric',
-            render: (text: string) => <div>{text}</div>,
+            title: intl.formatMessage({ id: 'common_desc' }),
+            dataIndex: 'description',
+            key: 'description',
+            render: (text: string) => <div>{text || '--'}</div>,
         },
         {
-            title: 'Issue',
-            dataIndex: 'issue',
-            key: 'issue',
-            render: (text: string) => <div>{text}</div>,
+            title: intl.formatMessage({ id: 'common_updater' }),
+            dataIndex: 'updater',
+            key: 'updater',
+            render: (text: string) => <div>{text || '--'}</div>,
         },
         {
             title: intl.formatMessage({ id: 'warn_update_time' }),
-            dataIndex: 'founder',
-            key: 'founder',
-            render: (text: string) => <div>{text}</div>,
+            dataIndex: 'updateTime',
+            key: 'updateTime',
+            render: (text: string) => <div>{text || '--'}</div>,
         },
         {
             title: intl.formatMessage({ id: 'common_action' }),
@@ -110,7 +125,7 @@ const Index = () => {
             width: 100,
             render: (text: string, record: TWarnSLATableItem) => (
                 <>
-                    <a onClick={() => { onEdit(record); }}><EyeOutlined /></a>
+                    <a onClick={() => { onEdit(record); }}>{intl.formatMessage({ id: 'common_edit' })}</a>
                     <Popconfirm
                         onClick={() => onDelete(record.id)}
                     />
@@ -119,15 +134,21 @@ const Index = () => {
         },
     ];
     return (
-        <div className="dv-page-paddinng">
-            <div style={{ textAlign: 'right', marginBottom: 10 }}>
-                <Button
-                    type="primary"
-                    onClick={() => { show(null); }}
-                >
-                    {intl.formatMessage({ id: 'warn_create_SLAs' })}
-                </Button>
+        <div>
+            <div style={{ paddingTop: '20px' }}>
+                <div className="dv-flex-between">
+                    <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
+                    <div style={{ textAlign: 'right', marginBottom: 10 }}>
+                        <Button
+                            type="primary"
+                            onClick={() => { show(null); }}
+                        >
+                            {intl.formatMessage({ id: 'warn_create_SLAs' })}
+                        </Button>
+                    </div>
+                </div>
             </div>
+
             <Table<TWarnSLATableItem>
                 loading={loading}
                 size="middle"
@@ -139,8 +160,7 @@ const Index = () => {
                     size: 'small',
                     total: tableData.total,
                     showSizeChanger: true,
-                    defaultPageSize: 20,
-                    current: pageParams.pageNo,
+                    current: pageParams.pageNumber,
                     pageSize: pageParams.pageSize,
                 }}
             />
