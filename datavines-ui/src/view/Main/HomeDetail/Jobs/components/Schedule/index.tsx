@@ -46,6 +46,10 @@ type ScheduleProps = {
     formRef: { current: FormInstance},
     detail: null | TDetail,
 }
+const commonStyle = {
+    display: 'inline-block',
+    lineHeight: '32px',
+};
 const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
     const intl = useIntl();
     const form = Form.useForm()[0];
@@ -61,13 +65,13 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
         { label: getIntl('jobs_schedule_cycle_nminute'), value: 'nminute' },
     ];
     const WeekSrouce = [
-        { label: '1', value: 1, key: 'week_1' },
-        { label: '2', value: 2, key: 'week_2' },
-        { label: '3', value: 3, key: 'week_3' },
-        { label: '4', value: 4, key: 'week_4' },
-        { label: '5', value: 5, key: 'week_5' },
-        { label: '6', value: 6, key: 'week_6' },
-        { label: '7', value: 0, key: 'week_0' },
+        { label: getIntl('jobs_Monday'), value: 1, key: 'week_1' },
+        { label: getIntl('jobs_Tuesday'), value: 2, key: 'week_2' },
+        { label: getIntl('jobs_Wednesday'), value: 3, key: 'week_3' },
+        { label: getIntl('jobs_Thursday'), value: 4, key: 'week_4' },
+        { label: getIntl('jobs_Friday'), value: 5, key: 'week_5' },
+        { label: getIntl('jobs_Saturday'), value: 6, key: 'week_6' },
+        { label: getIntl('jobs_Sunday'), value: 0, key: 'week_0' },
     ];
     // @ts-ignore
     const Date = <DatePicker showTime />;
@@ -79,9 +83,13 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 name="minute"
                 rules={requiredRule}
                 initialValue={detail?.param?.parameter?.minute}
-                style={{ width: 100, display: 'inline-block' }}
+                style={{ width: 60, display: 'inline-block' }}
             >
-                <InputNumber min={0} max={59} style={{ width: 100 }} placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_minute' })} />
+                <InputNumber
+                    min={0}
+                    max={59}
+                    style={{ width: 60 }}
+                />
             </Form.Item>
         ),
         nminute: () => (
@@ -90,9 +98,13 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 name="nminute"
                 rules={requiredRule}
                 initialValue={detail?.param?.parameter?.nminute}
-                style={{ width: 100, display: 'inline-block' }}
+                style={{ width: 60, display: 'inline-block' }}
             >
-                <InputNumber min={0} max={59} style={{ width: 100 }} placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_nminute' })} />
+                <InputNumber
+                    min={0}
+                    max={59}
+                    style={{ width: 60 }}
+                />
             </Form.Item>
         ),
         hour: () => (
@@ -101,9 +113,14 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 name="hour"
                 rules={requiredRule}
                 initialValue={detail?.param?.parameter?.hour}
-                style={{ width: 100, display: 'inline-block' }}
+                style={{ width: 60, display: 'inline-block' }}
             >
-                <InputNumber min={0} max={23} style={{ width: 100 }} placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_hour' })} />
+                <InputNumber
+                    min={0}
+                    max={23}
+                    style={{ width: 60 }}
+                    // placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_hour' })}
+                />
             </Form.Item>
         ),
         nhour: () => (
@@ -112,9 +129,14 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 name="nhour"
                 rules={requiredRule}
                 initialValue={detail?.param?.parameter?.nhour}
-                style={{ width: 100, display: 'inline-block' }}
+                style={{ width: 60, display: 'inline-block' }}
             >
-                <InputNumber min={0} max={23} style={{ width: 100 }} placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_nhour' })} />
+                <InputNumber
+                    min={0}
+                    max={23}
+                    style={{ width: 60 }}
+                    // placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_nhour' })}
+                />
             </Form.Item>
         ),
         wday: () => (
@@ -123,9 +145,9 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 name="wday"
                 rules={requiredRule}
                 initialValue={detail?.param?.parameter?.wday}
-                style={{ width: 160, display: 'inline-block' }}
+                style={{ width: 80, display: 'inline-block' }}
             >
-                <CustomSelect source={WeekSrouce} style={{ width: 160 }} />
+                <CustomSelect source={WeekSrouce} style={{ width: 80 }} />
             </Form.Item>
         ),
         day: () => (
@@ -136,7 +158,14 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 initialValue={detail?.param?.parameter?.day}
                 style={{ width: 100, display: 'inline-block' }}
             >
-                <InputNumber min={1} max={31} style={{ width: 100 }} placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_day' })} />
+                <InputNumber
+                    min={1}
+                    max={31}
+                    style={{ width: 100 }}
+                    formatter={(value: any) => (value ? `${getIntl('jobs_every_month')}${value}${getIntl('jobs_every_month_day')}` : '')}
+                    parser={(value: any) => (value || '').replace(getIntl('jobs_every_month'), '').replace(getIntl('jobs_every_month_day'), '')}
+                    // placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_day' })}
+                />
             </Form.Item>
         ),
     }).current;
@@ -147,39 +176,60 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                     <>
                         {timeMap.day()}
                         {timeMap.hour()}
+                        <span style={{ ...commonStyle, margin: '0 5px' }}>:</span>
                         {timeMap.minute()}
+                        <span style={{ ...commonStyle, marginLeft: 5 }}>{getIntl('jobs_week_after')}</span>
                     </>
                 );
             case 'week':
                 return (
                     <>
+                        <span style={{ ...commonStyle, marginRight: 5 }}>{getIntl('jobs_week_before')}</span>
                         {timeMap.wday()}
                         {timeMap.hour()}
+                        <span style={{ ...commonStyle, margin: '0 5px' }}>:</span>
                         {timeMap.minute()}
+                        <span style={{ ...commonStyle, marginLeft: 5 }}>{getIntl('jobs_week_after')}</span>
                     </>
                 );
             case 'day':
                 return (
                     <>
+                        <span style={{ ...commonStyle, marginRight: 5 }}>{getIntl('jobs_day_before')}</span>
                         {timeMap.hour()}
+                        <span style={{ ...commonStyle, margin: '0 5px' }}>:</span>
                         {timeMap.minute()}
+                        <span style={{ ...commonStyle, marginLeft: 5 }}>{getIntl('jobs_day_after')}</span>
                     </>
                 );
             case 'nhour':
                 return (
                     <>
+                        <span style={{ ...commonStyle, marginRight: 5 }}>{getIntl('jobs_nhour_before')}</span>
                         {timeMap.nhour()}
+                        <span style={{ ...commonStyle, margin: '0 5px' }}>:</span>
                         {timeMap.hour()}
+                        <span style={{ ...commonStyle, marginRight: 5 }}>{getIntl('jobs_nhour_middle')}</span>
                         {timeMap.minute()}
+                        <span style={{ ...commonStyle, marginLeft: 5 }}>{getIntl('jobs_nhour_after')}</span>
                     </>
                 );
             case 'hour':
-                return timeMap.minute();
+                return (
+                    <>
+                        <span style={{ ...commonStyle, marginRight: 5 }}>{getIntl('jobs_hour_before')}</span>
+                        {timeMap.minute()}
+                        <span style={{ ...commonStyle, marginLeft: 5 }}>{getIntl('jobs_hour_after')}</span>
+                    </>
+                );
             case 'nminute':
                 return (
                     <>
+                        <span style={{ ...commonStyle, marginRight: 5 }}>{getIntl('jobs_nminute_before')}</span>
                         {timeMap.nminute()}
+                        <span style={{ ...commonStyle, margin: '0 5px' }}>{getIntl('jobs_nminute_middle')}</span>
                         {timeMap.minute()}
+                        <span style={{ ...commonStyle, marginLeft: 5 }}>{getIntl('jobs_nminute_after')}</span>
                     </>
                 );
             default:
@@ -233,7 +283,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                             </Form.Item>
 
                             <Form.Item
-                                label={intl.formatMessage({ id: 'jobs_schedule_express' })}
+                                label={<span style={{ marginLeft: 11 }}>{intl.formatMessage({ id: 'jobs_schedule_express' })}</span>}
                                 name=" "
                                 initialValue={undefined}
                             >
@@ -264,12 +314,12 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
             <Form.Item noStyle dependencies={['type']}>
                 {() => {
                     const value = form.getFieldValue('type');
-                    if (value === 'offline') {
+                    if (value === 'offline' || !value) {
                         return null;
                     }
                     return (
                         <Row>
-                            <Col span={6}>
+                            <Col style={{ display: 'inline-block' }}>
                                 <Form.Item
                                     label={intl.formatMessage({ id: 'jobs_schedule_obtain_time' })}
                                     name="startTime"
@@ -278,21 +328,20 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                                 >
                                     {Date}
                                 </Form.Item>
+
                             </Col>
-                            <span style={{ marginRight: 60 }}>
+                            <span style={{ margin: '5px 10px 0px' }}>
                                 {getIntl('jobs_schedule_time_to')}
                             </span>
-                            <Col span={6}>
-                                <Form.Item
-                                    label=""
-                                    name="endTime"
-                                    initialValue={detail?.endTime ? moment(detail?.endTime) : get100Years()}
-                                    rules={requiredRule}
-                                    style={{ marginLeft: -20 }}
-                                >
-                                    {Date}
-                                </Form.Item>
-                            </Col>
+                            <Form.Item
+                                label=""
+                                name="endTime"
+                                initialValue={detail?.endTime ? moment(detail?.endTime) : get100Years()}
+                                rules={requiredRule}
+                                style={{ display: 'inline-block' }}
+                            >
+                                {Date}
+                            </Form.Item>
                         </Row>
                     );
                 }}
@@ -309,7 +358,6 @@ const ScheduleContainer = ({ jobId }: {jobId: string}) => {
     const formRef = React.useRef() as { current: FormInstance};
     const getValues = (callback: (...args: any[]) => any) => {
         formRef.current.validateFields().then(async (values) => {
-            console.log('values', values);
             const params: any = {
                 type: values.type,
             };
@@ -348,8 +396,7 @@ const ScheduleContainer = ({ jobId }: {jobId: string}) => {
             setLoading(false);
         }
     };
-    const onSave = (type?: any) => {
-        console.log('save', type);
+    const onSave = () => {
         getValues(async (params: any) => {
             globalSetLoading(true);
             try {

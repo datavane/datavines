@@ -13,6 +13,7 @@ import { useSelector } from '@/store';
 import { $http } from '@/http';
 import Schedule from '../components/Schedule';
 import PageContainer from './PageContainer';
+import { SelectSLAsComponent } from '../useSelectSLAsModal';
 
 const { TabPane } = Tabs;
 
@@ -30,12 +31,15 @@ const Inner = ({ innerRef }: InnerProps) => {
     const [metricDetail, setMetricDetail] = useState({});
     const metricConfigRef = useRef<any>();
     const { loginInfo } = useSelector((r) => r.userReducer);
+    const { workspaceId } = useSelector((r) => r.workSpaceReducer);
+    const { locale } = useSelector((r) => r.commonReducer);
     const editorParams = useMemo(() => ({
         baseURL: '/api/v1',
+        workspaceId,
         headers: {
             Authorization: `Bearer ${loginInfo.token}`,
         },
-    }), []);
+    }), [workspaceId]);
     useImperativeHandle(innerRef, () => ({
         getData() {
             return {};
@@ -73,11 +77,12 @@ const Inner = ({ innerRef }: InnerProps) => {
         try {
             setLoading(true);
             const params = await metricConfigRef.current.getValues();
-            console.log('params', params);
             if (data.record?.id) {
                 await $http.put('/job', { ...params, id: data.record?.id, runningNow });
             } else {
-                await $http.post('/job', { ...params, runningNow });
+                const res = await $http.post('/job', { ...params, runningNow });
+                console.log('----', res);
+                setJobId(res);
             }
             message.success('Success!');
         } catch (error) {
@@ -89,10 +94,19 @@ const Inner = ({ innerRef }: InnerProps) => {
     if (loading) {
         return <Spin spinning={loading} />;
     }
-    console.log('metricDetail', metricDetail);
+    const slaId = (data?.record?.slaList || [])[0]?.id;
     return (
         <div>
-            <Tabs activeKey={activeKey} onChange={(key) => (setActiveKey(key))}>
+            <Tabs
+                activeKey={activeKey}
+                onChange={(key) => {
+                    if (!jobId) {
+                        message.info(intl.formatMessage({ id: 'jobs_add_tip' }));
+                        return null;
+                    }
+                    setActiveKey(key);
+                }}
+            >
                 <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_config' })} key="metric">
                     <PageContainer
                         footer={(
@@ -103,24 +117,16 @@ const Inner = ({ innerRef }: InnerProps) => {
                         )}
                     >
                         <div style={{ width: 'calc(100vw - 80px)' }}>
-                            <DvEditor {...editorParams} innerRef={metricConfigRef} id={data.id} showMetricConfig detail={metricDetail} />
+                            <DvEditor {...editorParams} locale={locale} innerRef={metricConfigRef} id={data.id} showMetricConfig detail={metricDetail} />
                         </div>
                     </PageContainer>
                 </TabPane>
-                {
-                    jobId && (
-                        <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_schedule' })} key="schedule">
-                            <Schedule jobId={data?.record?.id} />
-                        </TabPane>
-                    )
-                }
-                {
-                    jobId && (
-                        <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_SLA' })} key="SLA">
-                            <div>3</div>
-                        </TabPane>
-                    )
-                }
+                <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_schedule' })} key="schedule">
+                    <IF visible={jobId}><Schedule jobId={jobId} /></IF>
+                </TabPane>
+                <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_SLA' })} key="SLA">
+                    <IF visible={jobId}><SelectSLAsComponent jobId={jobId} id={slaId} /></IF>
+                </TabPane>
             </Tabs>
         </div>
     );
@@ -129,7 +135,6 @@ const Inner = ({ innerRef }: InnerProps) => {
 export const useAddEditJobsModal = (options: ModalProps) => {
     const innerRef = useRef();
     const onOk = usePersistFn(() => {
-        console.log('connfirm ok');
     });
     const { Render, ...rest } = useModal<any>({
         title: 'Schedule Manage',

@@ -52,8 +52,8 @@ module.exports = {
                         options: {
                             lessOptions: {
                                 modifyVars: {
-                                    // 'primary-color': '#8eabde',
-                                    // 'link-color': '#8eabde',
+                                    'primary-color': '#4D8BFF',
+                                    'link-color': '#4D8BFF',
                                     'border-radius-base': '4px',
                                     'font-size-base': '13px',
                                 },
@@ -127,6 +127,14 @@ module.exports = {
             },
         },
     },
+    externals: {
+        antd: 'antd',
+        redux: 'Redux',
+        axios: 'axios',
+        react: 'React',
+        'react-dom': 'ReactDOM',
+        // 'react-router-dom': 'ReactRouterDOM',
+    },
     plugins: [
         new webpack.ProgressPlugin(),
         new MiniCssExtractPlugin({
@@ -145,7 +153,22 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 { from: resolve('node_modules/monaco-editor'), to: 'monaco-editor' },
-            ],
+                isDevelopment && { from: resolve('node_modules/react/umd/react.development.js'), to: 'static/react' },
+                isDevelopment && { from: resolve('node_modules/react-dom/umd/react-dom.development.js'), to: 'static/react-dom' },
+                isDevelopment && { from: resolve('node_modules/antd/dist/antd.js'), to: 'static/antd' },
+                isDevelopment && { from: resolve('node_modules/antd/dist/antd.css'), to: 'static/antd' },
+                isDevelopment && { from: resolve('node_modules/axios/dist/axios.js'), to: 'static/axios' },
+                isDevelopment && { from: resolve('node_modules/redux/dist/redux.js'), to: 'static/redux' },
+                // isDevelopment && { from: resolve('node_modules/react-router-dom/umd/react-router-dom.js'), to: 'static/react-router-dom' },
+
+                !isDevelopment && { from: resolve('node_modules/react/umd/react.production.min.js'), to: 'static/react' },
+                !isDevelopment && { from: resolve('node_modules/react-dom/umd/react-dom.production.min.js'), to: 'static/react-dom' },
+                !isDevelopment && { from: resolve('node_modules/antd/dist/antd.min.js'), to: 'static/antd' },
+                !isDevelopment && { from: resolve('node_modules/antd/dist/antd.min.css'), to: 'static/antd' },
+                !isDevelopment && { from: resolve('node_modules/axios/dist/axios.min.js'), to: 'static/axios' },
+                !isDevelopment && { from: resolve('node_modules/redux/dist/redux.min.js'), to: 'static/redux' },
+                // !isDevelopment && { from: resolve('node_modules/react-router-dom/umd/react-router-dom.min.js'), to: 'static/react-router-dom' },
+            ].filter(Boolean),
         }),
         new webpack.DefinePlugin({
             'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),

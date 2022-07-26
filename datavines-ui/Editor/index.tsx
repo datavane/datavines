@@ -11,13 +11,15 @@ import { MetricConfig } from './components/MetricModal';
 
 const App = (props: IDvEditorProps) => {
     const {
-        monacoConfig, baseURL, headers, id, ...rest
+        monacoConfig, baseURL, headers, id, workspaceId, locale, ...rest
     } = props;
     const [loading, setLoading] = useState(true);
     const fns = useEditorActions({ setEditorFn });
     useMount(() => {
         fns.setEditorFn({
+            workspaceId,
             monacoConfig,
+            locale,
             baseURL,
             headers: headers || {},
             id,

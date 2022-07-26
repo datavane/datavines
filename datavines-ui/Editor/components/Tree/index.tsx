@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Tree } from 'antd';
+import { Tree, message } from 'antd';
 import {
-    DatabaseOutlined, TableOutlined, DownOutlined, EditOutlined, ReloadOutlined,
+    DatabaseOutlined, CopyOutlined, DownOutlined, EditOutlined, ReloadOutlined,
 } from '@ant-design/icons';
 import type { TreeProps } from 'antd/lib/tree';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useMetricModal } from '../MetricModal';
 import { useEditorContextState } from '../../store/editor';
 import { usePersistFn } from '../../common';
@@ -52,7 +53,22 @@ const Index = ({ getDatabases }: TIndexProps) => {
             dataName: tableItem.name,
             parentName: item.name,
             type: tableItem.type,
-            icon: <TableOutlined />,
+            icon: (
+                <span
+                    onClick={(e) => {
+                        e.stopPropagation();
+                    }}
+                >
+                    <CopyToClipboard
+                        text={`select * from ${item.name}.${tableItem.name}`}
+                        onCopy={() => {
+                            message.success('Copy success');
+                        }}
+                    >
+                        <CopyOutlined />
+                    </CopyToClipboard>
+                </span>
+            ),
             children: (tableItem.children || []).map((fieldItem) => ({
                 title: (
                     <span className="dv-editor-tree-title">
@@ -105,14 +121,17 @@ const Index = ({ getDatabases }: TIndexProps) => {
 
                 </span>
             </div>
-            <Tree
-                showIcon
-                switcherIcon={<DownOutlined />}
-                onSelect={onSelect}
-                onExpand={onExpand}
-                expandedKeys={expandedKeys}
-                treeData={databases.map((item) => renderSingle(item))}
-            />
+            <div className="dv-editor-tree_list">
+                <Tree
+                    showIcon
+                    switcherIcon={<DownOutlined />}
+                    onSelect={onSelect}
+                    onExpand={onExpand}
+                    expandedKeys={expandedKeys}
+                    treeData={databases.map((item) => renderSingle(item))}
+                />
+            </div>
+
             <RenderModal />
         </div>
     );

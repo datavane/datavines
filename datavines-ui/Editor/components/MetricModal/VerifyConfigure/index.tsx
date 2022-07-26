@@ -5,7 +5,7 @@ import {
     Row, Col, Form, Input, FormInstance,
 } from 'antd';
 import { CustomSelect, useMount } from '../../../common';
-import { layoutItem } from '../helper';
+// import { layoutItem } from '../helper';
 import Title from '../Title';
 import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
@@ -31,10 +31,10 @@ const Index = ({ form, detail }: InnerProps) => {
             setResultFormula($resultFormula || []);
             if (detail && detail.id) {
                 const {
-                    result_formula, operator, threshold,
+                    resultFormula, operator, threshold,
                 } = detail?.parameterItem || {} as TParameterItem;
                 const options: Record<string, any> = {
-                    result_formula,
+                    resultFormula,
                     operator,
                     threshold,
                 };
@@ -43,14 +43,26 @@ const Index = ({ form, detail }: InnerProps) => {
         } catch (error) {
         }
     });
+    const layoutItem = {
+        style: {
+            marginBottom: 12,
+        },
+        labelCol: {
+            span: 8,
+        },
+        wrapperCol: {
+            span: 16,
+        },
+    };
     return (
         <Title title={intl.formatMessage({ id: 'dv_metric_title_verify_configure' })}>
-            <Row gutter={10}>
-                <Col span={8}>
+            <Row gutter={30}>
+                {/* <Col span={6} /> */}
+                <Col span={6} offset={2}>
                     <Form.Item
                         {...layoutItem}
                         label={intl.formatMessage({ id: 'dv_metric_verify_formula' })}
-                        name="result_formula"
+                        name="resultFormula"
                         rules={[...requiredRule]}
                     >
                         <CustomSelect
@@ -60,7 +72,7 @@ const Index = ({ form, detail }: InnerProps) => {
                         />
                     </Form.Item>
                 </Col>
-                <Col span={8}>
+                <Col span={6}>
                     <Form.Item
                         {...layoutItem}
                         label={intl.formatMessage({ id: 'dv_metric_verify_compare' })}
@@ -74,7 +86,7 @@ const Index = ({ form, detail }: InnerProps) => {
                         />
                     </Form.Item>
                 </Col>
-                <Col span={8}>
+                <Col span={6}>
                     <Form.Item
                         {...layoutItem}
                         rules={[...requiredRule]}

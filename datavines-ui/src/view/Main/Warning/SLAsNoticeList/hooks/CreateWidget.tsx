@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
     Input, ModalProps, Form, FormInstance, Radio, message,
 } from 'antd';
 import { useIntl } from 'react-intl';
 import {
-    useModal, useImmutable, FormRender, IFormRenderItem, IFormRender, usePersistFn, useMount, CustomSelect, useLoading,
+    useModal, useContextModal, useImmutable, FormRender, IFormRenderItem, IFormRender, usePersistFn, useMount, CustomSelect, useLoading,
 } from '@/common';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
@@ -17,6 +17,7 @@ type InnerProps = {
 
 const Inner = ({ form }: InnerProps) => {
     const intl = useIntl();
+    const { data: record } = useContextModal();
     const [typeSource, setTypeSource] = useState<{label: string, value: string}[]>([]);
     const [dynamicMeta, setDynamicMeta] = useState<IFormRenderItem[]>([]);
     useMount(async () => {
@@ -27,6 +28,15 @@ const Inner = ({ form }: InnerProps) => {
                 value: item,
             }));
             setTypeSource(data);
+            if (record?.id) {
+                await typeChange(record.type);
+                const configObj = record.config ? JSON.parse(record.config) : {};
+                form?.setFieldsValue({
+                    ...configObj,
+                    type: record.type,
+                    name: record.name,
+                });
+            }
         } catch (error) {
         }
     });
@@ -73,6 +83,17 @@ const Inner = ({ form }: InnerProps) => {
         meta: [
             {
                 label: intl.formatMessage({ id: 'warn_SLAs_name' }),
+                name: 'name',
+                rules: [
+                    {
+                        required: true,
+                        message: intl.formatMessage({ id: 'common_required_tip' }),
+                    },
+                ],
+                widget: <Input />,
+            },
+            {
+                label: intl.formatMessage({ id: 'warn_SLAs_type' }),
                 name: 'type',
                 rules: [
                     {
@@ -96,17 +117,24 @@ export const useCreateWidget = (options: ModalProps) => {
     const [form] = Form.useForm();
     const intl = useIntl();
     const setLoading = useLoading();
+    const recordRef = useRef<any>(null);
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
     const onOk = usePersistFn(async () => {
         form.validateFields().then(async (values) => {
-            console.log('values', values);
             try {
                 setLoading(true);
+                const { type, name, ...rest } = values;
                 const params = {
-                    workSpaceId: workspaceId,
-                    ...values,
+                    workspaceId,
+                    type,
+                    name,
+                    config: JSON.stringify(rest),
                 };
-                await $http.post('/sla/sender', params);
+                if (recordRef.current?.id) {
+                    await $http.put('/sla/sender', { ...params, id: recordRef.current?.id });
+                } else {
+                    await $http.post('/sla/sender', params);
+                }
                 message.success(intl.formatMessage({ id: 'common_success' }));
                 hide();
             } catch (error) {
@@ -117,7 +145,9 @@ export const useCreateWidget = (options: ModalProps) => {
             console.log(err);
         });
     });
-    const { Render, hide, ...rest } = useModal<any>({
+    const {
+        Render, hide, show, ...rest
+    } = useModal<any>({
         title: intl.formatMessage({ id: 'warn_create_widget' }),
         onOk,
         width: 600,
@@ -125,6 +155,10 @@ export const useCreateWidget = (options: ModalProps) => {
     });
     return {
         Render: useImmutable(() => (<Render><Inner form={form} /></Render>)),
+        show(record: any) {
+            recordRef.current = record;
+            show(record);
+        },
         ...rest,
     };
 };

@@ -1,18 +1,19 @@
 import { useState, useRef } from 'react';
 import type { languages, IRange } from 'monaco-editor';
 import { useUnMount, useWatch, usePersistFn } from '../../common';
-import { loadEditorMainModule } from '../../utils';
-import { TUseEditor, TCodeEditor, THintsItem } from '../../type';
+import { TUseEditor, TCodeEditor } from '../../type';
 import { useEditorContextState } from '../../store/editor';
 import {
     HINTS, SQL_STRING, getTableColumnHints, arrayRemoveRepeat,
 } from './helper';
+import useMonaco from '../useMonaco';
 
 const useEditor = (props: TUseEditor) => {
     const {
         elRef, language, value, onChange, tableColumnHints,
     } = props;
     const [{ monacoConfig }] = useEditorContextState();
+    const monaco = useMonaco(monacoConfig);
     const [monacoInstance, setMonacoInstance] = useState<TCodeEditor>();
     const providerRef = useRef<{ dispose:() => void }>();
     const [originHints] = useState(() => arrayRemoveRepeat([...HINTS, ...SQL_STRING]).sort());
@@ -21,7 +22,7 @@ const useEditor = (props: TUseEditor) => {
         const $positionBeforeText = positionBeforeText.replace(/[\*\[\]@\$\(\)]/g, '').replace(/(\s+|\.)/g, ' ');
         const textArr = $positionBeforeText.split(' ');
         const activeVal = textArr[textArr.length - 1];
-        console.log('textArr', textArr, activeVal);
+        // console.log('textArr', textArr, activeVal);
         const rexp = new RegExp(`([^\\w]|^)${activeVal}\\w*`, 'gim');
         const match = value.match(rexp);
         const $hints = !match
@@ -30,7 +31,7 @@ const useEditor = (props: TUseEditor) => {
                 const search = ele.search(new RegExp(activeVal, 'gim'));
                 return ele.substr(search);
             });
-        console.log('$hints', $hints);
+        // console.log('$hints', $hints);
         const hints = arrayRemoveRepeat([...originHints, ...$hints, ...getTableColumnHints(tableColumnHints || [])]).sort().filter((ele) => {
             const $rexp = new RegExp(ele.substr(0, activeVal.length), 'gim');
             return (match && match.length === 1 && ele === activeVal)
@@ -38,7 +39,7 @@ const useEditor = (props: TUseEditor) => {
                 ? false
                 : activeVal.match($rexp);
         });
-        console.log('hints111', hints);
+        // console.log('hints111', hints);
         const $$hints = hints.map((ele) => ({
             label: ele,
             kind: window.monaco.languages.CompletionItemKind.Function,
@@ -49,7 +50,6 @@ const useEditor = (props: TUseEditor) => {
                 startColumn: range.startColumn - activeVal.length,
             },
         }));
-        console.log('$$hints222', $$hints);
         return $$hints;
     };
     const getTableSuggestions = (positionBeforeText: string, range: IRange): languages.CompletionItem[] => {
@@ -58,7 +58,6 @@ const useEditor = (props: TUseEditor) => {
         const lastThree = arr[arr.length - 3] || '';
         const r = /select|SELECT/g;
         const s = /f|F|R|r|O|o|M|m/g;
-        console.log('getTableSuggestions', lastThree, currentVal, currentVal.match(s), lastThree.match(r));
         if (
             lastThree
             && currentVal.match(s)
@@ -78,6 +77,7 @@ const useEditor = (props: TUseEditor) => {
         return [];
     };
     const monacoCreate = usePersistFn(() => {
+        console.log('创建');
         const $monacoInstance = window.monaco.editor.create(elRef.current, {
             value,
             language,
@@ -113,12 +113,12 @@ const useEditor = (props: TUseEditor) => {
                     startColumn: 1,
                     endColumn: position.column,
                 });
-                const positionAfterText = model.getValueInRange({
-                    ...lineNumber,
-                    startColumn: position.column,
-                    endColumn: 1999,
-                });
-                console.log('内容', positionBeforeText, '-', positionAfterText);
+                // const positionAfterText = model.getValueInRange({
+                //     ...lineNumber,
+                //     startColumn: position.column,
+                //     endColumn: 1999,
+                // });
+                // console.log('内容', positionBeforeText, '-', positionAfterText);
                 const range = {
                     ...lineNumber,
                     startColumn: position.column,
@@ -126,7 +126,7 @@ const useEditor = (props: TUseEditor) => {
                 };
                 const defaultSuggestions = getDefaultSuggestions(positionBeforeText, range);
                 const tableSuggestions = getTableSuggestions(positionBeforeText, range);
-                console.log('lineContent', tableSuggestions, defaultSuggestions);
+                // console.log('lineContent', tableSuggestions, defaultSuggestions);
                 return {
                     // suggestions: defaultSuggestions || [],
                     suggestions: [...tableSuggestions, ...defaultSuggestions] || [],
@@ -140,28 +140,26 @@ const useEditor = (props: TUseEditor) => {
         });
     });
 
-    useWatch([language], async () => {
-        if (monacoInstance) {
+    useWatch([language, monaco, value], async () => {
+        if (monaco && !monacoInstance) {
             dispose();
             monacoCreate();
-            return;
         }
-        try {
-            await loadEditorMainModule(monacoConfig);
-            monacoCreate();
-        } catch (error) {
+        if (monaco && monacoInstance) {
+            monacoInstance?.setValue(value);
         }
     }, { immediate: true });
-    useWatch(value, () => {
-        monacoInstance?.setValue(value);
-    });
     const dispose = usePersistFn(() => {
-        if (monacoInstance?.getModel()) {
-            monacoInstance?.getModel()?.dispose();
-        }
-        monacoInstance?.dispose();
-        if (providerRef.current) {
-            providerRef.current.dispose();
+        try {
+            if (monacoInstance?.getModel()) {
+                monacoInstance?.getModel()?.dispose();
+            }
+            monacoInstance?.dispose();
+            if (providerRef.current) {
+                providerRef.current.dispose();
+            }
+        } catch (error) {
+            console.log('error', error);
         }
     });
     useUnMount(() => {

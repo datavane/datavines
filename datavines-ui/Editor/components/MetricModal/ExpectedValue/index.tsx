@@ -41,7 +41,7 @@ const Index = ({ form, detail }: InnerProps) => {
 
     return (
         <Title title={intl.formatMessage({ id: 'dv_metric_title_expected_value' })}>
-            <Row>
+            <Row gutter={30}>
                 <Col span={12}>
                     <Form.Item
                         {...layoutItem}

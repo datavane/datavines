@@ -59,9 +59,6 @@ const Inner = ({ form }: InnerProps) => {
         layout: 'vertical',
         column: 1,
         gutter: 20,
-        onFinish(values) {
-            console.log('yes', values);
-        },
         formItemProps: {
             style: { marginBottom: 10 },
         },

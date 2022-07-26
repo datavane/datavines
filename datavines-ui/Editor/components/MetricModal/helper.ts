@@ -31,10 +31,10 @@ export const layoutActuatorItem = {
         marginBottom: 12,
     },
     labelCol: {
-        span: 12,
+        span: 8,
     },
     wrapperCol: {
-        span: 12,
+        span: 16,
     },
 };
 export const layoutActuatorLineItem = {
@@ -42,7 +42,7 @@ export const layoutActuatorLineItem = {
         marginBottom: 12,
     },
     labelCol: {
-        span: 6,
+        span: 4,
     },
     wrapperCol: {
         span: 16,

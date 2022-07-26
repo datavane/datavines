@@ -8,6 +8,7 @@ import {
     Popconfirm, useMount, useModal, useImmutable, useFormRender, IFormRender, useContextModal, IF,
 } from '../../../common';
 import useRequest from '../../../hooks/useRequest';
+import { useEditorContextState } from '../../../store/editor';
 
 type IndexProps = {
 }
@@ -25,6 +26,7 @@ const Index: React.FC<IndexProps> = () => {
     const intl = useIntl();
     const { $http } = useRequest();
     const { data } = useContextModal();
+    const [context] = useEditorContextState();
     const [pageParams, setpageParams] = useState({ pageNo: 1, pageSize: 10 });
     const [tableData, setTableData] = useState<{list: IDataSourceListItem[], total: number}>({ list: [], total: 0 });
     const {
@@ -33,12 +35,12 @@ const Index: React.FC<IndexProps> = () => {
         afterClose() {
             getTenantList();
         },
-        onCustomOk: async ({ values, data }) => {
+        onCustomOk: async ({ values, data: $data }) => {
             try {
-                if (data.data) {
-                    await $http.put('tenant', { ...values, id: data.data.id });
+                if ($data.data) {
+                    await $http.put('tenant', { ...values, id: $data.data.id, workspaceId: data.workspaceId });
                 } else {
-                    await $http.post('tenant', values);
+                    await $http.post('tenant', { ...values, workspaceId: data.workspaceId });
                 }
                 hide();
             } catch (error) {
@@ -70,7 +72,7 @@ const Index: React.FC<IndexProps> = () => {
     };
     const getTenantList = async () => {
         try {
-            const tenantList = await $http.get('tenant/list');
+            const tenantList = await $http.get(`tenant/list/${context.workspaceId}`);
             setpageParams({
                 pageNo: 1,
                 pageSize: 10,
