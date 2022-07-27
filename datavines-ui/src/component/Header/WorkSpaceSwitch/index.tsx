@@ -67,7 +67,7 @@ export default React.memo(() => {
     );
     return (
         <>
-            <span className="main-color" style={{ fontSize: 18, fontWeight: 700, marginRight: 20 }}>DataVines</span>
+            <span className="main-color" style={{ fontSize: 18, fontWeight: 700, marginRight: 35 }}>DataVines</span>
             <IF visible={isDetailPage}>
                 <a onClick={goBack} style={{ marginLeft: 20 }}>{intl.formatMessage({ id: 'common_back' })}</a>
                 {/* <div className="dv-header__work-space" style={{ paddingRight: 0 }}>
