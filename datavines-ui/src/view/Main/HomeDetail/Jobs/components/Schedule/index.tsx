@@ -233,7 +233,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                     </>
                 );
             default:
-                return null;
+                return <div style={{ marginBottom: 24, height: 32 }}> </div>;
         }
     };
     return (
@@ -286,8 +286,9 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                                 label={<span style={{ marginLeft: 11 }}>{intl.formatMessage({ id: 'jobs_schedule_express' })}</span>}
                                 name=" "
                                 initialValue={undefined}
+                                style={{ height: 32 }}
                             >
-                                <div style={{ color: '#ff4d4f' }}>{detail?.cronExpression || intl.formatMessage({ id: 'jobs_schedule_auto_generage' })}</div>
+                                <div style={{ color: '#ff4d4f' }}>{detail?.cronExpression}</div>
                             </Form.Item>
                         </>
                     );

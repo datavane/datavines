@@ -30,7 +30,7 @@ const MenuLayout: React.FC<TMainProps> = ({ children, menus, visible = true }) =
                     theme="light"
                     style={{ height: 'calc(100vh - 60px)', overflow: 'auto', borderTop: '1px solid #f0f0f0' }}
                     width={180}
-                    collapsedWidth={45}
+                    collapsedWidth={50}
                     trigger={(
                         <div style={{ position: 'absolute', right: 15, fontSize: 16 }}>
                             {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}

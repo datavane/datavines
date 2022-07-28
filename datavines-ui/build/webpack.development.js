@@ -4,10 +4,21 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const { launchEditorMiddleware } = require('react-dev-inspector/plugins/webpack');
 const { resolve, host } = require('./utils');
 
-const TARGET_MAP = {
-    test: 'http://116.205.229.143:5600',
-    prod: 'http://116.205.229.143:5600',
+let TARGET_MAP = {
+    test: '',
+    prod: '',
 };
+let proxy = [];
+try {
+    // eslint-disable-next-line global-require
+    const { targetMap, getProxy } = require('./.proxy.js');
+    TARGET_MAP = targetMap;
+    proxy = getProxy(TARGET_MAP[process.env.DV_ENV], host);
+} catch (error) {
+    console.log('error', error);
+}
+
+console.log(TARGET_MAP, proxy);
 
 const target = TARGET_MAP[process.env.DV_ENV] || TARGET_MAP.test;
 console.log('host', host);
@@ -44,17 +55,9 @@ module.exports = {
                 context: ['/api'],
                 target,
                 changeOrigin: true,
-                // cookieDomainRewrite: host,
-                cookieDomainRewrite: 'https://9997-183-193-189-215.jp.ngrok.io',
+                cookieDomainRewrite: host,
             },
-            // {
-            //     context: ['/api/**'],
-            //     target: 'http://b394-14-127-81-48.jp.ngrok.io',
-            //     // secure: false,
-            //     changeOrigin: true,
-            //     cookieDomainRewrite: host,
-            //     // cookieDomainRewrite: 'https://5f87-183-193-191-233.ap.ngrok.io',
-            // },
+            ...proxy,
         ],
     },
     plugins: [

@@ -26,7 +26,7 @@ const Inner = ({ form }: InnerProps) => {
             const array = (JSON.parse(res) || []) as ICreateDataSourceItem[];
             setDynamicMeta(array.map((item) => {
                 const isTextarea = item.type === 'input' && item.props?.type === 'textarea';
-                const $props = pickProps(item.props || {}, ['placeholder', isTextarea && 'rows', 'disabled', 'size'].filter(Boolean) as string[]);
+                const $props = pickProps(item.props || {}, ['placeholder', isTextarea && 'rows', 'disabled'].filter(Boolean) as string[]);
                 return {
                     label: item.title,
                     name: item.field,
@@ -73,7 +73,7 @@ const Inner = ({ form }: InnerProps) => {
                     },
                 ],
                 initialValue: initData?.name,
-                widget: <Input size="small" placeholder={`${tipText}${nameText}`} />,
+                widget: <Input placeholder={`${tipText}${nameText}`} />,
             },
             {
                 label: sourceTypeText,
@@ -86,7 +86,6 @@ const Inner = ({ form }: InnerProps) => {
                 ],
                 initialValue: initData?.type,
                 widget: <CustomSelect
-                    size="small"
                     placeholder={`${tipText}${sourceTypeText}`}
                     onChange={onSourceTypeChange}
                     source={sqlTypeList}
