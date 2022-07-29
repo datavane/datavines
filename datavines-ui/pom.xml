@@ -31,56 +31,67 @@
     <artifactId>datavines-ui</artifactId>
     <name>${project.artifactId}</name>
 
-  <properties>
-    <node.version>v16.13.1</node.version>
-    <pnpm.version>v6.32.6</pnpm.version>
-    <sonar.sources>src</sonar.sources>
-  </properties>
+    <properties>
+        <node.version>v17.9.0</node.version>
+        <npm.version>8.6.0</npm.version>
+        <sonar.sources>src</sonar.sources>
+        <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
+    </properties>
 
-  <!--<profiles>-->
-    <!--<profile>-->
-      <!--<id>release</id>-->
-      <!--<build>-->
-        <!--<plugins>-->
-          <!--<plugin>-->
-            <!--<groupId>com.github.eirslett</groupId>-->
-            <!--<artifactId>frontend-maven-plugin</artifactId>-->
-            <!--<version>${frontend-maven-plugin.version}</version>-->
-            <!--<executions>-->
-              <!--<execution>-->
-                <!--<id>install node and pnpm</id>-->
-                <!--<goals>-->
-                  <!--<goal>install-node-and-pnpm</goal>-->
-                <!--</goals>-->
-                <!--<configuration>-->
-                  <!--<nodeVersion>${node.version}</nodeVersion>-->
-                  <!--<pnpmVersion>${pnpm.version}</pnpmVersion>-->
-                <!--</configuration>-->
-              <!--</execution>-->
-              <!--<execution>-->
-                <!--<id>pnpm install</id>-->
-                <!--<goals>-->
-                  <!--<goal>pnpm</goal>-->
-                <!--</goals>-->
-                <!--<phase>generate-resources</phase>-->
-                <!--<configuration>-->
-                  <!--<arguments>install</arguments>-->
-                <!--</configuration>-->
-              <!--</execution>-->
-              <!--<execution>-->
-                <!--<id>pnpm run build:prod</id>-->
-                <!--<goals>-->
-                  <!--<goal>pnpm</goal>-->
-                <!--</goals>-->
-                <!--<configuration>-->
-                  <!--<arguments>run build:prod</arguments>-->
-                <!--</configuration>-->
-              <!--</execution>-->
-            <!--</executions>-->
-          <!--</plugin>-->
-        <!--</plugins>-->
-      <!--</build>-->
-    <!--</profile>-->
-  <!--</profiles>-->
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>${frontend-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <configuration>
+                                    <nodeVersion>${node.version}</nodeVersion>
+                                    <npmVersion>${npm.version}</npmVersion>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <arguments>install</arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm fund</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <arguments>fund</arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm run build:prod</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>run build:prod</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

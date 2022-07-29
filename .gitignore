@@ -18,10 +18,11 @@ target/
 .*.swp
 .vim
 .tmp
+node/
 node_modules
 npm-debug.log
 .vscode
-!datavines-ui/.vscode
+datavines-ui/node/*
 datavines-ui/**/*.proxy.js
 logs/*
 .mvn/

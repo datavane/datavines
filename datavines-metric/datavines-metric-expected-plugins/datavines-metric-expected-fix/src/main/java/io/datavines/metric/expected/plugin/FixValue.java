@@ -24,7 +24,7 @@ public class FixValue implements ExpectedValue {
 
     @Override
     public String getName() {
-        return null;
+        return "fix_value";
     }
 
     @Override

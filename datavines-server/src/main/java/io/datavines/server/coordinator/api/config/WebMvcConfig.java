@@ -24,9 +24,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.LocaleResolver;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.*;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 
 import java.util.Collections;
@@ -35,7 +33,7 @@ import java.util.Locale;
 import static io.datavines.core.constant.DataVinesConstants.LOCALE_LANGUAGE_COOKIE;
 
 @Configuration
-public class WebMvcConfig extends WebMvcConfigurationSupport {
+public class WebMvcConfig implements WebMvcConfigurer {
 
     @Bean
     public AuthenticationInterceptor loginRequiredInterceptor() {
@@ -43,12 +41,10 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
     }
 
     @Override
-    protected void addInterceptors(InterceptorRegistry registry) {
+    public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(loginRequiredInterceptor())
                 .addPathPatterns(DataVinesConstants.BASE_API_PATH + "/**")
                 .excludePathPatterns(DataVinesConstants.BASE_API_PATH + "/login");
-
-        super.addInterceptors(registry);
     }
 
     @Override
@@ -57,7 +53,14 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/META-INF/resources/")
                 .addResourceLocations("classpath:/static/")
-                .addResourceLocations("classpath:/static/templates/");
+                .addResourceLocations("classpath:/static/templates")
+                .addResourceLocations("classpath:/public/")
+                ;
+    }
+
+    @Override
+    public void addViewControllers(ViewControllerRegistry registry) {
+        registry.addViewController("/").setViewName("index.html");
     }
 
     /**
@@ -65,7 +68,6 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
      * @return local resolver
      */
     @Bean(name = "localeResolver")
-    @Override
     public LocaleResolver localeResolver() {
         CookieLocaleResolver localeResolver = new CookieLocaleResolver();
         localeResolver.setCookieName(LOCALE_LANGUAGE_COOKIE);
