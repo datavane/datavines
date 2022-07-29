@@ -5,8 +5,8 @@ const { launchEditorMiddleware } = require('react-dev-inspector/plugins/webpack'
 const { resolve, host } = require('./utils');
 
 let TARGET_MAP = {
-    test: '',
-    prod: '',
+    test: '127.0.0.1:5600',
+    prod: '127.0.0.1:5600',
 };
 let proxy = [];
 try {
