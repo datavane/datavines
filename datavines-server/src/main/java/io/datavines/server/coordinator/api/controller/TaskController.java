@@ -16,10 +16,11 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import io.datavines.core.aop.RefreshToken;
-import io.datavines.server.coordinator.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.server.coordinator.repository.service.TaskResultService;
 import io.datavines.core.exception.DataVinesServerException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,10 @@ import io.datavines.server.coordinator.api.dto.bo.task.SubmitTask;
 import io.datavines.server.coordinator.repository.service.TaskService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+
+import java.io.IOException;
+
+import static io.datavines.common.utils.OSUtils.judgeConcurrentHost;
 
 @Api(value = "task", tags = "task", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
@@ -85,9 +90,17 @@ public class TaskController {
     @ApiOperation(value = "get task error data page")
     @GetMapping(value = "/errorDataPage")
     public Object readErrorDataPage(@RequestParam("taskId") Long taskId,
-                       @RequestParam("pageNumber") Integer pageNumber,
-                       @RequestParam("pageSize") Integer pageSize)  {
-        return taskService.readErrorDataPage(taskId, pageNumber, pageSize);
-    }
+                                    @RequestParam("pageNumber") Integer pageNumber,
+                                    @RequestParam("pageSize") Integer pageSize,
+                                    HttpServletRequest request, HttpServletResponse response) throws IOException {
 
+        String taskHost = taskService.getTaskExecuteHost(taskId);
+        Boolean isConcurrentHost = judgeConcurrentHost(taskHost);
+        if (isConcurrentHost) {
+            return taskService.readErrorDataPage(taskId, pageNumber, pageSize);
+        }
+        response.sendRedirect(request.getScheme() + "://" + taskHost + "/api/v1/task/errorDataPage?taskId=" + taskId +
+                "&pageNumber=" + pageNumber + "&pageSize="+pageSize);
+        return null;
+    }
 }

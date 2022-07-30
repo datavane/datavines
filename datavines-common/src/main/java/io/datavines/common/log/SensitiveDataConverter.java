@@ -16,18 +16,15 @@
  */
 package io.datavines.common.log;
 
-import org.apache.commons.lang3.StringUtils;
+import io.datavines.common.utils.PasswordFilterUtils;
 
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import ch.qos.logback.classic.pattern.MessageConverter;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import io.datavines.common.utils.SensitiveLogUtils;
 
 /**
  * sensitive data log converter
- * 
  */
 public class SensitiveDataConverter extends MessageConverter {
 
@@ -35,10 +32,21 @@ public class SensitiveDataConverter extends MessageConverter {
      * dataSource sensitive param
      */
     public static final String DATASOURCE_PASSWORD_REGEX = "(?<=(\\\\\"password\\\\\":\\\\\")).*?(?=(\\\\\"))";
+
+    /**
+     * dataSource sensitive param
+     */
+    public static final String DATASOURCE_PASSWORD_REGEX_1 = "(?<=(\"password\":\")).*?(?=(\"))";
+
     /**
      * password pattern
      */
-    private static final Pattern PWD_PATTERN = Pattern.compile(DATASOURCE_PASSWORD_REGEX);
+    public static final Pattern PWD_PATTERN = Pattern.compile(DATASOURCE_PASSWORD_REGEX);
+
+    /**
+     * password pattern
+     */
+    public static final Pattern PWD_PATTERN_1 = Pattern.compile(DATASOURCE_PASSWORD_REGEX_1);
 
     @Override
     public String convert(ILoggingEvent event) {
@@ -46,40 +54,7 @@ public class SensitiveDataConverter extends MessageConverter {
         // get original log
         String requestLogMsg = event.getFormattedMessage();
         // desensitization log
-        return convertMsg(requestLogMsg);
+        return PasswordFilterUtils.convertPassword(PWD_PATTERN, requestLogMsg);
     }
 
-    /**
-     * deal with sensitive log
-     *
-     * @param oriLogMsg original log
-     */
-    private static String convertMsg(final String oriLogMsg) {
-
-        String tempLogMsg = oriLogMsg;
-
-        if (StringUtils.isNotEmpty(tempLogMsg)) {
-            tempLogMsg = passwordHandler(PWD_PATTERN, tempLogMsg);
-        }
-        return tempLogMsg;
-    }
-
-    /**
-     * password regex
-     *
-     * @param logMsg original log
-     */
-    private static String passwordHandler(Pattern pwdPattern, String logMsg) {
-
-        Matcher matcher = pwdPattern.matcher(logMsg);
-        StringBuffer sb = new StringBuffer(logMsg.length());
-        while (matcher.find()) {
-            String password = matcher.group();
-            String maskPassword = SensitiveLogUtils.maskDataSourcePwd(password);
-            matcher.appendReplacement(sb, maskPassword);
-        }
-        matcher.appendTail(sb);
-
-        return sb.toString();
-    }
 }

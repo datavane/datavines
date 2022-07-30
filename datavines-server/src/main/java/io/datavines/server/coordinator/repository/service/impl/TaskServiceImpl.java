@@ -38,9 +38,12 @@ import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.coordinator.api.dto.vo.TaskVO;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.coordinator.repository.entity.DataSource;
+import io.datavines.server.coordinator.repository.service.ActualValuesService;
+import io.datavines.server.coordinator.repository.service.TaskResultService;
 import io.datavines.spi.PluginLoader;
 import io.datavines.storage.api.StorageFactory;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -57,6 +60,7 @@ import io.datavines.server.coordinator.repository.mapper.CommandMapper;
 import io.datavines.server.coordinator.repository.mapper.TaskMapper;
 import io.datavines.server.coordinator.repository.service.TaskService;
 import io.datavines.server.coordinator.repository.entity.Task;
+import org.springframework.transaction.annotation.Transactional;
 
 import static io.datavines.core.constant.DataVinesConstants.JDBC;
 import static io.datavines.core.constant.DataVinesConstants.SPARK;
@@ -66,6 +70,12 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
 
     @Autowired
     private CommandMapper commandMapper;
+
+    @Autowired
+    private TaskResultService taskResultService;
+
+    @Autowired
+    private ActualValuesService actualValuesService;
 
     @Override
     public long create(Task task) {
@@ -86,6 +96,24 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
     @Override
     public List<Task> listByJobId(long jobId) {
         return baseMapper.listByJobId(jobId);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int deleteByJobId(long jobId) {
+        List<Task> taskList = listByJobId(jobId);
+        if (CollectionUtils.isEmpty(taskList)) {
+            return 0;
+        }
+
+        taskList.forEach(task -> {
+            baseMapper.deleteById(task.getId());
+            taskResultService.deleteByTaskId(task.getId());
+            actualValuesService.deleteByTaskId(task.getId());
+            //删除错误数据存储
+        });
+
+        return 0;
     }
 
     @Override
@@ -222,6 +250,7 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
 
     @Override
     public Object readErrorDataPage(Long taskId, Integer pageNumber, Integer pageSize)  {
+
         Task task = getById(taskId);
         if (task == null) {
             throw new DataVinesServerException(ApiStatus.TASK_NOT_EXIST_ERROR, taskId);
@@ -249,5 +278,24 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
         }
 
         return result;
+    }
+
+    /**
+     * get task host from taskId
+     * @param taskId
+     * @return
+     * @throws DataVinesServerException
+     */
+    @Override
+    public String getTaskExecuteHost(Long taskId) {
+        Task task = baseMapper.selectById(taskId);
+        if(null == task){
+            throw new DataVinesServerException(ApiStatus.TASK_NOT_EXIST_ERROR, taskId);
+        }
+        String executeHost = task.getExecuteHost();
+        if(StringUtils.isEmpty(executeHost)){
+            throw new DataVinesServerException(ApiStatus.TASK_EXECUTE_HOST_NOT_EXIST_ERROR, taskId);
+        }
+        return executeHost;
     }
 }

@@ -18,7 +18,8 @@ package io.datavines.server.coordinator.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.datavines.connector.api.ConnectorFactory;
+
+import io.datavines.common.utils.PasswordFilterUtils;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
 
@@ -33,11 +34,14 @@ import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
 import io.datavines.storage.api.StorageFactory;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
 
 @Slf4j
 @Service("errorDataStorageService")
@@ -90,7 +94,14 @@ public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMap
 
     @Override
     public List<ErrorDataStorage> listByWorkspaceId(long workspaceId) {
-        return baseMapper.selectList(new QueryWrapper<ErrorDataStorage>().eq("workspace_id", workspaceId));
+        List<ErrorDataStorage> list = baseMapper.selectList(new QueryWrapper<ErrorDataStorage>().eq("workspace_id", workspaceId));
+        if (CollectionUtils.isNotEmpty(list)) {
+            list.forEach(errorDataStorage -> {
+                errorDataStorage.setParam(PasswordFilterUtils.convertPassword(PWD_PATTERN_1, errorDataStorage.getParam()));
+            });
+        }
+
+        return list;
     }
 
     @Override

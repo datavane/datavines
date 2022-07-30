@@ -416,4 +416,9 @@ public class OSUtils {
     }
   }
 
+  public static Boolean judgeConcurrentHost(String taskHost) {
+    String host = NetUtils.getAddr(CommonPropertyUtils.getInt(CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT));
+    return taskHost.equals(host);
+  }
+
 }

@@ -47,10 +47,11 @@ import io.datavines.server.coordinator.repository.entity.Command;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.coordinator.repository.mapper.CommandMapper;
-import io.datavines.server.coordinator.repository.mapper.DataSourceMapper;
 import io.datavines.server.coordinator.repository.mapper.TaskMapper;
+import io.datavines.server.coordinator.repository.service.DataSourceService;
 import io.datavines.server.coordinator.repository.service.JobService;
 import io.datavines.server.coordinator.repository.entity.Job;
+import io.datavines.server.coordinator.repository.service.TaskService;
 import io.datavines.server.enums.CommandType;
 import io.datavines.common.enums.JobType;
 import io.datavines.server.enums.Priority;
@@ -74,10 +75,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     private TaskMapper taskMapper;
 
     @Autowired
+    private TaskService taskService;
+
+    @Autowired
     private CommandMapper commandMapper;
 
     @Autowired
-    private DataSourceMapper dataSourceMapper;
+    private DataSourceService dataSourceService;
 
     @Autowired
     private EnvMapper envMapper;
@@ -191,6 +195,22 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int deleteByDataSourceId(long dataSourceId) {
+        List<Job> jobList = listByDataSourceId(dataSourceId);
+        if (CollectionUtils.isEmpty(jobList)) {
+            return 0;
+        }
+
+        jobList.forEach(job -> {
+            baseMapper.deleteById(job.getId());
+            taskService.deleteByJobId(job.getId());
+        });
+
+        return 1;
+    }
+
+    @Override
     public IPage<JobVO> getJobPage(String searchVal, Long dataSourceId, Integer pageNumber, Integer pageSize) {
         Page<JobVO> page = new Page<>(pageNumber, pageSize);
         IPage<JobVO> jobs = baseMapper.getJobPage(page, searchVal, dataSourceId);
@@ -217,7 +237,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     }
 
     private void executeJob(Job job, LocalDateTime scheduleTime) {
-        DataSource dataSource = dataSourceMapper.selectById(job.getDataSourceId());
+        DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
         Map<String, Object> srcSourceConfigMap = JSONUtils.toMap(dataSource.getParam(), String.class, Object.class);
         ConnectionInfo srcConnectionInfo = new ConnectionInfo();
         srcConnectionInfo.setType(dataSource.getType());

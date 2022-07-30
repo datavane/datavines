@@ -34,7 +34,7 @@ public class DataSourceInfoManager {
         return dataSourceInfo;
     }
 
-    public static void putDataSourceInfo(BaseDataSourceInfo dataSourceInfo, String key) {
+    public static void putDataSourceInfo(String key, BaseDataSourceInfo dataSourceInfo) {
         DATA_SOURCE_INFO_MAP.put(key,dataSourceInfo);
     }
 }

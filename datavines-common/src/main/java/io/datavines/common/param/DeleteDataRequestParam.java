@@ -14,46 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.metric.expected.plugin;
+package io.datavines.common.param;
 
-import io.datavines.metric.api.ExpectedValue;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.Map;
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class DeleteDataRequestParam extends ConnectorRequestParam {
 
-public class FixValue implements ExpectedValue {
-
-    @Override
-    public String getName() {
-        return "fix_value";
-    }
-
-    @Override
-    public String getZhName() {
-        return "固定值";
-    }
-
-    @Override
-    public String getType() {
-        return "fix_value";
-    }
-
-    @Override
-    public String getExecuteSql() {
-        return null;
-    }
-
-    @Override
-    public String getOutputTable() {
-        return null;
-    }
-
-    @Override
-    public boolean isNeedDefaultDatasource() {
-        return false;
-    }
-
-    @Override
-    public void prepare(Map<String, String> config) {
-
-    }
+    private String errorDataFileName;
 }
