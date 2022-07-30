@@ -36,7 +36,7 @@ public interface DataSourceService {
 
     int update(DataSourceUpdate dataSource) throws DataVinesException;
 
-    DataSource getById(long id);
+    DataSource getDataSourceById(long id);
 
     int delete(long id);
 

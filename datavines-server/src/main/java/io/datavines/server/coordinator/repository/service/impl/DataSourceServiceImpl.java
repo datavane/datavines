@@ -21,6 +21,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
+import io.datavines.common.utils.CommonPropertyUtils;
+import io.datavines.common.utils.CryptionUtils;
+import io.datavines.common.utils.PasswordFilterUtils;
 import io.datavines.core.utils.LanguageUtils;
 import io.datavines.server.coordinator.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.common.exception.DataVinesException;
@@ -33,22 +36,29 @@ import io.datavines.server.coordinator.api.dto.vo.DataSourceVO;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.server.coordinator.repository.mapper.DataSourceMapper;
 import io.datavines.server.coordinator.repository.service.DataSourceService;
-
 import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.server.coordinator.repository.service.JobService;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
+
 @Slf4j
 @Service("dataSourceService")
 public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSource>  implements DataSourceService {
+
+    @Autowired
+    private JobService jobService;
 
     @Override
     public boolean testConnect(TestConnectionRequestParam param) {
@@ -61,6 +71,16 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     public long insert(DataSourceCreate dataSourceCreate) {
         DataSource dataSource = new DataSource();
         BeanUtils.copyProperties(dataSourceCreate, dataSource);
+        String param = dataSourceCreate.getParam();
+
+        try {
+            param = CryptionUtils.encryptByAES(param
+                    ,CommonPropertyUtils.getString(CommonPropertyUtils.AES_KEY, CommonPropertyUtils.AES_KEY_DEFAULT));
+        } catch (Exception e) {
+            throw new DataVinesException("encrypt datasource param error : {}", e);
+        }
+
+        dataSource.setParam(param);
         dataSource.setCreateTime(LocalDateTime.now());
         dataSource.setUpdateTime(LocalDateTime.now());
         dataSource.setCreateBy(ContextHolder.getUserId());
@@ -77,6 +97,17 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         }
 
         BeanUtils.copyProperties(dataSourceUpdate, dataSource);
+        String param = dataSourceUpdate.getParam();
+
+        try {
+            param = CryptionUtils.encryptByAES(param
+                    ,CommonPropertyUtils.getString(CommonPropertyUtils.AES_KEY, CommonPropertyUtils.AES_KEY_DEFAULT));
+        } catch (Exception e) {
+            throw new DataVinesException("encrypt datasource param error : {}", e);
+        }
+
+        dataSource.setParam(param);
+
         dataSource.setUpdateTime(LocalDateTime.now());
         dataSource.setUpdateBy(ContextHolder.getUserId());
 
@@ -84,19 +115,50 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     }
 
     @Override
-    public DataSource getById(long id) {
-        return baseMapper.selectById(id);
+    public DataSource getDataSourceById(long id) {
+        DataSource dataSource = baseMapper.selectById(id);
+        if (dataSource == null) {
+            return null;
+        }
+
+        String param = dataSource.getParam();
+
+        try {
+            param = CryptionUtils.decryptByAES(param
+                    ,CommonPropertyUtils.getString(CommonPropertyUtils.AES_KEY, CommonPropertyUtils.AES_KEY_DEFAULT));
+        } catch (Exception e) {
+            throw new DataVinesException("encrypt datasource param error : {}", e);
+        }
+
+        dataSource.setParam(param);
+
+        return dataSource;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int delete(long id) {
-        return baseMapper.deleteById(id);
+        baseMapper.deleteById(id);
+        jobService.deleteByDataSourceId(id);
+        return 1;
     }
 
     @Override
     public IPage<DataSourceVO> getDataSourcePage(String searchVal, Long workspaceId, Integer pageNumber, Integer pageSize) {
         Page<DataSourceVO> page = new Page<>(pageNumber, pageSize);
         IPage<DataSourceVO> dataSources = baseMapper.getDataSourcePage(page, searchVal, workspaceId);
+        dataSources.getRecords().forEach(dataSourceVO -> {
+            String param = dataSourceVO.getParam();
+
+            try {
+                param = CryptionUtils.decryptByAES(param
+                        ,CommonPropertyUtils.getString(CommonPropertyUtils.AES_KEY, CommonPropertyUtils.AES_KEY_DEFAULT));
+            } catch (Exception e) {
+                throw new DataVinesException("encrypt datasource param error : {}", e);
+            }
+
+            dataSourceVO.setParam(PasswordFilterUtils.convertPassword(PWD_PATTERN_1, param));
+        });
         return dataSources;
     }
 
@@ -108,7 +170,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     @Override
     public Object getDatabaseList(Long id) throws DataVinesServerException {
 
-        DataSource dataSource = getById(id);
+        DataSource dataSource = getDataSourceById(id);
         GetDatabasesRequestParam param = new GetDatabasesRequestParam();
         param.setType(dataSource.getType());
         param.setDataSourceParam(dataSource.getParam());
@@ -128,7 +190,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
     @Override
     public Object getTableList(Long id, String database) throws DataVinesServerException {
-        DataSource dataSource = getById(id);
+        DataSource dataSource = getDataSourceById(id);
         GetTablesRequestParam param = new GetTablesRequestParam();
         param.setType(dataSource.getType());
         param.setDataSourceParam(dataSource.getParam());
@@ -149,7 +211,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
     @Override
     public Object getColumnList(Long id, String database, String table) throws DataVinesServerException {
-        DataSource dataSource = getById(id);
+        DataSource dataSource = getDataSourceById(id);
         GetColumnsRequestParam param = new GetColumnsRequestParam();
         param.setType(dataSource.getType());
         param.setDataSourceParam(dataSource.getParam());
@@ -171,7 +233,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
     @Override
     public Object executeScript(ExecuteRequest request) throws DataVinesServerException {
-        DataSource dataSource = getById(request.getDatasourceId());
+        DataSource dataSource = getDataSourceById(request.getDatasourceId());
         ExecuteRequestParam param = new ExecuteRequestParam();
         param.setType(dataSource.getType());
         param.setDataSourceParam(dataSource.getParam());

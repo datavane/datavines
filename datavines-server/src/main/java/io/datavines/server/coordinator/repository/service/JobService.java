@@ -33,6 +33,8 @@ public interface JobService {
 
     int deleteById(long id);
 
+    int deleteByDataSourceId(long datasourceId);
+
     int update(JobUpdate jobUpdate);
 
     Job getById(long id);

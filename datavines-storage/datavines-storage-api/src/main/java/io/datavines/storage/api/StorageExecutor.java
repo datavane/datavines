@@ -19,8 +19,6 @@ package io.datavines.storage.api;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.ExecuteRequestParam;
 
-import java.sql.SQLException;
-
 public interface StorageExecutor {
 
     /**
@@ -30,5 +28,14 @@ public interface StorageExecutor {
      */
     default ConnectorResponse executeSyncQuery(ExecuteRequestParam param) throws Exception {
         return null;
-    };
+    }
+
+    /**
+     * execute script
+     * @param param param
+     * @return Map<String,Object>
+     */
+    default ConnectorResponse deleteData(ExecuteRequestParam param) throws Exception {
+        return null;
+    }
 }

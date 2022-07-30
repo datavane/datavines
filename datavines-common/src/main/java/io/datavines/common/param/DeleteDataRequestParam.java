@@ -14,27 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.jdbc.datasource;
+package io.datavines.common.param;
 
-import io.datavines.common.utils.Md5Utils;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-import java.util.concurrent.ConcurrentHashMap;
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class DeleteDataRequestParam extends ConnectorRequestParam {
 
-public class DataSourceInfoManager {
-
-    private static final ConcurrentHashMap<String, BaseDataSourceInfo> DATA_SOURCE_INFO_MAP =
-            new ConcurrentHashMap<>();
-
-    public static BaseDataSourceInfo getDatasourceInfo(String param) {
-        BaseDataSourceInfo dataSourceInfo = null;
-
-        String key = Md5Utils.getMd5(param, false);
-        dataSourceInfo = DATA_SOURCE_INFO_MAP.get(key);
-
-        return dataSourceInfo;
-    }
-
-    public static void putDataSourceInfo(String key, BaseDataSourceInfo dataSourceInfo) {
-        DATA_SOURCE_INFO_MAP.put(key,dataSourceInfo);
-    }
+    private String errorDataFileName;
 }
