@@ -38,6 +38,7 @@ export default {
 
     confirm_text: 'OK',
     test_link: 'Test link',
+    test_link_fail: 'Test link failed',
 
     login_btn_text: 'Log in',
     login_username_msg: 'Please input your username!',

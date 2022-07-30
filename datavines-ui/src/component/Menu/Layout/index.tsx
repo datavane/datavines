@@ -13,7 +13,7 @@ type TMainProps = {
 };
 
 const MenuLayout: React.FC<TMainProps> = ({ children, menus, visible = true }) => {
-    const [collapsed, setCollapsed] = useState(false);
+    const [collapsed, setCollapsed] = useState(true);
     const onCollapse = (bool: boolean) => {
         setCollapsed(bool);
     };
