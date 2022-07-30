@@ -4,15 +4,15 @@ const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin'
 const { launchEditorMiddleware } = require('react-dev-inspector/plugins/webpack');
 const { resolve, host } = require('./utils');
 
-let TARGET_MAP = {
-    test: '127.0.0.1:5600',
-    prod: '127.0.0.1:5600',
+const TARGET_MAP = {
+    test: '',
+    prod: '',
 };
 let proxy = [];
 try {
     // eslint-disable-next-line global-require
     const { targetMap, getProxy } = require('./.proxy.js');
-    TARGET_MAP = targetMap;
+    Object.assign(TARGET_MAP, targetMap);
     proxy = getProxy(TARGET_MAP[process.env.DV_ENV], host);
 } catch (error) {
     console.log('error', error);

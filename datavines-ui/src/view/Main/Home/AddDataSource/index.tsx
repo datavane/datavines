@@ -27,6 +27,7 @@ const Inner = ({ form }: InnerProps) => {
             setDynamicMeta(array.map((item) => {
                 const isTextarea = item.type === 'input' && item.props?.type === 'textarea';
                 const $props = pickProps(item.props || {}, ['placeholder', isTextarea && 'rows', 'disabled'].filter(Boolean) as string[]);
+                $props.autocomplete = 'off';
                 return {
                     label: item.title,
                     name: item.field,
@@ -73,7 +74,8 @@ const Inner = ({ form }: InnerProps) => {
                     },
                 ],
                 initialValue: initData?.name,
-                widget: <Input placeholder={`${tipText}${nameText}`} />,
+                // @ts-ignore
+                widget: <Input placeholder={`${tipText}${nameText}`} autocomplete="off" />,
             },
             {
                 label: sourceTypeText,
@@ -138,11 +140,15 @@ export const useAddDataSource = (options: ModalProps) => {
                 setLoading(true);
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { name, type, ...rest } = values;
-                await $http.post('/datasource/test', {
+                const res = await $http.post('/datasource/test', {
                     type,
                     dataSourceParam: JSON.stringify(rest),
                 });
-                message.success('Success!');
+                if (res) {
+                    message.success('Success!');
+                } else {
+                    message.success(intl.formatMessage({ id: 'test_link_fail' }));
+                }
             } catch (error: any) {
             } finally {
                 setLoading(false);
