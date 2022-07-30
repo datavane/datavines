@@ -62,6 +62,9 @@ public class CommonPropertyUtils {
     public static final String ERROR_DATA_FILE_DIR = "error.data.file_dir";
     public static final String ERROR_DATA_FILE_DIR_DEFAULT = "/tmp/datavines/errordata";
 
+    public static final String AES_KEY = "aes.key";
+    public static final String AES_KEY_DEFAULT = "1234567890123456";
+
     private static final Logger logger = LoggerFactory.getLogger(CommonPropertyUtils.class);
 
     public static final String COMMON_PROPERTIES_PATH = "/common.properties";

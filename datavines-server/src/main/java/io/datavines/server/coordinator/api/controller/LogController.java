@@ -16,8 +16,6 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
-import io.datavines.common.utils.CommonPropertyUtils;
-import io.datavines.common.utils.NetUtils;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.enums.ApiStatus;
@@ -35,8 +33,8 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+
+import static io.datavines.common.utils.OSUtils.judgeConcurrentHost;
 
 @Api(value = "log", tags = "log")
 @RestController
@@ -54,7 +52,7 @@ public class LogController {
     @GetMapping(value = "/queryWholeLog")
     public Object queryWholeLog(@RequestParam("taskId") Long taskId,
                                 HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String taskHost = logService.getTaskHost(taskId);
+        String taskHost = taskService.getTaskExecuteHost(taskId);
         Boolean isConcurrentHost = judgeConcurrentHost(taskHost);
         if (isConcurrentHost) {
             return logService.queryWholeLog(taskId);
@@ -68,7 +66,7 @@ public class LogController {
     public Object queryLogWithOffsetLine(@RequestParam("taskId") Long taskId,
                                          @RequestParam("offsetLine") int offsetLine,
                                          HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String taskHost = logService.getTaskHost(taskId);
+        String taskHost = taskService.getTaskExecuteHost(taskId);
         Boolean isConcurrentHost = judgeConcurrentHost(taskHost);
         if (isConcurrentHost) {
             return logService.queryLog(taskId, offsetLine);
@@ -83,7 +81,7 @@ public class LogController {
     public Object queryLogWithLimit(@RequestParam("taskId") Long taskId,
                                     @RequestParam("offsetLine") int offsetLine,
                                     @RequestParam("limit") int limit, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String taskHost = logService.getTaskHost(taskId);
+        String taskHost = taskService.getTaskExecuteHost(taskId);
         Boolean isConcurrentHost = judgeConcurrentHost(taskHost);
         if (isConcurrentHost) {
             return logService.queryLog(taskId, offsetLine, limit);
@@ -113,10 +111,5 @@ public class LogController {
             return;
         }
         response.sendRedirect(request.getScheme() + "://" + taskHost + "/api/v1/task/log/download?taskId=" + taskId);
-    }
-
-    private Boolean judgeConcurrentHost(String taskHost) {
-        String host = NetUtils.getAddr(CommonPropertyUtils.getInt(CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT));
-        return taskHost.equals(host);
     }
 }

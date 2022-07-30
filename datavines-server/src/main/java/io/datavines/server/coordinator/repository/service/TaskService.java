@@ -34,6 +34,8 @@ public interface TaskService {
 
     List<Task> listByJobId(long jobId);
 
+    int deleteByJobId(long jobId);
+
     IPage<TaskVO> getTaskPage(String searchVal, Long jobId, Integer pageNumber, Integer pageSize);
 
     Long submitTask(SubmitTask submitTask) throws DataVinesServerException;
@@ -47,4 +49,6 @@ public interface TaskService {
     List<Task> listTaskNotInServerList(List<String> hostList);
 
     Object readErrorDataPage(Long taskId, Integer pageNumber, Integer pageSize);
+
+    String getTaskExecuteHost(Long taskId);
 }

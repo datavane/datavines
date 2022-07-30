@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
-
 @Api(value = "job", tags = "job", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/job/schedule", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -61,5 +60,4 @@ public class JobScheduleController {
     public Object showCron(@Valid @RequestBody MapParam mapParam) throws DataVinesServerException {
         return jobScheduleService.getCron(mapParam);
     }
-
 }

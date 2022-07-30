@@ -304,7 +304,7 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
             String key = Md5Utils.getMd5(param, false);
             ConnectionInfo connectionInfo = JSONUtils.parseObject(param,ConnectionInfo.class);
             BaseDataSourceInfo dataSourceInfo = getDatasourceInfo(connectionInfo);
-            DataSourceInfoManager.putDataSourceInfo(dataSourceInfo, key);
+            DataSourceInfoManager.putDataSourceInfo(key,dataSourceInfo);
         }
 
         return DataSourceInfoManager.getDatasourceInfo(param);
