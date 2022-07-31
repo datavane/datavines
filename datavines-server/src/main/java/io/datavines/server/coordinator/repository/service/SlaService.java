@@ -18,6 +18,8 @@ package io.datavines.server.coordinator.repository.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaCreate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaUpdate;
 import io.datavines.server.coordinator.api.dto.vo.SlaPageVO;
 import io.datavines.server.coordinator.repository.entity.Sla;
 
@@ -32,4 +34,9 @@ public interface SlaService extends IService<Sla> {
     String getSenderConfigJson(String type);
 
     Set<String> getSupportPlugin();
+
+    Sla createSla(SlaCreate create);
+
+    boolean updateSla(SlaUpdate update);
+
 }

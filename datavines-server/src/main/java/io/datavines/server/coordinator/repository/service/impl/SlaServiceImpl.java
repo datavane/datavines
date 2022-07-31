@@ -20,7 +20,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.common.exception.DataVinesException;
+import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.core.utils.BeanConvertUtils;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaCreate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaUpdate;
 import io.datavines.server.coordinator.api.dto.vo.SlaPageVO;
 import io.datavines.server.coordinator.api.dto.vo.JobVO;
 import io.datavines.server.coordinator.repository.entity.Sla;
@@ -28,14 +34,19 @@ import io.datavines.server.coordinator.repository.entity.SlaJob;
 import io.datavines.server.coordinator.repository.mapper.SlaMapper;
 import io.datavines.server.coordinator.repository.service.SlaJobService;
 import io.datavines.server.coordinator.repository.service.SlaService;
+import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaService {
 
     @Autowired
@@ -76,5 +87,45 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
                 .getPluginLoader(SlasHandlerPlugin.class)
                 .getSupportedPlugins();
         return supportedPlugins;
+    }
+
+    @Override
+    public Sla createSla(SlaCreate create) {
+        String name = create.getName();
+        LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Sla::getWorkspaceId, create.getWorkspaceId());
+        wrapper.eq(Sla::getName, name);
+        Sla existSla = getOne(wrapper);
+        if (Objects.nonNull(existSla)){
+            throw new DataVinesServerException(ApiStatus.SLAS_ALREADY_EXIST_ERROR, name);
+        }
+        Sla sla = BeanConvertUtils.convertBean(create, Sla::new);
+        sla.setCreateBy(ContextHolder.getUserId());
+        LocalDateTime now = LocalDateTime.now();
+        sla.setUpdateBy(ContextHolder.getUserId());
+        sla.setUpdateTime(now);
+        sla.setCreateTime(now);
+        boolean success = save(sla);
+        if (!success){
+            throw new DataVinesException("create sla error");
+        }
+        return sla;
+    }
+
+    @Override
+    public boolean updateSla(SlaUpdate update) {
+        LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(Sla::getWorkspaceId, update.getWorkspaceId());
+        wrapper.eq(Sla::getName, update.getName());
+        Sla existSla = getOne(wrapper);
+        if (Objects.nonNull(existSla) && !existSla.getId().equals(update.getId())){
+            log.error("db has sla {} is same as update {}", existSla, update);
+            throw new DataVinesServerException(ApiStatus.SLAS_ALREADY_EXIST_ERROR, update.getName());
+        }
+        Sla sla = BeanConvertUtils.convertBean(update, Sla::new);
+        sla.setUpdateBy(ContextHolder.getUserId());
+        sla.setUpdateTime(LocalDateTime.now());
+        boolean save = updateById(sla);
+        return save;
     }
 }

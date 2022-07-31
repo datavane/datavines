@@ -22,7 +22,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaNotificationCreate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaNotificationUpdate;
 import io.datavines.server.coordinator.repository.entity.SlaNotification;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Map;
 import java.util.Set;
@@ -32,5 +36,9 @@ public interface SlaNotificationService extends IService<SlaNotification>{
 
     String getConfigJson(String type);
 
-    IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, String searchVal);
+    SlaNotification createNotification(SlaNotificationCreate create);
+
+    SlaNotification updateNotification(SlaNotificationUpdate update);
+
+    IPage<SlaNotification> pageListNotification(Long workspaceId,  String searchVal, Integer pageNumber, Integer pageSize);
 }

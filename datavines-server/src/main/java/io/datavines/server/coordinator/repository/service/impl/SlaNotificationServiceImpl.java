@@ -20,20 +20,25 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.core.utils.BeanConvertUtils;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaNotificationCreate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaNotificationUpdate;
 import io.datavines.server.coordinator.repository.entity.SlaNotification;
 import io.datavines.server.coordinator.repository.entity.SlaSender;
 import io.datavines.server.coordinator.repository.mapper.SlaNotificationMapper;
 import io.datavines.server.coordinator.repository.service.SlaNotificationService;
 import io.datavines.server.coordinator.repository.service.SlaSenderService;
+import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -96,8 +101,46 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
                 .getConfigJson();
     }
 
-    @Override
     public IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, String searchVal) {
         return slaNotificationMapper.pageListNotification(page, workspaceId, searchVal);
+    }
+
+    @Override
+    public SlaNotification createNotification(SlaNotificationCreate create) {
+        SlaNotification bean = BeanConvertUtils.convertBean(create, SlaNotification::new);
+        bean.setCreateBy(ContextHolder.getUserId());
+        LocalDateTime now = LocalDateTime.now();
+        bean.setCreateTime(now);
+        bean.setUpdateTime(now);
+        bean.setUpdateBy(ContextHolder.getUserId());
+        boolean success = save(bean);
+        if (!success){
+            throw new DataVinesException("create sender error");
+        }
+        return bean;
+    }
+
+    @Override
+    public SlaNotification updateNotification(SlaNotificationUpdate update) {
+        SlaNotification bean = BeanConvertUtils.convertBean(update, SlaNotification::new);
+        bean.setCreateBy(ContextHolder.getUserId());
+        LocalDateTime now = LocalDateTime.now();
+        bean.setCreateTime(now);
+        bean.setUpdateTime(now);
+        bean.setUpdateBy(ContextHolder.getUserId());
+        boolean success = updateById(bean);
+        if (!success){
+            throw new DataVinesException("update sender error");
+        }
+        return bean;
+    }
+
+    @Override
+    public IPage<SlaNotification> pageListNotification(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize) {
+        LambdaQueryWrapper<SlaNotification> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SlaNotification::getWorkspaceId, workspaceId);
+        Page<SlaNotification> page = new Page<>(pageNumber, pageSize);
+        IPage<SlaNotification> result = pageListNotification(page, workspaceId, searchVal);
+        return result;
     }
 }

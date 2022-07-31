@@ -16,17 +16,26 @@
  */
 package io.datavines.server.coordinator.repository.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.common.exception.DataVinesException;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobCreate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobUpdate;
 import io.datavines.server.coordinator.api.dto.vo.SlaJobVO;
 import io.datavines.server.coordinator.repository.entity.SlaJob;
 import io.datavines.server.coordinator.repository.mapper.SlaJobMapper;
 import io.datavines.server.coordinator.repository.service.SlaJobService;
+import io.datavines.server.utils.ContextHolder;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@Slf4j
 public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> implements SlaJobService {
 
     @Autowired
@@ -36,5 +45,43 @@ public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> impleme
     public List<SlaJobVO>  listSlaJob(Long slaId) {
         List<SlaJobVO> res = slaJobMapper.listSlaJob(slaId);
         return res;
+    }
+
+    @Override
+    public boolean createSlaJob(SlaJobCreate create) {
+        LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SlaJob::getJobId,create.getJobId());
+        wrapper.eq(SlaJob::getWorkspaceId, create.getWorkspaceId());
+        SlaJob one = getOne(wrapper);
+        if (Objects.nonNull(one)){
+            log.error("SlaJob has been create {}", create);
+            throw new DataVinesException("SlaJob has been create");
+        }
+        SlaJob slaJob = new SlaJob();
+        slaJob.setSlaId(create.getSlaId());
+        slaJob.setJobId(create.getJobId());
+        slaJob.setWorkspaceId(create.getWorkspaceId());
+        slaJob.setCreateBy(ContextHolder.getUserId());
+        slaJob.setUpdateBy(ContextHolder.getUserId());
+        return save(slaJob);
+    }
+
+    @Override
+    public boolean updateSlaJob(SlaJobUpdate update) {
+        LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SlaJob::getSlaId,update.getSlaId());
+        wrapper.eq(SlaJob::getJobId,update.getJobId());
+        SlaJob one = getOne(wrapper);
+        if (Objects.nonNull(one) && !one.getId().equals(update.getId())){
+            log.error("db has slajob {} is same as update slajob {}", one, update);
+            throw new DataVinesException("SlaJob has been exist");
+        }
+        SlaJob slaJob = new SlaJob();
+        slaJob.setSlaId(update.getSlaId());
+        slaJob.setJobId(update.getJobId());
+        slaJob.setId(update.getId());
+        slaJob.setUpdateTime(LocalDateTime.now());
+        slaJob.setUpdateBy(ContextHolder.getUserId());
+        return updateById(slaJob);
     }
 }
