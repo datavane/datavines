@@ -27,7 +27,6 @@ const Index = ({ form, detail }: InnerProps) => {
         try {
             const $engineList = await $http.get('metric/engine/list');
             setEngineList($engineList || []);
-            // if (detail && detail.id) {
             const paramter = detail?.engineParameter || {} as TEngineParameter;
             form.setFieldsValue({
                 deployMode: paramter.deployMode ?? 'cluster',
@@ -40,7 +39,6 @@ const Index = ({ form, detail }: InnerProps) => {
                 tenantCode: detail?.tenantCode,
                 env: detail?.env,
             });
-            // }
         } catch (error) {
         }
     });

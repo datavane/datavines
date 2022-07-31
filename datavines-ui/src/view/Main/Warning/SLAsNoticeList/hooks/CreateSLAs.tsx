@@ -23,8 +23,6 @@ export const CreateSLAsComponent = ({ form, detail, innerRef }: InnerProps) => {
     const schema: IFormRender = {
         name: 'sla-form',
         layout: 'vertical',
-        // labelCol: { span: 6 },
-        // wrapperCol: { span: 18 },
         formItemProps: {
             style: { marginBottom: 10 },
         },

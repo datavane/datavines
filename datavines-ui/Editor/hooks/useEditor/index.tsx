@@ -18,11 +18,9 @@ const useEditor = (props: TUseEditor) => {
     const providerRef = useRef<{ dispose:() => void }>();
     const [originHints] = useState(() => arrayRemoveRepeat([...HINTS, ...SQL_STRING]).sort());
     const getDefaultSuggestions = (positionBeforeText: string, range: IRange): languages.CompletionItem[] => {
-        // eslint-disable-next-line no-useless-escape
         const $positionBeforeText = positionBeforeText.replace(/[\*\[\]@\$\(\)]/g, '').replace(/(\s+|\.)/g, ' ');
         const textArr = $positionBeforeText.split(' ');
         const activeVal = textArr[textArr.length - 1];
-        // console.log('textArr', textArr, activeVal);
         const rexp = new RegExp(`([^\\w]|^)${activeVal}\\w*`, 'gim');
         const match = value.match(rexp);
         const $hints = !match
@@ -31,7 +29,6 @@ const useEditor = (props: TUseEditor) => {
                 const search = ele.search(new RegExp(activeVal, 'gim'));
                 return ele.substr(search);
             });
-        // console.log('$hints', $hints);
         const hints = arrayRemoveRepeat([...originHints, ...$hints, ...getTableColumnHints(tableColumnHints || [])]).sort().filter((ele) => {
             const $rexp = new RegExp(ele.substr(0, activeVal.length), 'gim');
             return (match && match.length === 1 && ele === activeVal)
@@ -39,7 +36,6 @@ const useEditor = (props: TUseEditor) => {
                 ? false
                 : activeVal.match($rexp);
         });
-        // console.log('hints111', hints);
         const $$hints = hints.map((ele) => ({
             label: ele,
             kind: window.monaco.languages.CompletionItemKind.Function,

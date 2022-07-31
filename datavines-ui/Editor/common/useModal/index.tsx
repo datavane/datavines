@@ -3,7 +3,6 @@ import React, {
 } from 'react';
 import { Modal } from 'antd';
 import { ModalProps } from 'antd/es/modal';
-// import { useIntl } from 'react-intl';
 import useImmutable from '../useImmutable';
 import usePersistFn from '../usePersistFn';
 
@@ -53,7 +52,6 @@ function useModal<T = any>(options: ModalProps) {
     } as TModalContextProps<T>;
 
     const Render = useImmutable<React.FC<ModalProps>>(({ children, ...rest }) => {
-        // const intl = useIntl();
         const $afterClose = usePersistFn(() => {
             const { afterClose } = { ...rest, ...optionsRef.current, ...modalPropsRef.current };
             if (typeof afterClose === 'function') {
@@ -64,8 +62,6 @@ function useModal<T = any>(options: ModalProps) {
         });
         const modalProp = {
             destroyOnClose: true,
-            // okText: intl.formatMessage({ id: 'okText' }),
-            // cancelText: intl.formatMessage({ id: 'dv_cancelText' }),
             onCancel: hide,
             onOk: hide,
             ...rest,

@@ -20,14 +20,6 @@ const detailRouter: TRouter = {
         icon: <UnorderedListOutlined />,
         component: lazy(() => import(/* webpackChunkName: 'view-detail-jobs' */ '@/view/Main/HomeDetail/Jobs')),
     },
-    // 'dv-detail-tasks': {
-    //     path: '/main/detail/:id/tasks',
-    //     key: '/main/detail/:id/tasks',
-    //     label: '',
-    //     exact: true,
-    //     icon: <HistoryOutlined />,
-    //     component: lazy(() => import(/* webpackChunkName: 'view-detail-tasks' */ '@/view/Main/HomeDetail/Tasks')),
-    // },
 };
 
 export default detailRouter;

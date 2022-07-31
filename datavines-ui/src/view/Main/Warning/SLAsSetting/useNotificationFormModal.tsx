@@ -86,8 +86,6 @@ const Inner = ({ form }: InnerProps) => {
     const schema: IFormRender = {
         name: 'notice-form',
         layout: 'vertical',
-        // labelCol: { span: 8 },
-        // wrapperCol: { span: 16 },
         formItemProps: {
             style: { marginBottom: 10 },
         },

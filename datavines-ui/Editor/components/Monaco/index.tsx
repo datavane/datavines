@@ -10,7 +10,6 @@ const Editor: React.FC<InnerProps> = ({ monacoRef, style }) => {
     const divEl = useRef<any>(null);
     const { monacoInstance } = useEditor({
         elRef: divEl,
-        // value: 'select * from dv_datasource',
         value: '\n',
         language: 'mysql',
         tableColumnHints: [],

@@ -14,11 +14,6 @@ function pickProps(source: Record<string, any>, props: string[]) {
     return target;
 }
 
-// const defaultLayout = {
-//     labelCol: { span: 4 },
-//     wrapperCol: { span: 16 },
-// };
-
 const FormPropsPickArray = [
     'className',
     'style',
