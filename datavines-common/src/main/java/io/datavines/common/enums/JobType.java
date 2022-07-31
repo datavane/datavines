@@ -27,9 +27,11 @@ public enum JobType {
     /**
      * 0 DATA_QUALITY
      * 1 DATA_PROFILE
+     * 2 DATA_RECONCILIATION
      */
     DATA_QUALITY(0, "DATA_QUALITY"),
-    DATA_PROFILE(1, "DATA_PROFILE");
+    DATA_PROFILE(1, "DATA_PROFILE"),
+    DATA_RECONCILIATION(2, "DATA_RECONCILIATION");
 
     JobType(int code, String description) {
         this.code = code;

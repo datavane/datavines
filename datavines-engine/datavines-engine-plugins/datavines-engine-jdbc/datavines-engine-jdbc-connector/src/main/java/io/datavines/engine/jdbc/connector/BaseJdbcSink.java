@@ -24,10 +24,10 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.connector.api.TypeConverter;
-import io.datavines.engine.api.ConfigConstants;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcRuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcSink;
+import io.datavines.engine.jdbc.api.entity.ConnectionItem;
 import io.datavines.engine.jdbc.api.entity.ResultList;
 import io.datavines.engine.jdbc.api.utils.FileUtils;
 import io.datavines.engine.jdbc.api.utils.LoggerFactory;
@@ -93,7 +93,7 @@ public class BaseJdbcSink implements JdbcSink {
     public void output(List<ResultList> resultList, JdbcRuntimeEnvironment env) {
 
         if(env.getMetadataConnection() == null) {
-            env.setMetadataConnection(getConnection());
+            env.setMetadataConnection(getConnectionItem());
         }
 
         Map<String,String> inputParameter = new HashMap<>();
@@ -136,13 +136,13 @@ public class BaseJdbcSink implements JdbcSink {
     }
 
     private void executeInsert(String sql, JdbcRuntimeEnvironment env) throws SQLException {
-        Statement statement =  env.getMetadataConnection().createStatement();
+        Statement statement =  env.getMetadataConnection().getConnection().createStatement();
         statement.execute(sql);
         statement.close();
     }
 
-    private Connection getConnection() {
-        return ConnectionUtils.getConnection(config);
+    private ConnectionItem getConnectionItem() {
+        return new ConnectionItem(config);
     }
 
     private String buildCreateTableSql(String tableName, String header) {
@@ -204,7 +204,7 @@ public class BaseJdbcSink implements JdbcSink {
                     typeMap.put(i,columnSplit[1]);
                 }
                 String createTableSql = buildCreateTableSql(tableName, header);
-                Connection connection = getConnection();
+                Connection connection = getConnectionItem().getConnection();
                 connection.createStatement().execute(createTableSql);
                 PreparedStatement statement = connection.prepareStatement(buildInsertSql(tableName, header));
                 int skipLine = 1;

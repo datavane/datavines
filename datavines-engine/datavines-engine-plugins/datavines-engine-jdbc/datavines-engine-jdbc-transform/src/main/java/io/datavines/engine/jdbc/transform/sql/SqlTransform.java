@@ -19,14 +19,12 @@ package io.datavines.engine.jdbc.transform.sql;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
 import io.datavines.common.config.enums.TransformType;
-import io.datavines.engine.api.ConfigConstants;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcRuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcTransform;
 import io.datavines.engine.jdbc.api.entity.ResultList;
 import io.datavines.engine.jdbc.api.utils.LoggerFactory;
 import org.slf4j.Logger;
-
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -88,16 +86,16 @@ public class SqlTransform implements JdbcTransform {
             logger.info("transform sql is: {}, transform_type is : {}", sql, pluginType);
             switch (TransformType.of(pluginType)){
                 case INVALIDATE_ITEMS:
-                    resultList = new InvalidateItemsExecutor().execute(env.getSourceConnection(), config);
+                    resultList = new InvalidateItemsExecutor().execute(env.getSourceConnection().getConnection(), config);
                     break;
                 case ACTUAL_VALUE:
-                    resultList = new ActualValueExecutor().execute(env.getSourceConnection(), config);
+                    resultList = new ActualValueExecutor().execute(env.getSourceConnection().getConnection(), config);
                     break;
                 case EXPECTED_VALUE_FROM_METADATA_SOURCE:
-                    resultList = new ExpectedValueExecutor().execute(env.getMetadataConnection(), config);
+                    resultList = new ExpectedValueExecutor().execute(env.getMetadataConnection().getConnection(), config);
                     break;
                 case EXPECTED_VALUE_FROM_SOURCE:
-                    resultList = new ExpectedValueExecutor().execute(env.getSourceConnection(), config);
+                    resultList = new ExpectedValueExecutor().execute(env.getSourceConnection().getConnection(), config);
                     break;
                 default:
                     break;

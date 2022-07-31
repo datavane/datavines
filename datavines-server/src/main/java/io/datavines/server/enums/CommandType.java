@@ -44,8 +44,9 @@ public enum CommandType {
     }
 
     @EnumValue
-    int code;
-    String description;
+    private int code;
+
+    private String description;
 
     private static final Map<Integer, CommandType> COMMAND_TYPE_MAP = new HashMap<>();
 

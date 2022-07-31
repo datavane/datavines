@@ -21,11 +21,10 @@ import io.datavines.common.config.Config;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcRuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcSource;
+import io.datavines.engine.jdbc.api.entity.ConnectionItem;
 import io.datavines.engine.jdbc.api.utils.LoggerFactory;
 import org.slf4j.Logger;
 
-
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -76,8 +75,8 @@ public class BaseJdbcSource implements JdbcSource {
     }
 
     @Override
-    public Connection getConnection(JdbcRuntimeEnvironment env) {
-        return ConnectionUtils.getConnection(config);
+    public ConnectionItem getConnectionItem(JdbcRuntimeEnvironment env) {
+        return new ConnectionItem(config);
     }
 
 }
