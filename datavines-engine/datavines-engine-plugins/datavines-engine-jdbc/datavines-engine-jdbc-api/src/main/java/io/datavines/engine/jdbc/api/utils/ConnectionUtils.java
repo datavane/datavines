@@ -14,11 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.jdbc.connector;
+package io.datavines.engine.jdbc.api.utils;
 
 import io.datavines.common.config.Config;
-import io.datavines.common.utils.JSONUtils;
-import io.datavines.engine.jdbc.api.utils.LoggerFactory;
 import org.slf4j.Logger;
 
 import java.sql.Connection;

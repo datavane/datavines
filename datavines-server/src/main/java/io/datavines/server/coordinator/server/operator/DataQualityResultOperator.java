@@ -20,7 +20,6 @@ import io.datavines.common.entity.TaskRequest;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.server.coordinator.repository.entity.TaskResult;
 import io.datavines.server.coordinator.repository.service.impl.JobExternalService;
-import io.datavines.server.enums.DqFailureStrategy;
 import io.datavines.server.enums.DqTaskState;
 import io.datavines.server.enums.OperatorType;
 import io.datavines.spi.PluginLoader;
@@ -54,34 +53,18 @@ public class DataQualityResultOperator {
                 jobExternalService.getTaskResultByTaskId(taskRequest.getTaskId());
         if (taskResult != null) {
             //check the result ,if result is failure do some operator by failure strategy
-            checkDqExecuteResult(taskRequest, taskResult);
+            checkDqExecuteResult(taskResult);
         }
     }
 
     /**
      * get the data quality check result
      * and if the result is failure that will alert or block
-     * @param taskRequest taskRequest
      * @param taskResult taskResult
      */
-    private void checkDqExecuteResult(TaskRequest taskRequest,
-                                      TaskResult taskResult) {
+    private void checkDqExecuteResult(TaskResult taskResult) {
         if (isFailure(taskResult)) {
             taskResult.setState(DqTaskState.FAILURE.getCode());
-//            DqFailureStrategy dqFailureStrategy = DqFailureStrategy.of(taskResult.getFailureStrategy());
-//            if (dqFailureStrategy != null) {
-//                taskResult.setState(DqTaskState.FAILURE.getDescription());
-//                switch (dqFailureStrategy) {
-//                    case NONE:
-//                        logger.info("task is failure, do nothing");
-//                        break;
-//                    case ALERT:
-//                        logger.info("task is failure, continue and alert");
-//                        break;
-//                    default:
-//                        break;
-//                }
-//            }
         } else {
             taskResult.setState(DqTaskState.SUCCESS.getCode());
         }

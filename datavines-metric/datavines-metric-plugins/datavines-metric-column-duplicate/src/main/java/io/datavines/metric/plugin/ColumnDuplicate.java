@@ -27,6 +27,7 @@ public class ColumnDuplicate extends BaseSingleTableColumn {
 
     public ColumnDuplicate(){
         super();
+        invalidateItemsSql = new StringBuilder("select ${column} from ${table}");
     }
 
     @Override

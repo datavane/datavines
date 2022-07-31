@@ -79,18 +79,17 @@ public class LogService {
     }
 
     public byte[] getLogBytes(long taskId){
-
         Task task = getExecutionJob(taskId);
         return getFileContentBytes(task.getLogPath());
     }
 
     private Task getExecutionJob(long taskId) {
         Task task = taskService.getById(taskId);
-        if(null == task){
+        if (null == task) {
             logger.info("task {} is not exist", taskId);
             throw new DataVinesServerException(ApiStatus.TASK_NOT_EXIST_ERROR, taskId);
         }
-        if(StringUtils.isEmpty(task.getLogPath())){
+        if (StringUtils.isEmpty(task.getLogPath())) {
             logger.info("task log path {} is not exist", taskId);
             throw new DataVinesServerException(ApiStatus.TASK_LOG_PATH_NOT_EXIST_ERROR, taskId);
         }
@@ -145,7 +144,6 @@ public class LogService {
      *
      * @param filePath file path
      * @return byte array of file
-     * @throws Exception exception
      */
     private byte[] getFileContentBytes(String filePath) {
         InputStream in = null;
@@ -166,23 +164,5 @@ public class LogService {
             IOUtils.closeQuietly(in);
         }
         return new byte[0];
-    }
-
-    /**
-     * get task host from taskId
-     * @param taskId
-     * @return
-     * @throws DataVinesServerException
-     */
-    public String getTaskHost(Long taskId) {
-        Task task = taskService.getById(taskId);
-        if(null == task){
-            throw new DataVinesServerException(ApiStatus.TASK_NOT_EXIST_ERROR, taskId);
-        }
-        String executeHost = task.getExecuteHost();
-        if(StringUtils.isEmpty(executeHost)){
-            throw new DataVinesServerException(ApiStatus.TASK_EXECUTE_HOST_NOT_EXIST_ERROR, taskId);
-        }
-        return executeHost;
     }
 }

@@ -14,12 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.jdbc.api;
+package io.datavines.engine.jdbc.api.entity;
 
-import io.datavines.engine.api.component.Component;
-import io.datavines.engine.jdbc.api.entity.ConnectionItem;
+import io.datavines.common.config.Config;
+import io.datavines.engine.jdbc.api.utils.ConnectionUtils;
 
-public interface JdbcSource extends Component {
+import java.sql.Connection;
+import java.sql.SQLException;
 
-    ConnectionItem getConnectionItem(JdbcRuntimeEnvironment env);
+public class ConnectionItem {
+
+    private Connection connection;
+
+    private Config config;
+
+    public ConnectionItem(Config config){
+        this.config = config;
+        connection = ConnectionUtils.getConnection(config);
+    }
+
+    public Connection getConnection() throws SQLException {
+        if (connection == null || connection.isClosed() || !connection.isValid(10)) {
+            connection = ConnectionUtils.getConnection(config);
+        }
+        return connection;
+    }
 }

@@ -73,12 +73,12 @@ public class JobScheduler extends Thread {
                 register.blockUtilAcquireLock(TASK_LOCK_KEY);
 
                 command = jobExternalService.getCommand();
+
                 if (command != null) {
                     if (CommandType.START == command.getType()) {
                         Task task = jobExternalService.executeCommand(command);
-
                         if (task != null) {
-                            logger.info("start submit job : {} ",JSONUtils.toJsonString(task));
+                            logger.info("start submit task : {} ", JSONUtils.toJsonString(task));
                             TaskRequest taskRequest = taskExecuteManager.buildTaskRequest(task);
                             taskExecuteManager.addExecuteCommand(taskRequest);
                             jobExternalService.deleteCommandById(command.getId());
@@ -99,10 +99,10 @@ public class JobScheduler extends Thread {
                 retryNum = 0;
             } catch (Exception e){
                 retryNum++;
-                if (command != null) {
-                    command.setType(CommandType.ERROR);
-                    jobExternalService.updateCommand(command);
-                }
+//                if (command != null) {
+//                    command.setType(CommandType.ERROR);
+//                    jobExternalService.updateCommand(command);
+//                }
 
                 logger.error("schedule job error ", e);
                 ThreadUtils.sleep(SLEEP_TIME_MILLIS * RETRY_BACKOFF[retryNum % RETRY_BACKOFF.length]);
