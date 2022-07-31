@@ -10,7 +10,6 @@ import { layoutItem } from '../helper';
 import useRequest from '../../../hooks/useRequest';
 import { TDetail } from '../type';
 import { useEditorContextState } from '../../../store/editor';
-// import useRequiredRule from '../../../hooks/useRequiredRule';
 
 type InnerProps = {
     form: FormInstance,
@@ -21,7 +20,6 @@ const Index = ({ form, detail }: InnerProps) => {
     const intl = useIntl();
     const { $http } = useRequest();
     const [context] = useEditorContextState();
-    // const requiredRules = useRequiredRule();
     const [errorList, setErrorList] = useState([]);
     useMount(async () => {
         try {
@@ -42,7 +40,6 @@ const Index = ({ form, detail }: InnerProps) => {
                 <Col span={12}>
                     <Form.Item
                         {...layoutItem}
-                        // rules={requiredRules}
                         label={intl.formatMessage({ id: 'dv_metric_error_store_engine' })}
                         name="errorDataStorageId"
                     >

@@ -119,7 +119,6 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                     min={0}
                     max={23}
                     style={{ width: 60 }}
-                    // placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_hour' })}
                 />
             </Form.Item>
         ),
@@ -135,7 +134,6 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                     min={0}
                     max={23}
                     style={{ width: 60 }}
-                    // placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_nhour' })}
                 />
             </Form.Item>
         ),
@@ -164,7 +162,6 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                     style={{ width: 100 }}
                     formatter={(value: any) => (value ? `${getIntl('jobs_every_month')}${value}${getIntl('jobs_every_month_day')}` : '')}
                     parser={(value: any) => (value || '').replace(getIntl('jobs_every_month'), '').replace(getIntl('jobs_every_month_day'), '')}
-                    // placeholder={intl.formatMessage({ id: 'jobs_schedule_cycle_day' })}
                 />
             </Form.Item>
         ),

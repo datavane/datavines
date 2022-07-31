@@ -50,9 +50,6 @@ const Index = () => {
     useMount(() => {
         getData();
     });
-    // const onEdit = (record: TUserItem) => {
-    //     show(record);
-    // };
     const onDelete = async (id: any) => {
         try {
             setLoading(true);

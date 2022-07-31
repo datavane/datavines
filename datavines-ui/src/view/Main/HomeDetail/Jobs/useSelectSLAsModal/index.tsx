@@ -55,7 +55,7 @@ const SelectSLAs = ({ innerRef, jobId, id }: InnerProps) => {
     });
     const schema: IFormRender = {
         name: 'select-sla',
-        layout: 'inline',
+        layout: 'vertical',
         meta: [
             {
                 label: intl.formatMessage({ id: 'sla_select' }),

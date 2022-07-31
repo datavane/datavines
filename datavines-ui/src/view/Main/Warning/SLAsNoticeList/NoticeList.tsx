@@ -4,7 +4,6 @@ import {
 } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
-import { EyeOutlined } from '@ant-design/icons';
 import { TWarnTableData, TWarnTableItem } from '@/type/warning';
 import { useCreateWidget } from './hooks/CreateWidget';
 import { $http } from '@/http';

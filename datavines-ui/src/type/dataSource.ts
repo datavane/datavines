@@ -18,6 +18,7 @@ export interface ICreateDataSourceItem {
     props: ICreateDataSourceProps;
     type: string;
     title: string;
+    value: string;
     validate: ICreateDataSourceValidate[];
 }
 

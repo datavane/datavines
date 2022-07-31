@@ -2,7 +2,6 @@ import React from 'react';
 import { Table, Popconfirm } from 'antd';
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
-import { EyeOutlined, DeleteOutlined } from '@ant-design/icons';
 import { IDataSourceListItem, IDataSourceList } from '@/type/dataSource';
 
 type IndexProps = {

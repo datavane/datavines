@@ -3,7 +3,7 @@ import { Form, Button, Radio } from 'antd';
 import { IdcardOutlined, TableOutlined } from '@ant-design/icons';
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
-import { TableType, IDataSourceListItem, IDataSourceList } from '@/type/dataSource';
+import { IDataSourceListItem, IDataSourceList } from '@/type/dataSource';
 import {
     IF, usePersistFn, useWatch, useLoading,
 } from '@/common';
