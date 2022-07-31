@@ -75,8 +75,9 @@ const Inner = ({ form }: InnerProps) => {
     };
     const schema: IFormRender = {
         name: 'notice-form',
-        labelCol: { span: 8 },
-        wrapperCol: { span: 16 },
+        layout: 'vertical',
+        // labelCol: { span: 8 },
+        // wrapperCol: { span: 16 },
         formItemProps: {
             style: { marginBottom: 10 },
         },
@@ -104,7 +105,7 @@ const Inner = ({ form }: InnerProps) => {
                 widget: <CustomSelect
                     onChange={typeChange}
                     source={typeSource}
-                    style={{ width: 200 }}
+                    // style={{ width: 200 }}
                 />,
             },
             ...dynamicMeta,

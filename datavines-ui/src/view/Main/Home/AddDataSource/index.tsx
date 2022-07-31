@@ -32,6 +32,7 @@ const Inner = ({ form }: InnerProps) => {
                     label: item.title,
                     name: item.field,
                     rules: (item.validate || []).map(($item) => (pickProps($item, ['message', 'required']))),
+                    initialValue: item.value || undefined,
                     widget: isTextarea ? <Input.TextArea {...$props} /> : <Input {...$props} />,
                 };
             }));
