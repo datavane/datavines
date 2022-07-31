@@ -74,8 +74,6 @@ public class JobExternalService {
 
     public Task executeCommand(Command command){
         Task task = taskService.getById(command.getTaskId());
-        task.setStartTime(LocalDateTime.now());
-        taskService.update(task);
         return task;
     }
 

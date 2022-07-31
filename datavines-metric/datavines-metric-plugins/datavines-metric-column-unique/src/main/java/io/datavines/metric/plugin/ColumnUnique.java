@@ -27,6 +27,7 @@ public class ColumnUnique extends BaseSingleTableColumn {
 
     public ColumnUnique(){
         super();
+        invalidateItemsSql = new StringBuilder("select ${column} from ${table}");
     }
 
     @Override

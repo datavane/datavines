@@ -46,10 +46,10 @@ public class JdbcExecution implements Execution<JdbcSource, JdbcTransform, JdbcS
         sources.forEach(jdbcSource -> {
             switch (SourceType.of(jdbcSource.getConfig().getString(PLUGIN_TYPE))){
                 case NORMAL:
-                    jdbcRuntimeEnvironment.setSourceConnection(jdbcSource.getConnection(jdbcRuntimeEnvironment));
+                    jdbcRuntimeEnvironment.setSourceConnection(jdbcSource.getConnectionItem(jdbcRuntimeEnvironment));
                     break;
                 case METADATA:
-                    jdbcRuntimeEnvironment.setMetadataConnection(jdbcSource.getConnection(jdbcRuntimeEnvironment));
+                    jdbcRuntimeEnvironment.setMetadataConnection(jdbcSource.getConnectionItem(jdbcRuntimeEnvironment));
                     break;
                 default:
                     break;

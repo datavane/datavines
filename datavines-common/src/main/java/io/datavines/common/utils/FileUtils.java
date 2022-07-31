@@ -61,7 +61,7 @@ public class FileUtils {
             str = sb.toString();
             return str;
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("read file error: {} ", e);
             return null;
         }
     }

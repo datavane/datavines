@@ -26,9 +26,9 @@ import java.util.*;
 
 public abstract class BaseSingleTable implements SqlMetric {
 
-    protected final StringBuilder invalidateItemsSql = new StringBuilder("select * from ${table}");
+    protected StringBuilder invalidateItemsSql = new StringBuilder("select * from ${table}");
 
-    private final StringBuilder actualValueSql = new StringBuilder("select count(1) as actual_value from ${invalidate_items_table}");
+    private StringBuilder actualValueSql = new StringBuilder("select count(1) as actual_value from ${invalidate_items_table}");
 
     protected List<String> filters = new ArrayList<>();
 
