@@ -54,6 +54,7 @@ export interface IDvEditorProps {
     detail?: TDetail,
     innerRef?: any,
     locale?: any,
+    onShowModal?: (...args: any[]) => any;
 }
 
 export interface IDvDataBaseItem{
