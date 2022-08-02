@@ -14,9 +14,10 @@ import './index.less';
 
 type TIndexProps = {
     getDatabases: (...args: any[]) => void;
+    onShowModal?: (...args: any[]) => any;
 }
 
-const Index = ({ getDatabases }: TIndexProps) => {
+const Index = ({ getDatabases, onShowModal }: TIndexProps) => {
     const { Render: RenderModal, show } = useMetricModal();
     const [{ databases, id }] = useEditorContextState();
     const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
@@ -30,7 +31,7 @@ const Index = ({ getDatabases }: TIndexProps) => {
     const { onRequestTable, onRequestCloumn } = useTableCloumn({ $setExpandedKeys });
 
     const onFieldClick = (database: string, table: string, column?: string) => {
-        show(id as string, {
+        const $record = {
             parameterItem: {
                 metricParameter: {
                     database,
@@ -38,7 +39,15 @@ const Index = ({ getDatabases }: TIndexProps) => {
                     column: column || '',
                 },
             },
-        });
+        };
+        if (onShowModal) {
+            onShowModal({
+                parameter: JSON.stringify($record.parameterItem),
+                parameterItem: $record.parameterItem,
+            });
+            return;
+        }
+        show(id as string, $record);
     };
 
     const renderSingle = (item: IDvDataBaseItem) => ({

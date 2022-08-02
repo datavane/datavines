@@ -28,7 +28,8 @@ const Inner = ({ innerRef }: InnerProps) => {
     const intl = useIntl();
     const { data } = useContextModal();
     const [jobId, setJobId] = useState(data.record?.id);
-    const [metricDetail, setMetricDetail] = useState({});
+    const [metricDetail, setMetricDetail] = useState(data.record?.parameterItem ? data.record : {});
+    console.log('metricDetail', metricDetail);
     const metricConfigRef = useRef<any>();
     const { loginInfo } = useSelector((r) => r.userReducer);
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
