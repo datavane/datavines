@@ -24,7 +24,6 @@ const Index = (props: IDvEditorProps) => {
         if (!height) {
             return {};
         }
-        const $height = `calc(100vh - 110px - ${(height * 2) / 5}px)`;
         return {
             height: 260,
         };
@@ -33,10 +32,7 @@ const Index = (props: IDvEditorProps) => {
         if (!height) {
             return {};
         }
-        const $height = `calc(100vh - 110px - ${(height * 3) / 5}px)`;
-        return {
-            // height: $height,
-        };
+        return {};
     }, [height]);
     const getDatabases = usePersistFn(async () => {
         try {
@@ -64,16 +60,16 @@ const Index = (props: IDvEditorProps) => {
                 variables: '',
             };
             const res = await $http.post('/datasource/execute', params);
-            console.log('res', res);
             setTableData(res || {});
         } catch (error) {
+            setTableData({} as any);
         }
     };
 
     return (
         <div className="dv-editor" ref={containerRef}>
             <div className="dv-editor-left">
-                <Tree getDatabases={getDatabases} />
+                <Tree getDatabases={getDatabases} onShowModal={props.onShowModal} />
             </div>
             <div className="dv-editor-right">
                 <div className="dv-editor__header">
