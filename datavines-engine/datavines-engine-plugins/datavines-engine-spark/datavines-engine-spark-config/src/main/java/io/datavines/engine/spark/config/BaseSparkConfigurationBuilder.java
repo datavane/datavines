@@ -93,14 +93,15 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
             sourceConfigs.add(sourceConfig);
         }
 
-        String expectedType = taskParameter.getExpectedType();
+        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
         if (StringUtils.isEmpty(expectedType)) {
             return sourceConfigs;
         }
 
-        ExpectedValue expectedValue = PluginLoader
+        expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);
+
         if (expectedValue.isNeedDefaultDatasource()) {
             sourceConfigs.add(getDefaultSourceConfig());
         }
