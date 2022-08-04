@@ -50,7 +50,7 @@ public class KaptchaConfig {
     @Value("${kaptcha.textproducer.char.length:4}")
     private String getKaptchaTextproducerCharLength;
 
-    @Value("${kaptcha.textproducer.font.names:STSong,STSong,Microsoft YaHei}")
+    @Value("${kaptcha.textproducer.font.names:cmr10}")
     private String kaptchaTextproducerFontNames;
 
     @Bean
