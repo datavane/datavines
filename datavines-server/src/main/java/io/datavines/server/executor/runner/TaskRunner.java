@@ -107,6 +107,14 @@ public class TaskRunner implements Runnable {
         if (engineExecutor != null) {
             try {
                 engineExecutor.cancel();
+                TaskExecuteResponseCommand responseCommand =
+                        new TaskExecuteResponseCommand(this.taskRequest.getTaskId());
+                responseCommand.setStatus(ExecutionStatus.KILL.getCode());
+                responseCommand.setEndTime(LocalDateTime.now());
+                responseCommand.setApplicationIds(engineExecutor.getProcessResult().getApplicationId());
+                responseCommand.setProcessId(engineExecutor.getProcessResult().getProcessId());
+                taskExecuteManager.processTaskExecuteResponse(responseCommand);
+
             } catch (Exception e) {
                 logger.error(e.getMessage(),e);
             }

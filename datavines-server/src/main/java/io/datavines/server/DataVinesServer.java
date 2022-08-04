@@ -107,6 +107,7 @@ public class DataVinesServer {
 
             this.taskExecuteManager.close();
             this.register.close();
+            this.taskFailover.close();
 
         } catch (Exception e) {
             logger.error("coordinator server stop exception ", e);
