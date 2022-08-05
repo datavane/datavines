@@ -34,6 +34,7 @@ import java.util.Set;
 public interface SlaNotificationService extends IService<SlaNotification>{
     Map<SlaSenderMessage, Set<SlaConfigMessage>> getSlasNotificationConfigurationBySlasId(Long slaId);
 
+    Map<SlaSenderMessage, Set<SlaConfigMessage>> getSlasNotificationConfigurationByJobId(Long job);
     String getConfigJson(String type);
 
     SlaNotification createNotification(SlaNotificationCreate create);

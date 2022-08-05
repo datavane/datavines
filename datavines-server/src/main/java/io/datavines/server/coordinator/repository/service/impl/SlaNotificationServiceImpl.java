@@ -27,9 +27,11 @@ import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
 import io.datavines.server.coordinator.api.dto.bo.sla.SlaNotificationCreate;
 import io.datavines.server.coordinator.api.dto.bo.sla.SlaNotificationUpdate;
+import io.datavines.server.coordinator.repository.entity.SlaJob;
 import io.datavines.server.coordinator.repository.entity.SlaNotification;
 import io.datavines.server.coordinator.repository.entity.SlaSender;
 import io.datavines.server.coordinator.repository.mapper.SlaNotificationMapper;
+import io.datavines.server.coordinator.repository.service.SlaJobService;
 import io.datavines.server.coordinator.repository.service.SlaNotificationService;
 import io.datavines.server.coordinator.repository.service.SlaSenderService;
 import io.datavines.server.utils.ContextHolder;
@@ -51,6 +53,9 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
 
     @Autowired
     private SlaNotificationMapper slaNotificationMapper;
+
+    @Autowired
+    private SlaJobService slaJobService;
 
     /**
      * get sla sender and receiver configuration from db by slaId. it will return empty Map if sla not association with sender and receiver
@@ -85,6 +90,18 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
             result.putIfAbsent(slaSender, existSet);
         }
         return result;
+    }
+
+    @Override
+    public Map<SlaSenderMessage, Set<SlaConfigMessage>> getSlasNotificationConfigurationByJobId(Long jobId) {
+        LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SlaJob::getJobId, jobId);
+        SlaJob one = slaJobService.getOne(wrapper);
+        if (Objects.isNull(one)){
+            return new HashMap<>();
+        }
+        Long slaId = one.getSlaId();
+        return getSlasNotificationConfigurationBySlasId(slaId);
     }
 
     public Set<SlaConfigMessage> listReceiverMessageBySlaId(Long id){

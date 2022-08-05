@@ -618,6 +618,11 @@
                 <artifactId>datavines-notification-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.cronutils</groupId>

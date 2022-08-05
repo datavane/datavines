@@ -108,7 +108,7 @@ public class SlaController {
     @GetMapping(value = "/test/{slaId}")
     public Object test(@PathVariable("slaId") Long slaId){
         SlaNotificationMessage message = new SlaNotificationMessage();
-        message.setMessage("test");
+        message.setMessage("[\"test\"]");
         message.setSubject("just test slaId");
         Map<SlaSenderMessage, Set<SlaConfigMessage>> configuration = slaNotificationService.getSlasNotificationConfigurationBySlasId(slaId);
         SlaNotificationResult notify = client.notify(message, configuration);

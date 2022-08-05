@@ -17,8 +17,19 @@
 package io.datavines.server.coordinator.server.operator;
 
 import io.datavines.common.entity.TaskRequest;
+import io.datavines.engine.core.utils.JsonUtils;
 import io.datavines.metric.api.ResultFormula;
+import io.datavines.notification.api.entity.SlaConfigMessage;
+import io.datavines.notification.api.entity.SlaNotificationMessage;
+import io.datavines.notification.api.entity.SlaSenderMessage;
+import io.datavines.notification.core.NotificationManager;
+import io.datavines.notification.core.client.NotificationClient;
+import io.datavines.server.coordinator.api.dto.vo.TaskResultVO;
+import io.datavines.server.coordinator.repository.entity.Task;
 import io.datavines.server.coordinator.repository.entity.TaskResult;
+import io.datavines.server.coordinator.repository.service.SlaNotificationService;
+import io.datavines.server.coordinator.repository.service.TaskResultService;
+import io.datavines.server.coordinator.repository.service.TaskService;
 import io.datavines.server.coordinator.repository.service.impl.JobExternalService;
 import io.datavines.server.enums.DqTaskState;
 import io.datavines.server.enums.OperatorType;
@@ -29,6 +40,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * DataQualityResultOperator
@@ -40,6 +54,19 @@ public class DataQualityResultOperator {
 
     @Autowired
     private JobExternalService jobExternalService;
+
+    @Autowired
+    private NotificationClient notificationClient;
+
+    @Autowired
+    private TaskResultService taskResultService;
+
+    @Autowired
+    private TaskService taskService;
+
+    @Autowired
+    private SlaNotificationService slaNotificationService;
+
 
     /**
      * When the task type is data quality, it will get the statistics value、comparison value、
@@ -65,11 +92,52 @@ public class DataQualityResultOperator {
     private void checkDqExecuteResult(TaskResult taskResult) {
         if (isFailure(taskResult)) {
             taskResult.setState(DqTaskState.FAILURE.getCode());
+            taskResult.setState(DqTaskState.FAILURE.getDescription());
+//            DqFailureStrategy dqFailureStrategy = DqFailureStrategy.of(taskResult.getFailureStrategy());
+//            if (dqFailureStrategy != null) {
+//                taskResult.setState(DqTaskState.FAILURE.getDescription());
+//                switch (dqFailureStrategy) {
+//                    case NONE:
+//                        logger.info("task is failure, do nothing");
+//                        break;
+//                    case ALERT:
+//                        logger.info("task is failure, continue and alert");
+//                        break;
+//                    default:
+//                        break;
+//                }
+//            }
+            sendErrorEmail(taskRequest);
         } else {
             taskResult.setState(DqTaskState.SUCCESS.getCode());
         }
 
         jobExternalService.updateTaskResult(taskResult);
+    }
+
+
+    private void sendErrorEmail(TaskRequest taskRequest){
+        Long taskId = taskRequest.getTaskId();
+        TaskResultVO resultVO = taskResultService.getResultVOByTaskId(taskId);
+        LinkedList<String> messageList = new LinkedList<>();
+        messageList.add(resultVO.getMetricName());
+        messageList.add(resultVO.getCheckSubject());
+        messageList.add(resultVO.getCheckResult());
+        messageList.add(resultVO.getExpectedType());
+        messageList.add(resultVO.getResultFormulaFormat());
+        String jsonMessage = JsonUtils.toJsonString(messageList);
+        SlaNotificationMessage message = new SlaNotificationMessage();
+        message.setMessage(jsonMessage);
+        message.setSubject(String.format("datavines metric %s failure", resultVO.getMetricName()));
+        Task task = taskService.getById(taskId);
+        Long jobId = task.getJobId();
+
+
+        Map<SlaSenderMessage, Set<SlaConfigMessage>> config = slaNotificationService.getSlasNotificationConfigurationByJobId(jobId);
+        if (config.isEmpty()){
+            return;
+        }
+        notificationClient.notify(message, config);
     }
 
     /**
