@@ -89,7 +89,7 @@ public class SlaSenderServiceImpl extends ServiceImpl<SlaSenderMapper, SlaSender
         wrapper.eq(SlaSender::getName, update.getName());
         SlaSender existSlas = getOne(wrapper);
         if (Objects.nonNull(existSlas) && !existSlas.getId().equals(update.getId())){
-            throw new DataVinesServerException(ApiStatus.SLAS_ALREADY_EXIST_ERROR, update.getName());
+            throw new DataVinesServerException(ApiStatus.SLA_ALREADY_EXIST_ERROR, update.getName());
         }
         SlaSender sender = BeanConvertUtils.convertBean(update, SlaSender::new);
         sender.setUpdateTime(LocalDateTime.now());

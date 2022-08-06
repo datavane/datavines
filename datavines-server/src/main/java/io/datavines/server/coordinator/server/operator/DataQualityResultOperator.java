@@ -22,7 +22,6 @@ import io.datavines.metric.api.ResultFormula;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
-import io.datavines.notification.core.NotificationManager;
 import io.datavines.notification.core.client.NotificationClient;
 import io.datavines.server.coordinator.api.dto.vo.TaskResultVO;
 import io.datavines.server.coordinator.repository.entity.Task;
@@ -92,22 +91,8 @@ public class DataQualityResultOperator {
     private void checkDqExecuteResult(TaskResult taskResult) {
         if (isFailure(taskResult)) {
             taskResult.setState(DqTaskState.FAILURE.getCode());
-            taskResult.setState(DqTaskState.FAILURE.getDescription());
-//            DqFailureStrategy dqFailureStrategy = DqFailureStrategy.of(taskResult.getFailureStrategy());
-//            if (dqFailureStrategy != null) {
-//                taskResult.setState(DqTaskState.FAILURE.getDescription());
-//                switch (dqFailureStrategy) {
-//                    case NONE:
-//                        logger.info("task is failure, do nothing");
-//                        break;
-//                    case ALERT:
-//                        logger.info("task is failure, continue and alert");
-//                        break;
-//                    default:
-//                        break;
-//                }
-//            }
-            sendErrorEmail(taskRequest);
+            Long taskId = taskResult.getTaskId();
+            sendErrorEmail(taskId);
         } else {
             taskResult.setState(DqTaskState.SUCCESS.getCode());
         }
@@ -116,8 +101,7 @@ public class DataQualityResultOperator {
     }
 
 
-    private void sendErrorEmail(TaskRequest taskRequest){
-        Long taskId = taskRequest.getTaskId();
+    private void sendErrorEmail(Long taskId){
         TaskResultVO resultVO = taskResultService.getResultVOByTaskId(taskId);
         LinkedList<String> messageList = new LinkedList<>();
         messageList.add(resultVO.getMetricName());

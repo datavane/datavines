@@ -97,7 +97,7 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
         wrapper.eq(Sla::getName, name);
         Sla existSla = getOne(wrapper);
         if (Objects.nonNull(existSla)){
-            throw new DataVinesServerException(ApiStatus.SLAS_ALREADY_EXIST_ERROR, name);
+            throw new DataVinesServerException(ApiStatus.SLA_ALREADY_EXIST_ERROR, name);
         }
         Sla sla = BeanConvertUtils.convertBean(create, Sla::new);
         sla.setCreateBy(ContextHolder.getUserId());
@@ -120,7 +120,7 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
         Sla existSla = getOne(wrapper);
         if (Objects.nonNull(existSla) && !existSla.getId().equals(update.getId())){
             log.error("db has sla {} is same as update {}", existSla, update);
-            throw new DataVinesServerException(ApiStatus.SLAS_ALREADY_EXIST_ERROR, update.getName());
+            throw new DataVinesServerException(ApiStatus.SLA_ALREADY_EXIST_ERROR, update.getName());
         }
         Sla sla = BeanConvertUtils.convertBean(update, Sla::new);
         sla.setUpdateBy(ContextHolder.getUserId());

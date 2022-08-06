@@ -352,7 +352,7 @@ public class TaskExecuteManager {
         Job job = jobService.getById(jobId);
         String jobName = job.getName();
         Long dataSourceId = job.getDataSourceId();
-        DataSource dataSource = dataSourceService.getById(dataSourceId);
+        DataSource dataSource = dataSourceService.getDataSourceById(dataSourceId);
         String dataSourceName = dataSource.getName();
         String dataSourceType = dataSource.getType();
         messageList.add(String.format("you has job %s on %s Datasource %s failure, please check detail", jobName, dataSourceType, dataSourceName));
