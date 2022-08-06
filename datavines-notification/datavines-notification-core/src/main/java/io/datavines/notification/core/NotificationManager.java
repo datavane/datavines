@@ -52,7 +52,7 @@ public class NotificationManager {
 
         for(Map.Entry<SlaSenderMessage, Set<SlaConfigMessage>> entry: config.entrySet()){
             String type = entry.getKey().getType();
-            if (supportedPlugins.contains(type)){
+            if (!supportedPlugins.contains(type)){
                 throw new DataVinesException("sender type not support of "+ type);
             }
             SlasHandlerPlugin handlerPlugin = PluginLoader

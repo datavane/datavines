@@ -38,6 +38,8 @@ public class SlaNotificationVO {
 
     private String slaName;
 
+    private String type;
+
     private String senderName;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

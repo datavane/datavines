@@ -18,6 +18,8 @@ package io.datavines.server.coordinator.repository.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaSenderCreate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaSenderUpdate;
 import io.datavines.server.coordinator.api.dto.vo.SlaSenderVO;
 import io.datavines.server.coordinator.repository.entity.SlaSender;
 
@@ -28,4 +30,8 @@ public interface SlaSenderService extends IService<SlaSender> {
     IPage<SlaSenderVO> pageListSender(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize);
 
     List<SlaSenderVO> listSenders(Long workspaceId, String searchVal, String type);
+
+    SlaSender createSender(SlaSenderCreate create);
+
+    boolean updateSender(SlaSenderUpdate update);
 }
