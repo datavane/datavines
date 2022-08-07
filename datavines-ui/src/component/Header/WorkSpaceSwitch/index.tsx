@@ -6,21 +6,27 @@ import { useIntl } from 'react-intl';
 import {
     EditOutlined, EllipsisOutlined, DeleteOutlined,
 } from '@ant-design/icons';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useParams, useRouteMatch } from 'react-router-dom';
 import { useAddSpace } from './useAddSpace';
 import { useSelector, useWorkSpaceActions } from '@/store';
-import { CustomSelect, IF } from '@/common';
+import { CustomSelect, IF, useWatch } from '@/common';
 import { $http } from '@/http';
 import { getWorkSpaceList } from '@/action/workSpace';
+import { DV_WORKSPACE_ID } from '@/utils/constants';
+import shareData from '@/utils/shareData';
 import './index.less';
 
 export default React.memo(() => {
     const intl = useIntl();
     const history = useHistory();
+    const params = useParams<{ id: string}>();
+    const match = useRouteMatch();
     const [visible, setVisible] = useState(false);
     const { Render: RenderSpace, show } = useAddSpace({});
     const { workspaceId, spaceList } = useSelector((r) => r.workSpaceReducer);
     const { isDetailPage } = useSelector((r) => r.commonReducer);
+    const { loginInfo } = useSelector((r) => r.userReducer);
+    const [dataSourceList, setDataSourceList] = useState([]);
     const { setCurrentSpace } = useWorkSpaceActions();
     const onEllips = (e: any) => {
         e.stopPropagation();
@@ -37,14 +43,32 @@ export default React.memo(() => {
         } catch (error) {
         }
     };
+    useWatch([isDetailPage], async () => {
+        if (isDetailPage) {
+            try {
+                const res = (await $http.get('/datasource/page', {
+                    workSpaceId: workspaceId,
+                    pageNumber: 1,
+                    pageSize: 9999,
+                })) || {};
+                setDataSourceList(res?.records || []);
+            } catch (error) {
+            }
+        }
+    }, { immediate: true });
     const goBack = () => {
         history.push('/main/home');
     };
-    const onChangeSpace = (id: number) => {
+    const onChangeSpace = (id: any) => {
         setCurrentSpace(id);
+        shareData.sessionSet(`${DV_WORKSPACE_ID}_${loginInfo.id}`, id);
         if (!window.location.href.includes('/main/home')) {
             goBack();
         }
+    };
+    const onChangeDataSource = (id: any) => {
+        const url = `${match.path}`.replace(/:id/, id);
+        history.push(`${url}/editor`);
     };
     const renderSelect = () => (
         <CustomSelect
@@ -65,14 +89,33 @@ export default React.memo(() => {
             sourceValueMap="id"
         />
     );
+    const renderDataSourcSelect = () => (
+        <CustomSelect
+            showSearch
+            style={{
+                width: 240,
+                height: 30,
+                display: 'flex',
+            }}
+            size="small"
+            placeholder={intl.formatMessage({ id: 'header_top_search_msg' })}
+            optionFilterProp="children"
+            filterOption={(input, option: any) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+            source={dataSourceList}
+            value={params?.id ? +params.id : undefined}
+            onChange={onChangeDataSource}
+            sourceLabelMap="name"
+            sourceValueMap="id"
+        />
+    );
     return (
         <>
             <span className="main-color" style={{ fontSize: 18, fontWeight: 700, marginRight: 35 }}>DataVines</span>
             <IF visible={isDetailPage}>
                 <a onClick={goBack} style={{ marginLeft: 20 }}>{intl.formatMessage({ id: 'common_back' })}</a>
-                {/* <div className="dv-header__work-space" style={{ paddingRight: 0 }}>
-                    {renderSelect()}
-                </div> */}
+                <div className="dv-header__work-space" style={{ paddingRight: 0 }}>
+                    {renderDataSourcSelect()}
+                </div>
             </IF>
             <IF visible={!isDetailPage}>
                 <div className="dv-header__work-space">

@@ -39,7 +39,7 @@ function App() {
                 workSpaceId: workspaceId,
                 ...pageParams,
                 ...values,
-            })) || [];
+            })) || {};
             setTableData({
                 list: res?.records || [],
                 total: res.total,

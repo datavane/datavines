@@ -117,7 +117,7 @@ const Index: React.FC<IndexProps> = () => {
             width: 100,
             render: (text: string, record: IDataSourceListItem) => (
                 <>
-                    <a onClick={() => { showFormSchemaModal(record); }}><EyeOutlined /></a>
+                    <a onClick={() => { showFormSchemaModal(record); }}>{intl.formatMessage({ id: 'dv_metric_edit' })}</a>
                     <IF visible={data?.currentValue != record.id}>
                         <Popconfirm
                             onClick={async () => {

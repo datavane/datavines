@@ -1,9 +1,10 @@
 import { Dispatch, Action } from 'redux';
 import { useActions } from '../useActions';
 import { IWorkSpaceListItem } from '@/type/workSpace';
+import { getDefaultWorkspaceId } from '@/utils';
 
 export interface WorkSpaceReducer {
-    workspaceId?: number,
+    workspaceId?: any,
     spaceList: IWorkSpaceListItem[],
 }
 type TActionType =
@@ -18,7 +19,7 @@ type TAction = {
 type TDispatch = Dispatch<Action<TAction['type']>>;
 
 const initialState: WorkSpaceReducer = {
-    workspaceId: undefined,
+    workspaceId: getDefaultWorkspaceId() || undefined,
     spaceList: [],
 };
 

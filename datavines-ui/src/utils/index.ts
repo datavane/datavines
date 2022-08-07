@@ -1,3 +1,6 @@
+import { DV_WORKSPACE_ID, DV_STORAGE_LOGIN } from '@/utils/constants';
+import shareData from '@/utils/shareData';
+
 export function pickProps(source: Record<string, any>, props: string[]) {
     const target: Record<string, any> = {};
     props.forEach((propName) => {
@@ -18,4 +21,13 @@ export const download = (blob: any, fileName?: string) => {
     document.body.appendChild(link);
     link.click();
     URL.revokeObjectURL(url);
+};
+
+export const getDefaultWorkspaceId = () => {
+    const loginInfo = shareData.sessionGet(DV_STORAGE_LOGIN) || {};
+    if (loginInfo.id) {
+        const workspaceId = shareData.sessionGet(`${DV_WORKSPACE_ID}_${loginInfo.id}`);
+        return workspaceId;
+    }
+    return undefined;
 };

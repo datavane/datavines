@@ -29,7 +29,6 @@ const Inner = ({ innerRef }: InnerProps) => {
     const { data } = useContextModal();
     const [jobId, setJobId] = useState(data.record?.id);
     const [metricDetail, setMetricDetail] = useState(data.record?.parameterItem ? data.record : {});
-    console.log('metricDetail', metricDetail);
     const metricConfigRef = useRef<any>();
     const { loginInfo } = useSelector((r) => r.userReducer);
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
@@ -82,7 +81,6 @@ const Inner = ({ innerRef }: InnerProps) => {
                 await $http.put('/job', { ...params, id: data.record?.id, runningNow });
             } else {
                 const res = await $http.post('/job', { ...params, runningNow });
-                console.log('----', res);
                 setJobId(res);
             }
             message.success('Success!');

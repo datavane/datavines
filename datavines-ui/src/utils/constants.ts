@@ -5,3 +5,4 @@ export const CODE_REG = /^[a-zA-Z0-9]{4}$/;
 
 export const DV_STORAGE_LOGIN = 'dv-loginInfo';
 export const DV_LANGUAGE = 'dv-language';
+export const DV_WORKSPACE_ID = 'dv_workspace_id';

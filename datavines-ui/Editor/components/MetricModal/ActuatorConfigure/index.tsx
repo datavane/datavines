@@ -121,12 +121,12 @@ const Index = ({ form, detail }: InnerProps) => {
         </>
     );
     return (
-        <Title title={intl.formatMessage({ id: 'dv_metric_title_actuator_engine' })}>
+        <Title title={intl.formatMessage({ id: 'dv_metric_title_actuator_engine_config' })}>
             <Row gutter={30}>
                 <Col span={12}>
                     <Form.Item
                         {...layoutItem}
-                        label={<span>{intl.formatMessage({ id: 'dv_metric_title_actuator_engine_config' })}</span>}
+                        label={<span>{intl.formatMessage({ id: 'dv_metric_title_actuator_engine' })}</span>}
                         name="engineType"
                         initialValue="jdbc"
                         rules={[...requiredRule]}

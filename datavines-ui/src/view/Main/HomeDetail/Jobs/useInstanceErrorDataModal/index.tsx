@@ -24,7 +24,6 @@ const Inner = (props: InnerProps) => {
     });
     const [columns, setColumns] = useState<ColumnsType<tableItem>>([]);
     const getData = async () => {
-        console.log('props', props);
         try {
             setLoading(true);
             const res = (await $http.get('/task/errorDataPage', {

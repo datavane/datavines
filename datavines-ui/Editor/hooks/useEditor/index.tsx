@@ -73,7 +73,6 @@ const useEditor = (props: TUseEditor) => {
         return [];
     };
     const monacoCreate = usePersistFn(() => {
-        console.log('创建');
         const $monacoInstance = window.monaco.editor.create(elRef.current, {
             value,
             language,
