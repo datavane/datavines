@@ -86,6 +86,10 @@ public class JdbcRuntimeEnvironment implements RuntimeEnvironment {
             sourceConnection.getConnection().close();
         }
 
+        if(targetConnection != null) {
+            targetConnection.getConnection().close();
+        }
+
         if(metadataConnection != null) {
             metadataConnection.getConnection().close();
         }

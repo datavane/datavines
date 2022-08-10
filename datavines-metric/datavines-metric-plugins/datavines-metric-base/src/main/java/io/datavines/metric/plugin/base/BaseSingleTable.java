@@ -24,7 +24,8 @@ import io.datavines.metric.api.SqlMetric;
 
 import java.util.*;
 
-public abstract class BaseSingleTable implements SqlMetric {
+public abstract class
+BaseSingleTable implements SqlMetric {
 
     protected StringBuilder invalidateItemsSql = new StringBuilder("select * from ${table}");
 

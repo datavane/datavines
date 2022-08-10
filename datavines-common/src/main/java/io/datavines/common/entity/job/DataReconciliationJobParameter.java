@@ -14,22 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.service;
+package io.datavines.common.entity.job;
 
-import com.baomidou.mybatisplus.extension.service.IService;
-import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobCreate;
-import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobCreateOrUpdate;
-import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobUpdate;
-import io.datavines.server.coordinator.api.dto.vo.SlaJobVO;
-import io.datavines.server.coordinator.repository.entity.SlaJob;
-import org.springframework.web.bind.annotation.RequestBody;
+import io.datavines.common.entity.MappingColumn;
 
-import javax.validation.Valid;
 import java.util.List;
+import java.util.Map;
 
-public interface SlaJobService extends IService<SlaJob> {
+/**
+ *  data reconciliation job parameter, only contains base parameter
+ */
+public class DataReconciliationJobParameter {
 
-    List<SlaJobVO>  listSlaJob(Long slaId);
+    private String metricType = "multi_table_accuracy";
 
-    boolean createOrUpdateSlaJob(SlaJobCreateOrUpdate createOrUpdate);
+    private Map<String,Object> sourceMetricParameter;
+
+    private Map<String,Object> targetMetricParameter;
+
+    private List<MappingColumn> mappingColumns;
+
+    private String expectedType = "table_total_rows";
+
+    private Map<String, Object> expectedParameter;
+
+    private String resultFormula = "percentage";
+
+    private String operator = "gt";
+
+    private double threshold = 0;
 }

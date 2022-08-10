@@ -21,7 +21,7 @@ import io.datavines.common.config.SinkConfig;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
-import io.datavines.engine.config.entity.MappingColumn;
+import io.datavines.common.entity.MappingColumn;
 
 import java.util.ArrayList;
 import java.util.List;
