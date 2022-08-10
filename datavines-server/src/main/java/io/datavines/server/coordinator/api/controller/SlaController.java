@@ -16,44 +16,28 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.datavines.common.exception.DataVinesException;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
-import io.datavines.core.enums.ApiStatus;
-import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.core.utils.BeanConvertUtils;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
-import io.datavines.notification.api.entity.SlaNotificationResult;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.client.NotificationClient;
 import io.datavines.server.coordinator.api.dto.bo.sla.*;
-import io.datavines.server.coordinator.api.dto.vo.SlaJobVO;
-import io.datavines.server.coordinator.api.dto.vo.SlaSenderVO;
-import io.datavines.server.coordinator.api.dto.vo.SlaPageVO;
-import io.datavines.server.coordinator.repository.entity.Sla;
-import io.datavines.server.coordinator.repository.entity.SlaJob;
-import io.datavines.server.coordinator.repository.entity.SlaNotification;
-import io.datavines.server.coordinator.repository.entity.SlaSender;
 import io.datavines.server.coordinator.repository.service.SlaNotificationService;
 import io.datavines.server.coordinator.repository.service.SlaSenderService;
 import io.datavines.server.coordinator.repository.service.SlaService;
 import io.datavines.server.coordinator.repository.service.SlaJobService;
-import io.datavines.server.utils.ContextHolder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
+
 import java.util.*;
 
 @Api(value = "sla", tags = "sla", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -82,20 +66,13 @@ public class SlaController {
     @ApiOperation(value = "list job")
     @GetMapping(value = "/job/list")
     public Object listSlaJob(@RequestParam("slaId") Long id){
-        List<SlaJobVO> list = slaJobService.listSlaJob(id);
-        return list;
+        return slaJobService.listSlaJob(id);
     }
 
-    @ApiOperation(value = "create sla job")
-    @PostMapping(value = "/job", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createSlaJob(@Valid @RequestBody SlaJobCreate create){
-        return slaJobService.createSlaJob(create);
-    }
-
-    @ApiOperation(value = "update sla job")
-    @PutMapping(value = "/job", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateSlaJob(@Valid @RequestBody SlaJobUpdate update){
-        return slaJobService.updateSlaJob(update);
+    @ApiOperation(value = "create or update sla job")
+    @PostMapping(value = "/job/createOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object createOrUpdateSlaJob(@Valid @RequestBody SlaJobCreateOrUpdate createOrUpdate){
+        return slaJobService.createOrUpdateSlaJob(createOrUpdate);
     }
 
     @ApiOperation(value = "create sla job")
@@ -111,8 +88,7 @@ public class SlaController {
         message.setMessage("[\"test\"]");
         message.setSubject("just test slaId");
         Map<SlaSenderMessage, Set<SlaConfigMessage>> configuration = slaNotificationService.getSlasNotificationConfigurationBySlasId(slaId);
-        SlaNotificationResult notify = client.notify(message, configuration);
-        return notify;
+        return client.notify(message, configuration);
     }
 
     @ApiOperation(value = "page list sla")
@@ -121,8 +97,7 @@ public class SlaController {
                            @RequestParam(value = "searchVal", required = false) String searchVal,
                            @RequestParam("pageNumber") Integer pageNumber,
                            @RequestParam("pageSize") Integer pageSize){
-        IPage<SlaPageVO> slaVoList = slaService.listSlas(workspaceId, searchVal, pageNumber, pageSize);
-        return slaVoList;
+        return slaService.listSlas(workspaceId, searchVal, pageNumber, pageSize);
     }
 
     @ApiOperation(value = "create sla")
@@ -140,15 +115,13 @@ public class SlaController {
     @ApiOperation(value = "get sla")
     @GetMapping(value = "{slaId}")
     public Object getSla(@PathVariable Long slaId){
-        Sla sla = slaService.getById(slaId);
-        return sla;
+        return slaService.getById(slaId);
     }
 
     @ApiOperation(value = "delete sla")
     @DeleteMapping(value = "/{id}")
     public Object deleteSla(@PathVariable("id") Long id){
-        boolean remove = slaService.deleteById(id);
-        return remove;
+        return slaService.deleteById(id);
     }
 
     @ApiOperation(value = "get support plugin")
@@ -219,8 +192,7 @@ public class SlaController {
     @ApiOperation(value = "delete notification")
     @DeleteMapping(value = "/notification/{id}")
     public Object deleteNotification(@PathVariable("id") Long id){
-        boolean remove = slaNotificationService.removeById(id);
-        return remove;
+        return slaNotificationService.removeById(id);
     }
 
     @ApiOperation(value = "page list notification")

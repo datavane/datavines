@@ -56,6 +56,7 @@ public class JdbcEngineExecutor extends AbstractEngineExecutor {
     public void cancel() throws Exception {
         if(bootstrap != null){
             bootstrap.stop();
+            this.cancel = true;
         }
     }
 
