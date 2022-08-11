@@ -33,11 +33,11 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
 
     @Override
     public void buildTransformConfigs() {
-        List<MappingColumn> mappingColumnList = getMappingColumnList(inputParameter.get(MAPPING_COLUMNS));
-        //get on clause
-        inputParameter.put(ON_CLAUSE, getOnClause(mappingColumnList,inputParameter));
-        //get where clause
-        inputParameter.put(WHERE_CLAUSE, getWhereClause(mappingColumnList,inputParameter));
+//        List<MappingColumn> mappingColumnList = getMappingColumnList(inputParameter.get(MAPPING_COLUMNS));
+//        //get on clause
+//        inputParameter.put(ON_CLAUSE, getOnClause(mappingColumnList,inputParameter));
+//        //get where clause
+//        inputParameter.put(WHERE_CLAUSE, getWhereClause(mappingColumnList,inputParameter));
 
         super.buildTransformConfigs();
     }
@@ -82,7 +82,7 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
     private List<String> getSrcColumnList(List<MappingColumn> mappingColumns) {
         List<String> list = new ArrayList<>();
         mappingColumns.forEach(item ->
-                list.add(item.getSrcField())
+                list.add(item.getSrcColumn())
         );
 
         return list;
@@ -91,7 +91,7 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
     private List<String> getTargetColumnList(List<MappingColumn> mappingColumns) {
         List<String> list = new ArrayList<>();
         mappingColumns.forEach(item ->
-                list.add(item.getTargetField())
+                list.add(item.getTargetColumn())
         );
 
         return list;
@@ -102,9 +102,9 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
         String[] columnList = new String[mappingColumnList.size()];
         for (int i = 0; i < mappingColumnList.size(); i++) {
             MappingColumn column = mappingColumnList.get(i);
-            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE),column.getSrcField())
+            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE),column.getSrcColumn())
                     + column.getOperator()
-                    + getCoalesceString(inputParameterValueResult.get(TARGET_TABLE),column.getTargetField());
+                    + getCoalesceString(inputParameterValueResult.get(TARGET_TABLE),column.getTargetColumn());
         }
 
         return String.join(AND,columnList);

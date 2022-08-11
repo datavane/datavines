@@ -16,44 +16,23 @@
  */
 package io.datavines.common.entity;
 
+import lombok.Data;
+
 /**
  * MappingColumn
  */
+@Data
 public class MappingColumn {
 
-    private String srcField;
+    private String srcColumn;
     private String operator;
-    private String targetField;
+    private String targetColumn;
 
     public MappingColumn() {}
 
-    public MappingColumn(String srcField, String operator, String targetField) {
-        this.srcField = srcField;
+    public MappingColumn(String srcColumn, String operator, String targetColumn) {
+        this.srcColumn = srcColumn;
         this.operator = operator;
-        this.targetField = targetField;
-    }
-
-    public String getSrcField() {
-        return srcField;
-    }
-
-    public void setSrcField(String srcField) {
-        this.srcField = srcField;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public String getTargetField() {
-        return targetField;
-    }
-
-    public void setTargetField(String targetField) {
-        this.targetField = targetField;
+        this.targetColumn = targetColumn;
     }
 }

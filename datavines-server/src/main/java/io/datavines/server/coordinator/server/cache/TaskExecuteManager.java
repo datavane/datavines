@@ -37,7 +37,6 @@ import io.datavines.server.command.CommandCode;
 import io.datavines.server.command.TaskExecuteAckCommand;
 import io.datavines.server.command.TaskExecuteResponseCommand;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.server.coordinator.api.dto.vo.TaskResultVO;
 import io.datavines.server.coordinator.repository.entity.DataSource;
 import io.datavines.server.coordinator.repository.entity.Job;
 import io.datavines.server.coordinator.repository.entity.Task;

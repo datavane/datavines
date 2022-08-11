@@ -164,4 +164,10 @@ public class CommonConstants {
 
     public static final String SMALL = "small";
 
+    public static final String AND = " AND ";
+
+    public static final String TABLE = "table";
+
+    public static final String TABLE2 = "table2";
+
 }

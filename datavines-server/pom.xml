@@ -351,6 +351,12 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-multi-table-accuracy</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-metric-expected-fix</artifactId>
             <version>${project.version}</version>
         </dependency>

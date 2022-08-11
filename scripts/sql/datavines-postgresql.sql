@@ -175,6 +175,7 @@ CREATE TABLE dv_job (
     name varchar(255) DEFAULT NULL ,
     type int4 NOT NULL DEFAULT '0',
     datasource_id int8 NOT NULL,
+    datasource_id_2 int8 NOT NULL,
     schema_name varchar(128) DEFAULT NULL,
     table_name varchar(128) DEFAULT NULL,
     column_name varchar(128) DEFAULT NULL,

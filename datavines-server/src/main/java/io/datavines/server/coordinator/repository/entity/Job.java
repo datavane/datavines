@@ -43,6 +43,9 @@ public class Job implements Serializable {
     @TableField(value = "datasource_id")
     private Long dataSourceId;
 
+    @TableField(value = "datasource_id_2")
+    private Long dataSourceId2;
+
     @TableField(value = "schema_name")
     private String schemaName;
 

@@ -17,6 +17,8 @@
 package io.datavines.common.entity.job;
 
 import io.datavines.common.entity.MappingColumn;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 import java.util.Map;
@@ -24,23 +26,13 @@ import java.util.Map;
 /**
  *  data reconciliation job parameter, only contains base parameter
  */
-public class DataReconciliationJobParameter {
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class DataReconciliationJobParameter extends BaseJobParameter {
 
     private String metricType = "multi_table_accuracy";
 
-    private Map<String,Object> sourceMetricParameter;
-
-    private Map<String,Object> targetMetricParameter;
+    private Map<String,Object> metricParameter2;
 
     private List<MappingColumn> mappingColumns;
-
-    private String expectedType = "table_total_rows";
-
-    private Map<String, Object> expectedParameter;
-
-    private String resultFormula = "percentage";
-
-    private String operator = "gt";
-
-    private double threshold = 0;
 }

@@ -27,13 +27,13 @@ import io.datavines.metric.api.SqlMetric;
 
 public class MultiTableAccuracy implements SqlMetric {
 
-    private StringBuilder sourceTableSql = new StringBuilder("SELECT * FROM ${table})");
+    private final StringBuilder sourceTableSql = new StringBuilder("SELECT * FROM ${table})");
 
-    private StringBuilder targetTableSql = new StringBuilder("SELECT * FROM ${table2})");
+    private final StringBuilder targetTableSql = new StringBuilder("SELECT * FROM ${table2})");
 
-    private StringBuilder invalidateItemsSql = new StringBuilder("SELECT ${table}.* FROM (");
+    private final StringBuilder invalidateItemsSql = new StringBuilder("SELECT ${table}.* FROM (");
 
-    private StringBuilder actualValueSql = new StringBuilder("select count(1) as actual_value from ${invalidate_items_table}");
+    private final StringBuilder actualValueSql = new StringBuilder("select count(1) as actual_value from ${invalidate_items_table}");
 
     @Override
     public String getName() {
@@ -77,18 +77,18 @@ public class MultiTableAccuracy implements SqlMetric {
 
     @Override
     public void prepare(Map<String, String> config) {
-        if (config.containsKey("fliter")) {
+        if (config.containsKey("filter")) {
             sourceTableSql.append("WHERE (${filter})");
         }
 
-        if (config.containsKey("fliter2")) {
+        if (config.containsKey("filter2")) {
             targetTableSql.append("WHERE (${filter2})");
         }
 
         invalidateItemsSql
-                .append("(").append(sourceTableSql.toString()).append(")").append(" ${table} ")
+                .append("(").append(sourceTableSql).append(")").append(" ${table} ")
                 .append(" LEFT JOIN ")
-                .append("(").append(targetTableSql.toString()).append(")").append(" ${table2} ")
+                .append("(").append(targetTableSql).append(")").append(" ${table2} ")
                 .append("ON ${on_clause} WHERE ${where_clause}");
     }
 

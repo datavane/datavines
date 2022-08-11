@@ -31,6 +31,8 @@ public class JobCreate {
     @NotNull(message = "Datasource cannot be empty")
     private long dataSourceId;
 
+    private long dataSourceId2;
+
     private String executePlatformType = "local";
 
     private String executePlatformParameter;

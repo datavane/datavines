@@ -20,7 +20,6 @@ package io.datavines.server.coordinator.repository.service.impl;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -33,7 +32,6 @@ import io.datavines.common.entity.job.builder.TaskParameterBuilderFactory;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.core.enums.ApiStatus;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.server.coordinator.api.dto.bo.job.JobCreate;
 import io.datavines.common.enums.ExecutionStatus;
@@ -138,8 +136,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
                 .eq("schema_name",job.getSchemaName())
                 .eq("table_name",job.getTableName())
                 .eq("column_name",job.getColumnName())
-        );
-
+         );
          return CollectionUtils.isNotEmpty(list);
     }
 
@@ -237,14 +234,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
     }
 
     private void executeJob(Job job, LocalDateTime scheduleTime) {
-        DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
-        Map<String, Object> srcSourceConfigMap = JSONUtils.toMap(dataSource.getParam(), String.class, Object.class);
-        ConnectionInfo srcConnectionInfo = new ConnectionInfo();
-        srcConnectionInfo.setType(dataSource.getType());
-        srcConnectionInfo.setConfig(srcSourceConfigMap);
 
-        List<String> taskParameterList = buildTaskParameter(
-                job.getType().getDescription(), job.getParameter(), srcConnectionInfo, null);
+        List<String> taskParameterList = buildTaskParameter(job);
+
         long jobId = job.getId();
         Env env = envMapper.selectById(job.getEnv());
         String envStr = "";
@@ -350,8 +342,20 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         return String.format("%s_%s_%s", metric.toLowerCase(), column, System.currentTimeMillis());
     }
 
-    private List<String> buildTaskParameter(String jobType, String parameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo) {
-        return TaskParameterBuilderFactory.builder(JobType.of(jobType))
-                .buildTaskParameter(parameter,srcConnectionInfo,targetConnectionInfo);
+    private List<String> buildTaskParameter(Job job) {
+        DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
+        Map<String, Object> srcSourceConfigMap = JSONUtils.toMap(dataSource.getParam(), String.class, Object.class);
+        ConnectionInfo srcConnectionInfo = new ConnectionInfo();
+        srcConnectionInfo.setType(dataSource.getType());
+        srcConnectionInfo.setConfig(srcSourceConfigMap);
+
+        DataSource dataSource2 = dataSourceService.getDataSourceById(job.getDataSourceId2());
+        Map<String, Object> targetSourceConfigMap = JSONUtils.toMap(dataSource2.getParam(), String.class, Object.class);
+        ConnectionInfo targetConnectionInfo = new ConnectionInfo();
+        targetConnectionInfo.setType(dataSource2.getType());
+        targetConnectionInfo.setConfig(targetSourceConfigMap);
+
+        return TaskParameterBuilderFactory.builder(job.getType())
+                .buildTaskParameter(job.getParameter(), srcConnectionInfo, targetConnectionInfo);
     }
 }
