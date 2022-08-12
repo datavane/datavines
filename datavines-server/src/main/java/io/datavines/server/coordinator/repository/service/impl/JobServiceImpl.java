@@ -312,13 +312,15 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         String database = (String)metricParameter.get("database");
         String table = (String)metricParameter.get("table");
         String column = (String)metricParameter.get("column");
+        String metric = baseJobParameter.getMetricType();
 
         switch (JobType.of(jobType)) {
             case DATA_QUALITY:
-                String metric = baseJobParameter.getMetricType();
                 return String.format("%s(%s)", metric.toUpperCase(), resultFormula.getSymbol());
             case DATA_PROFILE:
                 return String.format("%s(%s.%s)", "DATA_PROFILE", database, table);
+            case DATA_RECONCILIATION:
+                return String.format("%s(%s)", metric.toUpperCase(), resultFormula.getSymbol());
             default:
                 return String.format("%s[%s.%s.%s]%s", "JOB", database, table, column, System.currentTimeMillis());
         }

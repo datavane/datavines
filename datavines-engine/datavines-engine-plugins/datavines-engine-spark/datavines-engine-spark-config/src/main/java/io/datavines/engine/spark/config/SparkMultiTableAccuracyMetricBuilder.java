@@ -27,23 +27,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.CommonConstants.AND;
+import static io.datavines.common.CommonConstants.TABLE;
+import static io.datavines.common.CommonConstants.TABLE2;
 
 public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfigurationBuilder {
 
     @Override
     public void buildTransformConfigs() {
-//        List<MappingColumn> mappingColumnList = getMappingColumnList(inputParameter.get(MAPPING_COLUMNS));
-//        //get on clause
-//        inputParameter.put(ON_CLAUSE, getOnClause(mappingColumnList,inputParameter));
-//        //get where clause
-//        inputParameter.put(WHERE_CLAUSE, getWhereClause(mappingColumnList,inputParameter));
-
+        super.buildTransformConfigs();
+        List<MappingColumn> mappingColumns = JSONUtils.toList(inputParameter.get("mappingColumns"),MappingColumn.class);
+        inputParameter.put("on_clause", getOnClause(mappingColumns,inputParameter));
+        inputParameter.put("where_clause", getWhereClause(mappingColumns, inputParameter));
         super.buildTransformConfigs();
     }
 
     @Override
     public void buildSinkConfigs() throws DataVinesException {
+
         List<SinkConfig> sinkConfigs = new ArrayList<>();
         //get the actual value storage parameter
         SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SparkSinkSqlBuilder.getActualValueSql(),  "dv_actual_values");
@@ -65,21 +66,40 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
         configuration.setSinkParameters(sinkConfigs);
     }
 
-    private List<MappingColumn> getMappingColumnList(String mappingColumns) {
-        ArrayNode mappingColumnList = JSONUtils.parseArray(mappingColumns);
-        List<MappingColumn> list = new ArrayList<>();
-        mappingColumnList.forEach(item -> {
-            MappingColumn column = new MappingColumn(
-                    String.valueOf(item.get(COLUMN)).replace("\"",""),
-                    String.valueOf(item.get(OPERATOR)).replace("\""," "),
-                    String.valueOf(item.get(TARGET_COLUMN)).replace("\"",""));
-            list.add(column);
-        });
+    public static String getOnClause(List<MappingColumn> mappingColumnList, Map<String,String> inputParameterValueResult) {
+        //get on clause
+        String[] columnList = new String[mappingColumnList.size()];
+        for (int i = 0; i < mappingColumnList.size(); i++) {
+            MappingColumn column = mappingColumnList.get(i);
+            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE),column.getSrcColumn())
+                    + column.getOperator()
+                    + getCoalesceString(inputParameterValueResult.get(TABLE2),column.getTargetColumn());
+        }
 
-        return list;
+        return String.join(AND,columnList);
     }
 
-    private List<String> getSrcColumnList(List<MappingColumn> mappingColumns) {
+    public static String getWhereClause(List<MappingColumn> mappingColumnList,Map<String,String> inputParameterValueResult) {
+        String srcColumnNotNull = "( NOT (" + getSrcColumnIsNullStr(inputParameterValueResult.get(TABLE),getSrcColumnList(mappingColumnList)) + " ))";
+        String targetColumnIsNull = "( " + getSrcColumnIsNullStr(inputParameterValueResult.get(TABLE2),getTargetColumnList(mappingColumnList)) + " )";
+
+        return srcColumnNotNull + AND + targetColumnIsNull;
+    }
+
+    private static String getCoalesceString(String table, String column) {
+        return "coalesce(" + table + "." + column + ", '')";
+    }
+
+    private static String getSrcColumnIsNullStr(String table,List<String> columns) {
+        String[] columnList = new String[columns.size()];
+        for (int i = 0; i < columns.size(); i++) {
+            String column = columns.get(i);
+            columnList[i] = table + "." + column + " IS NULL";
+        }
+        return  String.join(AND, columnList);
+    }
+
+    public static List<String> getSrcColumnList(List<MappingColumn> mappingColumns) {
         List<String> list = new ArrayList<>();
         mappingColumns.forEach(item ->
                 list.add(item.getSrcColumn())
@@ -88,45 +108,12 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
         return list;
     }
 
-    private List<String> getTargetColumnList(List<MappingColumn> mappingColumns) {
+    public static List<String> getTargetColumnList(List<MappingColumn> mappingColumns) {
         List<String> list = new ArrayList<>();
         mappingColumns.forEach(item ->
                 list.add(item.getTargetColumn())
         );
 
         return list;
-    }
-
-    private String getOnClause(List<MappingColumn> mappingColumnList,Map<String,String> inputParameterValueResult) {
-        //get on clause
-        String[] columnList = new String[mappingColumnList.size()];
-        for (int i = 0; i < mappingColumnList.size(); i++) {
-            MappingColumn column = mappingColumnList.get(i);
-            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE),column.getSrcColumn())
-                    + column.getOperator()
-                    + getCoalesceString(inputParameterValueResult.get(TARGET_TABLE),column.getTargetColumn());
-        }
-
-        return String.join(AND,columnList);
-    }
-
-    private String getWhereClause(List<MappingColumn> mappingColumnList,Map<String,String> inputParameterValueResult) {
-        String srcColumnNotNull = "( NOT (" + getSrcColumnIsNullStr(inputParameterValueResult.get(TABLE),getSrcColumnList(mappingColumnList)) + " ))";
-        String targetColumnIsNull = "( " + getSrcColumnIsNullStr(inputParameterValueResult.get(TARGET_TABLE),getTargetColumnList(mappingColumnList)) + " )";
-
-        return srcColumnNotNull + AND + targetColumnIsNull;
-    }
-
-    private String getCoalesceString(String table, String column) {
-        return "coalesce(" + table + "." + column + ", '')";
-    }
-
-    private String getSrcColumnIsNullStr(String table,List<String> columns) {
-        String[] columnList = new String[columns.size()];
-        for (int i = 0; i < columns.size(); i++) {
-            String column = columns.get(i);
-            columnList[i] = table + "." + column + " IS NULL";
-        }
-        return  String.join(AND, columnList);
     }
 }

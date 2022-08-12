@@ -46,8 +46,7 @@ public class DataReconciliationTaskParameterBuilder implements ParameterBuilder 
                 metricParameters.remove("database");
                 metricParameters.put("metric_database", database);
                 metricParameters.putAll(jobParam.getMetricParameter2());
-                metricParameters.put("on_clause", getOnClause(jobParam.getMappingColumns(),metricParameters));
-                metricParameters.put("where_clause", getWhereClause(jobParam.getMappingColumns(),metricParameters));
+                metricParameters.put("mappingColumns", JSONUtils.toJsonString(jobParam.getMappingColumns()));
                 taskParameter.setMetricParameter(metricParameters);
                 taskParameter.setExpectedType(jobParam.getExpectedType());
                 taskParameter.setExpectedParameter(jobParam.getExpectedParameter());
@@ -79,54 +78,4 @@ public class DataReconciliationTaskParameterBuilder implements ParameterBuilder 
         return null;
     }
 
-    public static String getOnClause(List<MappingColumn> mappingColumnList, Map<String,Object> inputParameterValueResult) {
-        //get on clause
-        String[] columnList = new String[mappingColumnList.size()];
-        for (int i = 0; i < mappingColumnList.size(); i++) {
-            MappingColumn column = mappingColumnList.get(i);
-            columnList[i] = getCoalesceString((String) inputParameterValueResult.get(TABLE),column.getSrcColumn())
-                    + column.getOperator()
-                    + getCoalesceString((String) inputParameterValueResult.get(TABLE2),column.getTargetColumn());
-        }
-
-        return String.join(AND,columnList);
-    }
-
-    public static String getWhereClause(List<MappingColumn> mappingColumnList,Map<String,Object> inputParameterValueResult) {
-        String srcColumnNotNull = "( NOT (" + getSrcColumnIsNullStr((String) inputParameterValueResult.get(TABLE),getSrcColumnList(mappingColumnList)) + " ))";
-        String targetColumnIsNull = "( " + getSrcColumnIsNullStr((String) inputParameterValueResult.get(TABLE2),getTargetColumnList(mappingColumnList)) + " )";
-
-        return srcColumnNotNull + AND + targetColumnIsNull;
-    }
-
-    private static String getCoalesceString(String table, String column) {
-        return "coalesce(" + table + "." + column + ", '')";
-    }
-
-    private static String getSrcColumnIsNullStr(String table,List<String> columns) {
-        String[] columnList = new String[columns.size()];
-        for (int i = 0; i < columns.size(); i++) {
-            String column = columns.get(i);
-            columnList[i] = table + "." + column + " IS NULL";
-        }
-        return  String.join(AND, columnList);
-    }
-
-    public static List<String> getSrcColumnList(List<MappingColumn> mappingColumns) {
-        List<String> list = new ArrayList<>();
-        mappingColumns.forEach(item ->
-                list.add(item.getSrcColumn())
-        );
-
-        return list;
-    }
-
-    public static List<String> getTargetColumnList(List<MappingColumn> mappingColumns) {
-        List<String> list = new ArrayList<>();
-        mappingColumns.forEach(item ->
-                list.add(item.getTargetColumn())
-        );
-
-        return list;
-    }
 }
