@@ -34,7 +34,7 @@ public enum MetricType {
     SINGLE_TABLE(0,"single_table"),
     SINGLE_TABLE_CUSTOM_SQL(1,"single_table_custom_sql"),
     MULTI_TABLE_ACCURACY(2,"multi_table_accuracy"),
-    MULTI_TABLE_COMPARISON(3,"multi_table_comparison");
+    MULTI_TABLE_VALUE_COMPARISON(3,"multi_table_value_comparison");
 
     MetricType(int code, String description) {
         this.code = code;
@@ -66,5 +66,9 @@ public enum MetricType {
             return VALUES_MAP.get(status);
         }
         throw new IllegalArgumentException("invalid code : " + status);
+    }
+
+    public boolean isSingleTable () {
+        return code == 0 || code == 1;
     }
 }

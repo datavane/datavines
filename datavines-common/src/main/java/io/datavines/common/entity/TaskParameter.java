@@ -16,10 +16,13 @@
  */
 package io.datavines.common.entity;
 
+import lombok.Data;
+
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
 
+@Data
 @NotNull(message = "TaskParameter cannot be null")
 public class TaskParameter {
 
@@ -27,89 +30,17 @@ public class TaskParameter {
 
     private Map<String,Object> metricParameter;
 
-    private ConnectorParameter srcConnectorParameter;
+    private ConnectorParameter connectorParameter;
 
-    private ConnectorParameter targetConnectorParameter;
+    private ConnectorParameter connectorParameter2;
 
-    private String expectedType = "table_total_rows";
+    private String expectedType;
 
     private Map<String, Object> expectedParameter;
 
-    private String resultFormula = "percentage";
+    private String resultFormula = "count";
 
     private String operator = "gt";
 
     private double threshold = 0;
-
-    public ConnectorParameter getSrcConnectorParameter() {
-        return srcConnectorParameter;
-    }
-
-    public void setSrcConnectorParameter(ConnectorParameter srcConnectorParameter) {
-        this.srcConnectorParameter = srcConnectorParameter;
-    }
-
-    public ConnectorParameter getTargetConnectorParameter() {
-        return targetConnectorParameter;
-    }
-
-    public void setTargetConnectorParameter(ConnectorParameter targetConnectorParameter) {
-        this.targetConnectorParameter = targetConnectorParameter;
-    }
-
-    public String getMetricType() {
-        return metricType;
-    }
-
-    public void setMetricType(String metricType) {
-        this.metricType = metricType;
-    }
-
-    public Map<String, Object> getMetricParameter() {
-        return metricParameter;
-    }
-
-    public void setMetricParameter(Map<String, Object> metricParameter) {
-        this.metricParameter = metricParameter;
-    }
-
-    public String getExpectedType() {
-        return expectedType;
-    }
-
-    public void setExpectedType(String expectedType) {
-        this.expectedType = expectedType;
-    }
-
-    public Map<String, Object> getExpectedParameter() {
-        return expectedParameter;
-    }
-
-    public void setExpectedParameter(Map<String, Object> expectedParameter) {
-        this.expectedParameter = expectedParameter;
-    }
-
-    public String getResultFormula() {
-        return resultFormula;
-    }
-
-    public void setResultFormula(String resultFormula) {
-        this.resultFormula = resultFormula;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public double getThreshold() {
-        return threshold;
-    }
-
-    public void setThreshold(double threshold) {
-        this.threshold = threshold;
-    }
 }

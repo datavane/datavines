@@ -253,7 +253,7 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
                 .setRows(rows)
                 .setPlaceholder(placeholder)
                 .setEmit(null)
-                .setValue("useUnicode=true&characterEncoding=UTF-8&useSSL=false")
+                .setValue("useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai")
                 .build();
     }
 

@@ -30,9 +30,9 @@ public class SparkSinkSqlBuilder {
         List<String> columnList = new ArrayList<>();
         for (ColumnInfo columnInfo : MetricConstants.ACTUAL_COLUMN_LIST) {
             if (columnInfo.isNeedSingleQuotation()) {
-                columnList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getName()+"}") + " as " + columnInfo.getName());
+                columnList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getParameterName()+"}") + " as " + columnInfo.getName());
             } else {
-                columnList.add("${"+columnInfo.getName()+"}" + " as " + columnInfo.getName());
+                columnList.add("${"+columnInfo.getParameterName()+"}" + " as " + columnInfo.getName());
             }
 
         }
@@ -43,10 +43,11 @@ public class SparkSinkSqlBuilder {
     private static String getBasicSql() {
         List<String> columnList = new ArrayList<>();
         for (ColumnInfo columnInfo : MetricConstants.RESULT_COLUMN_LIST) {
+
             if (columnInfo.isNeedSingleQuotation()) {
-                columnList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getName()+"}") + " as " + columnInfo.getName());
+                columnList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getParameterName()+"}") + " as " + columnInfo.getName());
             } else {
-                columnList.add("${"+columnInfo.getName()+"}" + " as " + columnInfo.getName());
+                columnList.add("${"+columnInfo.getParameterName()+"}" + " as " + columnInfo.getName());
             }
 
         }
@@ -55,18 +56,18 @@ public class SparkSinkSqlBuilder {
     }
 
     public static String getDefaultSinkSql() {
-        return getBasicSql() + "from ${actual_table} full join ${expected_table}";
+        return getBasicSql() + " from ${actual_table} full join ${expected_table}";
     }
 
     public static String getMultiTableComparisonSinkSql() {
         return getBasicSql()
-                + "from ( ${actual_execute_sql} ) tmp1 "
+                + " from ( ${actual_execute_sql} ) tmp1 "
                 + "join ( ${expected_execute_sql} ) tmp2";
     }
 
     public static String getSingleTableCustomSqlSinkSql() {
         return getBasicSql()
-                + "from ( ${actual_table} ) tmp1 "
+                + " from ( ${actual_table} ) tmp1 "
                 + "join ${expected_table}";
     }
 }

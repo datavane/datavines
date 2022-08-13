@@ -188,6 +188,7 @@ CREATE TABLE `dv_job` (
     `name` varchar(255) DEFAULT NULL COMMENT '任务名称',
     `type` int(11) NOT NULL DEFAULT '0',
     `datasource_id` bigint(20) NOT NULL,
+    `datasource_id_2` bigint(20) NOT NULL,
     `schema_name` varchar(128) DEFAULT NULL,
     `table_name` varchar(128) DEFAULT NULL,
     `column_name` varchar(128) DEFAULT NULL,

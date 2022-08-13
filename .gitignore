@@ -24,6 +24,7 @@ npm-debug.log
 .vscode
 !datavines-ui/.vscode
 datavines-ui/node/*
+datavines-ui/dist/*
 datavines-ui/**/*.proxy.js
 logs/*
 .mvn/
