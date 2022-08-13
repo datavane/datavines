@@ -16,7 +16,6 @@
  */
 package io.datavines.engine.spark.config;
 
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.datavines.common.config.SinkConfig;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.JSONUtils;
@@ -66,31 +65,31 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
         configuration.setSinkParameters(sinkConfigs);
     }
 
-    public static String getOnClause(List<MappingColumn> mappingColumnList, Map<String,String> inputParameterValueResult) {
+    private String getOnClause(List<MappingColumn> mappingColumnList, Map<String,String> inputParameterValueResult) {
         //get on clause
         String[] columnList = new String[mappingColumnList.size()];
         for (int i = 0; i < mappingColumnList.size(); i++) {
             MappingColumn column = mappingColumnList.get(i);
-            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE),column.getSrcColumn())
+            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE),column.getColumn())
                     + column.getOperator()
-                    + getCoalesceString(inputParameterValueResult.get(TABLE2),column.getTargetColumn());
+                    + getCoalesceString(inputParameterValueResult.get(TABLE2),column.getColumn2());
         }
 
         return String.join(AND,columnList);
     }
 
-    public static String getWhereClause(List<MappingColumn> mappingColumnList,Map<String,String> inputParameterValueResult) {
-        String srcColumnNotNull = "( NOT (" + getSrcColumnIsNullStr(inputParameterValueResult.get(TABLE),getSrcColumnList(mappingColumnList)) + " ))";
-        String targetColumnIsNull = "( " + getSrcColumnIsNullStr(inputParameterValueResult.get(TABLE2),getTargetColumnList(mappingColumnList)) + " )";
+    private String getWhereClause(List<MappingColumn> mappingColumnList,Map<String,String> inputParameterValueResult) {
+        String columnNotNull = "( NOT (" + getColumnIsNullStr(inputParameterValueResult.get(TABLE),getColumnListInTable(mappingColumnList)) + " ))";
+        String columnIsNull2 = "( " + getColumnIsNullStr(inputParameterValueResult.get(TABLE2),getColumnListInTable2(mappingColumnList)) + " )";
 
-        return srcColumnNotNull + AND + targetColumnIsNull;
+        return columnNotNull + AND + columnIsNull2;
     }
 
-    private static String getCoalesceString(String table, String column) {
+    private String getCoalesceString(String table, String column) {
         return "coalesce(" + table + "." + column + ", '')";
     }
 
-    private static String getSrcColumnIsNullStr(String table,List<String> columns) {
+    private String getColumnIsNullStr(String table, List<String> columns) {
         String[] columnList = new String[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
             String column = columns.get(i);
@@ -99,19 +98,19 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
         return  String.join(AND, columnList);
     }
 
-    public static List<String> getSrcColumnList(List<MappingColumn> mappingColumns) {
+    private List<String> getColumnListInTable(List<MappingColumn> mappingColumns) {
         List<String> list = new ArrayList<>();
         mappingColumns.forEach(item ->
-                list.add(item.getSrcColumn())
+                list.add(item.getColumn())
         );
 
         return list;
     }
 
-    public static List<String> getTargetColumnList(List<MappingColumn> mappingColumns) {
+    private List<String> getColumnListInTable2(List<MappingColumn> mappingColumns) {
         List<String> list = new ArrayList<>();
         mappingColumns.forEach(item ->
-                list.add(item.getTargetColumn())
+                list.add(item.getColumn2())
         );
 
         return list;

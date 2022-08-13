@@ -351,11 +351,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper,Job> implements JobSer
         srcConnectionInfo.setType(dataSource.getType());
         srcConnectionInfo.setConfig(srcSourceConfigMap);
 
-        DataSource dataSource2 = dataSourceService.getDataSourceById(job.getDataSourceId2());
-        Map<String, Object> targetSourceConfigMap = JSONUtils.toMap(dataSource2.getParam(), String.class, Object.class);
         ConnectionInfo targetConnectionInfo = new ConnectionInfo();
-        targetConnectionInfo.setType(dataSource2.getType());
-        targetConnectionInfo.setConfig(targetSourceConfigMap);
+        DataSource dataSource2 = dataSourceService.getDataSourceById(job.getDataSourceId2());
+        if (dataSource2 != null) {
+            Map<String, Object> targetSourceConfigMap = JSONUtils.toMap(dataSource2.getParam(), String.class, Object.class);
+            targetConnectionInfo.setType(dataSource2.getType());
+            targetConnectionInfo.setConfig(targetSourceConfigMap);
+        }
 
         return TaskParameterBuilderFactory.builder(job.getType())
                 .buildTaskParameter(job.getParameter(), srcConnectionInfo, targetConnectionInfo);

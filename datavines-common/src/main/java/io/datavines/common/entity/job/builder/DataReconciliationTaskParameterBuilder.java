@@ -33,7 +33,7 @@ import static io.datavines.common.CommonConstants.*;
 public class DataReconciliationTaskParameterBuilder implements ParameterBuilder {
 
     @Override
-    public List<String> buildTaskParameter(String jobParameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo) {
+    public List<String> buildTaskParameter(String jobParameter, ConnectionInfo connectionInfo, ConnectionInfo connectionInfo2) {
         List<DataReconciliationJobParameter> jobParameters = JSONUtils.toList(jobParameter, DataReconciliationJobParameter.class);
 
         if (CollectionUtils.isNotEmpty(jobParameters)) {
@@ -54,19 +54,19 @@ public class DataReconciliationTaskParameterBuilder implements ParameterBuilder 
                 taskParameter.setOperator(jobParam.getOperator());
                 taskParameter.setThreshold(jobParam.getThreshold());
 
-                ConnectorParameter srcConnectorParameter = new ConnectorParameter();
-                srcConnectorParameter.setType(srcConnectionInfo.getType());
-                Map<String,Object> srcConnectorParameterMap = srcConnectionInfo.configMap();
-                srcConnectorParameterMap.put("database", database);
-                srcConnectorParameter.setParameters(srcConnectorParameterMap);
-                taskParameter.setSrcConnectorParameter(srcConnectorParameter);
+                ConnectorParameter connectorParameter = new ConnectorParameter();
+                connectorParameter.setType(connectionInfo.getType());
+                Map<String,Object> connectorParameterMap = connectionInfo.configMap();
+                connectorParameterMap.put("database", database);
+                connectorParameter.setParameters(connectorParameterMap);
+                taskParameter.setConnectorParameter(connectorParameter);
 
-                ConnectorParameter targetConnectorParameter = new ConnectorParameter();
-                targetConnectorParameter.setType(targetConnectionInfo.getType());
-                Map<String,Object> targetConnectorParameterMap = targetConnectionInfo.configMap();
-                targetConnectorParameterMap.put("database", jobParam.getMetricParameter2().get("database2"));
-                targetConnectorParameter.setParameters(targetConnectorParameterMap);
-                taskParameter.setTargetConnectorParameter(targetConnectorParameter);
+                ConnectorParameter connectorParameter2 = new ConnectorParameter();
+                connectorParameter2.setType(connectionInfo2.getType());
+                Map<String,Object> connectorParameter2Map = connectionInfo2.configMap();
+                connectorParameter2Map.put("database", jobParam.getMetricParameter2().get("database2"));
+                connectorParameter2.setParameters(connectorParameter2Map);
+                taskParameter.setConnectorParameter2(connectorParameter2);
 
                 String taskParameterStr = JSONUtils.toJsonString(taskParameter);
                 taskParameters.add(taskParameterStr);

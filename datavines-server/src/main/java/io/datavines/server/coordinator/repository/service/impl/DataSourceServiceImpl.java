@@ -116,10 +116,14 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
     @Override
     public DataSource getDataSourceById(long id) {
+        DataSource dataSourceVO = new DataSource();
+
         DataSource dataSource = baseMapper.selectById(id);
         if (dataSource == null) {
             return null;
         }
+
+        BeanUtils.copyProperties(dataSource, dataSourceVO);
 
         String param = dataSource.getParam();
 
@@ -127,12 +131,12 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
             param = CryptionUtils.decryptByAES(param
                     ,CommonPropertyUtils.getString(CommonPropertyUtils.AES_KEY, CommonPropertyUtils.AES_KEY_DEFAULT));
         } catch (Exception e) {
-            throw new DataVinesException("encrypt datasource param error : {}", e);
+            throw new DataVinesException("encrypt datasource param error : ", e);
         }
 
-        dataSource.setParam(param);
+        dataSourceVO.setParam(param);
 
-        return dataSource;
+        return dataSourceVO;
     }
 
     @Override

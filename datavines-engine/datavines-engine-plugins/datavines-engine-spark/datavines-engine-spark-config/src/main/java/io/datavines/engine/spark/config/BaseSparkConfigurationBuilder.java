@@ -51,20 +51,20 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
     protected List<SourceConfig> getSourceConfigs() throws DataVinesException {
         List<SourceConfig> sourceConfigs = new ArrayList<>();
 
-        if (taskParameter.getSrcConnectorParameter() != null) {
-            ConnectorParameter srcConnectorParameter = taskParameter.getSrcConnectorParameter();
+        if (taskParameter.getConnectorParameter() != null) {
+            ConnectorParameter connectorParameter = taskParameter.getConnectorParameter();
             SourceConfig sourceConfig = new SourceConfig();
 
-            Map<String, Object> connectorParameterMap = new HashMap<>(srcConnectorParameter.getParameters());
+            Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter.getParameters());
             connectorParameterMap.putAll(inputParameter);
 
             ConnectorFactory connectorFactory = PluginLoader
                     .getPluginLoader(ConnectorFactory.class)
-                    .getNewPlugin(srcConnectorParameter.getType());
+                    .getNewPlugin(connectorParameter.getType());
 
             connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
 
-            String outputTable = srcConnectorParameter.getParameters().get(DATABASE) + "_" + inputParameter.get(TABLE);
+            String outputTable = connectorParameter.getParameters().get(DATABASE) + "_" + inputParameter.get(TABLE);
             connectorParameterMap.put(OUTPUT_TABLE, outputTable);
             connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
             inputParameter.put(TABLE, outputTable);
@@ -74,20 +74,20 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
             sourceConfigs.add(sourceConfig);
         }
 
-        if (taskParameter.getTargetConnectorParameter() != null && taskParameter.getTargetConnectorParameter().getParameters() !=null) {
-            ConnectorParameter targetConnectorParameter = taskParameter.getTargetConnectorParameter();
+        if (taskParameter.getConnectorParameter2() != null && taskParameter.getConnectorParameter2().getParameters() !=null) {
+            ConnectorParameter connectorParameter2 = taskParameter.getConnectorParameter2();
             SourceConfig sourceConfig = new SourceConfig();
 
-            Map<String, Object> connectorParameterMap = new HashMap<>(targetConnectorParameter.getParameters());
+            Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter2.getParameters());
             connectorParameterMap.put(TABLE, inputParameter.get(TABLE2));
 
             ConnectorFactory connectorFactory = PluginLoader
                     .getPluginLoader(ConnectorFactory.class)
-                    .getNewPlugin(targetConnectorParameter.getType());
+                    .getNewPlugin(connectorParameter2.getType());
 
             connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
 
-            String outputTable = targetConnectorParameter.getParameters().get(DATABASE) + "_" + inputParameter.get(TABLE2) + "2";
+            String outputTable = connectorParameter2.getParameters().get(DATABASE) + "_" + inputParameter.get(TABLE2) + "2";
             connectorParameterMap.put(OUTPUT_TABLE, outputTable);
             connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
             inputParameter.put(TABLE2, outputTable);
@@ -97,8 +97,10 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
             sourceConfigs.add(sourceConfig);
         }
 
+        inputParameter.put("actual_value", "actual_value");
+
         String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
-        if (StringUtils.isEmpty(expectedType)) {
+        if (StringUtils.isEmpty(taskParameter.getExpectedType())) {
             return sourceConfigs;
         }
 
@@ -109,9 +111,6 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
         if (expectedValue.isNeedDefaultDatasource()) {
             sourceConfigs.add(getDefaultSourceConfig());
         }
-
-
-        inputParameter.put("actual_value", "actual_value");
 
         return sourceConfigs;
     }

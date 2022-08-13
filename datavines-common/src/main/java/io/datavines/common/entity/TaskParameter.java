@@ -30,15 +30,15 @@ public class TaskParameter {
 
     private Map<String,Object> metricParameter;
 
-    private ConnectorParameter srcConnectorParameter;
+    private ConnectorParameter connectorParameter;
 
-    private ConnectorParameter targetConnectorParameter;
+    private ConnectorParameter connectorParameter2;
 
-    private String expectedType = "table_total_rows";
+    private String expectedType;
 
     private Map<String, Object> expectedParameter;
 
-    private String resultFormula = "percentage";
+    private String resultFormula = "count";
 
     private String operator = "gt";
 

@@ -24,15 +24,15 @@ import lombok.Data;
 @Data
 public class MappingColumn {
 
-    private String srcColumn;
+    private String column;
     private String operator;
-    private String targetColumn;
+    private String column2;
 
     public MappingColumn() {}
 
-    public MappingColumn(String srcColumn, String operator, String targetColumn) {
-        this.srcColumn = srcColumn;
+    public MappingColumn(String column, String operator, String column2) {
+        this.column = column;
         this.operator = operator;
-        this.targetColumn = targetColumn;
+        this.column2 = column2;
     }
 }

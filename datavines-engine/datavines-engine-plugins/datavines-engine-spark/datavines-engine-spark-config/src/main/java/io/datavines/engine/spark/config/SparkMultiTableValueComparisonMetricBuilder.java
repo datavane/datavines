@@ -18,20 +18,31 @@ package io.datavines.engine.spark.config;
 
 import io.datavines.common.config.SinkConfig;
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.MetricConstants;
+import io.datavines.metric.api.SqlMetric;
+import io.datavines.spi.PluginLoader;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SparkMultiTableComparisonMetricBuilder extends BaseSparkConfigurationBuilder {
+public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfigurationBuilder {
 
     @Override
     public void buildTransformConfigs() {
+        String metricType = taskParameter.getMetricType();
+        SqlMetric sqlMetric = PluginLoader
+                .getPluginLoader(SqlMetric.class)
+                .getNewPlugin(metricType);
 
+        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
     }
 
     @Override
     public void buildSinkConfigs() throws DataVinesException {
+
+        inputParameter.put("expected_value", "expected_value");
+
         List<SinkConfig> sinkConfigs = new ArrayList<>();
 
         //get the task data storage parameter

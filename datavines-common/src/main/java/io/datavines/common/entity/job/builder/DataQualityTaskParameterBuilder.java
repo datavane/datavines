@@ -54,7 +54,7 @@ public class DataQualityTaskParameterBuilder implements ParameterBuilder {
                 Map<String,Object> srcConnectorParameterMap = srcConnectionInfo.configMap();
                 srcConnectorParameterMap.put("database", database);
                 srcConnectorParameter.setParameters(srcConnectorParameterMap);
-                taskParameter.setSrcConnectorParameter(srcConnectorParameter);
+                taskParameter.setConnectorParameter(srcConnectorParameter);
 
                 String taskParameterStr = JSONUtils.toJsonString(taskParameter);
                 taskParameters.add(taskParameterStr);

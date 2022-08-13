@@ -216,23 +216,23 @@ public class TaskServiceImpl extends ServiceImpl<TaskMapper, Task>  implements T
             throw new DataVinesServerException(String.format("%s engine does not supported %s metric", engineType, metricType));
         }
 
-        ConnectorParameter srcConnectorParameter = taskParameter.getSrcConnectorParameter();
-        if (srcConnectorParameter != null) {
-            String srcConnectorType = srcConnectorParameter.getType();
+        ConnectorParameter connectorParameter = taskParameter.getConnectorParameter();
+        if (connectorParameter != null) {
+            String connectorType = connectorParameter.getType();
             Set<String> connectorFactoryPluginSet =
                     PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
-            if (!connectorFactoryPluginSet.contains(srcConnectorType)) {
-                throw new DataVinesServerException(String.format("%s connector does not supported", srcConnectorType));
+            if (!connectorFactoryPluginSet.contains(connectorType)) {
+                throw new DataVinesServerException(String.format("%s connector does not supported", connectorType));
             }
 
             if (JDBC.equals(engineType)) {
-                ConnectorFactory srcConnectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
-                if (!JDBC.equals(srcConnectorFactory.getCategory())) {
-                    throw new DataVinesServerException(String.format("jdbc engine does not supported %s connector", srcConnectorType));
+                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(connectorType);
+                if (!JDBC.equals(connectorFactory.getCategory())) {
+                    throw new DataVinesServerException(String.format("jdbc engine does not supported %s connector", connectorType));
                 }
             }
         } else {
-            throw new DataVinesServerException("src connector parameter should not be null");
+            throw new DataVinesServerException("connector parameter should not be null");
         }
 
         String expectedMetric = taskParameter.getExpectedType();

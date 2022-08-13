@@ -45,6 +45,7 @@
         <module>datavines-metric-column-match-not-regex</module>
         <module>datavines-metric-column-duplicate</module>
         <module>datavines-metric-column-not-in-enums</module>
+        <module>datavines-metric-multi-table-value-comparison</module>
     </modules>
 
     <dependencies>

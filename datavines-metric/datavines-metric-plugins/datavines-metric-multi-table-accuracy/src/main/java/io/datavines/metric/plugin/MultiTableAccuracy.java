@@ -37,7 +37,7 @@ public class MultiTableAccuracy implements SqlMetric {
 
     @Override
     public String getName() {
-        return "MultiTableAccuracy";
+        return "multi_table_accuracy";
     }
 
     @Override
