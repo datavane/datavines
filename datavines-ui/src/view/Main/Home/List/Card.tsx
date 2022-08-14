@@ -65,6 +65,7 @@ const Index: React.FC<IndexProps> = ({
                                         ]}
                                     />
                                 )}
+                                placement="bottomLeft"
                             >
                                 <a>{intl.formatMessage({ id: 'common_more' })}</a>
                             </Dropdown>
