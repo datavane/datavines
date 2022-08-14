@@ -23,9 +23,9 @@ import io.datavines.common.entity.QueryColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.jdbc.support.rowset.SqlRowSetMetaData;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -44,27 +44,25 @@ public class SqlUtils {
             jdbcTemplate.setMaxRows(Math.min(limit, DEFAULT_LIMIT));
         }
 
-        jdbcTemplate.query(sql, rs -> {
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sql);
+        SqlRowSetMetaData metaData = rowSet.getMetaData();
+        List<QueryColumn> queryColumns = new ArrayList<>();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            queryColumns.add(new QueryColumn(metaData.getColumnLabel(i), metaData.getColumnTypeName(i)));
+        }
+        listWithQueryColumn.setColumns(queryColumns);
 
-            ResultSetMetaData metaData = rs.getMetaData();
-            List<QueryColumn> queryColumns = new ArrayList<>();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                queryColumns.add(new QueryColumn(metaData.getColumnLabel(i), metaData.getColumnTypeName(i)));
+        List<Map<String, Object>> resultList = new ArrayList<>();
+
+        try {
+            while (rowSet.next()) {
+                resultList.add(getResultObjectMap(rowSet, metaData));
             }
-            listWithQueryColumn.setColumns(queryColumns);
+        } catch (Throwable e) {
+            logger.error("get data error", e);
+        }
 
-            List<Map<String, Object>> resultList = new ArrayList<>();
-
-            try {
-                while (rs.next()) {
-                    resultList.add(getResultObjectMap(rs, metaData));
-                }
-            } catch (Throwable e) {
-                logger.error("get data error", e);
-            }
-
-            listWithQueryColumn.setResultList(resultList);
-        });
+        listWithQueryColumn.setResultList(resultList);
 
         logger.info("query for {} ms, total count:{} sql:{}",
                 System.currentTimeMillis() - before,
@@ -112,7 +110,7 @@ public class SqlUtils {
         return sql;
     }
 
-    private static Map<String, Object> getResultObjectMap(ResultSet rs, ResultSetMetaData metaData) throws SQLException {
+    private static Map<String, Object> getResultObjectMap(SqlRowSet rs, SqlRowSetMetaData metaData) throws SQLException {
         Map<String, Object> map = new LinkedHashMap<>();
 
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
