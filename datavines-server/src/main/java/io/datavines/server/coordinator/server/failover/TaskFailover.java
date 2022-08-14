@@ -50,13 +50,15 @@ public class TaskFailover {
 
     private final TaskExecuteManager taskExecuteManager;
 
+    private final ScheduledExecutorService executorService;
+
     private final Integer SERVER_PORT =
             CommonPropertyUtils.getInt(CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT);
 
     public TaskFailover(TaskExecuteManager taskExecuteManager){
         this.jobExternalService = SpringApplicationContext.getBean(JobExternalService.class);
         this.taskExecuteManager = taskExecuteManager;
-        ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
+        executorService = Executors.newScheduledThreadPool(2);
         executorService.scheduleAtFixedRate(new YarnTaskStatusChecker(),0,4, TimeUnit.SECONDS);
     }
 
@@ -151,6 +153,12 @@ public class TaskFailover {
                     }
                 });
             }
+        }
+    }
+
+    public void close() {
+        if (executorService != null) {
+            executorService.shutdown();
         }
     }
 }

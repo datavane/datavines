@@ -20,13 +20,21 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.common.exception.DataVinesException;
+import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.core.utils.BeanConvertUtils;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaSenderCreate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaSenderUpdate;
 import io.datavines.server.coordinator.api.dto.vo.SlaSenderVO;
 import io.datavines.server.coordinator.repository.entity.SlaSender;
 import io.datavines.server.coordinator.repository.mapper.SlaSenderMapper;
 import io.datavines.server.coordinator.repository.service.SlaSenderService;
+import io.datavines.server.utils.ContextHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -57,6 +65,36 @@ public class SlaSenderServiceImpl extends ServiceImpl<SlaSenderMapper, SlaSender
                 .map(x -> new SlaSenderVO(x.getId(), x.getWorkspaceId(), x.getConfig(), x.getType(), x.getName(), null, x.getUpdateTime()))
                 .collect(Collectors.toList());
         return result;
+    }
+
+    @Override
+    public SlaSender createSender(SlaSenderCreate create) {
+        SlaSender slaSender = BeanConvertUtils.convertBean(create, SlaSender::new);
+        LocalDateTime now = LocalDateTime.now();
+        slaSender.setCreateTime(now);
+        slaSender.setCreateBy(ContextHolder.getUserId());
+        slaSender.setUpdateBy(ContextHolder.getUserId());
+        slaSender.setUpdateTime(now);
+        boolean success = save(slaSender);
+        if (!success){
+            throw new DataVinesException("create sender error");
+        }
+        return slaSender;
+    }
+
+    @Override
+    public boolean updateSender(SlaSenderUpdate update) {
+        LambdaQueryWrapper<SlaSender> wrapper = new LambdaQueryWrapper();
+        wrapper.eq(SlaSender::getWorkspaceId, update.getWorkspaceId());
+        wrapper.eq(SlaSender::getName, update.getName());
+        SlaSender existSlas = getOne(wrapper);
+        if (Objects.nonNull(existSlas) && !existSlas.getId().equals(update.getId())){
+            throw new DataVinesServerException(ApiStatus.SLA_ALREADY_EXIST_ERROR, update.getName());
+        }
+        SlaSender sender = BeanConvertUtils.convertBean(update, SlaSender::new);
+        sender.setUpdateTime(LocalDateTime.now());
+        boolean save = updateById(sender);
+        return save;
     }
 
 

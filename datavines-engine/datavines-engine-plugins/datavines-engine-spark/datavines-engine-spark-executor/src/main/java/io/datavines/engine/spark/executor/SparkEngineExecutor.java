@@ -17,6 +17,9 @@
 package io.datavines.engine.spark.executor;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -102,21 +105,25 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
                 basePath.replace("libs","plugins"):
                 basePath + File.separator + "plugins";
 
-        List<String> filePathList = FileUtils.getFileList(pluginDir);
-        if (CollectionUtils.isNotEmpty(filePathList)) {
-            String jars = sparkParameters.getJars();
-            if (StringUtils.isEmpty(jars)) {
-                jars = " --jars " + String.join(",", filePathList);
-            } else {
-                if(jars.trim().contains("--jars")) {
-                    jars += " " + String.join(",", filePathList);
-                } else {
-                    filePathList.add(jars);
-                    jars = " --jars " + String.join(",", filePathList);
-                }
-            }
+        logger.info("spark engine plugin dir : {}", pluginDir);
 
-            sparkParameters.setJars(jars);
+        if (FileUtils.isExist(pluginDir)) {
+            List<String> filePathList = FileUtils.getFileList(pluginDir);
+            if (CollectionUtils.isNotEmpty(filePathList)) {
+                String jars = sparkParameters.getJars();
+                if (StringUtils.isEmpty(jars)) {
+                    jars = " --jars " + String.join(",", filePathList);
+                } else {
+                    if(jars.trim().contains("--jars")) {
+                        jars += " " + String.join(",", filePathList);
+                    } else {
+                        filePathList.add(jars);
+                        jars = " --jars " + String.join(",", filePathList);
+                    }
+                }
+
+                sparkParameters.setJars(jars);
+            }
         }
 
         DataVinesQualityConfig configuration =

@@ -16,44 +16,28 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.datavines.common.exception.DataVinesException;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
-import io.datavines.core.enums.ApiStatus;
-import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.core.utils.BeanConvertUtils;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
-import io.datavines.notification.api.entity.SlaNotificationResult;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.client.NotificationClient;
 import io.datavines.server.coordinator.api.dto.bo.sla.*;
-import io.datavines.server.coordinator.api.dto.vo.SlaJobVO;
-import io.datavines.server.coordinator.api.dto.vo.SlaSenderVO;
-import io.datavines.server.coordinator.api.dto.vo.SlaPageVO;
-import io.datavines.server.coordinator.repository.entity.Sla;
-import io.datavines.server.coordinator.repository.entity.SlaJob;
-import io.datavines.server.coordinator.repository.entity.SlaNotification;
-import io.datavines.server.coordinator.repository.entity.SlaSender;
 import io.datavines.server.coordinator.repository.service.SlaNotificationService;
 import io.datavines.server.coordinator.repository.service.SlaSenderService;
 import io.datavines.server.coordinator.repository.service.SlaService;
 import io.datavines.server.coordinator.repository.service.SlaJobService;
-import io.datavines.server.utils.ContextHolder;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
+
 import java.util.*;
 
 @Api(value = "sla", tags = "sla", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -82,41 +66,13 @@ public class SlaController {
     @ApiOperation(value = "list job")
     @GetMapping(value = "/job/list")
     public Object listSlaJob(@RequestParam("slaId") Long id){
-        List<SlaJobVO> list = slaJobService.listSlaJob(id);
-        return list;
+        return slaJobService.listSlaJob(id);
     }
 
     @ApiOperation(value = "create or update sla job")
     @PostMapping(value = "/job/createOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createOrUpdateSlaJob(@Valid @RequestBody SlaJobCreateOrUpdate createOrUpdate){
-        SlaJob slaJob = null;
-        if (createOrUpdate.getId() != null) {
-            slaJob = slaJobService.getById(createOrUpdate.getId());
-            if (slaJob != null) {
-                BeanUtils.copyProperties(createOrUpdate, slaJob);
-                slaJob.setUpdateBy(ContextHolder.getUserId());
-                slaJob.setUpdateTime(LocalDateTime.now());
-                return slaJobService.updateById(slaJob);
-            } else {
-                throw new DataVinesServerException(ApiStatus.SLA_JOB_IS_NOT_EXIST_ERROR, createOrUpdate.getId());
-            }
-        } else {
-            LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(SlaJob::getJobId,createOrUpdate.getJobId());
-            wrapper.eq(SlaJob::getWorkspaceId, createOrUpdate.getWorkspaceId());
-            SlaJob one = slaJobService.getOne(wrapper);
-            if (Objects.nonNull(one)){
-                log.info("SlaJob has been create {}", createOrUpdate);
-                throw new DataVinesException("SlaJob has been create");
-            }
-
-            slaJob = new SlaJob();
-            BeanUtils.copyProperties(createOrUpdate, slaJob);
-            slaJob.setCreateBy(ContextHolder.getUserId());
-            slaJob.setUpdateBy(ContextHolder.getUserId());
-            slaJob.setUpdateTime(LocalDateTime.now());
-            return slaJobService.save(slaJob);
-        }
+        return slaJobService.createOrUpdateSlaJob(createOrUpdate);
     }
 
     @ApiOperation(value = "create sla job")
@@ -129,11 +85,10 @@ public class SlaController {
     @GetMapping(value = "/test/{slaId}")
     public Object test(@PathVariable("slaId") Long slaId){
         SlaNotificationMessage message = new SlaNotificationMessage();
-        message.setMessage("test");
+        message.setMessage("[\"test\"]");
         message.setSubject("just test slaId");
         Map<SlaSenderMessage, Set<SlaConfigMessage>> configuration = slaNotificationService.getSlasNotificationConfigurationBySlasId(slaId);
-        SlaNotificationResult notify = client.notify(message, configuration);
-        return notify;
+        return client.notify(message, configuration);
     }
 
     @ApiOperation(value = "page list sla")
@@ -142,85 +97,49 @@ public class SlaController {
                            @RequestParam(value = "searchVal", required = false) String searchVal,
                            @RequestParam("pageNumber") Integer pageNumber,
                            @RequestParam("pageSize") Integer pageSize){
-        IPage<SlaPageVO> slaVoList = slaService.listSlas(workspaceId, searchVal, pageNumber, pageSize);
-        return slaVoList;
+        return slaService.listSlas(workspaceId, searchVal, pageNumber, pageSize);
     }
 
     @ApiOperation(value = "create sla")
     @PostMapping( consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createSla(@Valid @RequestBody SlaCreate create){
-        String name = create.getName();
-        LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Sla::getWorkspaceId, create.getWorkspaceId());
-        wrapper.eq(Sla::getName, name);
-        Sla existSla = slaService.getOne(wrapper);
-        if (Objects.nonNull(existSla)){
-            throw new DataVinesServerException(ApiStatus.SLA_ALREADY_EXIST_ERROR, name);
-        }
-        Sla sla = BeanConvertUtils.convertBean(create, Sla::new);
-        sla.setCreateBy(ContextHolder.getUserId());
-        LocalDateTime now = LocalDateTime.now();
-        sla.setUpdateBy(ContextHolder.getUserId());
-        sla.setUpdateTime(now);
-        sla.setCreateTime(now);
-        boolean success = slaService.save(sla);
-        if (!success){
-            throw new DataVinesException("create sla error");
-        }
-        return sla;
+        return slaService.createSla(create);
     }
 
     @ApiOperation(value = "update sla")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object update(@Valid @RequestBody SlaUpdate update){
-        LambdaQueryWrapper<Sla> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(Sla::getWorkspaceId, update.getWorkspaceId());
-        wrapper.eq(Sla::getName, update.getName());
-        Sla existSla = slaService.getOne(wrapper);
-        if (Objects.nonNull(existSla) && !existSla.getId().equals(update.getId())){
-            log.info("db has sla {} is same as update {}", existSla, update);
-            throw new DataVinesServerException(ApiStatus.SLA_ALREADY_EXIST_ERROR, update.getName());
-        }
-        Sla sla = BeanConvertUtils.convertBean(update, Sla::new);
-        sla.setUpdateBy(ContextHolder.getUserId());
-        sla.setUpdateTime(LocalDateTime.now());
-        boolean save = slaService.updateById(sla);
-        return save;
+    public Object updateSla(@Valid @RequestBody SlaUpdate update){
+        return slaService.updateSla(update);
     }
 
     @ApiOperation(value = "get sla")
     @GetMapping(value = "{slaId}")
     public Object getSla(@PathVariable Long slaId){
-        Sla sla = slaService.getById(slaId);
-        return sla;
+        return slaService.getById(slaId);
     }
 
     @ApiOperation(value = "delete sla")
     @DeleteMapping(value = "/{id}")
     public Object deleteSla(@PathVariable("id") Long id){
-        boolean remove = slaService.deleteById(id);
-        return remove;
+        return slaService.deleteById(id);
     }
 
     @ApiOperation(value = "get support plugin")
     @GetMapping(value = "/plugin/support")
     public Object getSupportPlugin(){
-        Set<String> supportPlugin = slaService.getSupportPlugin();
-        return supportPlugin;
+        return slaService.getSupportPlugin();
     }
 
     @ApiOperation(value = "get config param of sender")
     @GetMapping(value = "/sender/config/{type}")
     public Object getSenderConfigJson(@PathVariable("type") String type){
-        String json = slaService.getSenderConfigJson(type);
-        return json;
+        return slaService.getSenderConfigJson(type);
     }
 
     @ApiOperation(value = "get config param of notification")
     @GetMapping(value = "/notification/config/{type}")
     public Object getNotificationConfigJson(@PathVariable("type") String type){
-        String json = slaNotificationService.getConfigJson(type);
-        return json;
+        return slaNotificationService.getConfigJson(type);
     }
 
     @ApiOperation(value = "page list sender")
@@ -229,8 +148,7 @@ public class SlaController {
                               @RequestParam(value = "searchVal", required = false) String searchVal,
                               @RequestParam("pageNumber") Integer pageNumber,
                               @RequestParam("pageSize") Integer pageSize){
-        IPage<SlaSenderVO> result = slaSenderService.pageListSender(workspaceId, searchVal, pageNumber, pageSize);
-        return result;
+        return slaSenderService.pageListSender(workspaceId, searchVal, pageNumber, pageSize);
     }
 
     @ApiOperation(value = " list sender")
@@ -238,86 +156,43 @@ public class SlaController {
     public Object listSenders(@RequestParam("workspaceId") Long workspaceId,
                               @RequestParam(value = "type") String type,
                               @RequestParam(value = "searchVal", required = false) String searchVal){
-        List<SlaSenderVO> result = slaSenderService.listSenders(workspaceId, searchVal, type);
-        return result;
+        return slaSenderService.listSenders(workspaceId, searchVal, type);
     }
 
     @ApiOperation(value = "create sender")
     @PostMapping(value = "/sender",consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createSender(@Valid @RequestBody SlaSenderCreate create){
-        SlaSender slaSender = BeanConvertUtils.convertBean(create, SlaSender::new);
-        LocalDateTime now = LocalDateTime.now();
-        slaSender.setCreateTime(now);
-        slaSender.setCreateBy(ContextHolder.getUserId());
-        slaSender.setUpdateBy(ContextHolder.getUserId());
-        slaSender.setUpdateTime(now);
-        boolean success = slaSenderService.save(slaSender);
-        if (!success){
-            throw new DataVinesException("create sender error");
-        }
-        return slaSender;
+        return slaSenderService.createSender(create);
     }
 
     @ApiOperation(value = "update sender")
     @PutMapping(value = "/sender",consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object updateSender(@Valid @RequestBody SlaSenderUpdate update){
-        LambdaQueryWrapper<SlaSender> wrapper = new LambdaQueryWrapper();
-        wrapper.eq(SlaSender::getWorkspaceId, update.getWorkspaceId());
-        wrapper.eq(SlaSender::getName, update.getName());
-        SlaSender existSlas = slaSenderService.getOne(wrapper);
-        if (Objects.nonNull(existSlas) && !existSlas.getId().equals(update.getId())){
-            throw new DataVinesServerException(ApiStatus.SLA_ALREADY_EXIST_ERROR, update.getName());
-        }
-        SlaSender sender = BeanConvertUtils.convertBean(update, SlaSender::new);
-        sender.setUpdateTime(LocalDateTime.now());
-        boolean save = slaSenderService.updateById(sender);
-        return save;
+        return slaSenderService.updateSender(update);
     }
 
     @ApiOperation(value = "delete sender")
     @DeleteMapping(value = "/sender/{id}")
     public Object deleteSender(@PathVariable("id") Long id){
-        boolean remove = slaSenderService.removeById(id);
-        return remove;
+        return slaSenderService.removeById(id);
     }
 
     @ApiOperation(value = "create notification")
     @PostMapping(value = "/notification")
     public Object createNotification(@RequestBody SlaNotificationCreate create){
-        SlaNotification bean = BeanConvertUtils.convertBean(create, SlaNotification::new);
-        bean.setCreateBy(ContextHolder.getUserId());
-        LocalDateTime now = LocalDateTime.now();
-        bean.setCreateTime(now);
-        bean.setUpdateTime(now);
-        bean.setUpdateBy(ContextHolder.getUserId());
-        boolean success = slaNotificationService.save(bean);
-        if (!success){
-            throw new DataVinesException("create sender error");
-        }
-        return bean;
+        return slaNotificationService.createNotification(create);
     }
 
     @ApiOperation(value = "update notification")
     @PutMapping(value = "/notification")
     public Object updateNotification(@RequestBody SlaNotificationUpdate update){
-        SlaNotification bean = BeanConvertUtils.convertBean(update, SlaNotification::new);
-        bean.setCreateBy(ContextHolder.getUserId());
-        LocalDateTime now = LocalDateTime.now();
-        bean.setCreateTime(now);
-        bean.setUpdateTime(now);
-        bean.setUpdateBy(ContextHolder.getUserId());
-        boolean success = slaNotificationService.updateById(bean);
-        if (!success){
-            throw new DataVinesException("update sender error");
-        }
-        return bean;
+        return slaNotificationService.updateNotification(update);
     }
 
     @ApiOperation(value = "delete notification")
     @DeleteMapping(value = "/notification/{id}")
     public Object deleteNotification(@PathVariable("id") Long id){
-        boolean remove = slaNotificationService.removeById(id);
-        return remove;
+        return slaNotificationService.removeById(id);
     }
 
     @ApiOperation(value = "page list notification")
@@ -326,10 +201,6 @@ public class SlaController {
                                    @RequestParam(value = "searchVal", required = false) String searchVal,
                                    @RequestParam("pageNumber") Integer pageNumber,
                                    @RequestParam("pageSize") Integer pageSize){
-        LambdaQueryWrapper<SlaNotification> wrapper = new LambdaQueryWrapper<>();
-        wrapper.eq(SlaNotification::getWorkspaceId, workspaceId);
-        Page<SlaNotification> page = new Page<>(pageNumber, pageSize);
-        IPage<SlaNotification> result = slaNotificationService.pageListNotification(page, workspaceId, searchVal);
-        return result;
+        return slaNotificationService.pageListNotification(workspaceId, searchVal, pageNumber, pageSize);
     }
 }

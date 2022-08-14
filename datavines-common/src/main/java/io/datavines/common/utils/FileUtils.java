@@ -112,4 +112,9 @@ public class FileUtils {
 
         return fileName;
     }
+
+    public static boolean isExist(String path) {
+        File file = new File(path);
+        return file.exists();
+    }
 }

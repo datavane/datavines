@@ -27,9 +27,17 @@ import io.datavines.metric.api.SqlMetric;
 
 public class MultiTableAccuracy implements SqlMetric {
 
+    private final StringBuilder sourceTableSql = new StringBuilder("SELECT * FROM ${table})");
+
+    private final StringBuilder targetTableSql = new StringBuilder("SELECT * FROM ${table2})");
+
+    private final StringBuilder invalidateItemsSql = new StringBuilder("SELECT ${table}.* FROM (");
+
+    private final StringBuilder actualValueSql = new StringBuilder("select count(1) as actual_value from ${invalidate_items_table}");
+
     @Override
     public String getName() {
-        return "MultiTableAccuracy";
+        return "multi_table_accuracy";
     }
 
     @Override
@@ -47,20 +55,20 @@ public class MultiTableAccuracy implements SqlMetric {
         return MetricType.MULTI_TABLE_ACCURACY;
     }
 
-//    @Override
-//    public String getInvalidateItemsSql() {
-//        return "SELECT ${table}.* FROM (SELECT * FROM ${table} WHERE (${filter})) ${table} LEFT JOIN (SELECT * FROM ${target_table} WHERE (${target_filter})) ${target_table} ON ${on_clause} WHERE ${where_clause}";
-//    }
+    @Override
+    public String getActualName() {
+        return null;
+    }
+
+    @Override
+    public String getIssue() {
+        return null;
+    }
 
     @Override
     public boolean isInvalidateItemsCanOutput() {
         return true;
     }
-
-//    @Override
-//    public String getActualValueSql() {
-//        return "SELECT COUNT(*) AS invalidate_count from invalidate_items";
-//    }
 
     @Override
     public CheckResult validateConfig(Map<String, Object> config) {
@@ -69,7 +77,19 @@ public class MultiTableAccuracy implements SqlMetric {
 
     @Override
     public void prepare(Map<String, String> config) {
+        if (config.containsKey("filter")) {
+            sourceTableSql.append("WHERE (${filter})");
+        }
 
+        if (config.containsKey("filter2")) {
+            targetTableSql.append("WHERE (${filter2})");
+        }
+
+        invalidateItemsSql
+                .append("(").append(sourceTableSql).append(")").append(" ${table} ")
+                .append(" LEFT JOIN ")
+                .append("(").append(targetTableSql).append(")").append(" ${table2} ")
+                .append("ON ${on_clause} WHERE ${where_clause}");
     }
 
     @Override
@@ -79,11 +99,19 @@ public class MultiTableAccuracy implements SqlMetric {
 
     @Override
     public ExecuteSql getInvalidateItems() {
-        return null;
+        ExecuteSql executeSql = new ExecuteSql();
+        executeSql.setResultTable("invalidate_items");
+        executeSql.setSql(invalidateItemsSql.toString());
+        executeSql.setErrorOutput(isInvalidateItemsCanOutput());
+        return executeSql;
     }
 
     @Override
     public ExecuteSql getActualValue() {
-        return null;
+        ExecuteSql executeSql = new ExecuteSql();
+        executeSql.setResultTable("invalidate_count");
+        executeSql.setSql(actualValueSql.toString());
+        executeSql.setErrorOutput(false);
+        return executeSql;
     }
 }

@@ -25,6 +25,8 @@ public class TaskParameterBuilderFactory {
             case DATA_QUALITY:
             case DATA_PROFILE:
                 return new DataQualityTaskParameterBuilder();
+            case DATA_RECONCILIATION:
+                return new DataReconciliationTaskParameterBuilder();
             default:
                 return new DataQualityTaskParameterBuilder();
         }

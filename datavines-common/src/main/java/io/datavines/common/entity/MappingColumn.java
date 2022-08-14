@@ -14,46 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.config.entity;
+package io.datavines.common.entity;
+
+import lombok.Data;
 
 /**
  * MappingColumn
  */
+@Data
 public class MappingColumn {
 
-    private String srcField;
+    private String column;
     private String operator;
-    private String targetField;
+    private String column2;
 
     public MappingColumn() {}
 
-    public MappingColumn(String srcField, String operator, String targetField) {
-        this.srcField = srcField;
+    public MappingColumn(String column, String operator, String column2) {
+        this.column = column;
         this.operator = operator;
-        this.targetField = targetField;
-    }
-
-    public String getSrcField() {
-        return srcField;
-    }
-
-    public void setSrcField(String srcField) {
-        this.srcField = srcField;
-    }
-
-    public String getOperator() {
-        return operator;
-    }
-
-    public void setOperator(String operator) {
-        this.operator = operator;
-    }
-
-    public String getTargetField() {
-        return targetField;
-    }
-
-    public void setTargetField(String targetField) {
-        this.targetField = targetField;
+        this.column2 = column2;
     }
 }

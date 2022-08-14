@@ -17,12 +17,19 @@
 package io.datavines.server.coordinator.repository.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobCreate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobCreateOrUpdate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobUpdate;
 import io.datavines.server.coordinator.api.dto.vo.SlaJobVO;
 import io.datavines.server.coordinator.repository.entity.SlaJob;
+import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.validation.Valid;
 import java.util.List;
 
 public interface SlaJobService extends IService<SlaJob> {
 
     List<SlaJobVO>  listSlaJob(Long slaId);
+
+    boolean createOrUpdateSlaJob(SlaJobCreateOrUpdate createOrUpdate);
 }

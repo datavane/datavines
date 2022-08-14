@@ -28,6 +28,7 @@ import io.datavines.common.param.form.props.InputParamsProps;
 import io.datavines.common.param.form.type.InputParam;
 import io.datavines.common.param.form.type.RadioParam;
 import io.datavines.common.utils.JSONUtils;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.notification.api.entity.*;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
 import io.datavines.notification.plugin.email.entity.NotificationConfig;
@@ -64,11 +65,13 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
                 String to = receiverConfig.getTo();
                 String cc = receiverConfig.getCc();
                 String[] toSplit = to.split(",|;");
-                String[] ccSplit = cc.split(",|;");
+                if(!StringUtils.isEmpty(cc)){
+                    String[] ccSplit = cc.split(",|;");
+                    Set<String> ccSet = Arrays.stream(ccSplit).collect(Collectors.toSet());
+                    ccReceivers.addAll(ccSet);
+                }
                 Set<String> toSet = Arrays.stream(toSplit).collect(Collectors.toSet());
-                Set<String> ccSet = Arrays.stream(ccSplit).collect(Collectors.toSet());
                 toReceivers.addAll(toSet);
-                ccReceivers.addAll(ccSet);
             }
             SlaNotificationResultRecord record = eMailSender.sendMails(toReceivers, ccReceivers, subject, message);
             if (record.getStatus().equals(false)){
@@ -144,7 +147,7 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
                 .build();
 
         InputParam sslTrust = InputParam.newBuilder("smtpSslTrust", "mail.smtp.ssl.trust")
-                .setValue("*")
+                .setValue("true")
                 .addValidate(Validate.newBuilder().setRequired(true).build())
                 .build();
 

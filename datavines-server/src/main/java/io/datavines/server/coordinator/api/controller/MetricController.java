@@ -16,12 +16,12 @@
  */
 package io.datavines.server.coordinator.api.controller;
 
+import io.datavines.common.enums.JobType;
+import io.datavines.common.exception.DataVinesException;
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.core.utils.LanguageUtils;
 import io.datavines.engine.api.engine.EngineExecutor;
-import io.datavines.metric.api.ConfigItem;
-import io.datavines.metric.api.ExpectedValue;
-import io.datavines.metric.api.ResultFormula;
-import io.datavines.metric.api.SqlMetric;
+import io.datavines.metric.api.*;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.server.coordinator.api.dto.vo.Item;
@@ -52,6 +52,41 @@ public class MetricController {
             }
         });
 
+        return items;
+    }
+
+    @ApiOperation(value = "get metric list by type")
+    @GetMapping(value = "/list/{type}")
+    public Object getMetricListByType(@PathVariable("type") String type) {
+        Set<String> metricList = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+        List<Item> items = new ArrayList<>();
+        JobType jobType = JobType.of(type);
+        if (jobType == null) {
+            throw new DataVinesServerException(type + "type is not validate");
+        }
+
+        switch (jobType) {
+            case DATA_QUALITY:
+                metricList.forEach(it -> {
+                    SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
+                    if (sqlMetric != null && sqlMetric.getType().isSingleTable()) {
+                        Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
+                        items.add(item);
+                    }
+                });
+                break;
+            case DATA_RECONCILIATION:
+                metricList.forEach(it -> {
+                    SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
+                    if (sqlMetric != null && !sqlMetric.getType().isSingleTable()) {
+                        Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
+                        items.add(item);
+                    }
+                });
+                break;
+            default:
+                break;
+        }
         return items;
     }
 

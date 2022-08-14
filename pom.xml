@@ -57,7 +57,7 @@
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
         <hadoop.version>2.7.5</hadoop.version>
-        <mysql.version>5.1.46</mysql.version>
+        <mysql.version>8.0.16</mysql.version>
         <skip.pmd.check>false</skip.pmd.check>
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>false</maven.javadoc.skip>
@@ -616,6 +616,11 @@
             <dependency>
                 <groupId>io.datavines</groupId>
                 <artifactId>datavines-notification-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

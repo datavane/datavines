@@ -17,10 +17,12 @@
 package io.datavines.engine.spark.config;
 
 import io.datavines.common.config.*;
+import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.*;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.engine.api.ConfigConstants;
 import io.datavines.engine.config.BaseDataQualityConfigurationBuilder;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
@@ -32,7 +34,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.common.CommonConstants.TABLE2;
 import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfigurationBuilder {
 
@@ -47,20 +51,20 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
     protected List<SourceConfig> getSourceConfigs() throws DataVinesException {
         List<SourceConfig> sourceConfigs = new ArrayList<>();
 
-        if (taskParameter.getSrcConnectorParameter() != null) {
-            ConnectorParameter srcConnectorParameter = taskParameter.getSrcConnectorParameter();
+        if (taskParameter.getConnectorParameter() != null) {
+            ConnectorParameter connectorParameter = taskParameter.getConnectorParameter();
             SourceConfig sourceConfig = new SourceConfig();
 
-            Map<String, Object> connectorParameterMap = new HashMap<>(srcConnectorParameter.getParameters());
+            Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter.getParameters());
             connectorParameterMap.putAll(inputParameter);
 
             ConnectorFactory connectorFactory = PluginLoader
                     .getPluginLoader(ConnectorFactory.class)
-                    .getNewPlugin(srcConnectorParameter.getType());
+                    .getNewPlugin(connectorParameter.getType());
 
             connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
 
-            String outputTable = srcConnectorParameter.getParameters().get(DATABASE) + "_" + inputParameter.get(TABLE);
+            String outputTable = connectorParameter.getParameters().get(DATABASE) + "_" + inputParameter.get(TABLE);
             connectorParameterMap.put(OUTPUT_TABLE, outputTable);
             connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
             inputParameter.put(TABLE, outputTable);
@@ -70,37 +74,40 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
             sourceConfigs.add(sourceConfig);
         }
 
-        if (taskParameter.getTargetConnectorParameter() != null && taskParameter.getTargetConnectorParameter().getParameters() !=null) {
-            ConnectorParameter targetConnectorParameter = taskParameter.getTargetConnectorParameter();
+        if (taskParameter.getConnectorParameter2() != null && taskParameter.getConnectorParameter2().getParameters() !=null) {
+            ConnectorParameter connectorParameter2 = taskParameter.getConnectorParameter2();
             SourceConfig sourceConfig = new SourceConfig();
 
-            Map<String, Object> connectorParameterMap = new HashMap<>(targetConnectorParameter.getParameters());
-            connectorParameterMap.putAll(inputParameter);
+            Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter2.getParameters());
+            connectorParameterMap.put(TABLE, inputParameter.get(TABLE2));
 
             ConnectorFactory connectorFactory = PluginLoader
                     .getPluginLoader(ConnectorFactory.class)
-                    .getNewPlugin(targetConnectorParameter.getType());
+                    .getNewPlugin(connectorParameter2.getType());
 
             connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
 
-            String outputTable = targetConnectorParameter.getParameters().get(DATABASE) + "_" + inputParameter.get(TARGET_TABLE);
+            String outputTable = connectorParameter2.getParameters().get(DATABASE) + "_" + inputParameter.get(TABLE2) + "2";
             connectorParameterMap.put(OUTPUT_TABLE, outputTable);
             connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
-            inputParameter.put(TARGET_TABLE, outputTable);
+            inputParameter.put(TABLE2, outputTable);
 
             sourceConfig.setPlugin(connectorFactory.getCategory());
             sourceConfig.setConfig(connectorParameterMap);
             sourceConfigs.add(sourceConfig);
         }
 
-        String expectedType = taskParameter.getExpectedType();
-        if (StringUtils.isEmpty(expectedType)) {
+        inputParameter.put("actual_value", "actual_value");
+
+        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
+        if (StringUtils.isEmpty(taskParameter.getExpectedType())) {
             return sourceConfigs;
         }
 
-        ExpectedValue expectedValue = PluginLoader
+        expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);
+
         if (expectedValue.isNeedDefaultDatasource()) {
             sourceConfigs.add(getDefaultSourceConfig());
         }
@@ -118,31 +125,46 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
         MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
 
         List<TransformConfig> transformConfigs = new ArrayList<>();
-        List<ExecuteSql> transformExecuteSqlList = new ArrayList<>();
-        transformExecuteSqlList.add(sqlMetric.getInvalidateItems());
-        transformExecuteSqlList.add(sqlMetric.getActualValue());
+
+        inputParameter.put(INVALIDATE_ITEMS_TABLE,
+                sqlMetric.getInvalidateItems().getResultTable()
+                        + "_" + inputParameter.get(ConfigConstants.TASK_ID));
+
+        MetricParserUtils.setTransformerConfig(
+                inputParameter, transformConfigs,
+                sqlMetric.getInvalidateItems(), TransformType.INVALIDATE_ITEMS.getDescription());
+
+        MetricParserUtils.setTransformerConfig(
+                inputParameter,
+                transformConfigs,
+                sqlMetric.getActualValue(),
+                TransformType.ACTUAL_VALUE.getDescription());
+
         inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
-        inputParameter.put(ACTUAL_VALUE, sqlMetric.getActualName());
-        inputParameter.put(INVALIDATE_ITEMS_TABLE, sqlMetric.getInvalidateItems().getResultTable());
 
         // get expected value transform sql
-        String expectedType = taskInfo.getEngineType() + "_" +taskParameter.getExpectedType();
+        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
         expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);
+
         ExecuteSql expectedValueExecuteSql =
-                new ExecuteSql(expectedValue.getExecuteSql(), expectedValue.getOutputTable());
-        transformExecuteSqlList.add(expectedValueExecuteSql);
+                new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
 
         if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
             inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
         }
 
-        if (StringUtils.isNotEmpty(expectedValue.getName())) {
-            inputParameter.put(EXPECTED_VALUE, expectedValue.getName());
+        inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
+
+        if (expectedValue.isNeedDefaultDatasource()) {
+            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
+                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());
+        } else {
+            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
+                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SOURCE.getDescription());
         }
 
-        MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs, transformExecuteSqlList);
         configuration.setTransformParameters(transformConfigs);
     }
 }

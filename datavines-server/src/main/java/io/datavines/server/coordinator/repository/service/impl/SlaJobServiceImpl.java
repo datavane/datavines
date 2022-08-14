@@ -16,17 +16,30 @@
  */
 package io.datavines.server.coordinator.repository.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.common.exception.DataVinesException;
+import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobCreate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobCreateOrUpdate;
+import io.datavines.server.coordinator.api.dto.bo.sla.SlaJobUpdate;
 import io.datavines.server.coordinator.api.dto.vo.SlaJobVO;
 import io.datavines.server.coordinator.repository.entity.SlaJob;
 import io.datavines.server.coordinator.repository.mapper.SlaJobMapper;
 import io.datavines.server.coordinator.repository.service.SlaJobService;
+import io.datavines.server.utils.ContextHolder;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@Slf4j
 public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> implements SlaJobService {
 
     @Autowired
@@ -34,7 +47,38 @@ public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> impleme
 
     @Override
     public List<SlaJobVO>  listSlaJob(Long slaId) {
-        List<SlaJobVO> res = slaJobMapper.listSlaJob(slaId);
-        return res;
+        return slaJobMapper.listSlaJob(slaId);
+    }
+
+    @Override
+    public boolean createOrUpdateSlaJob(SlaJobCreateOrUpdate createOrUpdate) {
+        SlaJob slaJob = null;
+        if (createOrUpdate.getId() != null) {
+            slaJob = getById(createOrUpdate.getId());
+            if (slaJob != null) {
+                BeanUtils.copyProperties(createOrUpdate, slaJob);
+                slaJob.setUpdateBy(ContextHolder.getUserId());
+                slaJob.setUpdateTime(LocalDateTime.now());
+                return updateById(slaJob);
+            } else {
+                throw new DataVinesServerException(ApiStatus.SLA_JOB_IS_NOT_EXIST_ERROR, createOrUpdate.getId());
+            }
+        } else {
+            LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(SlaJob::getJobId,createOrUpdate.getJobId());
+            wrapper.eq(SlaJob::getWorkspaceId, createOrUpdate.getWorkspaceId());
+            SlaJob one = getOne(wrapper);
+            if (Objects.nonNull(one)){
+                log.info("SlaJob has been create {}", createOrUpdate);
+                throw new DataVinesException("SlaJob has been create");
+            }
+
+            slaJob = new SlaJob();
+            BeanUtils.copyProperties(createOrUpdate, slaJob);
+            slaJob.setCreateBy(ContextHolder.getUserId());
+            slaJob.setUpdateBy(ContextHolder.getUserId());
+            slaJob.setUpdateTime(LocalDateTime.now());
+            return save(slaJob);
+        }
     }
 }
