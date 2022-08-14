@@ -107,6 +107,9 @@ export const useAddDataSource = (options: ModalProps) => {
     const setLoading = useLoading();
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
     const initDataRef = useRef<IDataSourceListItem | null>(null);
+    const [isSuccessTest, setIsSuccessTest] = useState(false);
+    const isSuccessTestRef = useRef(isSuccessTest);
+    isSuccessTestRef.current = isSuccessTest;
     const onConfirm = usePersistFn(() => {
         form.validateFields().then(async (values) => {
             try {
@@ -147,6 +150,7 @@ export const useAddDataSource = (options: ModalProps) => {
                 });
                 if (res) {
                     message.success('Success!');
+                    setIsSuccessTest(true);
                 } else {
                     message.success(intl.formatMessage({ id: 'test_link_fail' }));
                 }
@@ -166,6 +170,7 @@ export const useAddDataSource = (options: ModalProps) => {
             <div style={{ textAlign: 'center' }}>
                 <Button style={{ width: 120 }} onClick={onTestLink}>{intl.formatMessage({ id: 'test_link' })}</Button>
                 <Button
+                    disabled={!isSuccessTestRef.current}
                     style={{ width: 120 }}
                     type="primary"
                     onClick={onConfirm}
