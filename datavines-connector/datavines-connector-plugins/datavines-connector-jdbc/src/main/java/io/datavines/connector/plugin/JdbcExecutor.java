@@ -39,7 +39,7 @@ public abstract class JdbcExecutor implements Executor, IDataSourceInfo {
         JdbcTemplate jdbcTemplate = dataSourceManager.getJdbcTemplate(getDatasourceInfo(dataSourceParam));
 
         String sql = param.getScript();
-        if(StringUtils.isEmpty(sql)) {
+        if (StringUtils.isEmpty(sql)) {
             builder.status(ConnectorResponse.Status.ERROR);
             builder.errorMsg("execute script must not null");
         }

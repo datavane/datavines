@@ -38,12 +38,6 @@ public class HiveConnector extends JdbcConnector {
 
     @Override
     public ResultSet getMetadataTables(DatabaseMetaData metaData, String dbName, String schema) throws SQLException {
-        return metaData.getTables(dbName, null, null, TABLE_TYPES);
-    }
-
-    @Override
-    public ResultSet getMetadataDatabases(Connection connection) throws SQLException {
-        DatabaseMetaData metaData = connection.getMetaData();
-        return metaData.getCatalogs();
+        return metaData.getTables(null, dbName, null, TABLE_TYPES);
     }
 }
