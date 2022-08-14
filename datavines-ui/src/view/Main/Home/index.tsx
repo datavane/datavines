@@ -79,7 +79,7 @@ function App() {
         <ContentLayout>
             <div>
                 <Title>{intl.formatMessage({ id: 'datasource_list_title' })}</Title>
-                <div style={{ padding: '20px' }}>
+                <div style={{ padding: '25px' }}>
                     <div className="dv-flex-between">
                         <SearchForm form={form} onSearch={onSearch} />
                         <div>
