@@ -40,10 +40,4 @@ public class ImpalaConnector extends JdbcConnector {
     public ResultSet getMetadataTables(DatabaseMetaData metaData, String dbName, String schema) throws SQLException {
         return metaData.getTables(null, dbName, null, TABLE_TYPES);
     }
-
-    @Override
-    public ResultSet getMetadataDatabases(Connection connection) throws SQLException {
-        java.sql.Statement stmt = connection.createStatement();
-        return stmt.executeQuery("Show Databases");
-    }
 }

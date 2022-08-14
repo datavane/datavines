@@ -261,7 +261,7 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
         ResultSet rs = null;
         List<String> primaryKeys = new ArrayList<>();
         try {
-            rs = metaData.getPrimaryKeys(dbName, null, tableName);
+            rs = metaData.getPrimaryKeys(null, dbName, tableName);
 
             if (rs == null) {
                 return primaryKeys;
@@ -317,5 +317,8 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
 
     public abstract ResultSet getMetadataTables(DatabaseMetaData metaData, String dbName, String schema) throws SQLException;
 
-    public abstract ResultSet getMetadataDatabases(Connection connection) throws SQLException;
+    public  ResultSet getMetadataDatabases(Connection connection) throws SQLException {
+        java.sql.Statement stmt = connection.createStatement();
+        return stmt.executeQuery("show databases");
+    }
 }
