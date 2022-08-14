@@ -18,10 +18,11 @@ import { SelectSLAsComponent } from '../useSelectSLAsModal';
 const { TabPane } = Tabs;
 
 type InnerProps = {
-    innerRef: any
+    innerRef: any,
+    hide: (...args: any[]) => any
 }
 
-const Inner = ({ innerRef }: InnerProps) => {
+const Inner = ({ innerRef, hide }: InnerProps) => {
     const [activeKey, setActiveKey] = useState('metric');
     const [loading, $setLoading] = useState(true);
     const setLoading = useLoading();
@@ -84,6 +85,9 @@ const Inner = ({ innerRef }: InnerProps) => {
                 setJobId(res);
             }
             message.success('Success!');
+            if (runningNow) {
+                hide();
+            }
         } catch (error) {
             console.log('error', error);
         } finally {
@@ -110,8 +114,8 @@ const Inner = ({ innerRef }: InnerProps) => {
                     <PageContainer
                         footer={(
                             <>
-                                <Button type="primary" onClick={() => onJob()}>保存</Button>
-                                <Button style={{ marginLeft: 10 }} type="primary" onClick={() => onJob(1)}>保存并运行</Button>
+                                <Button type="primary" onClick={() => onJob()}>{intl.formatMessage({ id: 'common_save' })}</Button>
+                                <Button style={{ marginLeft: 10 }} type="primary" onClick={() => onJob(1)}>{intl.formatMessage({ id: 'jobs_save_run' })}</Button>
                             </>
                         )}
                     >
@@ -135,7 +139,7 @@ export const useAddEditJobsModal = (options: ModalProps) => {
     const innerRef = useRef();
     const onOk = usePersistFn(() => {
     });
-    const { Render, ...rest } = useModal<any>({
+    const { Render, hide, ...rest } = useModal<any>({
         title: 'Schedule Manage',
         width: 640,
         ...(options || {}),
@@ -147,7 +151,8 @@ export const useAddEditJobsModal = (options: ModalProps) => {
         className: 'dv-modal-fullscreen',
     });
     return {
-        Render: useImmutable(() => (<Render><Inner innerRef={innerRef} /></Render>)),
+        Render: useImmutable(() => (<Render><Inner hide={hide} innerRef={innerRef} /></Render>)),
+        hide,
         ...rest,
     };
 };

@@ -4,6 +4,7 @@ export default {
     common_input_pattern_tip: 'Please enter the correct ',
     common_action: 'Actions',
     common_add: 'Add ',
+    common_save: 'Save',
     common_edit: 'Edit',
     common_view: 'View',
     common_search: 'Search',
@@ -106,6 +107,7 @@ export default {
 
     jobs_tabs_title: 'Data quality inspection',
     jobs_tabs_config: 'Job configuration',
+    jobs_save_run: 'Save and run',
     jobs_tabs_schedule: 'Scheduled task configuration',
     jobs_tabs_SLA: 'SLA configuration',
 

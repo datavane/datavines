@@ -4,6 +4,7 @@ export default {
     common_required_top: '必填',
     common_action: '操作',
     common_add: '新增',
+    common_save: '保存',
     common_edit: '编辑',
     common_view: '查看',
     common_search: '搜索',
@@ -106,6 +107,7 @@ export default {
 
     jobs_tabs_title: '数据质量检查作业',
     jobs_tabs_config: '作业配置',
+    jobs_save_run: '保存并运行',
     jobs_tabs_schedule: '定时任务配置',
     jobs_tabs_SLA: 'SLA配置',
 
