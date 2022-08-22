@@ -63,7 +63,7 @@ public class ColumnDuplicate extends BaseSingleTableColumn {
         }
 
         if (config.containsKey("column")) {
-            invalidateItemsSql.append(" group by ${column} having count(1) > 1");
+            invalidateItemsSql.append(" group by ${column} having count(${column}) > 1");
         }
 
     }

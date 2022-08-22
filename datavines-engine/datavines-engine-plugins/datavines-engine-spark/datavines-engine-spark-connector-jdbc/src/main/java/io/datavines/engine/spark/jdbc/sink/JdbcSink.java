@@ -53,7 +53,7 @@ public class JdbcSink implements SparkBatchSink {
 
     @Override
     public CheckResult checkConfig() {
-        List<String> requiredOptions = Arrays.asList("url", "dbtable", "user", "password");
+        List<String> requiredOptions = Arrays.asList("url", "table", "user", "password");
 
         List<String> nonExistsOptions = new ArrayList<>();
         requiredOptions.forEach(x->{
@@ -92,7 +92,7 @@ public class JdbcSink implements SparkBatchSink {
         prop.setProperty("driver", config.getString("driver"));
         prop.setProperty("user", config.getString("user"));
         prop.setProperty("password", config.getString("password"));
-        data.write().mode(saveMode).jdbc(config.getString("url"), config.getString("dbtable"), prop);
+        data.write().mode(saveMode).jdbc(config.getString("url"), config.getString("table"), prop);
 
         return null;
     }

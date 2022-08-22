@@ -27,11 +27,11 @@ import io.datavines.metric.api.SqlMetric;
 
 public class MultiTableAccuracy implements SqlMetric {
 
-    private final StringBuilder sourceTableSql = new StringBuilder("SELECT * FROM ${table})");
+    private final StringBuilder sourceTableSql = new StringBuilder("SELECT * FROM ${table}");
 
-    private final StringBuilder targetTableSql = new StringBuilder("SELECT * FROM ${table2})");
+    private final StringBuilder targetTableSql = new StringBuilder("SELECT * FROM ${table2}");
 
-    private final StringBuilder invalidateItemsSql = new StringBuilder("SELECT ${table}.* FROM (");
+    private final StringBuilder invalidateItemsSql = new StringBuilder("SELECT ${table}.* FROM ");
 
     private final StringBuilder actualValueSql = new StringBuilder("select count(1) as actual_value from ${invalidate_items_table}");
 

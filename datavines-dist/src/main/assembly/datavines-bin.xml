@@ -94,9 +94,9 @@
                 <include>io.datavines:datavines-common</include>
                 <include>io.datavines:datavines-spi</include>
                 <include>io.datavines:datavines-engine-spark-api</include>
-                <include>io.datavines:datavines-engine-spark-jdbc</include>
+                <include>io.datavines:datavines-engine-spark-connector-jdbc</include>
                 <include>io.datavines:datavines-engine-core</include>
-                <include>io.datavines:datavines-engine-spark-sql</include>
+                <include>io.datavines:datavines-engine-spark-transform-sql</include>
                 <include>io.datavines:datavines-engine-api</include>
             </includes>
         </dependencySet>

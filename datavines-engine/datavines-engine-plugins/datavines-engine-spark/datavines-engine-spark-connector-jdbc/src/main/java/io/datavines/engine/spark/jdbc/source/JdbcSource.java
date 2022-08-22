@@ -34,6 +34,7 @@ import io.datavines.common.utils.TypesafeConfigUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.spark.api.SparkRuntimeEnvironment;
 import io.datavines.engine.spark.api.batch.SparkBatchSource;
+import org.apache.spark.sql.jdbc.JdbcDialects;
 
 public class JdbcSource implements SparkBatchSource {
 
@@ -84,6 +85,7 @@ public class JdbcSource implements SparkBatchSource {
 
     private DataFrameReader jdbcReader(SparkSession sparkSession) {
 
+        JdbcDialects.registerDialect(new HiveSqlDialect());
         DataFrameReader reader = sparkSession.read()
                 .format("jdbc")
                 .option("url", config.getString("url"))
@@ -91,7 +93,6 @@ public class JdbcSource implements SparkBatchSource {
                 .option("user", config.getString("user"))
                 .option("password", config.getString("password"))
                 .option("driver", config.getString("driver"));
-
 
         Config jdbcConfig = TypesafeConfigUtils.extractSubConfigThrowable(config, "jdbc.", false);
 

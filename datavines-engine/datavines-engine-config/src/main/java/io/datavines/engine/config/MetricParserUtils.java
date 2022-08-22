@@ -96,14 +96,19 @@ public class MetricParserUtils {
         Map<String,Object> config = new HashMap<>();
         config.put(INDEX, index++);
         config.put(SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult,true));
-        config.put(OUTPUT_TABLE, executeSql.getResultTable());
+        config.put(OUTPUT_TABLE, isInvalidateItems(type)? inputParameterValueResult.get(INVALIDATE_ITEMS_TABLE): executeSql.getResultTable());
         config.put(INVALIDATE_ITEMS_TABLE, inputParameterValueResult.get(INVALIDATE_ITEMS_TABLE));
         config.put(ERROR_DATA_FILE_DIR, inputParameterValueResult.get(ERROR_DATA_FILE_DIR));
         config.put(ERROR_DATA_FILE_NAME, inputParameterValueResult.get(ERROR_DATA_FILE_NAME));
         config.put(SRC_CONNECTOR_TYPE, inputParameterValueResult.get(SRC_CONNECTOR_TYPE));
+
         TransformConfig transformerConfig = new TransformConfig(SQL, config);
         transformerConfig.setType(type);
         transformerConfigList.add(transformerConfig);
+    }
+
+    private static boolean isInvalidateItems(String type) {
+        return "invalidate_items".equalsIgnoreCase(type);
     }
 
     /**
