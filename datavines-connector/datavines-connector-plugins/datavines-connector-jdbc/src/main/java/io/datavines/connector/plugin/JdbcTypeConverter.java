@@ -17,13 +17,18 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.enums.DataType;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.TypeConverter;
 
 public class JdbcTypeConverter implements TypeConverter {
-    
+
     @Override
     public DataType convert(String originType) {
-        switch (originType) {
+        if (StringUtils.isEmpty(originType)) {
+            throw new UnsupportedOperationException("sql type id null error");
+        }
+
+        switch (originType.toUpperCase()) {
             case "NULL":
                 return DataType.NULL_TYPE;
             case "BOOLEAN":
@@ -64,6 +69,7 @@ public class JdbcTypeConverter implements TypeConverter {
             case "LONGTEXT":
             case "JSON":
             case "ENUM":
+            case "STRING":
                 return DataType.STRING_TYPE;
             case "BINARY":
             case "VARBINARY":

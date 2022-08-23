@@ -112,7 +112,7 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
         }
         actualValueSourceConfig.setPlugin("jdbc");
         actualValueSourceConfig.setType(SourceType.METADATA.getDescription());
-        actualValueSourceConfig.setConfig(getDefaultSourceConfigMap(null,null));
+        actualValueSourceConfig.setConfig(getDefaultSourceConfigMap(null,"dv_actual_values"));
         return actualValueSourceConfig;
     }
 
@@ -134,10 +134,11 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
     protected Map<String,Object> getDefaultSourceConfigMap(String sql, String dbTable) {
         Map<String,Object> actualValueConfigMap = new HashMap<>();
         actualValueConfigMap.put(URL, connectionInfo.getUrl());
-        actualValueConfigMap.put(DB_TABLE, dbTable);
         actualValueConfigMap.put(USER, connectionInfo.getUsername());
         actualValueConfigMap.put(PASSWORD, connectionInfo.getPassword());
         actualValueConfigMap.put(DRIVER, connectionInfo.getDriverName());
+        actualValueConfigMap.put(TABLE, dbTable);
+        actualValueConfigMap.put(OUTPUT_TABLE, dbTable);
         if (StringUtils.isNotEmpty(sql)) {
             actualValueConfigMap.put(SQL, sql);
         }

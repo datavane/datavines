@@ -37,7 +37,7 @@ public class SparkSinkSqlBuilder {
 
         }
 
-        return "select " + String.join(", ", columnList) + "from ${actual_table}";
+        return "select " + String.join(", ", columnList) + " from ${actual_table}";
     }
 
     private static String getBasicSql() {
