@@ -34,6 +34,19 @@ public class DataSourceInfoManager {
         return dataSourceInfo;
     }
 
+    public static BaseDataSourceInfo getDatasourceInfo(String param, BaseDataSourceInfo defaultSourceInfo) {
+        BaseDataSourceInfo dataSourceInfo = null;
+
+        String key = Md5Utils.getMd5(param, false);
+        dataSourceInfo = DATA_SOURCE_INFO_MAP.get(key);
+        if (dataSourceInfo == null) {
+            putDataSourceInfo(key, defaultSourceInfo);
+            dataSourceInfo = defaultSourceInfo;
+        }
+
+        return dataSourceInfo;
+    }
+
     public static void putDataSourceInfo(String key, BaseDataSourceInfo dataSourceInfo) {
         DATA_SOURCE_INFO_MAP.put(key,dataSourceInfo);
     }

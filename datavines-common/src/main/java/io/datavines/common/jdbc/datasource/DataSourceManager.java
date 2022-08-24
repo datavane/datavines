@@ -17,8 +17,6 @@
 package io.datavines.common.jdbc.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -66,19 +64,10 @@ public class DataSourceManager {
             druidDataSource.setUsername(baseDataSourceInfo.getUser());
             druidDataSource.setPassword(baseDataSourceInfo.getPassword());
             druidDataSource.setDriverClassName(baseDataSourceInfo.getDriverClass());
+            druidDataSource.setBreakAfterAcquireFailure(true);
             dataSourceMap.put(baseDataSourceInfo.getUniqueKey(), druidDataSource);
             return druidDataSource;
         }
-
-//        if (dataSource == null) {
-//            HikariConfig config = new HikariConfig();
-//            config.setAutoCommit(true);
-//            config.setDriverClassName(baseDataSourceInfo.getDriverClass());
-//            config.setJdbcUrl(baseDataSourceInfo.getJdbcUrl());
-//            config.setUsername(baseDataSourceInfo.getUser());
-//            config.setPassword(baseDataSourceInfo.getPassword());
-//            return new HikariDataSource(config);
-//        }
 
         return dataSource;
     }

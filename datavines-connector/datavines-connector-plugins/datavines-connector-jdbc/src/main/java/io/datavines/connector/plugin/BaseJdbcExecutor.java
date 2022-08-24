@@ -28,7 +28,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.SQLException;
 
-public abstract class JdbcExecutor implements Executor, IDataSourceInfo {
+public abstract class BaseJdbcExecutor implements Executor, IDataSourceInfo {
 
     @Override
     public ConnectorResponse executeSyncQuery(ExecuteRequestParam param) throws SQLException {
@@ -36,7 +36,9 @@ public abstract class JdbcExecutor implements Executor, IDataSourceInfo {
         String dataSourceParam = param.getDataSourceParam();
 
         DataSourceManager dataSourceManager = DataSourceManager.getInstance();
-        JdbcTemplate jdbcTemplate = dataSourceManager.getJdbcTemplate(getDatasourceInfo(dataSourceParam));
+        ConnectionInfo connectionInfo = JSONUtils.parseObject(dataSourceParam, ConnectionInfo.class);
+        JdbcTemplate jdbcTemplate = dataSourceManager.getJdbcTemplate(
+                DataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(connectionInfo)));
 
         String sql = param.getScript();
         if (StringUtils.isEmpty(sql)) {
@@ -49,15 +51,4 @@ public abstract class JdbcExecutor implements Executor, IDataSourceInfo {
         return builder.build();
     }
 
-    public BaseDataSourceInfo getDatasourceInfo(String param) {
-
-        if (DataSourceInfoManager.getDatasourceInfo(param) == null) {
-            String key = Md5Utils.getMd5(param, false);
-            ConnectionInfo connectionInfo = JSONUtils.parseObject(param,ConnectionInfo.class);
-            BaseDataSourceInfo dataSourceInfo = getDatasourceInfo(connectionInfo);
-            DataSourceInfoManager.putDataSourceInfo(key,dataSourceInfo);
-        }
-
-        return DataSourceInfoManager.getDatasourceInfo(param);
-    }
 }

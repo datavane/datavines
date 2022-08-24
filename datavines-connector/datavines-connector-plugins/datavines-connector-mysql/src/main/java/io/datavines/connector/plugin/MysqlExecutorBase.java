@@ -19,10 +19,10 @@ package io.datavines.connector.plugin;
 import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
 import io.datavines.common.jdbc.datasource.ConnectionInfo;
 
-public class HiveExecutor extends JdbcExecutor {
+public class MysqlExecutorBase extends BaseJdbcExecutor {
 
     @Override
     public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
-        return new HiveDataSourceInfo(connectionInfo);
+        return new MysqlDataSourceInfo(connectionInfo);
     }
 }

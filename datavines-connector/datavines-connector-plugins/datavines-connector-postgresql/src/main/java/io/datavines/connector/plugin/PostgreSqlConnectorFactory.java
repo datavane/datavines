@@ -40,6 +40,6 @@ public class PostgreSqlConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new PostgreSqlExecutor();
+        return new PostgreSqlExecutorBase();
     }
 }

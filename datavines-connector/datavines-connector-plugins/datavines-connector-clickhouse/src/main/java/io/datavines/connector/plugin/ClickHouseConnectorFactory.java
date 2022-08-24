@@ -40,6 +40,6 @@ public class ClickHouseConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new ClickHouseExecutor();
+        return new ClickHouseExecutorBase();
     }
 }

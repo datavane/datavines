@@ -19,9 +19,10 @@ package io.datavines.connector.plugin;
 import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
 import io.datavines.common.jdbc.datasource.ConnectionInfo;
 
-public class PrestoExecutor extends JdbcExecutor{
+public class ImpalaExecutorBase extends BaseJdbcExecutor {
+
     @Override
     public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
-        return new PrestoDataSourceInfo(connectionInfo);
+        return new ImpalaDataSourceInfo(connectionInfo);
     }
 }
