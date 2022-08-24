@@ -19,10 +19,10 @@ package io.datavines.connector.plugin;
 import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
 import io.datavines.common.jdbc.datasource.ConnectionInfo;
 
-public class ImpalaExecutorBase extends BaseJdbcExecutor {
+public class ClickHouseExecutor extends BaseJdbcExecutor {
 
     @Override
     public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
-        return new ImpalaDataSourceInfo(connectionInfo);
+        return new ClickHouseDataSourceInfo(connectionInfo);
     }
 }

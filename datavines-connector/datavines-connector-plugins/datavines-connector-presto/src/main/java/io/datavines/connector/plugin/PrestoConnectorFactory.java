@@ -40,6 +40,6 @@ public class PrestoConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new PrestoExecutorBase();
+        return new PrestoExecutor();
     }
 }

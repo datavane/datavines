@@ -19,10 +19,9 @@ package io.datavines.connector.plugin;
 import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
 import io.datavines.common.jdbc.datasource.ConnectionInfo;
 
-public class ClickHouseExecutorBase extends BaseJdbcExecutor {
-
+public class PrestoExecutor extends BaseJdbcExecutor {
     @Override
     public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
-        return new ClickHouseDataSourceInfo(connectionInfo);
+        return new PrestoDataSourceInfo(connectionInfo);
     }
 }

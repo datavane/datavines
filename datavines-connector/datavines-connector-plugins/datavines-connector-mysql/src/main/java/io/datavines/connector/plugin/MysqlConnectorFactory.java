@@ -40,6 +40,6 @@ public class MysqlConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new MysqlExecutorBase();
+        return new MysqlExecutor();
     }
 }

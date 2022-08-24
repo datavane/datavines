@@ -40,6 +40,6 @@ public class HiveConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new HiveExecutorBase();
+        return new HiveExecutor();
     }
 }

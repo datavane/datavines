@@ -19,10 +19,10 @@ package io.datavines.connector.plugin;
 import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
 import io.datavines.common.jdbc.datasource.ConnectionInfo;
 
-public class PostgreSqlExecutorBase extends BaseJdbcExecutor {
+public class MysqlExecutor extends BaseJdbcExecutor {
 
     @Override
     public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
-        return new PostgreSqlDataSourceInfo(connectionInfo);
+        return new MysqlDataSourceInfo(connectionInfo);
     }
 }
