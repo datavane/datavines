@@ -19,7 +19,7 @@ package io.datavines.connector.plugin;
 import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
 import io.datavines.common.jdbc.datasource.ConnectionInfo;
 
-public class ImpalaExecutor extends JdbcExecutor {
+public class ImpalaExecutor extends BaseJdbcExecutor {
 
     @Override
     public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
