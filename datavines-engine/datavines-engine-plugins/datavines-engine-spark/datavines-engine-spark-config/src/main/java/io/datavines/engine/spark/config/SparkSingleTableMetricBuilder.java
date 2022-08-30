@@ -49,6 +49,8 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
         //todo
         //get the error data storage parameter
         //support file(hdfs/minio/s3)/es
+        SinkConfig errorDataSinkConfig = getErrorSinkConfig();
+        sinkConfigs.add(errorDataSinkConfig);
 
         configuration.setSinkParameters(sinkConfigs);
     }

@@ -18,19 +18,26 @@ package io.datavines.engine.config;
 
 import io.datavines.common.config.*;
 import io.datavines.common.config.enums.SourceType;
+import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.*;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.engine.api.ConfigConstants;
 import io.datavines.metric.api.ExpectedValue;
+import io.datavines.metric.api.SqlMetric;
+import io.datavines.spi.PluginLoader;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static io.datavines.engine.api.ConfigConstants.*;
 import static io.datavines.engine.api.ConfigConstants.SQL;
+import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public abstract class BaseDataQualityConfigurationBuilder implements DataQualityConfigurationBuilder {
 
@@ -93,6 +100,59 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
     @Override
     public void buildSourceConfigs() throws DataVinesException {
         configuration.setSourceParameters(getSourceConfigs());
+    }
+
+    @Override
+    public void buildTransformConfigs() {
+        String metricType = taskParameter.getMetricType();
+        SqlMetric sqlMetric = PluginLoader
+                .getPluginLoader(SqlMetric.class)
+                .getNewPlugin(metricType);
+
+        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
+
+        List<TransformConfig> transformConfigs = new ArrayList<>();
+
+        inputParameter.put(INVALIDATE_ITEMS_TABLE,
+                sqlMetric.getInvalidateItems().getResultTable()
+                        + "_" + inputParameter.get(ConfigConstants.TASK_ID));
+
+        MetricParserUtils.setTransformerConfig(
+                inputParameter, transformConfigs,
+                sqlMetric.getInvalidateItems(), TransformType.INVALIDATE_ITEMS.getDescription());
+
+        MetricParserUtils.setTransformerConfig(
+                inputParameter,
+                transformConfigs,
+                sqlMetric.getActualValue(),
+                TransformType.ACTUAL_VALUE.getDescription());
+
+        inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
+
+        // get expected value transform sql
+        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
+        expectedValue = PluginLoader
+                .getPluginLoader(ExpectedValue.class)
+                .getNewPlugin(expectedType);
+
+        ExecuteSql expectedValueExecuteSql =
+                new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
+
+        if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
+            inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
+        }
+
+        inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
+
+        if (expectedValue.isNeedDefaultDatasource()) {
+            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
+                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());
+        } else {
+            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
+                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SOURCE.getDescription());
+        }
+
+        configuration.setTransformParameters(transformConfigs);
     }
 
     @Override
