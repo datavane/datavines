@@ -139,7 +139,6 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
         ExecuteSql expectedValueExecuteSql =
                 new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
 
-
         if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
             inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
             inputParameter.put(EXPECTED_VALUE, expectedValue.getName());

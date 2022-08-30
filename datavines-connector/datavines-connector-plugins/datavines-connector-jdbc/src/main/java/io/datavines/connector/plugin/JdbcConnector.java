@@ -275,6 +275,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         ResultSet rs = null;
         List<String> primaryKeys = new ArrayList<>();
         try {
+
             rs = getPrimaryKeys(metaData, catalog, schema, tableName);
 
             if (rs == null) {
