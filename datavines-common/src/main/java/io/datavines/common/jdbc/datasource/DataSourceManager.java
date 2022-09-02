@@ -17,6 +17,7 @@
 package io.datavines.common.jdbc.datasource;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import io.datavines.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -62,7 +63,7 @@ public class DataSourceManager {
             DruidDataSource druidDataSource = new DruidDataSource();
             druidDataSource.setUrl(baseDataSourceInfo.getJdbcUrl());
             druidDataSource.setUsername(baseDataSourceInfo.getUser());
-            druidDataSource.setPassword(baseDataSourceInfo.getPassword());
+            druidDataSource.setPassword(StringUtils.isEmpty(baseDataSourceInfo.getPassword()) ? null : baseDataSourceInfo.getPassword());
             druidDataSource.setDriverClassName(baseDataSourceInfo.getDriverClass());
             druidDataSource.setBreakAfterAcquireFailure(true);
             dataSourceMap.put(baseDataSourceInfo.getUniqueKey(), druidDataSource);

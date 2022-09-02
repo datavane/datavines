@@ -54,6 +54,10 @@ public abstract class BaseDataSourceInfo {
 
     public abstract String getAddress();
 
+    public abstract String getCatalog();
+
+    public abstract String getSchema();
+
     public String getDatabase() {
         return connectionInfo.getDatabase();
     }

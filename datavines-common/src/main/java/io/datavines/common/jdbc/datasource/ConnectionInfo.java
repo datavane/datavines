@@ -51,6 +51,13 @@ public class ConnectionInfo {
     private String database;
 
     /**
+     * catalog name
+     */
+    private String catalog;
+
+    private String schema;
+
+    /**
      * properties
      */
     private String properties;
