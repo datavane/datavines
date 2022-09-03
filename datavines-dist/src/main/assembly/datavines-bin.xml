@@ -98,6 +98,10 @@
                 <include>io.datavines:datavines-engine-core</include>
                 <include>io.datavines:datavines-engine-spark-transform-sql</include>
                 <include>io.datavines:datavines-engine-api</include>
+                <include>mysql:mysql-connector-java</include>
+                <include>org.apache.httpcomponents:httpclient</include>
+                <include>org.apache.httpcomponents:httpcore</include>
+                <include>ru.yandex.clickhouse:clickhouse-jdbc</include>
             </includes>
         </dependencySet>
     </dependencySets>
