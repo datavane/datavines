@@ -16,10 +16,9 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
-import io.datavines.common.jdbc.datasource.ConnectionInfo;
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
-import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -27,8 +26,8 @@ import java.sql.SQLException;
 public class HiveConnector extends JdbcConnector {
 
     @Override
-    public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
-        return new HiveDataSourceInfo(connectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        return new HiveDataSourceInfo(jdbcConnectionInfo);
     }
 
     @Override

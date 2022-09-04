@@ -14,12 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.jdbc.datasource;
+package io.datavines.common.datasource.jdbc;
 
 /**
- * IDataSourceInfo
+ * IJdbcDataSourceInfo
  */
-public interface IDataSourceInfo {
+public interface IJdbcDataSourceInfo {
 
-    BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo);
+    BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo);
 }

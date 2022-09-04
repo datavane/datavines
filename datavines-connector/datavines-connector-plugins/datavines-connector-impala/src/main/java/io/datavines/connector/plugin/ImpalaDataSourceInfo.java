@@ -16,17 +16,17 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
-import io.datavines.common.jdbc.datasource.ConnectionInfo;
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ImpalaDataSourceInfo extends BaseDataSourceInfo {
+public class ImpalaDataSourceInfo extends BaseJdbcDataSourceInfo {
 
     private final Logger logger = LoggerFactory.getLogger(ImpalaDataSourceInfo.class);
 
-    public ImpalaDataSourceInfo(ConnectionInfo connectionInfo) {
-        super(connectionInfo);
+    public ImpalaDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        super(jdbcConnectionInfo);
     }
 
     @Override

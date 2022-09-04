@@ -16,29 +16,32 @@
  */
 package io.datavines.connector.plugin;
 
+import io.datavines.common.datasource.jdbc.*;
+import io.datavines.common.datasource.jdbc.utils.SqlUtils;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.utils.Md5Utils;
 import io.datavines.connector.api.Executor;
-import io.datavines.common.jdbc.datasource.*;
-import io.datavines.common.jdbc.utils.SqlUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.SQLException;
 
-public abstract class BaseJdbcExecutor implements Executor, IDataSourceInfo {
+public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo {
+
+    private final JdbcExecutorClientManager jdbcExecutorClientManager = JdbcExecutorClientManager.getInstance();
 
     @Override
     public ConnectorResponse executeSyncQuery(ExecuteRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
 
-        DataSourceManager dataSourceManager = DataSourceManager.getInstance();
-        ConnectionInfo connectionInfo = JSONUtils.parseObject(dataSourceParam, ConnectionInfo.class);
-        JdbcTemplate jdbcTemplate = dataSourceManager.getJdbcTemplate(
-                DataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(connectionInfo)));
+        JdbcExecutorClient executorClient = jdbcExecutorClientManager
+                .getExecutorClient(
+                        JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam,
+                                getDatasourceInfo(jdbcConnectionInfo)));
+        JdbcTemplate jdbcTemplate = executorClient.getJdbcTemplate();
 
         String sql = param.getScript();
         if (StringUtils.isEmpty(sql)) {

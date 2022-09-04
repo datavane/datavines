@@ -39,7 +39,7 @@ public class SparkLast30DayAvg implements ExpectedValue {
 
     @Override
     public String getExecuteSql() {
-        return "select round(avg(actual_value),2) as last_30d_avg from dv_actual_values where data_time >= date_add(date_trunc('day', ${data_time}),-30) and  data_time < date_add(date_trunc('day', ${data_time}),1) and unique_code = ${unique_code}";
+        return "select round(avg(actual_value),2) as last_30d_avg from dv_actual_values where data_time >= date_add(date_format(${data_time}, 'yyyy-MM-dd'),-30) and  data_time < date_add(date_format(${data_time}, 'yyyy-MM-dd'),1) and unique_code = ${unique_code}";
     }
 
     @Override

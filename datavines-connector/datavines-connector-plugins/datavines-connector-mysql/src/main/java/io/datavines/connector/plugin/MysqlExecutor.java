@@ -16,13 +16,13 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
-import io.datavines.common.jdbc.datasource.ConnectionInfo;
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
 public class MysqlExecutor extends BaseJdbcExecutor {
 
     @Override
-    public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
-        return new MysqlDataSourceInfo(connectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        return new MysqlDataSourceInfo(jdbcConnectionInfo);
     }
 }

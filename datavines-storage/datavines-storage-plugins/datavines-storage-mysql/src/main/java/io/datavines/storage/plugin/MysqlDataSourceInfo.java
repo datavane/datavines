@@ -16,18 +16,18 @@
  */
 package io.datavines.storage.plugin;
 
-import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
-import io.datavines.common.jdbc.datasource.ConnectionInfo;
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class MysqlDataSourceInfo extends BaseDataSourceInfo {
+public class MysqlDataSourceInfo extends BaseJdbcDataSourceInfo {
 
     private final Logger logger = LoggerFactory.getLogger(MysqlDataSourceInfo.class);
 
-    public MysqlDataSourceInfo(ConnectionInfo connectionInfo) {
-        super(connectionInfo);
+    public MysqlDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        super(jdbcConnectionInfo);
     }
 
     @Override
@@ -52,24 +52,6 @@ public class MysqlDataSourceInfo extends BaseDataSourceInfo {
 
     @Override
     protected String filterProperties(String other){
-        if(StringUtils.isBlank(other)){
-            return "";
-        }
-
-        String sensitiveParam = "autoDeserialize=true";
-        if(other.contains(sensitiveParam)){
-            int index = other.indexOf(sensitiveParam);
-            String tmp = sensitiveParam;
-            char symbol = '&';
-            if(index == 0 || other.charAt(index + 1) == symbol){
-                tmp = tmp + symbol;
-            } else if(other.charAt(index - 1) == symbol){
-                tmp = symbol + tmp;
-            }
-            logger.warn("sensitive param : {} in properties field is filtered", tmp);
-            other = other.replace(tmp, "");
-        }
-        logger.debug("properties : {}", other);
         return other;
     }
 }

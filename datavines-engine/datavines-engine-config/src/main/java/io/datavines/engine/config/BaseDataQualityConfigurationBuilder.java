@@ -21,6 +21,7 @@ import io.datavines.common.config.enums.SourceType;
 import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.*;
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
@@ -138,8 +139,10 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
         ExecuteSql expectedValueExecuteSql =
                 new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
 
+
         if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
             inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
+            inputParameter.put(EXPECTED_VALUE, expectedValue.getName());
         }
 
         inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));

@@ -528,6 +528,10 @@
                     <artifactId>javax.servlet</artifactId>
                     <groupId>org.eclipse.jetty.orbit</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>servlet-api-2.5</artifactId>
+                    <groupId>org.mortbay.jetty</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -575,6 +579,12 @@
         <dependency>
             <groupId>com.github.penggle</groupId>
             <artifactId>kaptcha</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>javax.servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

@@ -29,6 +29,7 @@ import java.util.Map;
 import static io.datavines.common.CommonConstants.AND;
 import static io.datavines.common.CommonConstants.TABLE;
 import static io.datavines.common.CommonConstants.TABLE2;
+import static io.datavines.engine.api.ConfigConstants.EXPECTED_VALUE;
 
 public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfigurationBuilder {
 

@@ -19,13 +19,15 @@ package io.datavines.connector.plugin;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
-import io.datavines.common.jdbc.datasource.ConnectionInfo;
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.common.datasource.jdbc.JdbcDataSourceInfoManager;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.common.param.form.PluginParams;
 import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.type.InputParam;
+import io.datavines.common.utils.JSONUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -34,8 +36,13 @@ import java.util.List;
 public class PrestoConnector extends JdbcConnector {
 
     @Override
-    public ResultSet getMetadataColumns(DatabaseMetaData metaData, String dbName, String schema, String tableName, String columnName) throws SQLException {
-        return metaData.getColumns(null, dbName, tableName, "%");
+    protected ResultSet getPrimaryKeys(DatabaseMetaData metaData, String catalog, String schema, String tableName) throws SQLException {
+        return metaData.getPrimaryKeys(catalog, schema, tableName);
+    }
+
+    @Override
+    public ResultSet getMetadataColumns(DatabaseMetaData metaData, String catalog, String schema, String tableName, String columnName) throws SQLException {
+        return metaData.getColumns(catalog, schema, tableName, "%");
     }
 
     @Override
@@ -50,13 +57,14 @@ public class PrestoConnector extends JdbcConnector {
     }
 
     @Override
-    public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
-        return new PrestoDataSourceInfo(connectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        return new PrestoDataSourceInfo(jdbcConnectionInfo);
     }
 
     @Override
     public ConnectorResponse testConnect(TestConnectionRequestParam param) {
-        BaseDataSourceInfo dataSourceInfo = getDatasourceInfo(param.getDataSourceParam());
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(param.getDataSourceParam(), JdbcConnectionInfo.class);
+        BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(jdbcConnectionInfo);
         dataSourceInfo.loadClass();
 
         try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(), dataSourceInfo.getUser(), null)) {
@@ -85,7 +93,7 @@ public class PrestoConnector extends JdbcConnector {
                 isEn ? "please enter port" : "请填入端口号", 1, Validate.newBuilder()
                         .setRequired(true).setMessage(isEn ? "please enter port" : "请填入端口号")
                         .build());
-        InputParam database = getInputParam("database",
+        InputParam catalog = getInputParam("catalog",
                 isEn ? "catalog" : "目录类型",
                 isEn ? "please enter catalog" : "请填入目录类型", 1, Validate.newBuilder()
                         .setRequired(true).setMessage(isEn ? "please enter catalog" : "请填入目录类型")
@@ -107,7 +115,7 @@ public class PrestoConnector extends JdbcConnector {
         List<PluginParams> params = new ArrayList<>();
         params.add(host);
         params.add(port);
-        params.add(database);
+        params.add(catalog);
         params.add(user);
         params.add(password);
         params.add(properties);
