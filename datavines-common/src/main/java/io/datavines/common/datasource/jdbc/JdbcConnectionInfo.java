@@ -14,16 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.jdbc.datasource;
+package io.datavines.common.datasource.jdbc;
 
 import io.datavines.common.utils.Md5Utils;
+import io.datavines.common.utils.StringUtils;
 import lombok.Data;
 
 /**
- * ConnectionInfo
+ * JdbcConnectionInfo
  */
 @Data
-public class ConnectionInfo {
+public class JdbcConnectionInfo {
 
     /**
      * user
@@ -46,7 +47,12 @@ public class ConnectionInfo {
     private int port;
 
     /**
-     * database name
+     * catalog name
+     */
+    private String catalog;
+
+    /**
+     * database(schema) name
      */
     private String database;
 
@@ -59,10 +65,15 @@ public class ConnectionInfo {
     public String toString() {
         return host.trim() +
                 "&" + port +
-                "&" + database.trim() +
-                "&" + user.trim() +
-                "&" + password.trim() +
+                "&" + getOrEmpty(catalog) +
+                "&" + getOrEmpty(database) +
+                "&" + getOrEmpty(user) +
+                "&" + getOrEmpty(password) +
                 "&" + properties;
+    }
+
+    private String getOrEmpty (String keyword) {
+        return StringUtils.isNotEmpty(keyword)? keyword.trim():"";
     }
 
     public String getUniqueKey() {

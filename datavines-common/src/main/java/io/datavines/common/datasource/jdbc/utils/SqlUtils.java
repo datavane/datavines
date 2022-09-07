@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.jdbc.utils;
+package io.datavines.common.datasource.jdbc.utils;
 
 import com.alibaba.druid.sql.SQLUtils;
 import io.datavines.common.entity.ListWithQueryColumn;

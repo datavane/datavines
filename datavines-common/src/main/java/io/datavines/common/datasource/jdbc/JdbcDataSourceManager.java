@@ -14,9 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.jdbc.datasource;
+package io.datavines.common.datasource.jdbc;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import io.datavines.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -26,46 +27,36 @@ import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * DataSourceManager
+ * JdbcDataSourceManager
  */
 @Slf4j
-public class DataSourceManager {
+public class JdbcDataSourceManager {
 
     private final ConcurrentHashMap<String,DataSource> dataSourceMap = new ConcurrentHashMap<>();
 
     private static final class Singleton {
-        private static final DataSourceManager INSTANCE = new DataSourceManager();
+        private static final JdbcDataSourceManager INSTANCE = new JdbcDataSourceManager();
     }
 
-    public static DataSourceManager getInstance() {
+    public static JdbcDataSourceManager getInstance() {
         return Singleton.INSTANCE;
     }
 
-    public Connection getConnection(BaseDataSourceInfo baseDataSourceInfo) throws SQLException {
-        return getDataSource(baseDataSourceInfo).getConnection();
-    }
-
-    public JdbcTemplate getJdbcTemplate(BaseDataSourceInfo baseDataSourceInfo) {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource(baseDataSourceInfo));
-        jdbcTemplate.setFetchSize(500);
-        return jdbcTemplate;
-    }
-
-    public DataSource getDataSource(BaseDataSourceInfo baseDataSourceInfo) {
-        if (baseDataSourceInfo == null) {
+    public DataSource getDataSource(BaseJdbcDataSourceInfo baseJdbcDataSourceInfo) {
+        if (baseJdbcDataSourceInfo == null) {
             return null;
         }
 
-        DataSource dataSource = dataSourceMap.get(baseDataSourceInfo.getUniqueKey());
+        DataSource dataSource = dataSourceMap.get(baseJdbcDataSourceInfo.getUniqueKey());
 
         if (dataSource == null) {
             DruidDataSource druidDataSource = new DruidDataSource();
-            druidDataSource.setUrl(baseDataSourceInfo.getJdbcUrl());
-            druidDataSource.setUsername(baseDataSourceInfo.getUser());
-            druidDataSource.setPassword(baseDataSourceInfo.getPassword());
-            druidDataSource.setDriverClassName(baseDataSourceInfo.getDriverClass());
+            druidDataSource.setUrl(baseJdbcDataSourceInfo.getJdbcUrl());
+            druidDataSource.setUsername(baseJdbcDataSourceInfo.getUser());
+            druidDataSource.setPassword(StringUtils.isEmpty(baseJdbcDataSourceInfo.getPassword()) ? null : baseJdbcDataSourceInfo.getPassword());
+            druidDataSource.setDriverClassName(baseJdbcDataSourceInfo.getDriverClass());
             druidDataSource.setBreakAfterAcquireFailure(true);
-            dataSourceMap.put(baseDataSourceInfo.getUniqueKey(), druidDataSource);
+            dataSourceMap.put(baseJdbcDataSourceInfo.getUniqueKey(), druidDataSource);
             return druidDataSource;
         }
 

@@ -18,7 +18,6 @@ package io.datavines.common.entity.job.builder;
 
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.ConnectorParameter;
-import io.datavines.common.entity.MappingColumn;
 import io.datavines.common.entity.TaskParameter;
 import io.datavines.common.entity.job.DataReconciliationJobParameter;
 import io.datavines.common.utils.JSONUtils;
@@ -27,8 +26,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import static io.datavines.common.CommonConstants.*;
 
 public class DataReconciliationTaskParameterBuilder implements ParameterBuilder {
 

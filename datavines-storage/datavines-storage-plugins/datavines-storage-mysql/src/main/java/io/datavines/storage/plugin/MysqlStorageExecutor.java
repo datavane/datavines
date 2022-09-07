@@ -15,8 +15,8 @@ package io.datavines.storage.plugin;/*
  * limitations under the License.
  */
 
-import io.datavines.common.jdbc.datasource.*;
-import io.datavines.common.jdbc.utils.SqlUtils;
+import io.datavines.common.datasource.jdbc.*;
+import io.datavines.common.datasource.jdbc.utils.SqlUtils;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.common.utils.JSONUtils;
@@ -27,15 +27,23 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.SQLException;
 
-public class MysqlStorageExecutor implements StorageExecutor, IDataSourceInfo {
+public class MysqlStorageExecutor implements StorageExecutor, IJdbcDataSourceInfo {
+
+    private final JdbcExecutorClientManager jdbcExecutorClientManager = JdbcExecutorClientManager.getInstance();
 
     @Override
     public ConnectorResponse executeSyncQuery(ExecuteRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
 
-        DataSourceManager dataSourceManager = DataSourceManager.getInstance();
-        JdbcTemplate jdbcTemplate = dataSourceManager.getJdbcTemplate(getDatasourceInfo(dataSourceParam));
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+
+        JdbcExecutorClient executorClient = jdbcExecutorClientManager
+                .getExecutorClient(
+                        JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam,
+                                getDatasourceInfo(jdbcConnectionInfo)));
+
+        JdbcTemplate jdbcTemplate = executorClient.getJdbcTemplate();
 
         String sql = "select * from " + param.getScript();
         if(StringUtils.isEmpty(sql)) {
@@ -49,20 +57,8 @@ public class MysqlStorageExecutor implements StorageExecutor, IDataSourceInfo {
         return builder.build();
     }
 
-    public BaseDataSourceInfo getDatasourceInfo(String param) {
-
-        if (DataSourceInfoManager.getDatasourceInfo(param) == null) {
-            String key = Md5Utils.getMd5(param, false);
-            ConnectionInfo connectionInfo = JSONUtils.parseObject(param,ConnectionInfo.class);
-            BaseDataSourceInfo dataSourceInfo = getDatasourceInfo(connectionInfo);
-            DataSourceInfoManager.putDataSourceInfo(key,dataSourceInfo);
-        }
-
-        return DataSourceInfoManager.getDatasourceInfo(param);
-    }
-
     @Override
-    public BaseDataSourceInfo getDatasourceInfo(ConnectionInfo connectionInfo) {
-        return new MysqlDataSourceInfo(connectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        return new MysqlDataSourceInfo(jdbcConnectionInfo);
     }
 }

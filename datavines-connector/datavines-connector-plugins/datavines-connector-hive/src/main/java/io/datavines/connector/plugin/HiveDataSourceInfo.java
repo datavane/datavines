@@ -16,13 +16,13 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
-import io.datavines.common.jdbc.datasource.ConnectionInfo;
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
-public class HiveDataSourceInfo extends BaseDataSourceInfo {
+public class HiveDataSourceInfo extends BaseJdbcDataSourceInfo {
 
-    public HiveDataSourceInfo(ConnectionInfo connectionInfo) {
-        super(connectionInfo);
+    public HiveDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        super(jdbcConnectionInfo);
     }
 
     @Override

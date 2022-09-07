@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.jdbc.datasource;
+package io.datavines.common.datasource.jdbc;
 
 import io.datavines.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -26,40 +26,44 @@ import java.sql.DriverManager;
 /**
  * data source base class
  */
-public abstract class BaseDataSourceInfo {
+public abstract class BaseJdbcDataSourceInfo {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseDataSourceInfo.class);
+    private static final Logger logger = LoggerFactory.getLogger(BaseJdbcDataSourceInfo.class);
 
-    protected final ConnectionInfo connectionInfo;
+    protected final JdbcConnectionInfo jdbcConnectionInfo;
 
-    public BaseDataSourceInfo(ConnectionInfo connectionInfo) {
-        this.connectionInfo = connectionInfo;
+    public BaseJdbcDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        this.jdbcConnectionInfo = jdbcConnectionInfo;
     }
 
     public String getUser() {
-        return connectionInfo.getUser();
+        return jdbcConnectionInfo.getUser();
     }
 
     public String getPassword() {
-        return connectionInfo.getPassword();
+        return jdbcConnectionInfo.getPassword();
     }
 
     public String getHost() {
-        return connectionInfo.getHost();
+        return jdbcConnectionInfo.getHost();
     }
 
     public int getPort() {
-        return connectionInfo.getPort();
+        return jdbcConnectionInfo.getPort();
     }
 
     public abstract String getAddress();
 
+    public String getCatalog() {
+        return jdbcConnectionInfo.getCatalog();
+    }
+
     public String getDatabase() {
-        return connectionInfo.getDatabase();
+        return jdbcConnectionInfo.getDatabase();
     }
 
     public String getProperties() {
-        return connectionInfo.getProperties();
+        return jdbcConnectionInfo.getProperties();
     }
 
     /**
@@ -89,6 +93,17 @@ public abstract class BaseDataSourceInfo {
      * append database
      * @param jdbcUrl jdbc url
      */
+    protected void appendCatalog(StringBuilder jdbcUrl) {
+        if (getAddress().lastIndexOf('/') != (jdbcUrl.length() - 1)) {
+            jdbcUrl.append("/");
+        }
+        jdbcUrl.append(getCatalog());
+    }
+
+    /**
+     * append database
+     * @param jdbcUrl jdbc url
+     */
     protected void appendDatabase(StringBuilder jdbcUrl) {
         if (getAddress().lastIndexOf('/') != (jdbcUrl.length() - 1)) {
             jdbcUrl.append("/");
@@ -100,7 +115,7 @@ public abstract class BaseDataSourceInfo {
      * append other
      * @param jdbcUrl jdbc url
      */
-    private void appendProperties(StringBuilder jdbcUrl) {
+    protected void appendProperties(StringBuilder jdbcUrl) {
         String otherParams = filterProperties(getProperties());
         if (StringUtils.isNotEmpty(otherParams)) {
             jdbcUrl.append(getSeparator()).append(otherParams);
@@ -132,6 +147,6 @@ public abstract class BaseDataSourceInfo {
     }
 
     public String getUniqueKey() {
-        return connectionInfo.getUniqueKey();
+        return jdbcConnectionInfo.getUniqueKey();
     }
 }

@@ -17,9 +17,11 @@
 package io.datavines.engine.spark.config;
 
 import io.datavines.common.config.*;
+import io.datavines.common.config.enums.SinkType;
 import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.*;
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.api.ConfigConstants;
@@ -28,6 +30,7 @@ import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
+import io.datavines.storage.api.StorageFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -115,56 +118,28 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
         return sourceConfigs;
     }
 
-    @Override
-    public void buildTransformConfigs() {
-        String metricType = taskParameter.getMetricType();
-        SqlMetric sqlMetric = PluginLoader
-                .getPluginLoader(SqlMetric.class)
-                .getNewPlugin(metricType);
+    protected SinkConfig getErrorSinkConfig() {
+        SinkConfig errorDataSinkConfig = null;
+        if (StringUtils.isNotEmpty(taskInfo.getErrorDataStorageType())
+                && StringUtils.isNotEmpty(taskInfo.getErrorDataStorageParameter())) {
+            errorDataSinkConfig = new SinkConfig();
+            errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
 
-        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
+            Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(taskInfo.getErrorDataStorageParameter(),String.class, Object.class));
+            connectorParameterMap.putAll(inputParameter);
+            StorageFactory storageFactory = PluginLoader
+                    .getPluginLoader(StorageFactory.class)
+                    .getNewPlugin(taskInfo.getErrorDataStorageType());
 
-        List<TransformConfig> transformConfigs = new ArrayList<>();
-
-        inputParameter.put(INVALIDATE_ITEMS_TABLE,
-                sqlMetric.getInvalidateItems().getResultTable()
-                        + "_" + inputParameter.get(ConfigConstants.TASK_ID));
-
-        MetricParserUtils.setTransformerConfig(
-                inputParameter, transformConfigs,
-                sqlMetric.getInvalidateItems(), TransformType.INVALIDATE_ITEMS.getDescription());
-
-        MetricParserUtils.setTransformerConfig(
-                inputParameter,
-                transformConfigs,
-                sqlMetric.getActualValue(),
-                TransformType.ACTUAL_VALUE.getDescription());
-
-        inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
-
-        // get expected value transform sql
-        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
-        expectedValue = PluginLoader
-                .getPluginLoader(ExpectedValue.class)
-                .getNewPlugin(expectedType);
-
-        ExecuteSql expectedValueExecuteSql =
-                new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
-
-        if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
-            inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
+            if (storageFactory != null) {
+                connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
+                errorDataSinkConfig.setPlugin(storageFactory.getCategory());
+                connectorParameterMap.put(ERROR_DATA_FILE_NAME, taskInfo.getErrorDataFileName());
+                connectorParameterMap.put(SQL, "SELECT * FROM "+ inputParameter.get(INVALIDATE_ITEMS_TABLE));
+                errorDataSinkConfig.setConfig(connectorParameterMap);
+            }
         }
 
-        inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
-
-        if (expectedValue.isNeedDefaultDatasource()) {
-            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());
-        } else {
-            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SOURCE.getDescription());
-        }
-
-        configuration.setTransformParameters(transformConfigs);
+        return errorDataSinkConfig;
     }
 }

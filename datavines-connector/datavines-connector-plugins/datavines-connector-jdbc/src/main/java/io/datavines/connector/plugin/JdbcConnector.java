@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datavines.common.CommonConstants;
+import io.datavines.common.datasource.jdbc.*;
 import io.datavines.common.entity.QueryColumn;
 import io.datavines.common.entity.TableInfo;
 import io.datavines.common.param.*;
@@ -29,10 +30,8 @@ import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.props.InputParamsProps;
 import io.datavines.common.param.form.type.InputParam;
 import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.utils.Md5Utils;
 import io.datavines.connector.api.Connector;
-import io.datavines.common.jdbc.datasource.*;
-import io.datavines.common.jdbc.utils.DataSourceUtils;
+import io.datavines.common.datasource.jdbc.utils.JdbcDataSourceUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class JdbcConnector implements Connector, IDataSourceInfo {
+public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
     protected final Logger logger = LoggerFactory.getLogger(JdbcConnector.class);
 
@@ -57,23 +56,34 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
 
     protected static final String TABLE_TYPE = "TABLE_TYPE";
 
+    private final JdbcExecutorClientManager jdbcExecutorClientManager = JdbcExecutorClientManager.getInstance();
+
     @Override
     public ConnectorResponse getDatabases(GetDatabasesRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
-
-        DataSourceManager dataSourceManager = DataSourceManager.getInstance();
-        Connection connection = dataSourceManager.getConnection(getDatasourceInfo(dataSourceParam));
+        JdbcExecutorClient executorClient = getJdbcExecutorClient(dataSourceParam);
+        Connection connection = executorClient.getConnection();
 
         ResultSet rs = getMetadataDatabases(connection);
         List<QueryColumn> databaseList = new ArrayList<>();
         while (rs.next()) {
             databaseList.add(new QueryColumn(rs.getString(1), DATABASE));
         }
-        DataSourceUtils.releaseConnection(connection);
+        JdbcDataSourceUtils.releaseConnection(connection);
         builder.result(databaseList);
 
         return builder.build();
+    }
+
+    private JdbcExecutorClient getJdbcExecutorClient(String dataSourceParam) {
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+
+        return jdbcExecutorClientManager.getExecutorClient(JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
+    }
+
+    private JdbcExecutorClient getJdbcExecutorClient(String dataSourceParam, JdbcConnectionInfo jdbcConnectionInfo) {
+        return jdbcExecutorClientManager.getExecutorClient(JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
     }
 
     @Override
@@ -81,25 +91,23 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
 
-        DataSourceManager dataSourceManager = DataSourceManager.getInstance();
-        Connection connection = dataSourceManager.getConnection(getDatasourceInfo(dataSourceParam));
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+        if (jdbcConnectionInfo == null) {
+            throw new SQLException("jdbc datasource param is no validate");
+        }
+
+        JdbcExecutorClient executorClient = getJdbcExecutorClient(dataSourceParam, jdbcConnectionInfo);
+        Connection connection = executorClient.getConnection();
 
         List<QueryColumn> tableList = null;
         ResultSet tables = null;
 
         try {
             DatabaseMetaData metaData = connection.getMetaData();
+            String schema = param.getDataBase();
 
-            String schema = null;
-            try {
-                schema = metaData.getConnection().getSchema();
-            } catch (Throwable t) {
-                t.printStackTrace();
-            }
-
-            String dbName = param.getDataBase();
             tableList = new ArrayList<>();
-            tables = getMetadataTables(metaData,dbName,schema);
+            tables = getMetadataTables(metaData, jdbcConnectionInfo.getCatalog(), schema);
 
             if (null == tables) {
                 return builder.result(tableList).build();
@@ -121,7 +129,7 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
         } catch (Exception e) {
             logger.error("get table list error: {0}", e);
         } finally {
-            DataSourceUtils.releaseConnection(connection);
+            JdbcDataSourceUtils.releaseConnection(connection);
         }
 
         return builder.result(tableList).build();
@@ -131,9 +139,13 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
     public ConnectorResponse getColumns(GetColumnsRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+        if (jdbcConnectionInfo == null) {
+            throw new SQLException("jdbc datasource param is no validate");
+        }
 
-        DataSourceManager dataSourceManager = DataSourceManager.getInstance();
-        Connection connection = dataSourceManager.getConnection(getDatasourceInfo(dataSourceParam));
+        JdbcExecutorClient executorClient = getJdbcExecutorClient(dataSourceParam, jdbcConnectionInfo);
+        Connection connection = executorClient.getConnection();
 
         TableInfo tableInfo = null;
         try {
@@ -141,15 +153,15 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
             String tableName = param.getTable();
             if (null != connection) {
                 DatabaseMetaData metaData = connection.getMetaData();
-                List<String> primaryKeys = getPrimaryKeys(dbName, tableName, metaData);
-                List<QueryColumn> columns = getColumns(dbName, tableName, metaData);
+                List<String> primaryKeys = getPrimaryKeys(jdbcConnectionInfo.getCatalog(), dbName, tableName, metaData);
+                List<QueryColumn> columns = getColumns(jdbcConnectionInfo.getCatalog(), dbName, tableName, metaData);
                 tableInfo = new TableInfo(tableName, primaryKeys, columns);
             }
         } catch (SQLException e) {
             logger.error(e.toString(), e);
             throw new SQLException(e.getMessage() + ", " + dataSourceParam);
         } finally {
-            DataSourceUtils.releaseConnection(connection);
+            JdbcDataSourceUtils.releaseConnection(connection);
         }
 
         return builder.result(tableInfo).build();
@@ -162,11 +174,12 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
 
     @Override
     public ConnectorResponse testConnect(TestConnectionRequestParam param) {
-        BaseDataSourceInfo dataSourceInfo = getDatasourceInfo(param.getDataSourceParam());
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(param.getDataSourceParam(), JdbcConnectionInfo.class);
+        BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(jdbcConnectionInfo);
         dataSourceInfo.loadClass();
 
         try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(), dataSourceInfo.getUser(), dataSourceInfo.getPassword())) {
-            boolean result = con!=null;
+            boolean result = con != null;
             if (result) {
                 con.close();
             }
@@ -231,7 +244,7 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
         return result;
     }
 
-    private InputParam getInputParam(String field, String title, String placeholder, int rows, Validate validate) {
+    protected InputParam getInputParam(String field, String title, String placeholder, int rows, Validate validate) {
         return InputParam
                 .newBuilder(field, title)
                 .addValidate(validate)
@@ -244,7 +257,7 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
                 .build();
     }
 
-    private InputParam getInputParamNoValidate(String field, String title, String placeholder, int rows) {
+    protected InputParam getInputParamNoValidate(String field, String title, String placeholder, int rows) {
         return InputParam
                 .newBuilder(field, title)
                 .setProps(new InputParamsProps().setDisabled(false))
@@ -257,11 +270,12 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
                 .build();
     }
 
-    public List<String> getPrimaryKeys(String dbName, String tableName, DatabaseMetaData metaData) {
+    private List<String> getPrimaryKeys(String catalog, String schema, String tableName, DatabaseMetaData metaData) {
         ResultSet rs = null;
         List<String> primaryKeys = new ArrayList<>();
         try {
-            rs = metaData.getPrimaryKeys(null, dbName, tableName);
+
+            rs = getPrimaryKeys(metaData, catalog, schema, tableName);
 
             if (rs == null) {
                 return primaryKeys;
@@ -272,16 +286,16 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
         } catch (Exception e) {
             logger.error(e.toString(), e);
         } finally {
-            DataSourceUtils.closeResult(rs);
+            JdbcDataSourceUtils.closeResult(rs);
         }
         return primaryKeys;
     }
 
-    public List<QueryColumn> getColumns(String dbName, String tableName, DatabaseMetaData metaData) {
+    public List<QueryColumn> getColumns(String catalog, String schema, String tableName, DatabaseMetaData metaData) {
         ResultSet rs = null;
         List<QueryColumn> columnList = new ArrayList<>();
         try {
-            rs = getMetadataColumns(metaData, dbName, null, tableName, "%");
+            rs = getMetadataColumns(metaData, catalog, schema, tableName, "%");
             if (rs == null) {
                 return columnList;
             }
@@ -294,30 +308,22 @@ public abstract class JdbcConnector implements Connector, IDataSourceInfo {
         } catch (Exception e) {
             logger.error(e.toString(), e);
         } finally {
-            DataSourceUtils.closeResult(rs);
+            JdbcDataSourceUtils.closeResult(rs);
         }
         return columnList;
     }
 
-    protected BaseDataSourceInfo getDatasourceInfo(String param) {
-
-        if (DataSourceInfoManager.getDatasourceInfo(param) == null) {
-            String key = Md5Utils.getMd5(param, false);
-            ConnectionInfo connectionInfo = JSONUtils.parseObject(param,ConnectionInfo.class);
-            BaseDataSourceInfo dataSourceInfo = getDatasourceInfo(connectionInfo);
-            DataSourceInfoManager.putDataSourceInfo(key,dataSourceInfo);
-        }
-
-        return DataSourceInfoManager.getDatasourceInfo(param);
-    }
-
-    public abstract ResultSet getMetadataColumns(DatabaseMetaData metaData,
-                                                 String dbName, String schema,
+    protected abstract ResultSet getMetadataColumns(DatabaseMetaData metaData,
+                                                 String catalog, String schema,
                                                  String tableName, String columnName) throws SQLException;
 
-    public abstract ResultSet getMetadataTables(DatabaseMetaData metaData, String dbName, String schema) throws SQLException;
+    protected abstract ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException;
 
-    public  ResultSet getMetadataDatabases(Connection connection) throws SQLException {
+    protected ResultSet getPrimaryKeys(DatabaseMetaData metaData,String catalog, String schema, String tableName) throws SQLException {
+        return metaData.getPrimaryKeys(schema, null, tableName);
+    }
+
+    protected ResultSet getMetadataDatabases(Connection connection) throws SQLException {
         java.sql.Statement stmt = connection.createStatement();
         return stmt.executeQuery("show databases");
     }

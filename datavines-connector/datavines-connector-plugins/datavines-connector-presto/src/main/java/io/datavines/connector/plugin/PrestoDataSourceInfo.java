@@ -16,18 +16,32 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
-import io.datavines.common.jdbc.datasource.ConnectionInfo;
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
-public class PrestoDataSourceInfo extends BaseDataSourceInfo {
+public class PrestoDataSourceInfo extends BaseJdbcDataSourceInfo {
 
-    public PrestoDataSourceInfo(ConnectionInfo connectionInfo) {
-        super(connectionInfo);
+    public PrestoDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        super(jdbcConnectionInfo);
     }
 
     @Override
     public String getAddress() {
         return "jdbc:presto" + "://" + getHost() + ":" + getPort();
+    }
+
+    /**
+     * gets the JDBC url for the data source connection
+     * @return getJdbcUrl
+     */
+    @Override
+    public String getJdbcUrl() {
+        StringBuilder jdbcUrl = new StringBuilder(getAddress());
+        appendCatalog(jdbcUrl);
+        appendDatabase(jdbcUrl);
+        appendProperties(jdbcUrl);
+
+        return jdbcUrl.toString();
     }
 
     @Override

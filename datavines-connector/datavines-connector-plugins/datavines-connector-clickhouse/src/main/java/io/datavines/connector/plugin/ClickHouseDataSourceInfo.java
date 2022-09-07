@@ -16,13 +16,13 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.jdbc.datasource.BaseDataSourceInfo;
-import io.datavines.common.jdbc.datasource.ConnectionInfo;
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
-public class ClickHouseDataSourceInfo extends BaseDataSourceInfo {
+public class ClickHouseDataSourceInfo extends BaseJdbcDataSourceInfo {
 
-    public ClickHouseDataSourceInfo(ConnectionInfo connectionInfo) {
-        super(connectionInfo);
+    public ClickHouseDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        super(jdbcConnectionInfo);
     }
 
     @Override

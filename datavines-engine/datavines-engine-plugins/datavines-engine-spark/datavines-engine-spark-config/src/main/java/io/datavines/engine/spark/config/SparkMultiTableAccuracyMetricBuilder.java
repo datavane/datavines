@@ -29,6 +29,7 @@ import java.util.Map;
 import static io.datavines.common.CommonConstants.AND;
 import static io.datavines.common.CommonConstants.TABLE;
 import static io.datavines.common.CommonConstants.TABLE2;
+import static io.datavines.engine.api.ConfigConstants.EXPECTED_VALUE;
 
 public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfigurationBuilder {
 
@@ -61,6 +62,10 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
         //todo
         //get the error data storage parameter
         //support file(hdfs/minio/s3)/es
+        SinkConfig errorDataSinkConfig = getErrorSinkConfig();
+        if (errorDataSinkConfig != null) {
+            sinkConfigs.add(errorDataSinkConfig);
+        }
 
         configuration.setSinkParameters(sinkConfigs);
     }

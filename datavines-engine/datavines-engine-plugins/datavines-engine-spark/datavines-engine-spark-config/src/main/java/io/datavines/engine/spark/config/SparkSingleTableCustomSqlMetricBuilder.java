@@ -71,9 +71,12 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
         SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "dv_task_result");
         sinkConfigs.add(taskResultSinkConfig);
 
-        //todo
         //get the error data storage parameter
         //support file(hdfs/minio/s3)/es
+        SinkConfig errorDataSinkConfig = getErrorSinkConfig();
+        if (errorDataSinkConfig != null) {
+            sinkConfigs.add(errorDataSinkConfig);
+        }
 
         configuration.setSinkParameters(sinkConfigs);
     }
