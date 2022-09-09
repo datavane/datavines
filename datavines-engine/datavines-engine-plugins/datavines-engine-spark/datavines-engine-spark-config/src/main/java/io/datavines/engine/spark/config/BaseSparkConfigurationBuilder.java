@@ -135,6 +135,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
                 connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
                 errorDataSinkConfig.setPlugin(storageFactory.getCategory());
                 connectorParameterMap.put(ERROR_DATA_FILE_NAME, taskInfo.getErrorDataFileName());
+                connectorParameterMap.put(TABLE, taskInfo.getErrorDataFileName());
                 connectorParameterMap.put(SQL, "SELECT * FROM "+ inputParameter.get(INVALIDATE_ITEMS_TABLE));
                 errorDataSinkConfig.setConfig(connectorParameterMap);
             }
