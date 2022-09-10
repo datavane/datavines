@@ -123,7 +123,6 @@ public class MetricParserUtils {
         Map<String,String> newInputParameterValue = new HashMap<>(inputParameterValue);
 
         newInputParameterValue.remove(METRIC_TYPE);
-//        newInputParameterValue.remove(METRIC_NAME);
         newInputParameterValue.remove(METRIC_DIMENSION);
         newInputParameterValue.remove(CREATE_TIME);
         newInputParameterValue.remove(UPDATE_TIME);
@@ -136,6 +135,7 @@ public class MetricParserUtils {
         newInputParameterValue.remove(ERROR_DATA_FILE_DIR);
         newInputParameterValue.remove(EXPECTED_TYPE);
         newInputParameterValue.remove(EXPECTED_NAME);
+        newInputParameterValue.remove(EXPECTED_VALUE);
         newInputParameterValue.remove(EXPECTED_TABLE);
         newInputParameterValue.remove(INVALIDATE_ITEMS_TABLE);
         newInputParameterValue.remove(SRC_CONNECTOR_TYPE);
