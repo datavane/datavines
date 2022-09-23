@@ -28,7 +28,7 @@ import io.datavines.core.exception.DataVinesServerException;
 
 import java.util.List;
 
-public interface WorkSpaceService {
+public interface  WorkSpaceService {
 
     long insert(WorkSpaceCreate workSpaceCreate) throws DataVinesServerException;
 

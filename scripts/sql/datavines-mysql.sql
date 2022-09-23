@@ -448,20 +448,22 @@ INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`, 
 INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1', "admin\'s default", '1', '2022-05-20 23:01:18', '1', '2022-05-20 23:01:21');
 INSERT INTO `dv_user_workspace` (`id`, `user_id`, `workspace_id`, `role_id`,`create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1', '1', '1', '1','1', '2022-07-16 20:34:02', '1', '2022-07-16 20:34:02');
 
-CREATE TABLE `dv_entity_definition` (
+CREATE TABLE `dv_catalog_entity_definition` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `uuid` varchar(64) NOT NULL COMMENT '唯一ID',
   `name` varchar(255) NOT NULL COMMENT '实体定义的名字',
   `description` varchar(255) DEFAULT NULL COMMENT '描述',
   `properties` text COMMENT '实体参数，用List存储 例如 [{"name":"id","type":"string"}]',
   `super_uuid` varchar(64) NOT NULL DEFAULT '-1' COMMENT '父类ID',
-  `update_time` datetime NOT NULL COMMENT '更新时间',
-  `updated_by` varchar(255) NOT NULL COMMENT '更新人',
+  `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dv_entity_definition_un` (`uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体定义';
 
-CREATE TABLE `dv_entity_instance` (
+CREATE TABLE `dv_catalog_entity_instance` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `uuid` varchar(64) NOT NULL COMMENT '唯一ID',
   `type` varchar(127) NOT NULL COMMENT '实体类型',
@@ -474,45 +476,32 @@ CREATE TABLE `dv_entity_instance` (
   `version` varchar(64) NOT NULL DEFAULT '1.0' COMMENT '版本',
   `status` varchar(255) DEFAULT 'active' COMMENT '实体状态：active/deleted',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `update_time` datetime NOT NULL COMMENT '更新时间',
-  `updated_by` varchar(255) NOT NULL COMMENT '更新者',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dv_entity_instance_un` (`uuid`),
-  FULLTEXT KEY `full_idx_display_name_description` (`display_name`,`description`) /*!50100 WITH PARSER `ngram` */
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='实体';
+  FULLTEXT KEY `full_idx_display_name_description` (`display_name`,`description`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体';
 
-CREATE TABLE `dv_entity_rel` (
+CREATE TABLE `dv_catalog_entity_rel` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `entity1_uuid` varchar(64) NOT NULL COMMENT '实体1uuid',
   `entity2_uuid` varchar(64) NOT NULL COMMENT '实体2uuid',
   `direction` varchar(64) NOT NULL COMMENT '关系方向，up-2是1上游，down-2是1下游',
-  `update_time` datetime NOT NULL COMMENT '更新时间',
-  `updated_by` varchar(255) NOT NULL COMMENT '更新人',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `updated_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dv_entity_rel_un` (`entity1_uuid`,`entity2_uuid`,`direction`),
   KEY `idx_entity2_uuid` (`entity2_uuid`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='实体关联关系';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体关联关系';
 
-
-CREATE TABLE `dv_entity_rel` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `entity1_uuid` varchar(64) NOT NULL COMMENT '实体1uuid',
-  `entity2_uuid` varchar(64) NOT NULL COMMENT '实体2uuid',
-  `direction` varchar(64) NOT NULL COMMENT '关系方向，up-2是1上游，down-2是1下游',
-  `update_time` datetime NOT NULL COMMENT '更新时间',
-  `updated_by` varchar(255) NOT NULL COMMENT '更新人',
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `dv_entity_rel_un` (`entity1_uuid`,`entity2_uuid`,`direction`),
-  KEY `idx_entity2_uuid` (`entity2_uuid`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='实体关联关系';
-
-CREATE TABLE `dv_schema_change` (
-  `id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `entity_uuid` varchar(64) NOT NULL COMMENT '实体uuid',
-  `change_type` varchar(64) NOT NULL COMMENT '变更类型',
-  `change_before` text NOT NULL COMMENT '变更前',
-  `change_after` text NOT NULL COMMENT '变更后',
-  `update_time` datetime NOT NULL COMMENT '更新时间',
-  `updated_by` varchar(255) NOT NULL COMMENT '更新人',
-  PRIMARY KEY (`id`),
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COMMENT='Schema变更记录表';
+CREATE TABLE `dv_catalog_schema_change` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `entity_uuid` varchar(64) NOT NULL COMMENT '实体uuid',
+    `change_type` varchar(64) NOT NULL COMMENT '变更类型',
+    `change_before` text NOT NULL COMMENT '变更前',
+    `change_after` text NOT NULL COMMENT '变更后',
+    `updated_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Schema变更记录表';
