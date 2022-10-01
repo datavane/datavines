@@ -14,25 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.entity;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
+package io.datavines.server.coordinator.repository.entity.catalog;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.datavines.server.enums.CommandCategory;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import lombok.Data;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 @Data
-@TableName("dv_command")
-public class Command implements Serializable {
+@TableName("dv_catalog_command")
+public class CatalogCommand implements Serializable {
 
     private static final long serialVersionUID = -1L;
 

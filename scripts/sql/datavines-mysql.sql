@@ -505,3 +505,28 @@ CREATE TABLE `dv_catalog_schema_change` (
     `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Schema变更记录表';
+
+CREATE TABLE `dv_catalog_command` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `type` tinyint(4) DEFAULT '0' COMMENT 'Command type: 0 start task, 1 stop task, 2 recover fault-tolerant task, 3 resume waiting thread',
+    `parameter` text COMMENT 'json command parameters',
+    `task_id` bigint(20) NOT NULL COMMENT 'task id',
+    `priority` int(11) DEFAULT NULL COMMENT 'process instance priority: 0 Highest,1 High,2 Medium,3 Low,4 Lowest',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `dv_catalog_task` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `datasource_id` bigint(20) NOT NULL DEFAULT '-1',
+    `status` int(11) DEFAULT NULL,
+    `execute_host` varchar(255) DEFAULT NULL COMMENT '执行任务的主机',
+    `submit_time` datetime DEFAULT NULL,
+    `schedule_time` datetime DEFAULT NULL,
+    `start_time` datetime DEFAULT NULL,
+    `end_time` datetime DEFAULT NULL,
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

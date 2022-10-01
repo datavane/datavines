@@ -52,7 +52,7 @@ public class TaskRunner implements Runnable {
     public void run() {
         TaskExecuteResponseCommand responseCommand =
                 new TaskExecuteResponseCommand(this.taskRequest.getTaskId());
-        try{
+        try {
             String taskLoggerName = LoggerUtils.buildTaskLoggerName(
                     LoggerUtils.TASK_LOGGER_INFO_PREFIX,
                     taskRequest.getTaskUniqueId());

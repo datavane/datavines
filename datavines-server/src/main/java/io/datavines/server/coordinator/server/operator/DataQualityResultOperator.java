@@ -116,7 +116,6 @@ public class DataQualityResultOperator {
         Task task = taskService.getById(taskId);
         Long jobId = task.getJobId();
 
-
         Map<SlaSenderMessage, Set<SlaConfigMessage>> config = slaNotificationService.getSlasNotificationConfigurationByJobId(jobId);
         if (config.isEmpty()){
             return;

@@ -75,6 +75,7 @@ public class JobScheduler extends Thread {
                 command = jobExternalService.getCommand();
 
                 if (command != null) {
+
                     if (CommandType.START == command.getType()) {
                         Task task = jobExternalService.executeCommand(command);
                         if (task != null) {

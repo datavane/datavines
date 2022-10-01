@@ -14,42 +14,52 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.coordinator.repository.entity;
-
-import java.io.Serializable;
-import java.time.LocalDateTime;
+package io.datavines.server.coordinator.repository.entity.catalog;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.datavines.server.enums.CommandCategory;
-import io.datavines.server.enums.CommandType;
-import io.datavines.server.enums.Priority;
+import io.datavines.common.entity.TaskParameter;
+import io.datavines.common.enums.ExecutionStatus;
+import io.datavines.common.enums.JobType;
+import io.datavines.common.enums.TimeoutStrategy;
 import lombok.Data;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
 @Data
-@TableName("dv_command")
-public class Command implements Serializable {
+@TableName("dv_catalog_task")
+public class CatalogTask implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
     @TableId(type= IdType.AUTO)
     private Long id;
 
-    @TableField(value = "type")
-    private CommandType type;
+    @TableField(value = "datasource_id")
+    private Long dataSourceId;
 
-    @TableField(value = "parameter")
-    private String parameter;
+    @TableField(value = "status")
+    private ExecutionStatus status;
 
-    @TableField(value = "task_id")
-    private Long taskId;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @TableField(value = "submit_time")
+    private LocalDateTime submitTime;
 
-    @TableField(value = "priority")
-    private Priority priority;
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @TableField(value = "schedule_time")
+    private LocalDateTime scheduleTime;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @TableField(value = "start_time")
+    private LocalDateTime startTime;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @TableField(value = "end_time")
+    private LocalDateTime endTime;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     @TableField(value = "create_time")
