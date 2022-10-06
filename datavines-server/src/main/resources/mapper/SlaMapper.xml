@@ -18,7 +18,7 @@
 
 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.datavines.server.coordinator.repository.mapper.SlaMapper">
+<mapper namespace="io.datavines.server.repository.mapper.SlaMapper">
 
     <sql id="slaJob">
         SELECT sla_id,
@@ -31,7 +31,7 @@
             sla_id
     </sql>
 
-    <select id="listSlas" resultType="io.datavines.server.coordinator.api.dto.vo.SlaPageVO" >
+    <select id="listSlas" resultType="io.datavines.server.api.dto.vo.SlaPageVO" >
         SELECT
             sla.id,
             sla.name,
@@ -52,7 +52,7 @@
         </if>
     </select>
 
-    <select id="getSlaByJobId" resultType="io.datavines.server.coordinator.api.dto.vo.SlaVO" >
+    <select id="getSlaByJobId" resultType="io.datavines.server.api.dto.vo.SlaVO" >
         SELECT
             sla.id,
             sla.name,

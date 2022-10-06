@@ -17,7 +17,7 @@
 package io.datavines.server.utils;
 
 import io.datavines.core.constant.DataVinesConstants;
-import io.datavines.server.coordinator.repository.entity.User;
+import io.datavines.server.repository.entity.User;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;

@@ -18,9 +18,9 @@
 
 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.datavines.server.coordinator.repository.mapper.SlaJobMapper">
+<mapper namespace="io.datavines.server.repository.mapper.SlaJobMapper">
 
-    <select id="listSlaJob" resultType="io.datavines.server.coordinator.api.dto.vo.SlaJobVO" >
+    <select id="listSlaJob" resultType="io.datavines.server.api.dto.vo.SlaJobVO" >
         SELECT dsj.id,
                 dsj.job_id,
                 dj.name AS job_name,

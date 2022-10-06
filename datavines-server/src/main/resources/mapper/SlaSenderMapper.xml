@@ -18,7 +18,7 @@
 
 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.datavines.server.coordinator.repository.mapper.SlaSenderMapper">
+<mapper namespace="io.datavines.server.repository.mapper.SlaSenderMapper">
 
 
     <sql id="workspaceData">
@@ -33,7 +33,7 @@
         WHERE workspace_id = #{workspaceId}
     </sql>
 
-    <select id="pageListSender" resultType="io.datavines.server.coordinator.api.dto.vo.SlaSenderVO" >
+    <select id="pageListSender" resultType="io.datavines.server.api.dto.vo.SlaSenderVO" >
         SELECT dss.id,
             dss.workspace_id,
             dss.name,

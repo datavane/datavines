@@ -298,6 +298,7 @@ CREATE TABLE `dv_task_result` (
 
 CREATE TABLE `dv_datasource` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `uuid` varchar(64) NOT NULL COMMENT '唯一ID',
     `name` varchar(255) NOT NULL,
     `type` varchar(255) NOT NULL,
     `param` text NOT NULL,
@@ -467,7 +468,7 @@ CREATE TABLE `dv_catalog_entity_instance` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `uuid` varchar(64) NOT NULL COMMENT '唯一ID',
   `type` varchar(127) NOT NULL COMMENT '实体类型',
-  `datasource_config_key` varchar(1024) DEFAULT NULL COMMENT '数据源的配置信息 MD5 值',
+  `datasource_id` bigint(20) NOT NULL COMMENT '数据源id',
   `fully_qualified_name` varchar(255) NOT NULL COMMENT '全限定名',
   `display_name` varchar(255) NOT NULL COMMENT '展示名字',
   `description` varchar(1024) DEFAULT NULL COMMENT '描述',
@@ -477,7 +478,7 @@ CREATE TABLE `dv_catalog_entity_instance` (
   `status` varchar(255) DEFAULT 'active' COMMENT '实体状态：active/deleted',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `updated_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+  `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dv_entity_instance_un` (`uuid`),
   FULLTEXT KEY `full_idx_display_name_description` (`display_name`,`description`)
@@ -489,7 +490,7 @@ CREATE TABLE `dv_catalog_entity_rel` (
   `entity2_uuid` varchar(64) NOT NULL COMMENT '实体2uuid',
   `direction` varchar(64) NOT NULL COMMENT '关系方向，up-2是1上游，down-2是1下游',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
-  `updated_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+  `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dv_entity_rel_un` (`entity1_uuid`,`entity2_uuid`,`direction`),
   KEY `idx_entity2_uuid` (`entity2_uuid`)
@@ -499,9 +500,12 @@ CREATE TABLE `dv_catalog_schema_change` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `entity_uuid` varchar(64) NOT NULL COMMENT '实体uuid',
     `change_type` varchar(64) NOT NULL COMMENT '变更类型',
+    `database` varchar(64) DEFAULT NULL COMMENT '数据库',
+    `table` varchar(64) DEFAULT NULL COMMENT '表',
+    `column` varchar(64) DEFAULT NULL COMMENT '列',
     `change_before` text NOT NULL COMMENT '变更前',
     `change_after` text NOT NULL COMMENT '变更后',
-    `updated_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+    `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
     `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Schema变更记录表';

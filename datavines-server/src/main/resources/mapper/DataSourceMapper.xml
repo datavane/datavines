@@ -18,13 +18,13 @@
 
 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.datavines.server.coordinator.repository.mapper.DataSourceMapper">
+<mapper namespace="io.datavines.server.repository.mapper.DataSourceMapper">
 
     <sql id="basic_sql">
         select * from dv_datasource where workspace_id = #{workspaceId}
     </sql>
 
-    <select id="getDataSourcePage" resultType="io.datavines.server.coordinator.api.dto.vo.DataSourceVO">
+    <select id="getDataSourcePage" resultType="io.datavines.server.api.dto.vo.DataSourceVO">
         select p.id, p.name, p.type, p.param, u.username as updater, p.update_time from (<include refid="basic_sql"/>) p left join `dv_user` u on u.id = p.create_by
         <where>
             <if test="searchVal != null">

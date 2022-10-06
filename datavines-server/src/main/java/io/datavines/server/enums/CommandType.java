@@ -44,9 +44,9 @@ public enum CommandType {
     }
 
     @EnumValue
-    private int code;
+    private final int code;
 
-    private String description;
+    private final String description;
 
     private static final Map<Integer, CommandType> COMMAND_TYPE_MAP = new HashMap<>();
 
@@ -60,7 +60,7 @@ public enum CommandType {
         if (COMMAND_TYPE_MAP.containsKey(status)) {
             return COMMAND_TYPE_MAP.get(status);
         }
-        throw new IllegalArgumentException("invalid status : " + status);
+        throw new IllegalArgumentException("invalid command : " + status);
     }
 
     public int getCode() {

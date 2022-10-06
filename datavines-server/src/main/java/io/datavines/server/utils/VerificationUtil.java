@@ -19,8 +19,8 @@ package io.datavines.server.utils;
 import com.google.code.kaptcha.impl.DefaultKaptcha;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.utils.TokenManager;
-import io.datavines.server.coordinator.api.dto.vo.KaptchaResp;
-import io.datavines.core.enums.ApiStatus;
+import io.datavines.server.api.dto.vo.KaptchaResp;
+import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -38,9 +38,9 @@ import java.util.Map;
 
 public class VerificationUtil {
 
-    private static Logger logger = LoggerFactory.getLogger(VerificationUtil.class);
-    private static DefaultKaptcha defaultKaptcha;
-    private static TokenManager tokenManager;
+    private static final Logger logger = LoggerFactory.getLogger(VerificationUtil.class);
+    private static final DefaultKaptcha defaultKaptcha;
+    private static final TokenManager tokenManager;
     private static final Long timeOutMillis = 300000L;
 
     static {
@@ -62,15 +62,15 @@ public class VerificationUtil {
         try {
             claims = tokenManager.getClaims(verificationCodeJwt);
         } catch (ExpiredJwtException e) {
-            throw new DataVinesServerException(ApiStatus.EXPIRED_VERIFICATION_CODE);
+            throw new DataVinesServerException(Status.EXPIRED_VERIFICATION_CODE);
         }
         Date expiration = claims.getExpiration();
         if(null == expiration || expiration.getTime() < System.currentTimeMillis()){
-            throw new DataVinesServerException(ApiStatus.EXPIRED_VERIFICATION_CODE);
+            throw new DataVinesServerException(Status.EXPIRED_VERIFICATION_CODE);
         }
         String verificationCodeInJwt = null == claims.get(DataVinesConstants.TOKEN_VERIFICATION_CODE) ? null : claims.get(DataVinesConstants.TOKEN_VERIFICATION_CODE).toString();
         if(null == verificationCodeInJwt || !verificationCodeInJwt.equals(verificationCode)){
-            throw new DataVinesServerException(ApiStatus.INVALID_VERIFICATION_CODE);
+            throw new DataVinesServerException(Status.INVALID_VERIFICATION_CODE);
         }
     }
 
@@ -103,25 +103,24 @@ public class VerificationUtil {
         }
         String imageByte64;
         BASE64Encoder encoder = new BASE64Encoder();
-        if(null == imageInByte){
-            throw new DataVinesServerException(ApiStatus.CREATE_VERIFICATION_IMAGE_ERROR);
+        if (null == imageInByte) {
+            throw new DataVinesServerException(Status.CREATE_VERIFICATION_IMAGE_ERROR);
         }
         imageByte64 = encoder.encodeBuffer(imageInByte).replaceAll("\n", "").replaceAll("\r", "");
         return "data:image/jpg;base64,".concat(imageByte64);
     }
 
     public static boolean verifyIsNeedParam(Map<String ,String>  parameter, String[]  times) {
-        for (int i = 0; i < times.length; i++) {
-            String time = times[i];
-            if(! parameter.containsKey(time)){
+        for (String time : times) {
+            if (!parameter.containsKey(time)) {
                 return false;
             }
-            try{
-                Integer timeValue = Integer.parseInt(parameter.get(time));
-                if(timeValue > 60 || timeValue < 0 ){
+            try {
+                int timeValue = Integer.parseInt(parameter.get(time));
+                if (timeValue > 60 || timeValue < 0) {
                     return false;
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 return false;
             }
         }

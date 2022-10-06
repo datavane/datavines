@@ -18,6 +18,9 @@ package io.datavines.connector.plugin;
 
 import io.datavines.connector.api.Dialect;
 
+import java.util.Arrays;
+import java.util.List;
+
 public abstract class JdbcDialect implements Dialect {
 
     @Override
@@ -38,5 +41,10 @@ public abstract class JdbcDialect implements Dialect {
     @Override
     public String getNotRegexKey() {
         return "not regexp";
+    }
+
+    @Override
+    public List<String> getExcludeDatabases() {
+        return Arrays.asList("sys", "information_schema", "performance_schema", "mysql");
     }
 }

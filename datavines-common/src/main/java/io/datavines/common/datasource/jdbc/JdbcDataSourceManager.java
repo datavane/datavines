@@ -26,9 +26,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.ConcurrentHashMap;
 
-/**
- * JdbcDataSourceManager
- */
 @Slf4j
 public class JdbcDataSourceManager {
 
