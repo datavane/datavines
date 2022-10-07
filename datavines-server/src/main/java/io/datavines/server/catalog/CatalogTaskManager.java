@@ -1,18 +1,20 @@
 package io.datavines.server.catalog;
 
-import io.datavines.common.utils.CommonPropertyUtils;
-import io.datavines.common.utils.Stopper;
-import io.datavines.common.utils.ThreadUtils;
+import io.datavines.common.utils.*;
+import io.datavines.server.catalog.enums.FetchType;
 import io.datavines.server.catalog.task.CatalogTaskContext;
 import io.datavines.server.catalog.task.CatalogTaskResponse;
 import io.datavines.server.catalog.task.CatalogTaskResponseQueue;
 import io.datavines.server.catalog.task.MetaDataFetchRequest;
+import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.catalog.CatalogTask;
 import io.datavines.server.repository.service.CatalogTaskService;
+import io.datavines.server.repository.service.impl.JobExternalService;
 import io.datavines.server.utils.NamedThreadFactory;
 import io.datavines.server.utils.SpringApplicationContext;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -28,6 +30,9 @@ public class CatalogTaskManager {
     private final CatalogTaskService catalogTaskService =
             SpringApplicationContext.getBean(CatalogTaskService.class);
 
+    private final JobExternalService jobExternalService =
+            SpringApplicationContext.getBean(JobExternalService.class);
+
     private final ExecutorService taskExecuteService;
 
     public CatalogTaskManager () {
@@ -36,7 +41,7 @@ public class CatalogTaskManager {
                 new NamedThreadFactory("CatalogTask-Execute-Thread"));
     }
 
-    public void init() {
+    public void start() {
         new TaskExecutor().start();
 
         new TaskResponseOperator().start();
@@ -50,6 +55,7 @@ public class CatalogTaskManager {
                 try {
                     CatalogTaskContext catalogTaskContext = taskQueue.take();
                     taskExecuteService.execute(new CatalogTaskRunner(catalogTaskContext));
+                    ThreadUtils.sleep(1000);
                 } catch(Exception e) {
                     log.error("dispatcher catalog task error",e);
                     ThreadUtils.sleep(2000);
@@ -68,17 +74,55 @@ public class CatalogTaskManager {
             while (Stopper.isRunning()) {
                 try {
                     CatalogTaskResponse taskResponse = responseQueue.take();
+                    log.info("CatalogTaskResponse: " + JSONUtils.toJsonString(taskResponse));
                     CatalogTask catalogTask = catalogTaskService.getById(taskResponse.getCatalogTaskId());
                     if (catalogTask != null) {
                         catalogTask.setStatus(taskResponse.getStatus());
                         catalogTaskService.update(catalogTask);
                     }
-
+                    ThreadUtils.sleep(1000);
                 } catch(Exception e) {
                     log.info("operate catalog task response error {0}", e);
                 }
             }
         }
+    }
+
+    public void putCatalogTask(CatalogTask catalogTask) throws InterruptedException {
+        if (catalogTask == null) {
+            return;
+        }
+
+        Long dataSourceId = catalogTask.getDataSourceId();
+        DataSource dataSource = jobExternalService.getDataSourceService().getDataSourceById(dataSourceId);
+        if (dataSource == null) {
+            return;
+        }
+
+        MetaDataFetchRequest metaDataFetchRequest = new MetaDataFetchRequest();
+        metaDataFetchRequest.setDataSource(dataSource);
+        metaDataFetchRequest.setFetchType(FetchType.DATASOURCE);
+
+        String parameter = catalogTask.getParameter();
+        if (StringUtils.isNotEmpty(parameter)) {
+            Map<String, String> parameterMap = JSONUtils.toMap(parameter);
+            if (parameterMap != null) {
+                String database = parameterMap.get("database");
+                if (StringUtils.isNotEmpty(database)) {
+                    metaDataFetchRequest.setDatabase(database);
+                    metaDataFetchRequest.setFetchType(FetchType.DATABASE);
+                }
+
+                String table = parameterMap.get("table");
+                if (StringUtils.isNotEmpty(table)) {
+                    metaDataFetchRequest.setTable(table);
+                    metaDataFetchRequest.setFetchType(FetchType.TABLE);
+                }
+            }
+        }
+
+        CatalogTaskContext catalogTaskContext = new CatalogTaskContext(metaDataFetchRequest, catalogTask.getId());
+        taskQueue.put(catalogTaskContext);
     }
 
 }

@@ -43,7 +43,7 @@ public class CatalogTask implements Serializable {
     private Long dataSourceId;
 
     @TableField(value = "parameter")
-    private Long parameter;
+    private String parameter;
 
     @TableField(value = "status")
     private int status;

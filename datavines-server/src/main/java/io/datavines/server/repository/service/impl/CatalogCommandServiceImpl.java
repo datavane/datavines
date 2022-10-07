@@ -11,13 +11,15 @@ import org.springframework.stereotype.Service;
 public class CatalogCommandServiceImpl
         extends ServiceImpl<CatalogCommandMapper, CatalogCommand>
         implements CatalogCommandService {
+
     @Override
-    public long insert(CatalogCommand CatalogCommand) {
-        return 0;
+    public long create(CatalogCommand catalogCommand) {
+        baseMapper.insert(catalogCommand);
+        return catalogCommand.getId();
     }
 
     @Override
-    public int update(CatalogCommand CatalogCommand) {
+    public int update(CatalogCommand catalogCommand) {
         return 0;
     }
 
@@ -33,6 +35,6 @@ public class CatalogCommandServiceImpl
 
     @Override
     public int deleteById(long id) {
-        return 0;
+        return baseMapper.deleteById(id);
     }
 }

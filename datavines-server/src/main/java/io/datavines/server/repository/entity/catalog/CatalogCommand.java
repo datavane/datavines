@@ -37,12 +37,6 @@ public class CatalogCommand implements Serializable {
     @TableId(type= IdType.AUTO)
     private Long id;
 
-    @TableField(value = "type")
-    private CommandType type;
-
-    @TableField(value = "parameter")
-    private String parameter;
-
     @TableField(value = "task_id")
     private Long taskId;
 

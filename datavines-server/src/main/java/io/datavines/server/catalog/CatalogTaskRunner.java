@@ -23,6 +23,7 @@ public class CatalogTaskRunner implements Runnable {
         CatalogMetaDataFetchTaskImpl fetchTask = new CatalogMetaDataFetchTaskImpl(taskContext.getMetaDataFetchRequest());
         try {
             fetchTask.execute();
+            log.info("fetch metadata finished");
             responseQueue.add(new CatalogTaskResponse(taskContext.getCatalogTaskId(), 1));
         } catch (SQLException e) {
             log.error("fetch metadata error: ", e);

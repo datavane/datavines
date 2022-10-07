@@ -19,6 +19,7 @@ package io.datavines.server.registry;
 import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.NetUtils;
 import io.datavines.common.utils.Stopper;
+import io.datavines.common.utils.ThreadUtils;
 import io.datavines.registry.api.Event;
 import io.datavines.registry.api.Registry;
 import io.datavines.registry.api.ServerInfo;
@@ -75,13 +76,8 @@ public class Register {
     }
 
     public void blockUtilAcquireLock(String key) {
-        while (Stopper.isRunning()
-                &&!registry.acquire(key, 10)) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        while (Stopper.isRunning() &&!registry.acquire(key, 10)) {
+                ThreadUtils.sleep(1000);
         }
     }
 

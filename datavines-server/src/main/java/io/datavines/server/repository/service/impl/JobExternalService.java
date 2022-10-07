@@ -63,6 +63,9 @@ public class JobExternalService {
     @Autowired
     private CatalogTaskService catalogTaskService;
 
+    @Autowired
+    private DataSourceService dataSourceService;
+
     public Job getJobById(Long id) {
         return jobService.getById(id);
     }
@@ -81,6 +84,10 @@ public class JobExternalService {
 
     public int deleteCommandById(long id){
         return commandService.deleteById(id);
+    }
+
+    public int deleteCatalogCommandById(long id){
+        return catalogCommandService.deleteById(id);
     }
 
     public Task executeCommand(Command command){
@@ -178,5 +185,9 @@ public class JobExternalService {
 
     public JobService getJobService() {
         return jobService;
+    }
+
+    public DataSourceService getDataSourceService() {
+        return dataSourceService;
     }
 }

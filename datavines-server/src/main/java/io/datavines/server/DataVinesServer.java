@@ -22,10 +22,13 @@ import io.datavines.common.utils.Stopper;
 import io.datavines.common.utils.ThreadUtils;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.registry.api.Registry;
+import io.datavines.server.catalog.CatalogTaskManager;
+import io.datavines.server.catalog.CatalogTaskScheduler;
 import io.datavines.server.registry.Register;
 import io.datavines.server.dqc.coordinator.cache.TaskExecuteManager;
 import io.datavines.server.dqc.coordinator.failover.TaskFailover;
 import io.datavines.server.dqc.coordinator.runner.JobScheduler;
+import io.datavines.server.registry.RegistryHolder;
 import io.datavines.server.utils.SpringApplicationContext;
 import io.datavines.spi.PluginLoader;
 import org.slf4j.Logger;
@@ -48,6 +51,9 @@ public class DataVinesServer {
     @Autowired
     private Environment environment;
 
+    @Autowired
+    private RegistryHolder registryHolder;
+
     private Register register;
 
     private TaskExecuteManager taskExecuteManager;
@@ -68,6 +74,9 @@ public class DataVinesServer {
         taskExecuteManager = new TaskExecuteManager();
         taskExecuteManager.start();
 
+        CatalogTaskManager catalogTaskManager = new CatalogTaskManager();
+        catalogTaskManager.start();
+
         taskFailover = new TaskFailover(taskExecuteManager);
 
         Registry registry = PluginLoader
@@ -75,6 +84,7 @@ public class DataVinesServer {
                 .getOrCreatePlugin(CommonPropertyUtils
                         .getString(CommonPropertyUtils.REGISTRY_TYPE, CommonPropertyUtils.REGISTRY_TYPE_DEFAULT));
         registry.init(CommonPropertyUtils.getProperties());
+        registryHolder.setRegistry(registry);
 
         register = new Register(registry, taskFailover);
         register.start();
@@ -82,6 +92,9 @@ public class DataVinesServer {
         //start job scheduler
         JobScheduler jobScheduler = new JobScheduler(taskExecuteManager, register);
         jobScheduler.start();
+
+        CatalogTaskScheduler catalogTaskScheduler = new CatalogTaskScheduler(catalogTaskManager, register);
+        catalogTaskScheduler.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> close("shutdownHook")));
     }

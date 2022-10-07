@@ -20,9 +20,9 @@ import io.datavines.server.repository.entity.catalog.CatalogCommand;
 
 public interface CatalogCommandService {
 
-    long insert(CatalogCommand CatalogCommand);
+    long create(CatalogCommand catalogCommand);
 
-    int update(CatalogCommand CatalogCommand);
+    int update(CatalogCommand catalogCommand);
 
     CatalogCommand getById(long id);
 

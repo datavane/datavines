@@ -49,7 +49,7 @@ public class CatalogTaskScheduler extends Thread {
                         CommonPropertyUtils.getDouble(RESERVED_MEMORY, RESERVED_MEMORY_DEFAULT));
 
                 if (!runCheckFlag) {
-                    Thread.sleep(SLEEP_TIME_MILLIS);
+                    ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                     continue;
                 }
 
@@ -62,8 +62,8 @@ public class CatalogTaskScheduler extends Thread {
                     CatalogTask task = jobExternalService.executeCatalogCommand(command);
                     if (task != null) {
                         log.info("start submit catalog task : {} ", JSONUtils.toJsonString(task));
-
-                        jobExternalService.deleteCommandById(command.getId());
+                        catalogTaskManager.putCatalogTask(task);
+                        jobExternalService.deleteCatalogCommandById(command.getId());
                         log.info(String.format("submit success, catalog task : %s", task.getParameter()) );
                     }
 

@@ -17,6 +17,8 @@ public class TableInfo {
 
     private String createTime;
 
+    public TableInfo() {}
+
     public TableInfo(String database, String name, String type, String comment) {
         this.database = database;
         this.name = name;

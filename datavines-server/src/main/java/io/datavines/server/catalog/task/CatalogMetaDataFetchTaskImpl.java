@@ -224,7 +224,16 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
         CatalogEntityInstance oldDatabaseInstance =
                 instanceService.getByDataSourceAndFQN(datasourceId, database);
         if (oldDatabaseInstance == null) {
-            return;
+            oldDatabaseInstance = new CatalogEntityInstance();
+            oldDatabaseInstance.setType("database");
+            oldDatabaseInstance.setDisplayName(database);
+            oldDatabaseInstance.setFullyQualifiedName(database);
+            oldDatabaseInstance.setUuid(UUID.randomUUID().toString());
+            oldDatabaseInstance.setUpdateTime(LocalDateTime.now());
+            oldDatabaseInstance.setUpdateBy(0L);
+            oldDatabaseInstance.setStatus("active");
+            oldDatabaseInstance.setDatasourceId(datasourceId);
+            instanceService.create(oldDatabaseInstance);
         }
 
         //获取数据源中的表列表
