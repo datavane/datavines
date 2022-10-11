@@ -22,11 +22,10 @@ import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
 import java.util.Map;
-import java.util.Set;
 
-public class TableFreshness extends BaseSingleTableColumn {
+public class Freshness extends BaseSingleTableColumn {
 
-    public TableFreshness(){
+    public Freshness(){
         configMap.put("begin_time",new ConfigItem("begin_time", "开始时间", "begin_time"));
         configMap.put("deadline_time",new ConfigItem("deadline_time", "结束时间", "deadline_time"));
         configMap.put("datetime_format",new ConfigItem("datetime_format", "时间格式", "datetime_format"));
@@ -38,7 +37,7 @@ public class TableFreshness extends BaseSingleTableColumn {
 
     @Override
     public String getName() {
-        return "table_freshness";
+        return "freshness";
     }
 
     @Override

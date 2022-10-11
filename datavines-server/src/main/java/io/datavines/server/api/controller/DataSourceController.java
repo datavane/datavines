@@ -127,16 +127,9 @@ public class DataSourceController {
         return items;
     }
 
-    @ApiOperation(value = "get datasource catalog")
-    @GetMapping(value = "/catalog/{id}")
-    public Object getDataSourceCatalog(@PathVariable Long id) throws SQLException {
-        DataSource dataSource = dataSourceService.getDataSourceById(id);
-        MetaDataFetchRequest request = new MetaDataFetchRequest();
-        request.setDataSource(dataSource);
-        request.setFetchType(FetchType.DATASOURCE);
-        CatalogMetaDataFetchTaskImpl catalogMetaDataFetchTask = new CatalogMetaDataFetchTaskImpl(request);
-        catalogMetaDataFetchTask.execute();
-        return true;
+    @ApiOperation(value = "get datasource list by workspaceId and type")
+    @GetMapping(value = "/list/{workspaceId}/{type}")
+    public Object getDataSourceListByType(@PathVariable Long workspaceId, @PathVariable String type) {
+        return dataSourceService.listByWorkSpaceIdAndType(workspaceId,type);
     }
-
 }

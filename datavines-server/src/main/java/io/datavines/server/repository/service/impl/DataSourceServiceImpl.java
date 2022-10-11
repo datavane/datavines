@@ -172,6 +172,11 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     }
 
     @Override
+    public List<DataSource> listByWorkSpaceIdAndType(long workspaceId, String type) {
+        return baseMapper.selectList(new QueryWrapper<DataSource>().eq("workspace_id", workspaceId).eq("type", type));
+    }
+
+    @Override
     public Object getDatabaseList(Long id) throws DataVinesServerException {
 
         DataSource dataSource = getDataSourceById(id);

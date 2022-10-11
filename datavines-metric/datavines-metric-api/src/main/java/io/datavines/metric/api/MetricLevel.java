@@ -16,24 +16,23 @@
  */
 package io.datavines.metric.api;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import com.fasterxml.jackson.annotation.JsonValue;
-
-public enum MetricType {
+public enum MetricLevel {
     /**
-     * 0-single_table
-     * 1-single_table_custom_sql
-     * 2-multi_table_accuracy
-     * 3-multi_table_comparison
+     * 0-database
+     * 1-table
+     * 2-column
      */
-    SINGLE_TABLE(0,"single_table"),
-    SINGLE_TABLE_CUSTOM_SQL(1,"single_table_custom_sql"),
-    MULTI_TABLE_ACCURACY(2,"multi_table_accuracy"),
-    MULTI_TABLE_VALUE_COMPARISON(3,"multi_table_value_comparison");
+    NONE(0, "none"),
+    DATABASE(0,"database"),
+    TABLE(1,"table"),
+    COLUMN(2,"column");
 
-    MetricType(int code, String description) {
+    MetricLevel(int code, String description) {
         this.code = code;
         this.description = description;
     }
@@ -50,22 +49,18 @@ public enum MetricType {
         return description;
     }
 
-    private static final Map<Integer, MetricType> VALUES_MAP = new HashMap<>();
+    private static final Map<Integer, MetricLevel> VALUES_MAP = new HashMap<>();
 
     static {
-        for (MetricType type : MetricType.values()) {
+        for (MetricLevel type : MetricLevel.values()) {
             VALUES_MAP.put(type.code,type);
         }
     }
 
-    public static MetricType of(Integer status) {
+    public static MetricLevel of(Integer status) {
         if (VALUES_MAP.containsKey(status)) {
             return VALUES_MAP.get(status);
         }
         throw new IllegalArgumentException("invalid code : " + status);
-    }
-
-    public boolean isSingleTable () {
-        return code == 0 || code == 1;
     }
 }

@@ -21,15 +21,14 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.datavines.server.catalog.enums.SchemaChangeType;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("dv_catalog_schema_change")
-public class CatalogSchemaChange implements Serializable {
+@TableName("dv_catalog_entity_metric_job_rel")
+public class CatalogEntityMetricJobRel implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
@@ -39,23 +38,15 @@ public class CatalogSchemaChange implements Serializable {
     @TableField(value = "entity_uuid")
     private String entityUuid;
 
-    @TableField(value = "change_type")
-    private SchemaChangeType changeType;
+    @TableField(value = "metric_job_id")
+    private Long metricJobId;
 
-    @TableField(value = "database_name")
-    private String databaseName;
+    @TableField(value = "create_by")
+    private Long createBy;
 
-    @TableField(value = "table_name")
-    private String tableName;
-
-    @TableField(value = "column_name")
-    private String columnName;
-
-    @TableField(value = "change_before")
-    private String changeBefore;
-
-    @TableField(value = "change_after")
-    private String changeAfter;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @TableField(value = "create_time")
+    private LocalDateTime createTime;
 
     @TableField(value = "update_by")
     private Long updateBy;

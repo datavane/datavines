@@ -38,6 +38,10 @@ public interface SqlMetric {
 
     MetricType getType();
 
+    default MetricLevel getLevel() {
+        return MetricLevel.NONE;
+    }
+
     boolean isInvalidateItemsCanOutput();
 
     /**
@@ -54,7 +58,6 @@ public interface SqlMetric {
 
     /**
      * get actual name
-     * @return
      */
     default String getActualName() {
         return "actual_value";

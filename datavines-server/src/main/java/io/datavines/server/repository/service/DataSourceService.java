@@ -53,4 +53,6 @@ public interface DataSourceService {
     Object executeScript(ExecuteRequest request) throws DataVinesServerException;
 
     String getConfigJson(String type);
+
+    List<DataSource> listByWorkSpaceIdAndType(long workspaceId,String type);
 }

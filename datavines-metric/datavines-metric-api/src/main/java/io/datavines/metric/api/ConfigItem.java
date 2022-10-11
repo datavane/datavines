@@ -16,15 +16,13 @@
  */
 package io.datavines.metric.api;
 
-import lombok.Data;
-
 public class ConfigItem {
 
-    private String esLabel;
+    private final String esLabel;
 
-    private String zhLabel;
+    private final String zhLabel;
 
-    private String key;
+    private final String key;
 
     public ConfigItem(String esLabel, String zhLabel, String key) {
         this.esLabel = esLabel;

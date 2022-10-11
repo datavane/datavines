@@ -512,10 +512,7 @@ CREATE TABLE `dv_catalog_schema_change` (
 
 CREATE TABLE `dv_catalog_command` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `type` tinyint(4) DEFAULT '0' COMMENT 'Command type: 0 start task, 1 stop task, 2 recover fault-tolerant task, 3 resume waiting thread',
-    `parameter` text COMMENT 'json command parameters',
     `task_id` bigint(20) NOT NULL COMMENT 'task id',
-    `priority` int(11) DEFAULT NULL COMMENT 'process instance priority: 0 Highest,1 High,2 Medium,3 Low,4 Lowest',
     `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
     `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
     PRIMARY KEY (`id`)
@@ -525,6 +522,7 @@ CREATE TABLE `dv_catalog_task` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `datasource_id` bigint(20) NOT NULL DEFAULT '-1',
     `status` int(11) DEFAULT NULL,
+    `parameter` text NULL,
     `execute_host` varchar(255) DEFAULT NULL COMMENT '执行任务的主机',
     `submit_time` datetime DEFAULT NULL,
     `schedule_time` datetime DEFAULT NULL,
@@ -534,3 +532,15 @@ CREATE TABLE `dv_catalog_task` (
     `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `dv_catalog_entity_metric_job_rel` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `entity_uuid` varchar(64) NOT NULL COMMENT '实体uuid',
+    `metric_job_id` bigint(20) NOT NULL COMMENT 'metric job id',
+    `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `dv_catalog_entity_metric_rel_un` (`entity_uuid`,`metric_job_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体和规则作业关联关系';

@@ -16,23 +16,22 @@
  */
 package io.datavines.server.api.controller;
 
-import io.datavines.common.param.TestConnectionRequestParam;
-import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
-import io.datavines.server.api.dto.bo.datasource.DataSourceCreate;
-import io.datavines.server.api.dto.bo.datasource.DataSourceUpdate;
-import io.datavines.server.api.dto.bo.datasource.ExecuteRequest;
-import io.datavines.server.api.dto.vo.Item;
-import io.datavines.server.catalog.enums.FetchType;
-import io.datavines.server.catalog.task.CatalogMetaDataFetchTaskImpl;
-import io.datavines.server.catalog.task.MetaDataFetchRequest;
-import io.datavines.server.repository.entity.DataSource;
+import io.datavines.server.api.dto.bo.catalog.OptionItem;
+
+import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
+import io.datavines.server.api.dto.vo.CatalogColumnDetailVO;
+import io.datavines.server.api.dto.vo.CatalogDatabaseDetailVO;
+import io.datavines.server.api.dto.vo.CatalogEntityMetricParameter;
+import io.datavines.server.api.dto.vo.CatalogTableDetailVO;
+
+import io.datavines.server.repository.entity.catalog.CatalogSchemaChange;
 import io.datavines.server.repository.service.CatalogEntityInstanceService;
+import io.datavines.server.repository.service.CatalogSchemaChangeService;
 import io.datavines.server.repository.service.CatalogTaskService;
-import io.datavines.server.repository.service.DataSourceService;
-import io.datavines.spi.PluginLoader;
+
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,9 +39,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 @Api(value = "catalog", tags = "catalog", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
@@ -56,99 +52,86 @@ public class CatalogController {
     @Autowired
     private CatalogEntityInstanceService catalogEntityInstanceService;
 
-    //获取数据源列表，对数据源类型进行分类
-    //获取数据源下面的数据库列表
-    //获取数据库下面的表列表
-    //获取表下面的列列表
-    //对数据源、数据库、表进行刷线
-    //获取数据库、表、列的实体信息，包括各种统计信息
+    @Autowired
+    private CatalogSchemaChangeService catalogSchemaChangeService;
 
-//    @ApiOperation(value = "test connection")
-//    @PostMapping(value = "/test", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public Object testConnection(@RequestBody TestConnectionRequestParam param)  {
-//        return dataSourceService.testConnect(param);
-//    }
-//
-//    @ApiOperation(value = "create datasource")
-//    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public Object createDataSource(@RequestBody DataSourceCreate dataSourceCreate)  {
-//        return dataSourceService.insert(dataSourceCreate);
-//    }
-//
-//    @ApiOperation(value = "update datasource")
-//    @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public Object updateDataSource(@RequestBody DataSourceUpdate dataSourceUpdate) {
-//        return dataSourceService.update(dataSourceUpdate)>0;
-//    }
-//
-//    @ApiOperation(value = "delete databases")
-//    @DeleteMapping(value = "/{id}")
-//    public Object deleteDataSource(@PathVariable Long id)  {
-//        return dataSourceService.delete(id);
-//    }
-//
-//    @ApiOperation(value = "get datasource page")
-//    @GetMapping(value = "/page")
-//    public Object page(@RequestParam(value = "searchVal", required = false) String searchVal,
-//                       @RequestParam("workSpaceId") Long workSpaceId,
-//                       @RequestParam("pageNumber") Integer pageNumber,
-//                       @RequestParam("pageSize") Integer pageSize)  {
-//        return dataSourceService.getDataSourcePage(searchVal, workSpaceId, pageNumber, pageSize);
-//    }
-//
-//    @ApiOperation(value = "get databases")
-//    @GetMapping(value = "/{id}/databases")
-//    public Object getDatabaseList(@PathVariable Long id) {
-//        return dataSourceService.getDatabaseList(id);
-//    }
-//
-//    @ApiOperation(value = "get tables")
-//    @GetMapping(value = "/{id}/{database}/tables")
-//    public Object getTableList(@PathVariable Long id, @PathVariable String database) {
-//        return dataSourceService.getTableList(id, database);
-//    }
-//
-//    @ApiOperation(value = "get columns")
-//    @GetMapping(value = "/{id}/{database}/{table}/columns")
-//    public Object getColumnList(@PathVariable Long id, @PathVariable String database, @PathVariable String table) {
-//        return dataSourceService.getColumnList(id, database, table);
-//    }
-//
-//    @ApiOperation(value = "execute script")
-//    @PostMapping(value = "/execute", consumes = MediaType.APPLICATION_JSON_VALUE)
-//    public Object execute(@RequestBody ExecuteRequest param)  {
-//        return dataSourceService.executeScript(param);
-//    }
-//
-//    @ApiOperation(value = "get config json")
-//    @GetMapping(value = "/config/{type}")
-//    public Object getConfigJson(@PathVariable String type){
-//        return dataSourceService.getConfigJson(type);
-//    }
-//
-//    @ApiOperation(value = "get connector type list")
-//    @GetMapping(value = "/type/list")
-//    public Object getConnectorTypeList() {
-//        Set<String> connectorList = PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
-//        List<Item> items = new ArrayList<>();
-//        connectorList.forEach(it -> {
-//            Item item = new Item(it,it);
-//            items.add(item);
-//        });
-//
-//        return items;
-//    }
-
-    @ApiOperation(value = "refresh")
+    @ApiOperation(value = "refresh", response = Long.class)
     @PostMapping(value = "/refresh", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object refreshCatalog(@RequestBody CatalogRefresh catalogRefresh) throws SQLException {
         return catalogTaskService.refreshCatalog(catalogRefresh);
     }
 
-    @ApiOperation(value = "")
-    @GetMapping(value = "/childList")
-    public Object getDatabaseList(@PathVariable String uuid, @PathVariable String type) {
-        return catalogEntityInstanceService.getEntityList(uuid);
+    @ApiOperation(value = "get database list", response = OptionItem.class, responseContainer = "list")
+    @GetMapping(value = "/list/database/{upstreamUuid}")
+    public Object getDatabaseList(@PathVariable String upstreamUuid) {
+        return catalogEntityInstanceService.getEntityList(upstreamUuid);
     }
 
+    @ApiOperation(value = "get table list", response = OptionItem.class, responseContainer = "list")
+    @GetMapping(value = "/list/table/{upstreamUuid}")
+    public Object getTableList(@PathVariable String upstreamUuid) {
+        return catalogEntityInstanceService.getEntityList(upstreamUuid);
+    }
+
+    @ApiOperation(value = "get column list", response = OptionItem.class, responseContainer = "list")
+    @GetMapping(value = "/list/column/{upstreamUuid}")
+    public Object getColumnList(@PathVariable String upstreamUuid) {
+        return catalogEntityInstanceService.getEntityList(upstreamUuid);
+    }
+
+    @ApiOperation(value = "get table with detail list", response = CatalogTableDetailVO.class, responseContainer = "list")
+    @GetMapping(value = "/list/tableWithDetail/{upstreamUuid}")
+    public Object getTableWithDetailList(@PathVariable String upstreamUuid) {
+        return catalogEntityInstanceService.getCatalogTableWithDetailList(upstreamUuid);
+    }
+
+    @ApiOperation(value = "get column with detail list", response = CatalogColumnDetailVO.class, responseContainer = "list")
+    @GetMapping(value = "/list/columnWithDetail/{upstreamUuid}")
+    public Object getColumnWithDetailList(@PathVariable String upstreamUuid) {
+        return catalogEntityInstanceService.getCatalogColumnWithDetailList(upstreamUuid);
+    }
+
+    @ApiOperation(value = "get database entity detail", response = CatalogDatabaseDetailVO.class)
+    @GetMapping(value = "/detail/database/{uuid}")
+    public Object getDatabaseEntityDetail(@PathVariable String uuid) {
+        return catalogEntityInstanceService.getDatabaseEntityDetail(uuid);
+    }
+
+    @ApiOperation(value = "get table entity detail", response = CatalogTableDetailVO.class)
+    @GetMapping(value = "/detail/table//{uuid}")
+    public Object getTableEntityDetail(@PathVariable String uuid) {
+        return catalogEntityInstanceService.getTableEntityDetail(uuid);
+    }
+
+    @ApiOperation(value = "get column entity detail", response = CatalogColumnDetailVO.class)
+    @GetMapping(value = "/detail/column/{uuid}")
+    public Object getColumnEntityDetail(@PathVariable String uuid) {
+        return catalogEntityInstanceService.getColumnEntityDetail(uuid);
+    }
+
+    @ApiOperation(value = "get column entity detail", response = CatalogSchemaChange.class, responseContainer = "list")
+    @GetMapping(value = "/list/schemaChange/{uuid}")
+    public Object getSchemaChangeList(@PathVariable String uuid) {
+        return catalogSchemaChangeService.getSchemaChangeList(uuid);
+    }
+
+    @ApiOperation(value = "entity add metric", response = Long.class)
+    @PostMapping(value = "/addMetric", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object entityAddMetric(@RequestBody JobCreateWithEntityUuid jobCreateWithEntityUuid) throws SQLException {
+        return catalogEntityInstanceService.entityAddMetric(jobCreateWithEntityUuid);
+    }
+
+    @ApiOperation(value = "get entity metric parameter", response = CatalogEntityMetricParameter.class)
+    @GetMapping(value = "/entity/metric/parameter/{uuid}")
+    public Object getEntityMetricParameter(@PathVariable String uuid) {
+        return catalogEntityInstanceService.getEntityMetricParameter(uuid);
+    }
+
+    @ApiOperation(value = "get entity metric list", response = CatalogSchemaChange.class, responseContainer = "list")
+    @GetMapping(value = "/list/entity/metric")
+    public Object getEntityMetricList(@RequestParam String uuid,
+                                      @RequestParam("pageNumber") Integer pageNumber,
+                                      @RequestParam("pageSize") Integer pageSize) {
+        return catalogEntityInstanceService.getEntityMetricList(uuid, pageNumber, pageSize);
+    }
 }

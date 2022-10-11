@@ -21,9 +21,6 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
-/**
- * rule type
- */
 public enum MetricDimension {
     /**
      * 0-completeness

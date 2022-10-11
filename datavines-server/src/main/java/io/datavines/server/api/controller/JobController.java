@@ -21,6 +21,7 @@ import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.job.JobCreate;
 import io.datavines.server.api.dto.bo.job.JobUpdate;
+import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.service.JobService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,31 +42,31 @@ public class JobController {
     @Autowired
     private JobService jobService;
 
-    @ApiOperation(value = "create job")
+    @ApiOperation(value = "create job", response = long.class)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createJob(@Valid @RequestBody JobCreate jobCreate) throws DataVinesServerException {
         return jobService.create(jobCreate);
     }
 
-    @ApiOperation(value = "delete job")
+    @ApiOperation(value = "delete job", response = int.class)
     @DeleteMapping(value = "/{id}")
     public Object deleteJob(@PathVariable Long id)  {
         return jobService.deleteById(id);
     }
 
-    @ApiOperation(value = "update job")
+    @ApiOperation(value = "update job", response = int.class)
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object updateJob(@Valid @RequestBody JobUpdate jobUpdate) throws DataVinesServerException {
         return jobService.update(jobUpdate);
     }
 
-    @ApiOperation(value = "get job by id")
+    @ApiOperation(value = "get job by id", response = Job.class)
     @GetMapping(value = "/{id}")
     public Object getById(@PathVariable Long id)  {
         return jobService.getById(id);
     }
 
-    @ApiOperation(value = "list job by datasource id")
+    @ApiOperation(value = "list job by datasource id", response = Job.class, responseContainer = "list")
     @GetMapping(value = "list/{datasourceId}")
     public Object listByDataSourceId(@PathVariable Long datasourceId)  {
         return jobService.listByDataSourceId(datasourceId);

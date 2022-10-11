@@ -20,6 +20,7 @@ import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.ConfigChecker;
 import io.datavines.common.entity.ExecuteSql;
 import io.datavines.metric.api.ConfigItem;
+import io.datavines.metric.api.MetricLevel;
 import io.datavines.metric.api.SqlMetric;
 
 import java.util.*;
@@ -79,5 +80,10 @@ public abstract class BaseSingleTable implements SqlMetric {
         if (filters.size() > 0) {
             invalidateItemsSql.append(" where ").append(String.join(" and ", filters));
         }
+    }
+
+    @Override
+    public MetricLevel getLevel() {
+        return MetricLevel.TABLE;
     }
 }

@@ -30,6 +30,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Api(value = "metric", tags = "metric", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -86,6 +87,40 @@ public class MetricController {
             default:
                 break;
         }
+        return items;
+    }
+
+    @ApiOperation(value = "get reconciliation metric list")
+    @GetMapping(value = "/reconciliation/list")
+    public Object getReconciliationMetricList() {
+        Set<String> metricList = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+        List<Item> items = new ArrayList<>();
+
+        metricList.forEach(it -> {
+            SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
+            if (sqlMetric != null && !sqlMetric.getType().isSingleTable()) {
+                Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
+                items.add(item);
+            }
+        });
+
+        return items;
+    }
+
+    @ApiOperation(value = "get quality metric list")
+    @GetMapping(value = "/quality/list/{level}")
+    public Object getDataQualityMetricList(@NotNull @PathVariable("level") String level) {
+        Set<String> metricList = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+        List<Item> items = new ArrayList<>();
+
+        metricList.forEach(it -> {
+            SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
+            if (sqlMetric != null && sqlMetric.getType().isSingleTable() && level.equals(sqlMetric.getLevel().getDescription())) {
+                Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
+                items.add(item);
+            }
+        });
+
         return items;
     }
 

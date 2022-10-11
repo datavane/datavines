@@ -14,28 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.metric.plugin.base;
+package io.datavines.server.repository.mapper;
 
-import io.datavines.metric.api.ConfigItem;
-import io.datavines.metric.api.MetricLevel;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.datavines.server.api.dto.vo.CatalogEntityMetricVO;
+import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
-import java.util.Map;
+@Mapper
+public interface CatalogEntityMetricJobRelMapper extends BaseMapper<CatalogEntityMetricJobRel>  {
 
-public abstract class BaseSingleTableColumn extends BaseSingleTable {
-
-    public BaseSingleTableColumn() {
-        super();
-        configMap.put("column",new ConfigItem("column", "列名", "column"));
-        requiredOptions.add("column");
-    }
-
-    @Override
-    public Map<String, ConfigItem> getConfigMap() {
-        return configMap;
-    }
-
-    @Override
-    public MetricLevel getLevel() {
-        return MetricLevel.COLUMN;
-    }
+    IPage<CatalogEntityMetricVO> getEntityMetricPage(Page<CatalogEntityMetricVO> page,
+                                                     @Param("uuid") String uuid);
 }

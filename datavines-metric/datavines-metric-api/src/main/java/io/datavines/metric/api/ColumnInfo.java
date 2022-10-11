@@ -16,10 +16,15 @@
  */
 package io.datavines.metric.api;
 
+import lombok.Data;
+
+@Data
 public class ColumnInfo {
 
     private String name;
+
     private String parameterName;
+
     private boolean needSingleQuotation;
 
     public ColumnInfo(String name, boolean needSingleQuotation) {
@@ -32,27 +37,4 @@ public class ColumnInfo {
         this.parameterName = parameterName;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getParameterName() {
-        return parameterName;
-    }
-
-    public void setParameterName(String parameterName) {
-        this.parameterName = parameterName;
-    }
-
-    public boolean isNeedSingleQuotation() {
-        return needSingleQuotation;
-    }
-
-    public void setNeedSingleQuotation(boolean needSingleQuotation) {
-        this.needSingleQuotation = needSingleQuotation;
-    }
 }
