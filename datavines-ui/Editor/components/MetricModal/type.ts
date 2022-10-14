@@ -12,6 +12,19 @@ export type TMetricParameter = {
     filter?: string;
     [key: string]: any;
 }
+export type TMetricParameter2 = {
+    database2: string;
+    table2: string;
+    column2: string;
+    filter?: string;
+    [key: string]: any;
+}
+
+export type TMappingColumns = {
+    column: string;
+    column2: string;
+    operator: string;
+}
 
 export type TParameterItem = {
     metricType?: string;
@@ -23,6 +36,8 @@ export type TParameterItem = {
     operator?: string;
     threshold?: string;
     metricParameter: TMetricParameter;
+    metricParameter2?: TMetricParameter2;
+    mappingColumns?: TMappingColumns;
 }
 
 export type TEngineParameter = {
@@ -33,10 +48,12 @@ export type TEngineParameter = {
     numExecutors: number,
     executorMemory:string,
     executorCores: number,
-    others: string
+    others: string,
 }
 
 export type TDetail = null | {
+    metricType: any;
+    dataSourceId2: any;
     id?: number;
     name?: string;
     type?: string;

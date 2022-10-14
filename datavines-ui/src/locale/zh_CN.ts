@@ -106,6 +106,7 @@ export default {
     jobs_task_check_explain_text: '当校验公式的结果为真，那么检查结果为失败，反之亦然',
 
     jobs_tabs_title: '数据质量检查作业',
+    jobs_tabs_comparison_title: '数据比对作业',
     jobs_tabs_config: '作业配置',
     jobs_save_run: '保存并运行',
     jobs_tabs_schedule: '定时任务配置',

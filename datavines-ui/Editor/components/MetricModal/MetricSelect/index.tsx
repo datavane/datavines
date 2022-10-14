@@ -64,7 +64,7 @@ const Index = ({
     };
     useMount(async () => {
         try {
-            const $metricList = await $http.get('metric/list');
+            const $metricList = await $http.get('metric/list/DATA_QUALITY');
             const $databases = await $http.get(`/datasource/${id}/databases`);
             const {
                 database, table, column, filter, ...rest

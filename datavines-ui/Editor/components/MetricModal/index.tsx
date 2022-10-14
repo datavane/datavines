@@ -4,9 +4,10 @@ import {
 } from 'antd';
 import { useIntl } from 'react-intl';
 import {
-    useModal, useImmutable, usePersistFn, useLoading,
+    useModal, useImmutable, usePersistFn, useLoading, IF
 } from '@/common';
 import useRequest from '../../hooks/useRequest';
+import RuleSelect from './RuleSelect';
 import MetricSelect from './MetricSelect';
 import ExpectedValue from './ExpectedValue';
 import VerifyConfigure from './VerifyConfigure';
@@ -16,6 +17,7 @@ import OtherConfig from './OtherConfig';
 import { pickProps } from './helper';
 import ErrorDataStoreConfig from './ErrorDataStoreConfig';
 import { TDetail } from './type';
+import store, { RootReducer } from '@/store';
 
 type InnerProps = {
     innerRef?: {
@@ -25,7 +27,8 @@ type InnerProps = {
         }
     },
     id: string,
-    detail: TDetail
+    detail: TDetail,
+    modeType?: string
 }
 const keys = [
     'engineType',
@@ -42,6 +45,8 @@ export const MetricConfig = (props: InnerProps) => {
     const [form] = Form.useForm();
     const metricSelectRef = useRef<any>();
     const id = props.id || detail?.dataSourceId;
+    const [metricType, setMetricTypeParent] = useState('')
+    const { datasourceReducer } = store.getState() as RootReducer;
     useImperativeHandle(innerRef, () => ({
         form,
         getValues() {
@@ -49,7 +54,7 @@ export const MetricConfig = (props: InnerProps) => {
                 innerRef?.current.form.validateFields().then((values) => {
                     console.log('values', values);
                     const params: any = {
-                        type: 'DATA_QUALITY',
+                        type: datasourceReducer.modeType === 'comparison' ? 'DATA_RECONCILIATION' : 'DATA_QUALITY',
                         dataSourceId: id,
                         ...(pickProps(values, [...keys])),
                     };
@@ -62,8 +67,7 @@ export const MetricConfig = (props: InnerProps) => {
                     const parameter: any = {
                         ...(pickProps(values, ['metricType', 'expectedType', 'resultFormula', 'operator', 'threshold'])),
                         metricParameter: {
-                            ...(pickProps(values, ['database', 'table', 'column', 'filter'])),
-                            ...(metricSelectRef.current.getDynamicValues()),
+                            ...(pickProps(values, ['database', 'table', 'column', 'filter',]))
                         },
                     };
                     if (values.expectedType === 'fix_value') {
@@ -71,10 +75,26 @@ export const MetricConfig = (props: InnerProps) => {
                             expected_value: values.expected_value,
                         };
                     }
+                    if (datasourceReducer.modeType === 'comparison') {
+                        params['dataSourceId2'] = values.dataSourceId2
+                        Object.assign(parameter, pickProps(values, ['metricParameter', 'metricParameter2']))
+                        if (values.metricType === 'multi_table_accuracy') {
+                            values.mappingColumns.forEach((item: any) => {
+                                item['operator'] = '='
+                            });
+                            parameter['mappingColumns'] = values.mappingColumns
+                        }
+                    } else if (datasourceReducer.modeType === 'quality') {
+                        parameter['metricParameter'] = {
+                            ...(pickProps(values, ['database', 'table', 'column', 'filter',])),
+                            ...metricSelectRef.current.getDynamicValues()
+                        }
+                    }
                     params.parameter = JSON.stringify([parameter]);
                     console.log('params', params);
                     resolve(params);
                 }).catch((error) => {
+                    console.log('error', error)
                     reject(error);
                 });
             });
@@ -82,8 +102,15 @@ export const MetricConfig = (props: InnerProps) => {
     }));
     return (
         <Form form={form}>
-            <MetricSelect detail={detail} id={id} form={form} metricSelectRef={metricSelectRef} />
-            <ExpectedValue detail={detail} form={form} />
+            <IF visible={datasourceReducer.modeType === 'comparison'}>
+                <RuleSelect detail={detail} id={id} form={form} setMetricTypeParent={setMetricTypeParent} />
+            </IF>
+            <IF visible={datasourceReducer.modeType === 'quality'}>
+                <MetricSelect detail={detail} id={id} form={form} metricSelectRef={metricSelectRef} />
+            </IF>
+            <IF visible={datasourceReducer.modeType === 'quality' || metricType === 'multi_table_accuracy'}>
+                <ExpectedValue detail={detail} form={form} />
+            </IF>
             <VerifyConfigure detail={detail} form={form} />
             <ActuatorConfigure detail={detail} form={form} />
             <RunEvnironment id={id} form={form} />
@@ -94,7 +121,7 @@ export const MetricConfig = (props: InnerProps) => {
 };
 
 export const useMetricModal = () => {
-    const innerRef:InnerProps['innerRef'] = useRef<any>();
+    const innerRef: InnerProps['innerRef'] = useRef<any>();
     const intl = useIntl();
     const { $http } = useRequest();
     const [id, setId] = useState('');

@@ -4,17 +4,19 @@ import { useActions } from '../useActions';
 type TTableType = 'CARD' | 'TABLE';
 
 export interface DatasourceReducer {
-    tableType: TTableType
+    tableType: TTableType,
+    modeType: string
 }
 
 type TAction = {
-    type?: 'save_datasource_type',
+    type?: 'save_datasource_type' | 'save_datasource_modeType',
     payload?: Partial<DatasourceReducer>
 }
 type TDispatch = Dispatch<Action<TAction['type']>>;
 
 const initialState: DatasourceReducer = {
     tableType: 'CARD',
+    modeType: ''
 };
 
 export const datasourceActionsMap = {
@@ -22,6 +24,12 @@ export const datasourceActionsMap = {
         dispatch({
             type: 'save_datasource_type',
             payload: tableType,
+        });
+    },
+    setDatasourceModeType: (modeType: string) => (dispatch: TDispatch) => {
+        dispatch({
+            type: 'save_datasource_type',
+            payload: modeType,
         });
     },
 };
@@ -32,6 +40,8 @@ const datasourceReducer = (state: DatasourceReducer = initialState, action: TAct
     switch (action.type) {
         case 'save_datasource_type':
             return { ...state, tableType: action.payload };
+        case 'save_datasource_modeType':
+            return { ...state, modeType: action.payload };
         default:
             return state;
     }

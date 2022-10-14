@@ -6,7 +6,7 @@ const { resolve, host } = require('./utils');
 
 const TARGET_MAP = {
     test: '',
-    prod: '',
+    prod: 'http://116.205.229.143:5600/',
 };
 let proxy = [];
 try {

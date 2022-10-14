@@ -11,6 +11,8 @@ import { usePersistFn } from '../../common';
 import { IDvDataBaseItem } from '../../type';
 import useTableCloumn from './useTableCloumn';
 import './index.less';
+import { TDetail } from '../MetricModal/type';
+import store from '@/store';
 
 type TIndexProps = {
     getDatabases: (...args: any[]) => void;
@@ -41,13 +43,17 @@ const Index = ({ getDatabases, onShowModal }: TIndexProps) => {
             },
         };
         if (onShowModal) {
+            store.dispatch({
+                type: 'save_datasource_modeType',
+                payload: 'quality',
+            });
             onShowModal({
                 parameter: JSON.stringify($record.parameterItem),
                 parameterItem: $record.parameterItem,
             });
             return;
         }
-        show(id as string, $record);
+        show(id as string, $record as TDetail);
     };
 
     const renderSingle = (item: IDvDataBaseItem) => ({
@@ -99,6 +105,7 @@ const Index = ({ getDatabases, onShowModal }: TIndexProps) => {
         })),
     });
     const onSelect: TreeProps['onSelect'] = (selectedKeys, e: any) => {
+        if(e.node?.selected) return
         if (e.node.children?.length >= 1) {
             if (e.selected) {
                 $setExpandedKeys(e.node.key);

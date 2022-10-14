@@ -32,7 +32,9 @@ const Index = (props: IDvEditorProps) => {
         if (!height) {
             return {};
         }
-        return {};
+        return {
+            
+        };
     }, [height]);
     const getDatabases = usePersistFn(async () => {
         try {
@@ -75,7 +77,7 @@ const Index = (props: IDvEditorProps) => {
                 <div className="dv-editor__header">
                     <a onClick={onRun}>{intl.formatMessage({ id: 'dv_metric_run' })}</a>
                 </div>
-                <Monaco monacoRef={monacoRef} style={monacoStyle} />
+                <Monaco monacoRef={monacoRef} style={monacoStyle}/>
                 <Divider />
                 <SqlTable style={sqlStyle} tableData={tableData} />
             </div>

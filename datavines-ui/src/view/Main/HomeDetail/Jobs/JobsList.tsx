@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import {
-    Table, Form, Button, Popconfirm, message,
+    Table, Form, Button, Popconfirm, message, Dropdown,Menu
 } from 'antd';
+import type {MenuProps} from 'antd'
 import { ColumnsType } from 'antd/es/table';
 import { useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
@@ -12,7 +13,7 @@ import { $http } from '@/http';
 import { defaultRender } from '@/utils/helper';
 import { useAddEditJobsModal } from './useAddEditJobsModal';
 import { useSelectSLAsModal } from './useSelectSLAsModal';
-
+import store from '@/store';
 type TJobs = {
     datasourceId?: any,
 }
@@ -23,8 +24,9 @@ const Jobs = ({ datasourceId }: TJobs) => {
     const [loading, setLoading] = useState(false);
     const history = useHistory();
     const match = useRouteMatch();
+    const [addType, setAddType] = useState('')
     const { Render: RenderJobsModal, show: showJobsModal } = useAddEditJobsModal({
-        title: intl.formatMessage({ id: 'jobs_tabs_title' }),
+        title: intl.formatMessage({ id: addType === 'quality' ? 'jobs_tabs_title':'jobs_tabs_comparison_title' }),
         afterClose() {
             getData();
         },
@@ -39,6 +41,34 @@ const Jobs = ({ datasourceId }: TJobs) => {
         pageNumber: 1,
         pageSize: 10,
     });
+    const handleMenuClick: MenuProps['onClick'] = e => {
+        setAddType(e.key)
+        store.dispatch({
+            type: 'save_datasource_modeType',
+            payload: e.key,
+        });
+        showJobsModal({
+            id: (match.params as any).id,
+            record: {
+                modeType: e.key
+            },
+        });
+      };
+    const menu = (
+        <Menu
+          onClick={handleMenuClick}
+          items={[
+            {
+              key: 'quality',
+              label: intl.formatMessage({ id: 'jobs_tabs_title' }),
+            },
+            {
+              key: 'comparison',
+              label: intl.formatMessage({ id: 'jobs_tabs_comparison_title' }),
+            },
+          ]}
+        />
+      );
     const getData = async (values: any = null) => {
         try {
             setLoading(true);
@@ -80,6 +110,12 @@ const Jobs = ({ datasourceId }: TJobs) => {
         }
     };
     const onEdit = (record: TJobsTableItem) => {
+        const type = record.type === 'DATA_RECONCILIATION' ? 'comparison' : 'quality'
+        store.dispatch({
+            type: 'save_datasource_modeType',
+            payload: type
+        });
+        setAddType(type)
         showJobsModal({
             id: (match.params as any).id,
             record,
@@ -191,19 +227,14 @@ const Jobs = ({ datasourceId }: TJobs) => {
                     <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
 
                     <div>
-                        <Button
-                            type="primary"
-                            style={{ marginRight: 15 }}
-                            onClick={() => {
-                                showJobsModal({
-                                    id: (match.params as any).id,
-                                    record: null,
-                                });
-                            }}
-                        >
-                            {intl.formatMessage({ id: 'jobs_add' })}
-
-                        </Button>
+                        <Dropdown overlay={menu} >
+                            <Button
+                                type="primary"
+                                style={{ marginRight: 15 }}
+                            >
+                                {intl.formatMessage({ id: 'jobs_add' })}
+                            </Button>
+                        </Dropdown>
                     </div>
                 </div>
             </div>

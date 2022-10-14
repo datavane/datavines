@@ -26,6 +26,7 @@ const SqlTable = ({ style, tableData }: SqlTableProps) => {
         dataIndex: item.name,
         key: item.name,
         width: item.type === 'DATETIME' ? 200 : 160,
+        ellipsis: true,
         render: (text) => {
             if (item.type === 'DATETIME') {
                 return text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '';
@@ -37,17 +38,20 @@ const SqlTable = ({ style, tableData }: SqlTableProps) => {
         },
     }));
     return (
-        <div style={{ ...style, width: '100%' }}>
-            <div style={{ padding: '0 10px' }}>
+        <div style={{ ...style, width: '100%'}}>
+            <div style={{ padding: '0 10px', }}>
                 <Table<IDvSqlTableResultItem>
-                    size="middle"
+                    size="small"
                     rowKey="id"
                     columns={columns}
                     dataSource={tableData.resultList || []}
                     onChange={onChange}
+                    className="dv-table-small"
                     scroll={{
                         x: '100%',
+                        y: 280
                     }}
+                    sticky={true}
                     pagination={{
                         size: 'small',
                         total: (tableData.resultList || []).length,

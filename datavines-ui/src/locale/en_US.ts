@@ -106,6 +106,7 @@ export default {
     jobs_task_check_explain_text: 'When the result of the check formula is true, the check result is failed, and vice versa',
 
     jobs_tabs_title: 'Data quality inspection',
+    jobs_tabs_comparison_title: 'Data comparison work',
     jobs_tabs_config: 'Job configuration',
     jobs_save_run: 'Save and run',
     jobs_tabs_schedule: 'Scheduled task configuration',

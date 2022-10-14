@@ -1,5 +1,6 @@
 export type TJobsTableItem = {
-    id: string | number
+    id: string | number,
+    type?: string
 }
 
 export type TJobsTableData = {

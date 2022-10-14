@@ -12,7 +12,7 @@ import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
 import { TDetail, TEngineParameter } from '../type';
 import './index.less';
-
+import store, { RootReducer } from '@/store';
 type InnerProps = {
     form: FormInstance,
     detail: TDetail
@@ -23,7 +23,10 @@ const Index = ({ form, detail }: InnerProps) => {
     const intl = useIntl();
     const requiredRule = useRequiredRule();
     const [engineList, setEngineList] = useState([]);
+    const { datasourceReducer } = store.getState() as RootReducer;
+    console.log('123123',detail)
     useMount(async () => {
+       
         try {
             const $engineList = await $http.get('metric/engine/list');
             setEngineList($engineList || []);
@@ -38,8 +41,10 @@ const Index = ({ form, detail }: InnerProps) => {
                 others: paramter.others ?? '--conf spark.yarn.maxAppAttempts=1',
                 tenantCode: detail?.tenantCode,
                 env: detail?.env,
+                engineType: detail?.engineType || (datasourceReducer.modeType === 'comparison' ? 'spark' : 'jdbc')
             });
         } catch (error) {
+            console.log('error',error)
         }
     });
     const renderSpark = () => (
@@ -128,13 +133,13 @@ const Index = ({ form, detail }: InnerProps) => {
                         {...layoutItem}
                         label={<span>{intl.formatMessage({ id: 'dv_metric_title_actuator_engine' })}</span>}
                         name="engineType"
-                        initialValue="jdbc"
                         rules={[...requiredRule]}
                     >
                         <CustomSelect
                             source={engineList}
                             sourceValueMap="key"
                             style={{ width: 200 }}
+                            disabled={ datasourceReducer.modeType === 'comparison' }
                         />
                     </Form.Item>
                 </Col>
