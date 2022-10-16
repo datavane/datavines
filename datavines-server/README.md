@@ -19,7 +19,5 @@
   - Server启动以后，首先会去获取当前active server list
     - 所有的容错处理都会先竞争分布式锁
     - 第一，根据当前server的host:port去库里面查询有没有当前server running状态的任务，有的话，先进行容错
-    - 
     - 第二，查询task中host不存在activeServerList的任务进行容错
 - Command获取以后，开始执行，如果Server挂掉了，如何去恢复任务
-- 每个

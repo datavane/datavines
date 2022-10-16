@@ -34,4 +34,6 @@ public interface ResultFormula {
     String getResultFormat(boolean isEn);
 
     String getSymbol();
+
+    ResultFormulaType getType();
 }

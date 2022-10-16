@@ -17,6 +17,7 @@
 package io.datavines.metric.result.formula;
 
 import io.datavines.metric.api.ResultFormula;
+import io.datavines.metric.api.ResultFormulaType;
 
 public class DiffPercentage implements ResultFormula {
 
@@ -49,5 +50,10 @@ public class DiffPercentage implements ResultFormula {
     @Override
     public String getSymbol() {
         return "Δ%";
+    }
+
+    @Override
+    public ResultFormulaType getType() {
+        return ResultFormulaType.PERCENTAGE;
     }
 }

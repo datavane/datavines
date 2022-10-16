@@ -56,7 +56,7 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
         }
 
         //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "dv_task_result");
+        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "dv_job_execution_result");
         sinkConfigs.add(taskResultSinkConfig);
 
         //todo

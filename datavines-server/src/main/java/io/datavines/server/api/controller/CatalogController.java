@@ -16,29 +16,29 @@
  */
 package io.datavines.server.api.controller;
 
+import io.datavines.common.utils.DateUtils;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
 import io.datavines.server.api.dto.bo.catalog.OptionItem;
 
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
-import io.datavines.server.api.dto.vo.CatalogColumnDetailVO;
-import io.datavines.server.api.dto.vo.CatalogDatabaseDetailVO;
-import io.datavines.server.api.dto.vo.CatalogEntityMetricParameter;
-import io.datavines.server.api.dto.vo.CatalogTableDetailVO;
+import io.datavines.server.api.dto.vo.*;
 
 import io.datavines.server.repository.entity.catalog.CatalogSchemaChange;
 import io.datavines.server.repository.service.CatalogEntityInstanceService;
 import io.datavines.server.repository.service.CatalogSchemaChangeService;
 import io.datavines.server.repository.service.CatalogTaskService;
 
+import io.datavines.server.repository.service.JobExecutionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
+import java.util.Date;
 
 @Api(value = "catalog", tags = "catalog", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
@@ -55,9 +55,12 @@ public class CatalogController {
     @Autowired
     private CatalogSchemaChangeService catalogSchemaChangeService;
 
+    @Autowired
+    private JobExecutionService jobExecutionService;
+
     @ApiOperation(value = "refresh", response = Long.class)
     @PostMapping(value = "/refresh", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object refreshCatalog(@RequestBody CatalogRefresh catalogRefresh) throws SQLException {
+    public Object refreshCatalog(@RequestBody CatalogRefresh catalogRefresh) {
         return catalogTaskService.refreshCatalog(catalogRefresh);
     }
 
@@ -80,13 +83,13 @@ public class CatalogController {
     }
 
     @ApiOperation(value = "get table with detail list", response = CatalogTableDetailVO.class, responseContainer = "list")
-    @GetMapping(value = "/list/tableWithDetail/{upstreamUuid}")
+    @GetMapping(value = "/list/table-with-detail/{upstreamUuid}")
     public Object getTableWithDetailList(@PathVariable String upstreamUuid) {
         return catalogEntityInstanceService.getCatalogTableWithDetailList(upstreamUuid);
     }
 
     @ApiOperation(value = "get column with detail list", response = CatalogColumnDetailVO.class, responseContainer = "list")
-    @GetMapping(value = "/list/columnWithDetail/{upstreamUuid}")
+    @GetMapping(value = "/list/column-with-detail/{upstreamUuid}")
     public Object getColumnWithDetailList(@PathVariable String upstreamUuid) {
         return catalogEntityInstanceService.getCatalogColumnWithDetailList(upstreamUuid);
     }
@@ -98,7 +101,7 @@ public class CatalogController {
     }
 
     @ApiOperation(value = "get table entity detail", response = CatalogTableDetailVO.class)
-    @GetMapping(value = "/detail/table//{uuid}")
+    @GetMapping(value = "/detail/table/{uuid}")
     public Object getTableEntityDetail(@PathVariable String uuid) {
         return catalogEntityInstanceService.getTableEntityDetail(uuid);
     }
@@ -110,14 +113,14 @@ public class CatalogController {
     }
 
     @ApiOperation(value = "get column entity detail", response = CatalogSchemaChange.class, responseContainer = "list")
-    @GetMapping(value = "/list/schemaChange/{uuid}")
+    @GetMapping(value = "/list/schema-change/{uuid}")
     public Object getSchemaChangeList(@PathVariable String uuid) {
         return catalogSchemaChangeService.getSchemaChangeList(uuid);
     }
 
     @ApiOperation(value = "entity add metric", response = Long.class)
-    @PostMapping(value = "/addMetric", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object entityAddMetric(@RequestBody JobCreateWithEntityUuid jobCreateWithEntityUuid) throws SQLException {
+    @PostMapping(value = "/add-metric", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object entityAddMetric(@RequestBody JobCreateWithEntityUuid jobCreateWithEntityUuid) {
         return catalogEntityInstanceService.entityAddMetric(jobCreateWithEntityUuid);
     }
 
@@ -127,11 +130,24 @@ public class CatalogController {
         return catalogEntityInstanceService.getEntityMetricParameter(uuid);
     }
 
-    @ApiOperation(value = "get entity metric list", response = CatalogSchemaChange.class, responseContainer = "list")
-    @GetMapping(value = "/list/entity/metric")
+    @ApiOperation(value = "get entity metric page", response = CatalogSchemaChange.class, responseContainer = "list")
+    @GetMapping(value = "/page/entity/metric")
     public Object getEntityMetricList(@RequestParam String uuid,
                                       @RequestParam("pageNumber") Integer pageNumber,
                                       @RequestParam("pageSize") Integer pageSize) {
         return catalogEntityInstanceService.getEntityMetricList(uuid, pageNumber, pageSize);
+    }
+
+    @ApiOperation(value = "get entity metric dashboard", response = MetricExecutionDashBoard.class, responseContainer = "list")
+    @GetMapping(value = "/list/entity/metric/dashboard")
+    public Object getEntityMetricDashBoard(@RequestParam Long jobId,
+                                           @RequestParam(value = "startTime", required = false) String startTime,
+                                           @RequestParam(value = "endTime",required = false) String endTime) {
+        if (StringUtils.isEmpty(startTime) || StringUtils.isEmpty(endTime)) {
+            endTime = DateUtils.getCurrentTime();
+            startTime = DateUtils.format(DateUtils.getSomeDay(new Date(), -7), DateUtils.YYYY_MM_DD_HH_MM_SS);
+        }
+
+        return jobExecutionService.getMetricExecutionDashBoard(jobId, startTime ,endTime);
     }
 }

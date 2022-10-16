@@ -46,42 +46,42 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
 
     protected Map<String, String> inputParameter;
 
-    protected TaskParameter taskParameter;
+    protected JobExecutionParameter jobExecutionParameter;
 
-    protected TaskInfo taskInfo;
+    protected JobExecutionInfo jobExecutionInfo;
 
     protected ExpectedValue expectedValue;
 
     private ConnectionInfo connectionInfo;
 
     @Override
-    public void init(Map<String, String> inputParameter, TaskInfo taskInfo, ConnectionInfo connectionInfo) {
+    public void init(Map<String, String> inputParameter, JobExecutionInfo jobExecutionInfo, ConnectionInfo connectionInfo) {
         this.inputParameter = inputParameter;
         this.inputParameter.put(COLUMN, "");
-        this.taskInfo = taskInfo;
-        this.taskParameter = taskInfo.getTaskParameter();
+        this.jobExecutionInfo = jobExecutionInfo;
+        this.jobExecutionParameter = jobExecutionInfo.getJobExecutionParameter();
         this.connectionInfo = connectionInfo;
 
-        if (taskParameter.getMetricParameter() != null) {
-            taskParameter.getMetricParameter().forEach((k, v) -> {
+        if (jobExecutionParameter.getMetricParameter() != null) {
+            jobExecutionParameter.getMetricParameter().forEach((k, v) -> {
                 inputParameter.put(k, String.valueOf(v));
             });
         }
 
-        if (taskParameter.getExpectedParameter() != null) {
-            taskParameter.getExpectedParameter().forEach((k, v) -> {
+        if (jobExecutionParameter.getExpectedParameter() != null) {
+            jobExecutionParameter.getExpectedParameter().forEach((k, v) -> {
                 inputParameter.put(k, String.valueOf(v));
             });
         }
 
-        inputParameter.put(RESULT_FORMULA, String.valueOf(taskParameter.getResultFormula()));
-        inputParameter.put(OPERATOR, String.valueOf(taskParameter.getOperator()));
-        inputParameter.put(THRESHOLD, String.valueOf(taskParameter.getThreshold()));
-        inputParameter.put(EXPECTED_TYPE, StringUtils.wrapperSingleQuotes(taskParameter.getExpectedType()));
-        inputParameter.put(ERROR_DATA_FILE_NAME, taskInfo.getErrorDataFileName());
+        inputParameter.put(RESULT_FORMULA, String.valueOf(jobExecutionParameter.getResultFormula()));
+        inputParameter.put(OPERATOR, String.valueOf(jobExecutionParameter.getOperator()));
+        inputParameter.put(THRESHOLD, String.valueOf(jobExecutionParameter.getThreshold()));
+        inputParameter.put(EXPECTED_TYPE, StringUtils.wrapperSingleQuotes(jobExecutionParameter.getExpectedType()));
+        inputParameter.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
 
-        if ("local-file".equalsIgnoreCase(taskInfo.getErrorDataStorageType())) {
-            inputParameter.putAll(JSONUtils.toMap(taskInfo.getErrorDataStorageParameter(),String.class, String.class));
+        if ("local-file".equalsIgnoreCase(jobExecutionInfo.getErrorDataStorageType())) {
+            inputParameter.putAll(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, String.class));
         } else {
             inputParameter.put(ERROR_DATA_FILE_DIR, CommonPropertyUtils.getString(ERROR_DATA_FILE_DIR,CommonPropertyUtils.ERROR_DATA_FILE_DIR_DEFAULT));
         }
@@ -90,7 +90,7 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
 
     @Override
     public void buildName() {
-        configuration.setName(taskInfo.getName());
+        configuration.setName(jobExecutionInfo.getName());
     }
 
     @Override
@@ -105,12 +105,12 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
 
     @Override
     public void buildTransformConfigs() {
-        String metricType = taskParameter.getMetricType();
+        String metricType = jobExecutionParameter.getMetricType();
         SqlMetric sqlMetric = PluginLoader
                 .getPluginLoader(SqlMetric.class)
                 .getNewPlugin(metricType);
 
-        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
+        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, jobExecutionInfo);
 
         List<TransformConfig> transformConfigs = new ArrayList<>();
 
@@ -131,7 +131,7 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
         inputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue().getResultTable());
 
         // get expected value transform sql
-        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
+        String expectedType = jobExecutionInfo.getEngineType() + "_" + jobExecutionParameter.getExpectedType();
         expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);

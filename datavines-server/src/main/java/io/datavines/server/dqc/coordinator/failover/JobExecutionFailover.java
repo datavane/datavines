@@ -21,10 +21,10 @@ import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.NetUtils;
 import io.datavines.common.utils.Stopper;
 import io.datavines.common.utils.YarnUtils;
-import io.datavines.server.dqc.command.TaskExecuteResponseCommand;
+import io.datavines.server.dqc.command.JobExecuteResponseCommand;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.server.dqc.coordinator.cache.TaskExecuteManager;
-import io.datavines.server.repository.entity.Task;
+import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
+import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.service.impl.JobExternalService;
 import io.datavines.server.utils.SpringApplicationContext;
 import io.datavines.common.utils.StringUtils;
@@ -40,104 +40,104 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class TaskFailover {
+public class JobExecutionFailover {
 
-    private static final Logger logger = LoggerFactory.getLogger(TaskFailover.class);
+    private static final Logger logger = LoggerFactory.getLogger(JobExecutionFailover.class);
 
     private final JobExternalService jobExternalService;
 
-    private final ConcurrentHashMap<Long,Task> needCheckStatusTaskMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Long,JobExecution> needCheckStatusJobExecutionMap = new ConcurrentHashMap<>();
 
-    private final TaskExecuteManager taskExecuteManager;
+    private final JobExecuteManager jobExecuteManager;
 
     private final ScheduledExecutorService executorService;
 
     private final Integer SERVER_PORT =
             CommonPropertyUtils.getInt(CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT);
 
-    public TaskFailover(TaskExecuteManager taskExecuteManager){
+    public JobExecutionFailover(JobExecuteManager jobExecuteManager){
         this.jobExternalService = SpringApplicationContext.getBean(JobExternalService.class);
-        this.taskExecuteManager = taskExecuteManager;
+        this.jobExecuteManager = jobExecuteManager;
         executorService = Executors.newScheduledThreadPool(2);
-        executorService.scheduleAtFixedRate(new YarnTaskStatusChecker(),0,4, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(new YarnJobExecutionStatusChecker(),0,4, TimeUnit.SECONDS);
     }
 
-    public void handleTaskFailover(String host) {
-        List<Task> taskList = jobExternalService.getTaskListNeedFailover(host);
-        if (CollectionUtils.isEmpty(taskList)) {
+    public void handleJobExecutionFailover(String host) {
+        List<JobExecution> jobExecutionList = jobExternalService.getJobExecutionListNeedFailover(host);
+        if (CollectionUtils.isEmpty(jobExecutionList)) {
             return;
         }
 
-        innerHandleTaskFailover(taskList);
+        innerHandleJobExecutionFailover(jobExecutionList);
     }
 
-    public void handleTaskFailover(List<String> hostList) {
-        List<Task> taskList = jobExternalService.getTaskListNeedFailover(hostList);
-        if (CollectionUtils.isEmpty(taskList)) {
+    public void handleJobExecutionFailover(List<String> hostList) {
+        List<JobExecution> jobExecutionList = jobExternalService.getJobExecutionListNeedFailover(hostList);
+        if (CollectionUtils.isEmpty(jobExecutionList)) {
             return;
         }
 
-        innerHandleTaskFailover(taskList);
+        innerHandleJobExecutionFailover(jobExecutionList);
     }
 
-    private void innerHandleTaskFailover(List<Task> taskList) {
-        List<Task> needRerunTaskList = new ArrayList<>();
+    private void innerHandleJobExecutionFailover(List<JobExecution> jobExecutionList) {
+        List<JobExecution> needRerunJobExecutionList = new ArrayList<>();
 
-        taskList.forEach(task -> {
+        jobExecutionList.forEach(task -> {
             if(StringUtils.isNotEmpty(task.getApplicationId())){
                 try {
-                    taskExecuteManager.addFailoverTaskRequest(task);
+                    jobExecuteManager.addFailoverJobExecutionRequest(task);
                 } catch (DataVinesException e) {
                     e.printStackTrace();
                 }
                 task.setExecuteHost(NetUtils.getAddr(SERVER_PORT));
-                jobExternalService.updateTask(task);
-                needCheckStatusTaskMap.put(task.getId(), task);
+                jobExternalService.updateJobExecution(task);
+                needCheckStatusJobExecutionMap.put(task.getId(), task);
             } else {
                 String appId = YarnUtils.getYarnAppId(task.getTenantCode(), task.getApplicationIdTag());
                 if (StringUtils.isNotEmpty(appId)) {
                     try {
-                        taskExecuteManager.addFailoverTaskRequest(task);
+                        jobExecuteManager.addFailoverJobExecutionRequest(task);
                     } catch (DataVinesException e) {
                         e.printStackTrace();
                     }
                     task.setApplicationId(appId);
                     task.setExecuteHost(NetUtils.getAddr(SERVER_PORT));
-                    jobExternalService.updateTask(task);
-                    needCheckStatusTaskMap.put(task.getId(), task);
+                    jobExternalService.updateJobExecution(task);
+                    needCheckStatusJobExecutionMap.put(task.getId(), task);
                 } else {
-                    needRerunTaskList.add(task);
+                    needRerunJobExecutionList.add(task);
                 }
             }
         });
 
-        handleRerunTask(needRerunTaskList);
+        handleRerunJobExecution(needRerunJobExecutionList);
     }
 
-    private void handleRerunTask(List<Task> needRerunTaskList) {
-        needRerunTaskList.forEach(task->{
+    private void handleRerunJobExecution(List<JobExecution> needRerunJobExecutionList) {
+        needRerunJobExecutionList.forEach(task->{
             try {
-                taskExecuteManager.addFailoverTaskRequest(task);
-                TaskExecuteResponseCommand responseCommand =
-                        new TaskExecuteResponseCommand(task.getId());
+                jobExecuteManager.addFailoverJobExecutionRequest(task);
+                JobExecuteResponseCommand responseCommand =
+                        new JobExecuteResponseCommand(task.getId());
                 responseCommand.setEndTime(LocalDateTime.now());
                 responseCommand.setStatus(ExecutionStatus.FAILURE.getCode());
-                taskExecuteManager.processTaskExecuteResponse(responseCommand);
+                jobExecuteManager.processJobExecutionExecuteResponse(responseCommand);
             } catch (DataVinesException e) {
                 e.printStackTrace();
             }
         });
     }
 
-    class YarnTaskStatusChecker implements Runnable {
+    class YarnJobExecutionStatusChecker implements Runnable {
 
         @Override
         public void run() {
 
-            if (Stopper.isRunning() && needCheckStatusTaskMap.size() > 0) {
-                needCheckStatusTaskMap.forEach((k,v) ->{
-                    TaskExecuteResponseCommand responseCommand =
-                            new TaskExecuteResponseCommand(v.getId());
+            if (Stopper.isRunning() && needCheckStatusJobExecutionMap.size() > 0) {
+                needCheckStatusJobExecutionMap.forEach((k,v) ->{
+                    JobExecuteResponseCommand responseCommand =
+                            new JobExecuteResponseCommand(v.getId());
                     responseCommand.setEndTime(LocalDateTime.now());
                     ExecutionStatus applicationStatus = YarnUtils.getApplicationStatus(v.getApplicationId());
                     if (applicationStatus != null) {
@@ -147,8 +147,8 @@ public class TaskFailover {
                                 applicationStatus.equals(ExecutionStatus.SUCCESS)) {
                             responseCommand.setStatus(applicationStatus.getCode());
                             responseCommand.setApplicationIds(v.getApplicationId());
-                            taskExecuteManager.processTaskExecuteResponse(responseCommand);
-                            needCheckStatusTaskMap.remove(k);
+                            jobExecuteManager.processJobExecutionExecuteResponse(responseCommand);
+                            needCheckStatusJobExecutionMap.remove(k);
                         }
                     }
                 });

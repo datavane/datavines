@@ -16,7 +16,6 @@
  */
 package io.datavines.server.api.dto.vo;
 
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

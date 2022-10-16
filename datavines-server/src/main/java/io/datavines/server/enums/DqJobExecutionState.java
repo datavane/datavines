@@ -24,7 +24,7 @@ import java.util.Map;
 /**
  * data quality task state
  */
-public enum DqTaskState {
+public enum DqJobExecutionState {
     /**
      * 0-none
      * 1-success
@@ -34,7 +34,7 @@ public enum DqTaskState {
     SUCCESS(1, "success", "成功"),
     FAILURE(2, "failure", "失败");
 
-    DqTaskState(int code, String description,String zhDescription) {
+    DqJobExecutionState(int code, String description, String zhDescription) {
         this.code = code;
         this.description = description;
         this.zhDescription = zhDescription;
@@ -61,15 +61,15 @@ public enum DqTaskState {
         return isEn ? description : zhDescription;
     }
 
-    private static final Map<Integer, DqTaskState> VALUES_MAP = new HashMap<>();
+    private static final Map<Integer, DqJobExecutionState> VALUES_MAP = new HashMap<>();
 
     static {
-        for (DqTaskState type : DqTaskState.values()) {
+        for (DqJobExecutionState type : DqJobExecutionState.values()) {
             VALUES_MAP.put(type.code,type);
         }
     }
 
-    public static DqTaskState of(Integer status) {
+    public static DqJobExecutionState of(Integer status) {
         if (VALUES_MAP.containsKey(status)) {
             return VALUES_MAP.get(status);
         }

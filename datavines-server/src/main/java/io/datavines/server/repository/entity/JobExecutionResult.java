@@ -27,16 +27,16 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("dv_task_result")
-public class TaskResult implements Serializable {
+@TableName("dv_job_execution_result")
+public class JobExecutionResult implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
     @TableId(type= IdType.AUTO)
     private Long id;
 
-    @TableField(value = "task_id")
-    private Long taskId;
+    @TableField(value = "job_execution_id")
+    private Long jobExecutionId;
 
     @TableField(value = "metric_name")
     private String metricName;

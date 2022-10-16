@@ -16,18 +16,18 @@
  */
 package io.datavines.server.dqc.coordinator.runner;
 
+import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.utils.*;
-import io.datavines.server.dqc.coordinator.cache.TaskExecuteManager;
+import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
 import io.datavines.server.registry.Register;
 import io.datavines.server.enums.CommandType;
+import io.datavines.server.repository.entity.JobExecution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.datavines.server.repository.service.impl.JobExternalService;
 import io.datavines.server.utils.SpringApplicationContext;
-import io.datavines.common.entity.TaskRequest;
 import io.datavines.server.repository.entity.Command;
-import io.datavines.server.repository.entity.Task;
 
 import static io.datavines.common.CommonConstants.SLEEP_TIME_MILLIS;
 import static io.datavines.common.utils.CommonPropertyUtils.*;
@@ -43,13 +43,13 @@ public class JobScheduler extends Thread {
 
     private final JobExternalService jobExternalService;
 
-    private final TaskExecuteManager taskExecuteManager;
+    private final JobExecuteManager jobExecuteManager;
 
     private final Register register;
 
-    public JobScheduler(TaskExecuteManager taskExecuteManager, Register register){
+    public JobScheduler(JobExecuteManager jobExecuteManager, Register register){
         this.jobExternalService = SpringApplicationContext.getBean(JobExternalService.class);
-        this.taskExecuteManager = taskExecuteManager;
+        this.jobExecuteManager = jobExecuteManager;
         this.register = register;
     }
 
@@ -77,18 +77,18 @@ public class JobScheduler extends Thread {
                 if (command != null) {
 
                     if (CommandType.START == command.getType()) {
-                        Task task = jobExternalService.executeCommand(command);
-                        if (task != null) {
-                            logger.info("start submit task : {} ", JSONUtils.toJsonString(task));
-                            TaskRequest taskRequest = taskExecuteManager.buildTaskRequest(task);
-                            taskExecuteManager.addExecuteCommand(taskRequest);
+                        JobExecution jobExecution = jobExternalService.executeCommand(command);
+                        if (jobExecution != null) {
+                            logger.info("start submit jobExecution : {} ", JSONUtils.toJsonString(jobExecution));
+                            JobExecutionRequest jobExecutionRequest = jobExecuteManager.buildJobExecutionRequest(jobExecution);
+                            jobExecuteManager.addExecuteCommand(jobExecutionRequest);
                             jobExternalService.deleteCommandById(command.getId());
-                            logger.info(String.format("submit success, task : %s", task.getName()) );
+                            logger.info(String.format("submit success, jobExecution : %s", jobExecution.getName()) );
                         }
                     } else if (CommandType.STOP == command.getType()) {
-                        taskExecuteManager.addKillCommand(command.getTaskId());
+                        jobExecuteManager.addKillCommand(command.getJobExecutionId());
                         jobExternalService.deleteCommandById(command.getId());
-                        logger.info(String.format("kill task : %s", command.getTaskId()) );
+                        logger.info(String.format("kill task : %s", command.getJobExecutionId()) );
                     }
                     register.release(TASK_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS);

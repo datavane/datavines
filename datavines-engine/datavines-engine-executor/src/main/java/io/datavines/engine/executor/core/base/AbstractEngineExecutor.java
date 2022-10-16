@@ -18,15 +18,15 @@ package io.datavines.engine.executor.core.base;
 
 import java.util.List;
 
+import io.datavines.common.entity.JobExecutionRequest;
 import org.slf4j.Logger;
 
-import io.datavines.common.entity.TaskRequest;
 import io.datavines.common.entity.ProcessResult;
 import io.datavines.engine.api.engine.EngineExecutor;
 
 public abstract class AbstractEngineExecutor implements EngineExecutor {
 
-    protected TaskRequest taskRequest;
+    protected JobExecutionRequest jobExecutionRequest;
 
     protected Logger logger;
 

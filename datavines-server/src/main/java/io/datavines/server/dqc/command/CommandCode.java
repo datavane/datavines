@@ -24,23 +24,23 @@ public enum CommandCode {
     /**
      * execute job request
      */
-    TASK_EXECUTE_REQUEST,
+    JOB_EXECUTE_REQUEST,
     /**
      * execute job ack
      */
-    TASK_EXECUTE_ACK,
+    JOB_EXECUTE_ACK,
     /**
      * execute job response
      */
-    TASK_EXECUTE_RESPONSE,
+    JOB_EXECUTE_RESPONSE,
     /**
      * kill job request
      */
-    TASK_KILL_REQUEST,
+    JOB_KILL_REQUEST,
     /**
      * kill job response
      */
-    TASK_KILL_RESPONSE,
+    JOB_KILL_RESPONSE,
     /**
      *  roll view log request
      */

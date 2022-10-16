@@ -1,6 +1,6 @@
 # Task
 
-> POST /api/v1/task/submit
+> POST /api/v1/jobExecution/submit
 
 - spark engine request parameter
 ```json
@@ -89,7 +89,7 @@
 }
 ```
 
-> GET /api/v1/task/result/{taskId}
+> GET /api/v1/jobExecution/result/{taskId}
 
 - response
 ```
@@ -97,7 +97,7 @@
     "msg": "Success",
     "code": 200,
     "data": {
-        "taskResult": {
+        "jobExecutionResult": {
             "id": 15,
             "metricName": "value_between",
             "metricDimension": "completeness",
@@ -118,7 +118,7 @@
 }
 ```
 
-> GET /api/v1/task/status/{taskId}
+> GET /api/v1/jobExecution/status/{taskId}
 
 - response
 ```
@@ -131,7 +131,7 @@
 }
 ```
 
-> DELETE /api/v1/task/kill/{id}
+> DELETE /api/v1/jobExecution/kill/{id}
 - response
 ```
 {

@@ -16,9 +16,7 @@ import io.datavines.server.repository.entity.catalog.CatalogEntityRel;
 import io.datavines.server.repository.mapper.CatalogEntityInstanceMapper;
 import io.datavines.server.repository.mapper.CatalogEntityMetricJobRelMapper;
 import io.datavines.server.repository.mapper.CatalogEntityRelMapper;
-import io.datavines.server.repository.service.CatalogEntityInstanceService;
-import io.datavines.server.repository.service.CatalogEntityMetricJobRelService;
-import io.datavines.server.repository.service.JobService;
+import io.datavines.server.repository.service.*;
 import io.datavines.server.utils.ContextHolder;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +44,12 @@ public class CatalogEntityInstanceServiceImpl
 
     @Autowired
     private CatalogEntityMetricJobRelMapper catalogEntityMetricJobRelMapper;
+
+    @Autowired
+    private JobExecutionService jobExecutionService;
+
+    @Autowired
+    private JobExecutionResultService jobExecutionResultService;
 
     @Override
     public String create(CatalogEntityInstance entityInstance) {

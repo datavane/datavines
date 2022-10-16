@@ -27,7 +27,7 @@ import org.springframework.stereotype.Service;
 public class ActualValuesServiceImpl extends ServiceImpl<ActualValuesMapper, ActualValues>  implements ActualValuesService {
 
     @Override
-    public int deleteByTaskId(long taskId) {
+    public int deleteByJobExecutionId(long taskId) {
         return baseMapper.delete(new QueryWrapper<ActualValues>().eq("task_id",taskId));
     }
 

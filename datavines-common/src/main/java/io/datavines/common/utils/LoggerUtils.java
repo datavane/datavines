@@ -24,29 +24,29 @@ import java.time.LocalDateTime;
 public class LoggerUtils {
 
     /**
-     * Task Logger's prefix
+     * JobExecution Logger's prefix
      */
-    public static final String TASK_LOGGER_INFO_PREFIX = "TASK";
+    public static final String JOB_LOGGER_INFO_PREFIX = "JOB";
 
     /**
-     * Task Logger Thread's name
+     * JobExecution Logger Thread's name
      */
-    public static final String TASK_LOGGER_THREAD_NAME = "TaskLogInfo";
+    public static final String JOB_LOGGER_THREAD_NAME = "JobExecutionLogInfo";
 
     /**
-     * Task Logger Thread's name
+     * JobExecution Logger Thread's name
      */
-    public static final String TASK_UNIQUE_ID_LOG_FORMAT = "[TaskUniqueId=";
+    public static final String JOB_UNIQUE_ID_LOG_FORMAT = "[JobExecutionUniqueId=";
 
     /**
-     * Task log info format
+     * JobExecution log info format
      */
-    public static final String TASK_LOG_INFO_FORMAT = "TaskLogInfo-%s";
+    public static final String JOB_LOG_INFO_FORMAT = "JobExecutionLogInfo-%s";
 
-    public static String buildTaskLoggerName(String affix, String taskUniqueId){
-        // - [TaskUniqueId=TASK-20220320-LOCAL_SPARK_1521012323213]
+    public static String buildJobExecutionLoggerName(String affix, String taskUniqueId){
+        // - [JobExecutionUniqueId=JOB-20220320-LOCAL_SPARK_1521012323213]
         return String.format("%s%s-%s-%s",
-                TASK_UNIQUE_ID_LOG_FORMAT,
+                JOB_UNIQUE_ID_LOG_FORMAT,
                 affix.toUpperCase(),
                 DateUtils.format(LocalDateTime.now(),DateUtils.YYYYMMDD),
                 taskUniqueId);

@@ -19,43 +19,43 @@ package io.datavines.server.dqc.executor.runner;
 import java.time.LocalDateTime;
 
 import io.datavines.common.config.Configurations;
-import io.datavines.common.entity.TaskRequest;
+import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.LoggerUtils;
 import io.datavines.engine.api.engine.EngineExecutor;
-import io.datavines.server.dqc.coordinator.cache.TaskExecuteManager;
-import io.datavines.server.dqc.command.TaskExecuteResponseCommand;
+import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
+import io.datavines.server.dqc.command.JobExecuteResponseCommand;
 import io.datavines.spi.PluginLoader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class TaskRunner implements Runnable {
+public class JobRunner implements Runnable {
 
-    private final Logger logger = LoggerFactory.getLogger(TaskRunner.class);
+    private final Logger logger = LoggerFactory.getLogger(JobRunner.class);
 
-    private final TaskRequest taskRequest;
+    private final JobExecutionRequest jobExecutionRequest;
 
-    private final TaskExecuteManager taskExecuteManager;
+    private final JobExecuteManager jobExecuteManager;
 
     private EngineExecutor engineExecutor;
 
     private final Configurations configurations;
 
-    public TaskRunner(TaskRequest taskRequest, TaskExecuteManager taskExecuteManager, Configurations configurations){
-        this.taskRequest = taskRequest;
-        this.taskExecuteManager = taskExecuteManager;
+    public JobRunner(JobExecutionRequest jobExecutionRequest, JobExecuteManager jobExecuteManager, Configurations configurations){
+        this.jobExecutionRequest = jobExecutionRequest;
+        this.jobExecuteManager = jobExecuteManager;
         this.configurations = configurations;
     }
 
     @Override
     public void run() {
-        TaskExecuteResponseCommand responseCommand =
-                new TaskExecuteResponseCommand(this.taskRequest.getTaskId());
+        JobExecuteResponseCommand responseCommand =
+                new JobExecuteResponseCommand(this.jobExecutionRequest.getJobExecutionId());
         try {
-            String taskLoggerName = LoggerUtils.buildTaskLoggerName(
-                    LoggerUtils.TASK_LOGGER_INFO_PREFIX,
-                    taskRequest.getTaskUniqueId());
+            String taskLoggerName = LoggerUtils.buildJobExecutionLoggerName(
+                    LoggerUtils.JOB_LOGGER_INFO_PREFIX,
+                    jobExecutionRequest.getJobExecutionUniqueId());
 
             // custom logger
             Logger taskLogger = LoggerFactory.getLogger(taskLoggerName);
@@ -63,9 +63,9 @@ public class TaskRunner implements Runnable {
 
             engineExecutor = PluginLoader
                     .getPluginLoader(EngineExecutor.class)
-                    .getNewPlugin(taskRequest.getEngineType());
+                    .getNewPlugin(jobExecutionRequest.getEngineType());
 
-            engineExecutor.init(taskRequest, taskLogger, configurations);
+            engineExecutor.init(jobExecutionRequest, taskLogger, configurations);
             engineExecutor.execute();
             engineExecutor.after();
 
@@ -96,7 +96,7 @@ public class TaskRunner implements Runnable {
             responseCommand.setApplicationIds(engineExecutor.getProcessResult().getApplicationId());
             responseCommand.setProcessId(engineExecutor.getProcessResult().getProcessId());
         } finally {
-            taskExecuteManager.processTaskExecuteResponse(responseCommand);
+            jobExecuteManager.processJobExecutionExecuteResponse(responseCommand);
         }
     }
 
@@ -107,13 +107,13 @@ public class TaskRunner implements Runnable {
         if (engineExecutor != null) {
             try {
                 engineExecutor.cancel();
-                TaskExecuteResponseCommand responseCommand =
-                        new TaskExecuteResponseCommand(this.taskRequest.getTaskId());
+                JobExecuteResponseCommand responseCommand =
+                        new JobExecuteResponseCommand(this.jobExecutionRequest.getJobExecutionId());
                 responseCommand.setStatus(ExecutionStatus.KILL.getCode());
                 responseCommand.setEndTime(LocalDateTime.now());
                 responseCommand.setApplicationIds(engineExecutor.getProcessResult().getApplicationId());
                 responseCommand.setProcessId(engineExecutor.getProcessResult().getProcessId());
-                taskExecuteManager.processTaskExecuteResponse(responseCommand);
+                jobExecuteManager.processJobExecutionExecuteResponse(responseCommand);
 
             } catch (Exception e) {
                 logger.error(e.getMessage(),e);

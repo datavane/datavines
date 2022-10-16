@@ -22,11 +22,7 @@ import ch.qos.logback.core.filter.Filter;
 import ch.qos.logback.core.spi.FilterReply;
 import io.datavines.common.utils.LoggerUtils;
 
-/**
- *  task log filter
- * 
- */
-public class TaskLogFilter extends Filter<ILoggingEvent> {
+public class JobExecutionLogFilter extends Filter<ILoggingEvent> {
 
     private Level level;
 
@@ -41,7 +37,7 @@ public class TaskLogFilter extends Filter<ILoggingEvent> {
      */
     @Override
     public FilterReply decide(ILoggingEvent event) {
-        if (event.getThreadName().startsWith(LoggerUtils.TASK_LOGGER_THREAD_NAME) || event.getLevel().isGreaterOrEqual(level)) {
+        if (event.getThreadName().startsWith(LoggerUtils.JOB_LOGGER_THREAD_NAME) || event.getLevel().isGreaterOrEqual(level)) {
             return FilterReply.ACCEPT;
         }
         return FilterReply.DENY;

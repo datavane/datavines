@@ -16,40 +16,16 @@
  */
 package io.datavines.server.dqc.coordinator.cache;
 
-import io.datavines.common.entity.TaskRequest;
+import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.server.dqc.command.CommandCode;
+import lombok.Data;
 
+@Data
 public class CommandContext {
 
     private CommandCode commandCode;
 
-    private Long taskId;
+    private Long jobExecutionId;
 
-    private TaskRequest taskRequest;
-
-    public CommandContext(){}
-
-    public CommandCode getCommandCode() {
-        return commandCode;
-    }
-
-    public void setCommandCode(CommandCode commandCode) {
-        this.commandCode = commandCode;
-    }
-
-    public Long getTaskId() {
-        return taskId;
-    }
-
-    public void setTaskId(Long taskId) {
-        this.taskId = taskId;
-    }
-
-    public TaskRequest getTaskRequest() {
-        return taskRequest;
-    }
-
-    public void setTaskRequest(TaskRequest taskRequest) {
-        this.taskRequest = taskRequest;
-    }
+    private JobExecutionRequest jobExecutionRequest;
 }

@@ -14,16 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.repository.mapper;
+package io.datavines.server.dqc.executor.cache;
 
-import org.apache.ibatis.annotations.Mapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import io.datavines.server.repository.entity.TaskResult;
-import org.apache.ibatis.annotations.Select;
+import io.datavines.common.entity.JobExecutionRequest;
+import io.datavines.server.dqc.executor.runner.JobRunner;
+import lombok.Data;
 
-@Mapper
-public interface TaskResultMapper extends BaseMapper<TaskResult>  {
+@Data
+public class JobExecutionContext {
 
-    @Select("SELECT * from dv_task_result where task_id = #{taskId} limit 1 ")
-    TaskResult getOne(Long taskId);
+    private JobExecutionRequest jobExecutionRequest;
+
+    private JobRunner jobRunner;
+
 }

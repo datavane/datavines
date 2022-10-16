@@ -52,13 +52,16 @@ public class ConnectorResponse {
     }
 
     public static enum Status {
+        /**
+         *
+         */
         IN_PROGRESS(0),
         SUCCESS(1),
         ERROR(-1);
 
         private final int status;
 
-        private Status(int status) {
+        Status(int status) {
             this.status = status;
         }
 

@@ -21,7 +21,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.datavines.common.entity.TaskParameter;
+import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.TimeoutStrategy;
 import io.datavines.common.enums.JobType;
@@ -31,8 +31,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("dv_task")
-public class Task implements Serializable {
+@TableName("dv_job_execution")
+public class JobExecution implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
@@ -73,7 +73,7 @@ public class Task implements Serializable {
     private String errorDataFileName;
 
     /**
-     * {@link TaskParameter}
+     * {@link JobExecutionParameter}
      */
     @TableField(value = "parameter")
     private String parameter;

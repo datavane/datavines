@@ -16,25 +16,23 @@
  */
 package io.datavines.server.dqc.coordinator.operator;
 
-import io.datavines.common.entity.TaskRequest;
+import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.engine.core.utils.JsonUtils;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.client.NotificationClient;
-import io.datavines.server.api.dto.vo.TaskResultVO;
-import io.datavines.server.repository.entity.Task;
-import io.datavines.server.repository.entity.TaskResult;
+import io.datavines.server.api.dto.vo.JobExecutionResultVO;
+import io.datavines.server.enums.DqJobExecutionState;
+import io.datavines.server.repository.entity.JobExecution;
+import io.datavines.server.repository.entity.JobExecutionResult;
 import io.datavines.server.repository.service.SlaNotificationService;
-import io.datavines.server.repository.service.TaskResultService;
-import io.datavines.server.repository.service.TaskService;
+import io.datavines.server.repository.service.JobExecutionResultService;
+import io.datavines.server.repository.service.JobExecutionService;
 import io.datavines.server.repository.service.impl.JobExternalService;
-import io.datavines.server.enums.DqTaskState;
 import io.datavines.server.enums.OperatorType;
 import io.datavines.spi.PluginLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -43,13 +41,8 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * DataQualityResultOperator
- */
 @Component
 public class DataQualityResultOperator {
-
-    private final Logger logger = LoggerFactory.getLogger(DataQualityResultOperator.class);
 
     @Autowired
     private JobExternalService jobExternalService;
@@ -58,51 +51,49 @@ public class DataQualityResultOperator {
     private NotificationClient notificationClient;
 
     @Autowired
-    private TaskResultService taskResultService;
+    private JobExecutionResultService jobExecutionResultService;
 
     @Autowired
-    private TaskService taskService;
+    private JobExecutionService jobExecutionService;
 
     @Autowired
     private SlaNotificationService slaNotificationService;
-
-
+    
     /**
      * When the task type is data quality, it will get the statistics value、comparison value、
      * threshold、check type、operator and failure strategy，use the formula that
      * {result formula} {operator} {threshold} to get dqc result . If result is failure, it will alert
-     * @param taskRequest taskRequest
+     * @param jobExecutionRequest jobExecutionRequest
      */
-    public void operateDqExecuteResult(TaskRequest taskRequest) {
+    public void operateDqExecuteResult(JobExecutionRequest jobExecutionRequest) {
 
-        TaskResult taskResult =
-                jobExternalService.getTaskResultByTaskId(taskRequest.getTaskId());
-        if (taskResult != null) {
+        JobExecutionResult jobExecutionResult =
+                jobExternalService.getJobExecutionResultByJobExecutionId(jobExecutionRequest.getJobExecutionId());
+        if (jobExecutionResult != null) {
             //check the result ,if result is failure do some operator by failure strategy
-            checkDqExecuteResult(taskResult);
+            checkDqExecuteResult(jobExecutionResult);
         }
     }
 
     /**
      * get the data quality check result
      * and if the result is failure that will alert or block
-     * @param taskResult taskResult
+     * @param jobExecutionResult jobExecutionResult
      */
-    private void checkDqExecuteResult(TaskResult taskResult) {
-        if (isFailure(taskResult)) {
-            taskResult.setState(DqTaskState.FAILURE.getCode());
-            Long taskId = taskResult.getTaskId();
+    private void checkDqExecuteResult(JobExecutionResult jobExecutionResult) {
+        if (isFailure(jobExecutionResult)) {
+            jobExecutionResult.setState(DqJobExecutionState.FAILURE.getCode());
+            Long taskId = jobExecutionResult.getJobExecutionId();
             sendErrorEmail(taskId);
         } else {
-            taskResult.setState(DqTaskState.SUCCESS.getCode());
+            jobExecutionResult.setState(DqJobExecutionState.SUCCESS.getCode());
         }
 
-        jobExternalService.updateTaskResult(taskResult);
+        jobExternalService.updateJobExecutionResult(jobExecutionResult);
     }
-
-
+    
     private void sendErrorEmail(Long taskId){
-        TaskResultVO resultVO = taskResultService.getResultVOByTaskId(taskId);
+        JobExecutionResultVO resultVO = jobExecutionResultService.getResultVOByJobExecutionId(taskId);
         LinkedList<String> messageList = new LinkedList<>();
         messageList.add(resultVO.getMetricName());
         messageList.add(resultVO.getCheckSubject());
@@ -113,8 +104,8 @@ public class DataQualityResultOperator {
         SlaNotificationMessage message = new SlaNotificationMessage();
         message.setMessage(jsonMessage);
         message.setSubject(String.format("datavines metric %s failure", resultVO.getMetricName()));
-        Task task = taskService.getById(taskId);
-        Long jobId = task.getJobId();
+        JobExecution jobExecution = jobExecutionService.getById(taskId);
+        Long jobId = jobExecution.getJobId();
 
         Map<SlaSenderMessage, Set<SlaConfigMessage>> config = slaNotificationService.getSlasNotificationConfigurationByJobId(jobId);
         if (config.isEmpty()){
@@ -125,24 +116,24 @@ public class DataQualityResultOperator {
 
     /**
      * It is used to judge whether the result of the data quality task is failed
-     * @param taskResult
+     * @param jobExecutionResult
      * @return
      */
-    private boolean isFailure(TaskResult taskResult) {
+    private boolean isFailure(JobExecutionResult jobExecutionResult) {
 
-        Double actualValue = taskResult.getActualValue();
+        Double actualValue = jobExecutionResult.getActualValue();
         Double expectedValue = null;
-        if (taskResult.getExpectedValue() == null) {
-            expectedValue = taskResult.getActualValue();
+        if (jobExecutionResult.getExpectedValue() == null) {
+            expectedValue = jobExecutionResult.getActualValue();
         } else {
-            expectedValue = taskResult.getExpectedValue();
+            expectedValue = jobExecutionResult.getExpectedValue();
         }
-        Double threshold = taskResult.getThreshold();
+        Double threshold = jobExecutionResult.getThreshold();
 
-        OperatorType operatorType = OperatorType.of(taskResult.getOperator());
+        OperatorType operatorType = OperatorType.of(jobExecutionResult.getOperator());
 
         ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class)
-                            .getOrCreatePlugin(taskResult.getResultFormula());
+                            .getOrCreatePlugin(jobExecutionResult.getResultFormula());
         return getCompareResult(operatorType, resultFormula.getResult(actualValue, expectedValue), threshold);
     }
 

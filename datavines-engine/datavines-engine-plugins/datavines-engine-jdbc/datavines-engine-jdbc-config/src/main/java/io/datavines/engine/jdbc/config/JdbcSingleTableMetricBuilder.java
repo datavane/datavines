@@ -43,26 +43,26 @@ public class JdbcSingleTableMetricBuilder extends BaseJdbcConfigurationBuilder {
         sinkConfigs.add(actualValueSinkConfig);
 
         //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(SinkSqlBuilder.getTaskResultSql(),  "dv_task_result");
+        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(SinkSqlBuilder.getTaskResultSql(),  "dv_job_execution_result");
         taskResultSinkConfig.setType(SinkType.TASK_RESULT.getDescription());
         sinkConfigs.add(taskResultSinkConfig);
 
         //get the error data storage parameter
-        if (StringUtils.isNotEmpty(taskInfo.getErrorDataStorageType())
-                &&StringUtils.isNotEmpty(taskInfo.getErrorDataStorageParameter())) {
+        if (StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageType())
+                &&StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageParameter())) {
             SinkConfig errorDataSinkConfig = new SinkConfig();
             errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
 
-            Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(taskInfo.getErrorDataStorageParameter(),String.class, Object.class));
+            Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, Object.class));
             connectorParameterMap.putAll(inputParameter);
             StorageFactory storageFactory = PluginLoader
                     .getPluginLoader(StorageFactory.class)
-                    .getNewPlugin(taskInfo.getErrorDataStorageType());
+                    .getNewPlugin(jobExecutionInfo.getErrorDataStorageType());
 
             if (storageFactory != null) {
                 connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
                 errorDataSinkConfig.setPlugin(storageFactory.getCategory());
-                connectorParameterMap.put(ERROR_DATA_FILE_NAME, taskInfo.getErrorDataFileName());
+                connectorParameterMap.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
                 connectorParameterMap.put(ERROR_DATA_FILE_DIR, inputParameter.get(ERROR_DATA_FILE_DIR));
                 connectorParameterMap.put(METRIC_NAME, inputParameter.get(METRIC_NAME));
                 connectorParameterMap.put(SRC_CONNECTOR_TYPE, inputParameter.get(SRC_CONNECTOR_TYPE));

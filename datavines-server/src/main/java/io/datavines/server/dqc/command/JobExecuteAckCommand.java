@@ -14,26 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.repository.mapper;
+package io.datavines.server.dqc.command;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.datavines.server.api.dto.vo.TaskVO;
-import org.apache.ibatis.annotations.*;
+import lombok.Data;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+@Data
+public class JobExecuteAckCommand extends BaseCommand {
 
-import io.datavines.server.repository.entity.Task;
+    private long jobExecutionId;
 
-@Mapper
-public interface TaskMapper extends BaseMapper<Task>  {
+    private LocalDateTime startTime;
 
-    @Select("SELECT * from dv_task WHERE job_id = #{jobId} ")
-    List<Task> listByJobId(long jobId);
+    private String host;
 
-    IPage<TaskVO> getTaskPage(Page<TaskVO> page,
-                             @Param("searchVal") String searchVal,
-                             @Param("jobId") Long jobId);
+    private int status;
+
+    private String logPath;
+
+    private String executePath;
+
+    public JobExecuteAckCommand(long jobExecutionId) {
+        this.jobExecutionId = jobExecutionId;
+        this.commandCode = CommandCode.JOB_EXECUTE_ACK;
+    }
+
+    public JobExecuteAckCommand(){
+        this.commandCode = CommandCode.JOB_EXECUTE_ACK;
+    }
+
 }

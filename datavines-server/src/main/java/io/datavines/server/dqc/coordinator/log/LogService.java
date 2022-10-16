@@ -18,6 +18,7 @@ package io.datavines.server.dqc.coordinator.log;
 
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.server.repository.entity.JobExecution;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 
@@ -41,8 +42,7 @@ import org.springframework.stereotype.Component;
 
 import io.datavines.common.entity.LogResult;
 import io.datavines.common.utils.IOUtils;
-import io.datavines.server.repository.entity.Task;
-import io.datavines.server.repository.service.TaskService;
+import io.datavines.server.repository.service.JobExecutionService;
 
 @Component
 public class LogService {
@@ -50,17 +50,17 @@ public class LogService {
     private final Logger logger = LoggerFactory.getLogger(LogService.class);
 
     @Autowired
-    private TaskService taskService;
+    private JobExecutionService jobExecutionService;
 
-    public LogResult queryLog(long taskId, int offsetLine){
-        return this.queryLog(taskId,offsetLine,10000);
+    public LogResult queryLog(long jobExecutionId, int offsetLine){
+        return this.queryLog(jobExecutionId,offsetLine,10000);
     }
 
-    public LogResult queryLog(long taskId, int offsetLine, int limit){
+    public LogResult queryLog(long jobExecutionId, int offsetLine, int limit){
 
-        Task task = getExecutionJob(taskId);
+        JobExecution jobExecution = getExecutionJob(jobExecutionId);
 
-        List<String> contents = readPartFileContent(task.getLogPath(), offsetLine, limit);
+        List<String> contents = readPartFileContent(jobExecution.getLogPath(), offsetLine, limit);
         StringBuilder msg = new StringBuilder();
 
         if (CollectionUtils.isNotEmpty(contents)) {
@@ -73,27 +73,27 @@ public class LogService {
         return new LogResult(msg.toString(), offsetLine);
     }
 
-    public LogResult queryWholeLog(long taskId){
-        Task task = getExecutionJob(taskId);
-        return new LogResult(readWholeFileContent(task.getLogPath()),0);
+    public LogResult queryWholeLog(long jobExecutionId){
+        JobExecution jobExecution = getExecutionJob(jobExecutionId);
+        return new LogResult(readWholeFileContent(jobExecution.getLogPath()),0);
     }
 
-    public byte[] getLogBytes(long taskId){
-        Task task = getExecutionJob(taskId);
-        return getFileContentBytes(task.getLogPath());
+    public byte[] getLogBytes(long jobExecutionId){
+        JobExecution jobExecution = getExecutionJob(jobExecutionId);
+        return getFileContentBytes(jobExecution.getLogPath());
     }
 
-    private Task getExecutionJob(long taskId) {
-        Task task = taskService.getById(taskId);
-        if (null == task) {
-            logger.info("task {} is not exist", taskId);
-            throw new DataVinesServerException(Status.TASK_NOT_EXIST_ERROR, taskId);
+    private JobExecution getExecutionJob(long jobExecutionId) {
+        JobExecution jobExecution = jobExecutionService.getById(jobExecutionId);
+        if (null == jobExecution) {
+            logger.info("jobExecution {} is not exist", jobExecutionId);
+            throw new DataVinesServerException(Status.TASK_NOT_EXIST_ERROR, jobExecutionId);
         }
-        if (StringUtils.isEmpty(task.getLogPath())) {
-            logger.info("task log path {} is not exist", taskId);
-            throw new DataVinesServerException(Status.TASK_LOG_PATH_NOT_EXIST_ERROR, taskId);
+        if (StringUtils.isEmpty(jobExecution.getLogPath())) {
+            logger.info("jobExecution log path {} is not exist", jobExecutionId);
+            throw new DataVinesServerException(Status.TASK_LOG_PATH_NOT_EXIST_ERROR, jobExecutionId);
         }
-        return task;
+        return jobExecution;
     }
 
     /**

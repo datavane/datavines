@@ -14,33 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.entity;
+package io.datavines.server.repository.mapper;
 
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.datavines.server.repository.entity.catalog.CatalogTag;
+import org.apache.ibatis.annotations.Mapper;
 
-import java.util.Map;
+@Mapper
+public interface CatalogTagMapper extends BaseMapper<CatalogTag>  {
 
-import javax.validation.constraints.NotNull;
-
-@Data
-@NotNull(message = "TaskParameter cannot be null")
-public class TaskParameter {
-
-    private String metricType;
-
-    private Map<String,Object> metricParameter;
-
-    private ConnectorParameter connectorParameter;
-
-    private ConnectorParameter connectorParameter2;
-
-    private String expectedType;
-
-    private Map<String, Object> expectedParameter;
-
-    private String resultFormula = "count";
-
-    private String operator = "gt";
-
-    private double threshold = 0;
 }

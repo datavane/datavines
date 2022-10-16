@@ -20,8 +20,8 @@ import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.repository.entity.Task;
-import io.datavines.server.repository.service.TaskService;
+import io.datavines.server.repository.entity.JobExecution;
+import io.datavines.server.repository.service.JobExecutionService;
 import io.datavines.server.dqc.coordinator.log.LogService;
 import io.datavines.server.utils.FileUtils;
 import io.swagger.annotations.Api;
@@ -43,7 +43,7 @@ import static io.datavines.common.utils.OSUtils.judgeConcurrentHost;
 public class LogController {
 
     @Resource
-    private TaskService taskService;
+    private JobExecutionService jobExecutionService;
 
     @Resource
     private LogService logService;
@@ -52,7 +52,7 @@ public class LogController {
     @GetMapping(value = "/queryWholeLog")
     public Object queryWholeLog(@RequestParam("taskId") Long taskId,
                                 HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String taskHost = taskService.getTaskExecuteHost(taskId);
+        String taskHost = jobExecutionService.getJobExecutionHost(taskId);
         Boolean isConcurrentHost = judgeConcurrentHost(taskHost);
         if (isConcurrentHost) {
             return logService.queryWholeLog(taskId);
@@ -66,7 +66,7 @@ public class LogController {
     public Object queryLogWithOffsetLine(@RequestParam("taskId") Long taskId,
                                          @RequestParam("offsetLine") int offsetLine,
                                          HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String taskHost = taskService.getTaskExecuteHost(taskId);
+        String taskHost = jobExecutionService.getJobExecutionHost(taskId);
         Boolean isConcurrentHost = judgeConcurrentHost(taskHost);
         if (isConcurrentHost) {
             return logService.queryLog(taskId, offsetLine);
@@ -81,7 +81,7 @@ public class LogController {
     public Object queryLogWithLimit(@RequestParam("taskId") Long taskId,
                                     @RequestParam("offsetLine") int offsetLine,
                                     @RequestParam("limit") int limit, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String taskHost = taskService.getTaskExecuteHost(taskId);
+        String taskHost = jobExecutionService.getJobExecutionHost(taskId);
         Boolean isConcurrentHost = judgeConcurrentHost(taskHost);
         if (isConcurrentHost) {
             return logService.queryLog(taskId, offsetLine, limit);
@@ -94,22 +94,22 @@ public class LogController {
     @ApiOperation(value = "download", notes = "download log file")
     @GetMapping(value = "/download")
     public void download(@RequestParam("taskId") Long taskId, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Task task = taskService.getById(taskId);
-        if(null == task){
+        JobExecution jobExecution = jobExecutionService.getById(taskId);
+        if(null == jobExecution){
             throw new DataVinesServerException(Status.TASK_NOT_EXIST_ERROR, taskId);
         }
-        String taskHost = task.getExecuteHost();
+        String taskHost = jobExecution.getExecuteHost();
         if(StringUtils.isEmpty(taskHost)){
             throw new DataVinesServerException(Status.TASK_EXECUTE_HOST_NOT_EXIST_ERROR, taskId);
         }
         Boolean isConcurrentHost = judgeConcurrentHost(taskHost);
         if (isConcurrentHost) {
-            if(StringUtils.isEmpty(task.getLogPath())){
+            if(StringUtils.isEmpty(jobExecution.getLogPath())){
                 throw new DataVinesServerException(Status.TASK_LOG_PATH_NOT_EXIST_ERROR, taskId);
             }
-            FileUtils.downloadToResp(task.getLogPath(), response);
+            FileUtils.downloadToResp(jobExecution.getLogPath(), response);
             return;
         }
-        response.sendRedirect(request.getScheme() + "://" + taskHost + "/api/v1/task/log/download?taskId=" + taskId);
+        response.sendRedirect(request.getScheme() + "://" + taskHost + "/api/v1/jobExecution/log/download?taskId=" + taskId);
     }
 }

@@ -16,34 +16,62 @@
  */
 package io.datavines.common.entity;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+
+import io.datavines.common.enums.TimeoutStrategy;
 import lombok.Data;
 
 @Data
-public class TaskInfo {
+public class JobExecutionRequest implements Serializable {
 
-    private Long id;
-    private String name;
+    private long id;
+
+    private long jobExecutionId;
+
+    private String jobExecutionUniqueId;
+
+    private String jobExecutionName;
+
+    private String executePlatformType;
+
+    private String executePlatformParameter;
+
     private String engineType;
+
     private String engineParameter;
+
     private String errorDataStorageType;
+
     private String errorDataStorageParameter;
-    private String errorDataFileName;
-    private TaskParameter taskParameter;
 
-    public TaskInfo() {
-    }
+    private String applicationParameter;
 
-    public TaskInfo(Long id, String name,
-                    String engineType, String engineParameter,
-                    String errorDataStorageType, String errorDataStorageParameter,String errorDataFileName,
-                    TaskParameter taskParameter) {
-        this.id = id;
-        this.name = name;
-        this.engineType = engineType;
-        this.engineParameter = engineParameter;
-        this.errorDataStorageType = errorDataStorageType;
-        this.errorDataStorageParameter = errorDataStorageParameter;
-        this.errorDataFileName = errorDataFileName;
-        this.taskParameter = taskParameter;
-    }
+    private String tenantCode;
+
+    private Integer retryTimes;
+
+    private Integer retryInterval;
+
+    private Integer timeout;
+
+    private TimeoutStrategy timeoutStrategy;
+
+    private String executeHost;
+
+    private Integer status;
+
+    private String applicationId;
+
+    private int processId;
+
+    private String executeFilePath;
+
+    private String logPath;
+
+    private String env;
+
+    private LocalDateTime startTime;
+
+    private LocalDateTime endTime;
 }

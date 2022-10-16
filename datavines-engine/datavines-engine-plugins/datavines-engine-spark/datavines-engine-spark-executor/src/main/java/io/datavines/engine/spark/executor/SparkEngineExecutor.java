@@ -17,12 +17,10 @@
 package io.datavines.engine.spark.executor;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.utils.FileUtils;
 import io.datavines.engine.executor.core.base.AbstractYarnEngineExecutor;
 import io.datavines.engine.spark.executor.utils.StringUtils;
@@ -31,7 +29,6 @@ import org.slf4j.Logger;
 
 import io.datavines.common.config.Configurations;
 import io.datavines.common.config.DataVinesQualityConfig;
-import io.datavines.common.entity.TaskRequest;
 import io.datavines.common.entity.ProcessResult;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.LoggerUtils;
@@ -49,15 +46,15 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
     private Configurations configurations;
 
     @Override
-    public void init(TaskRequest taskRequest, Logger logger, Configurations configurations) throws Exception {
+    public void init(JobExecutionRequest jobExecutionRequest, Logger logger, Configurations configurations) throws Exception {
 
-        String threadLoggerInfoName = String.format(LoggerUtils.TASK_LOG_INFO_FORMAT, taskRequest.getTaskUniqueId());
+        String threadLoggerInfoName = String.format(LoggerUtils.JOB_LOG_INFO_FORMAT, jobExecutionRequest.getJobExecutionUniqueId());
         Thread.currentThread().setName(threadLoggerInfoName);
 
-        this.taskRequest = taskRequest;
+        this.jobExecutionRequest = jobExecutionRequest;
         this.logger = logger;
         this.shellCommandProcess = new ShellCommandProcess(this::logHandle,
-                logger, taskRequest, configurations);
+                logger, jobExecutionRequest, configurations);
         this.configurations = configurations;
     }
 
@@ -88,14 +85,14 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
     }
 
     @Override
-    public TaskRequest getTaskRequest() {
-        return this.taskRequest;
+    public JobExecutionRequest getTaskRequest() {
+        return this.jobExecutionRequest;
     }
 
     @Override
     protected String buildCommand() {
 
-        SparkParameters sparkParameters = JSONUtils.parseObject(taskRequest.getEngineParameter(), SparkParameters.class);
+        SparkParameters sparkParameters = JSONUtils.parseObject(jobExecutionRequest.getEngineParameter(), SparkParameters.class);
         assert sparkParameters != null;
 
         String basePath = System.getProperty("user.dir").replace(File.separator + "bin", File.separator + "libs");
@@ -127,7 +124,7 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
         }
 
         DataVinesQualityConfig configuration =
-                JSONUtils.parseObject(taskRequest.getApplicationParameter(), DataVinesQualityConfig.class);
+                JSONUtils.parseObject(jobExecutionRequest.getApplicationParameter(), DataVinesQualityConfig.class);
 
         sparkParameters.setMainArgs("\""
                 + StringUtils.replaceDoubleBrackets(StringUtils.escapeJava(JSONUtils.toJsonString(configuration))) + "\"");
@@ -136,9 +133,9 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
 
         String others = sparkParameters.getOthers();
         if (StringUtils.isNotEmpty(others)) {
-            others += " --conf spark.yarn.tags="+taskRequest.getTaskUniqueId();
+            others += " --conf spark.yarn.tags="+ jobExecutionRequest.getJobExecutionUniqueId();
         } else {
-            others = " --conf spark.yarn.tags="+taskRequest.getTaskUniqueId();
+            others = " --conf spark.yarn.tags="+ jobExecutionRequest.getJobExecutionUniqueId();
         }
 
         sparkParameters.setOthers(others);

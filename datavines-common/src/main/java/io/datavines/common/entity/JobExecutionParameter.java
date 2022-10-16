@@ -14,35 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.dqc.coordinator.cache;
+package io.datavines.common.entity;
 
-import io.datavines.common.entity.TaskRequest;
-import io.datavines.server.dqc.command.CommandCode;
+import lombok.Data;
 
-public class TaskResponseContext {
+import java.util.Map;
 
-    private CommandCode commandCode;
+import javax.validation.constraints.NotNull;
 
-    private TaskRequest taskRequest;
+@Data
+@NotNull(message = "JobExecutionParameter cannot be null")
+public class JobExecutionParameter {
 
-    public TaskResponseContext(CommandCode commandCode, TaskRequest taskRequest) {
-        this.commandCode = commandCode;
-        this.taskRequest = taskRequest;
-    }
+    private String metricType;
 
-    public CommandCode getCommandCode() {
-        return commandCode;
-    }
+    private Map<String,Object> metricParameter;
 
-    public void setCommandCode(CommandCode commandCode) {
-        this.commandCode = commandCode;
-    }
+    private ConnectorParameter connectorParameter;
 
-    public TaskRequest getTaskRequest() {
-        return taskRequest;
-    }
+    private ConnectorParameter connectorParameter2;
 
-    public void setTaskRequest(TaskRequest taskRequest) {
-        this.taskRequest = taskRequest;
-    }
+    private String expectedType;
+
+    private Map<String, Object> expectedParameter;
+
+    private String resultFormula = "count";
+
+    private String operator = "gt";
+
+    private double threshold = 0;
 }

@@ -41,7 +41,7 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
         //get custom execute sql
         transformExecuteSqlList.add(getCustomExecuteSql(inputParameter));
         //get expected value sql
-        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
+        String expectedType = jobExecutionInfo.getEngineType() + "_" + jobExecutionParameter.getExpectedType();
         expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);
@@ -68,7 +68,7 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
             taskSinkSql = taskSinkSql.replaceAll("join \\$\\{expected_table}","");
         }
         //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "dv_task_result");
+        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "dv_job_execution_result");
         sinkConfigs.add(taskResultSinkConfig);
 
         //get the error data storage parameter

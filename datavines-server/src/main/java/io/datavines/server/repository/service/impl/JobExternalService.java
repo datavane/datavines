@@ -17,17 +17,17 @@
 package io.datavines.server.repository.service.impl;
 
 import io.datavines.common.config.DataVinesQualityConfig;
-import io.datavines.common.entity.TaskInfo;
-import io.datavines.common.entity.TaskParameter;
-import io.datavines.common.entity.TaskRequest;
+import io.datavines.common.entity.JobExecutionInfo;
+import io.datavines.common.entity.JobExecutionParameter;
+import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.engine.config.DataVinesConfigurationManager;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.server.repository.entity.Command;
 import io.datavines.server.repository.entity.Job;
-import io.datavines.server.repository.entity.Task;
-import io.datavines.server.repository.entity.TaskResult;
+import io.datavines.server.repository.entity.JobExecution;
+import io.datavines.server.repository.entity.JobExecutionResult;
 import io.datavines.server.repository.entity.catalog.CatalogCommand;
 import io.datavines.server.repository.entity.catalog.CatalogTask;
 import io.datavines.server.repository.service.*;
@@ -43,7 +43,7 @@ import java.util.Map;
 public class JobExternalService {
     
     @Autowired
-    private TaskService taskService;
+    private JobExecutionService jobExecutionService;
 
     @Autowired
     private CommandService commandService;
@@ -52,7 +52,7 @@ public class JobExternalService {
     private JobService jobService;
 
     @Autowired
-    private TaskResultService taskResultService;
+    private JobExecutionResultService jobExecutionResultService;
 
     @Autowired
     private ActualValuesService actualValuesService;
@@ -70,8 +70,8 @@ public class JobExternalService {
         return jobService.getById(id);
     }
 
-    public Task getTaskById(Long id){
-        return taskService.getById(id);
+    public JobExecution getJobExecutionById(Long id){
+        return jobExecutionService.getById(id);
     }
 
     public Command getCommand(){
@@ -90,20 +90,20 @@ public class JobExternalService {
         return catalogCommandService.deleteById(id);
     }
 
-    public Task executeCommand(Command command){
-        return taskService.getById(command.getTaskId());
+    public JobExecution executeCommand(Command command){
+        return jobExecutionService.getById(command.getJobExecutionId());
     }
 
     public CatalogTask executeCatalogCommand(CatalogCommand command){
         return catalogTaskService.getById(command.getTaskId());
     }
 
-    public int updateTask(Task task){
-        return taskService.update(task);
+    public int updateJobExecution(JobExecution jobExecution){
+        return jobExecutionService.update(jobExecution);
     }
 
-    public Long createTask(Task task){
-        return taskService.create(task);
+    public Long createJobExecution(JobExecution jobExecution){
+        return jobExecutionService.create(jobExecution);
     }
 
     public Long insertCommand(Command command){
@@ -114,73 +114,73 @@ public class JobExternalService {
         return commandService.update(command);
     }
 
-    public void updateTaskStatus(Long taskId, ExecutionStatus status){
-        Task task = getTaskById(taskId);
-        task.setStatus(status);
-        updateTask(task);
+    public void updateJobExecutionStatus(Long taskId, ExecutionStatus status){
+        JobExecution jobExecution = getJobExecutionById(taskId);
+        jobExecution.setStatus(status);
+        updateJobExecution(jobExecution);
     }
 
-    public void updateTaskRetryTimes(Long taskId, int times) {
-        Task task = getTaskById(taskId);
-        task.setRetryTimes(times);
-        updateTask(task);
+    public void updateJobExecutionRetryTimes(Long taskId, int times) {
+        JobExecution jobExecution = getJobExecutionById(taskId);
+        jobExecution.setRetryTimes(times);
+        updateJobExecution(jobExecution);
     }
 
-    public TaskRequest buildTaskRequest(Task task) throws DataVinesException {
+    public JobExecutionRequest buildJobExecutionRequest(JobExecution jobExecution) throws DataVinesException {
         // need to convert job parameter to other parameter
-        TaskRequest taskRequest = new TaskRequest();
-        taskRequest.setTaskId(task.getId());
-        taskRequest.setTaskName(task.getName());
-        TaskParameter taskParameter = JSONUtils.parseObject(task.getParameter(),TaskParameter.class);
-        if (taskParameter == null) {
-            throw new DataVinesException("TaskParameter can not be null");
+        JobExecutionRequest jobExecutionRequest = new JobExecutionRequest();
+        jobExecutionRequest.setJobExecutionId(jobExecution.getId());
+        jobExecutionRequest.setJobExecutionName(jobExecution.getName());
+        JobExecutionParameter jobExecutionParameter = JSONUtils.parseObject(jobExecution.getParameter(),JobExecutionParameter.class);
+        if (jobExecutionParameter == null) {
+            throw new DataVinesException("JobExecutionParameter can not be null");
         }
 
-        taskRequest.setExecutePlatformType(task.getExecutePlatformType());
+        jobExecutionRequest.setExecutePlatformType(jobExecution.getExecutePlatformType());
         //读取配置文件获取环境信息
-        taskRequest.setExecutePlatformParameter(task.getExecutePlatformParameter());
-        taskRequest.setEngineType(task.getEngineType());
-        taskRequest.setEngineParameter(task.getEngineParameter());
+        jobExecutionRequest.setExecutePlatformParameter(jobExecution.getExecutePlatformParameter());
+        jobExecutionRequest.setEngineType(jobExecution.getEngineType());
+        jobExecutionRequest.setEngineParameter(jobExecution.getEngineParameter());
         Map<String,String> inputParameter = new HashMap<>();
 
-        TaskInfo taskInfo = new TaskInfo(task.getId(),task.getName(),
-                                         task.getEngineType(),task.getEngineParameter(),
-                                         task.getErrorDataStorageType(),task.getErrorDataStorageParameter(),task.getErrorDataFileName(),
-                                         taskParameter);
+        JobExecutionInfo jobExecutionInfo = new JobExecutionInfo(jobExecution.getId(), jobExecution.getName(),
+                                         jobExecution.getEngineType(), jobExecution.getEngineParameter(),
+                                         jobExecution.getErrorDataStorageType(), jobExecution.getErrorDataStorageParameter(), jobExecution.getErrorDataFileName(),
+                jobExecutionParameter);
         DataVinesQualityConfig qualityConfig =
-                DataVinesConfigurationManager.generateConfiguration(inputParameter, taskInfo, DefaultDataSourceInfoUtils.getDefaultConnectionInfo());
-        taskRequest.setApplicationParameter(JSONUtils.toJsonString(qualityConfig));
-        taskRequest.setTenantCode(task.getTenantCode());
-        taskRequest.setRetryTimes(task.getRetryTimes());
-        taskRequest.setRetryInterval(task.getRetryInterval());
-        taskRequest.setTimeout(task.getTimeout());
-        taskRequest.setTimeoutStrategy(task.getTimeoutStrategy());
-        taskRequest.setEnv(task.getEnv());
-        return taskRequest;
+                DataVinesConfigurationManager.generateConfiguration(inputParameter, jobExecutionInfo, DefaultDataSourceInfoUtils.getDefaultConnectionInfo());
+        jobExecutionRequest.setApplicationParameter(JSONUtils.toJsonString(qualityConfig));
+        jobExecutionRequest.setTenantCode(jobExecution.getTenantCode());
+        jobExecutionRequest.setRetryTimes(jobExecution.getRetryTimes());
+        jobExecutionRequest.setRetryInterval(jobExecution.getRetryInterval());
+        jobExecutionRequest.setTimeout(jobExecution.getTimeout());
+        jobExecutionRequest.setTimeoutStrategy(jobExecution.getTimeoutStrategy());
+        jobExecutionRequest.setEnv(jobExecution.getEnv());
+        return jobExecutionRequest;
     }
 
-    public TaskResult getTaskResultByTaskId(long taskId) {
-        return taskResultService.getByTaskId(taskId);
+    public JobExecutionResult getJobExecutionResultByJobExecutionId(long taskId) {
+        return jobExecutionResultService.getByJobExecutionId(taskId);
     }
 
-    public int deleteTaskResultByTaskId(long taskId) {
-        return taskResultService.deleteByTaskId(taskId);
+    public int deleteJobExecutionResultByJobExecutionId(long taskId) {
+        return jobExecutionResultService.deleteByJobExecutionId(taskId);
     }
 
-    public int deleteActualValuesByTaskId(long taskId) {
-        return actualValuesService.deleteByTaskId(taskId);
+    public int deleteActualValuesByJobExecutionId(long taskId) {
+        return actualValuesService.deleteByJobExecutionId(taskId);
     }
 
-    public int updateTaskResult(TaskResult taskResult) {
-        return taskResultService.update(taskResult);
+    public int updateJobExecutionResult(JobExecutionResult jobExecutionResult) {
+        return jobExecutionResultService.update(jobExecutionResult);
     }
 
-    public List<Task> getTaskListNeedFailover(String host){
-        return taskService.listNeedFailover(host);
+    public List<JobExecution> getJobExecutionListNeedFailover(String host){
+        return jobExecutionService.listNeedFailover(host);
     }
 
-    public List<Task> getTaskListNeedFailover(List<String> host){
-        return taskService.listTaskNotInServerList(host);
+    public List<JobExecution> getJobExecutionListNeedFailover(List<String> host){
+        return jobExecutionService.listJobExecutionNotInServerList(host);
     }
 
     public JobService getJobService() {

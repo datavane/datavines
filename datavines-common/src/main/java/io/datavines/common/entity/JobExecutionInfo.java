@@ -16,26 +16,14 @@
  */
 package io.datavines.common.entity;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
-import io.datavines.common.enums.TimeoutStrategy;
 import lombok.Data;
 
 @Data
-public class TaskRequest implements Serializable {
+public class JobExecutionInfo {
 
-    private long id;
+    private Long id;
 
-    private long taskId;
-
-    private String taskUniqueId;
-
-    private String taskName;
-
-    private String executePlatformType;
-
-    private String executePlatformParameter;
+    private String name;
 
     private String engineType;
 
@@ -45,33 +33,24 @@ public class TaskRequest implements Serializable {
 
     private String errorDataStorageParameter;
 
-    private String applicationParameter;
+    private String errorDataFileName;
 
-    private String tenantCode;
+    private JobExecutionParameter jobExecutionParameter;
 
-    private Integer retryTimes;
+    public JobExecutionInfo() {
+    }
 
-    private Integer retryInterval;
-
-    private Integer timeout;
-
-    private TimeoutStrategy timeoutStrategy;
-
-    private String executeHost;
-
-    private Integer status;
-
-    private String applicationId;
-
-    private int processId;
-
-    private String executeFilePath;
-
-    private String logPath;
-
-    private String env;
-
-    private LocalDateTime startTime;
-
-    private LocalDateTime endTime;
+    public JobExecutionInfo(Long id, String name,
+                            String engineType, String engineParameter,
+                            String errorDataStorageType, String errorDataStorageParameter, String errorDataFileName,
+                            JobExecutionParameter jobExecutionParameter) {
+        this.id = id;
+        this.name = name;
+        this.engineType = engineType;
+        this.engineParameter = engineParameter;
+        this.errorDataStorageType = errorDataStorageType;
+        this.errorDataStorageParameter = errorDataStorageParameter;
+        this.errorDataFileName = errorDataFileName;
+        this.jobExecutionParameter = jobExecutionParameter;
+    }
 }

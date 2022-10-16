@@ -21,14 +21,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import io.datavines.core.aop.RefreshToken;
-import io.datavines.server.api.dto.bo.task.SubmitTask;
-import io.datavines.server.repository.service.TaskResultService;
+import io.datavines.server.api.dto.bo.job.SubmitJob;
+import io.datavines.server.repository.service.JobExecutionResultService;
 import io.datavines.core.exception.DataVinesServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import io.datavines.core.constant.DataVinesConstants;
-import io.datavines.server.repository.service.TaskService;
+import io.datavines.server.repository.service.JobExecutionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -43,39 +43,39 @@ import static io.datavines.common.utils.OSUtils.judgeConcurrentHost;
 public class TaskController {
 
     @Autowired
-    private TaskService taskService;
+    private JobExecutionService jobExecutionService;
 
     @Autowired
-    private TaskResultService taskResultService;
+    private JobExecutionResultService jobExecutionResultService;
 
     @ApiOperation(value = "submit task")
     @PostMapping(value = "/submit", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object submitTask(@Valid @RequestBody SubmitTask submitTask) throws DataVinesServerException {
-        return taskService.submitTask(submitTask);
+    public Object submitTask(@Valid @RequestBody SubmitJob submitJob) throws DataVinesServerException {
+        return jobExecutionService.submitJob(submitJob);
     }
 
     @ApiOperation(value = "kill task")
     @DeleteMapping(value = "/kill/{id}")
     public Object killTask(@PathVariable("id") Long taskId) {
-        return taskService.killTask(taskId);
+        return jobExecutionService.killJob(taskId);
     }
 
     @ApiOperation(value = "get task status")
     @GetMapping(value = "/status/{id}")
     public Object getTaskStatus(@PathVariable("id") Long taskId) {
-        return taskService.getById(taskId).getStatus().getDescription();
+        return jobExecutionService.getById(taskId).getStatus().getDescription();
     }
 
     @ApiOperation(value = "get task list by job id")
     @GetMapping(value = "/list/{jobId}")
     public Object getTaskListByJobId(@PathVariable("jobId") Long jobId) {
-        return taskService.listByJobId(jobId);
+        return jobExecutionService.listByJobId(jobId);
     }
 
     @ApiOperation(value = "get task result")
     @GetMapping(value = "/result/{taskId}")
     public Object getTaskResultInfo(@PathVariable("taskId") Long taskId) {
-        return taskResultService.getResultVOByTaskId(taskId);
+        return jobExecutionResultService.getResultVOByJobExecutionId(taskId);
     }
 
     @ApiOperation(value = "get task page")
@@ -84,7 +84,7 @@ public class TaskController {
                        @RequestParam("jobId") Long jobId,
                        @RequestParam("pageNumber") Integer pageNumber,
                        @RequestParam("pageSize") Integer pageSize)  {
-        return taskService.getTaskPage(searchVal, jobId, pageNumber, pageSize);
+        return jobExecutionService.getJobExecutionPage(searchVal, jobId, pageNumber, pageSize);
     }
 
     @ApiOperation(value = "get task error data page")
@@ -94,10 +94,10 @@ public class TaskController {
                                     @RequestParam("pageSize") Integer pageSize,
                                     HttpServletRequest request, HttpServletResponse response) throws IOException {
 
-        String taskHost = taskService.getTaskExecuteHost(taskId);
+        String taskHost = jobExecutionService.getJobExecutionHost(taskId);
         Boolean isConcurrentHost = judgeConcurrentHost(taskHost);
         if (isConcurrentHost) {
-            return taskService.readErrorDataPage(taskId, pageNumber, pageSize);
+            return jobExecutionService.readErrorDataPage(taskId, pageNumber, pageSize);
         }
         response.sendRedirect(request.getScheme() + "://" + taskHost + "/api/v1/task/errorDataPage?taskId=" + taskId +
                 "&pageNumber=" + pageNumber + "&pageSize="+pageSize);

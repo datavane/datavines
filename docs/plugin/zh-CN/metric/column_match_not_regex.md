@@ -23,7 +23,7 @@ regexp is regex pattern
 
 ## Example
 
-> POST localhost:5600/api/v1/task/submit
+> POST localhost:5600/api/v1/jobExecution/submit
 ```json
 
 {
@@ -31,7 +31,7 @@ regexp is regex pattern
     "parameter":{
         "metricType":"column_match_not_regex",
         "metricParameter":{
-            "table":"task",
+            "table":"jobExecution",
             "column":"parameter"
         },
         "srcConnectorParameter":{

@@ -60,8 +60,8 @@ When you see the log that `[INFO] 2022-04-10 12:29:05.447 io.datavines.server.Da
 
 ### Submit Task
 Only supports submitting tasks via http
-- submit task
-> POST localhost:5600/api/v1/task/submit
+- submit jobExecution
+> POST localhost:5600/api/v1/jobExecution/submit
 ```
 {
     "name":"test",
@@ -95,8 +95,8 @@ Only supports submitting tasks via http
     }
 }
 ```
-- query task status
-> GET localhost:5600/api/v1/task/status/{taskId}
+- query jobExecution status
+> GET localhost:5600/api/v1/jobExecution/status/{taskId}
 
 - response
 ```
@@ -108,10 +108,10 @@ Only supports submitting tasks via http
     }
 }
 ```
-if the task status is success，you can get the task result 
+if the jobExecution status is success，you can get the jobExecution result 
 
-- query task result
-> GET localhost:5600/api/v1/task/result/{taskId}
+- query jobExecution result
+> GET localhost:5600/api/v1/jobExecution/result/{taskId}
 
 - response
 ```
@@ -119,7 +119,7 @@ if the task status is success，you can get the task result
     "msg": "Success",
     "code": 200,
     "data": {
-        "taskResult": {
+        "jobExecutionResult": {
             "id": 15,
             "metricName": "column_null",
             "metricDimension": "completeness",

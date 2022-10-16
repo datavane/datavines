@@ -27,7 +27,7 @@ MetaDataServer is a metadata management center, mainly responsible for metadata-
 MetaDataCrawler is mainly responsible for regularly grabbing the metadata information of the specified data source, and then updating it to the metadata storage engine
 
 ## NotificationServer
-NotificationServer is mainly responsible for alarms. Users configure alarm rules on the platform. Once the data monitoring task triggers an alarm, NotificationServer will send the error message to the specified platform, such as email, enterprise WeChat, etc.
+NotificationServer is mainly responsible for alarms. Users configure alarm rules on the platform. Once the data monitoring jobExecution triggers an alarm, NotificationServer will send the error message to the specified platform, such as email, enterprise WeChat, etc.
 
 # Core design
 ## Plug-in design
@@ -40,7 +40,7 @@ NotificationServer is mainly responsible for alarms. Users configure alarm rules
 - Engine is the core component of the platform and defines the execution logic of data monitoring tasks in the computing engine. Different engines correspond to different execution engines, such as Spark, Flink, and Presto. The execution logic is mainly composed of Sources, Transformers, and Sinks. Source performs data source connection and data reading, Transformer performs various aggregation statistics processing, and Sink performs the output of execution results. Different computing engines have different implementations, but the core process is to read data, perform statistics and output data. The plug-in design allows users to customize the Engine to add new computing engines.
 # Process Design
 ## Task execution process
-![task execution flow](../../img/task-execute-flow.png)
+![jobExecution execution flow](../../img/jobExecution-execute-flow.png)
 
 ## Data monitoring parameter generation process
 ![Parameter construction and conversion process](../../img/engine-config-parser.png)

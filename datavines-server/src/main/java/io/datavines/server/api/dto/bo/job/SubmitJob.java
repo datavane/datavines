@@ -14,20 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.bo.task;
+package io.datavines.server.api.dto.bo.job;
 
 import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
-import io.datavines.common.entity.TaskParameter;
+import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.enums.TimeoutStrategy;
 import lombok.Data;
 
 @Data
-@NotNull(message = "SubmitTask cannot be null")
-public class SubmitTask {
+@NotNull(message = "SubmitJob cannot be null")
+public class SubmitJob {
 
     @NotBlank(message = "task name cannot be empty")
     private String name;
@@ -44,7 +44,7 @@ public class SubmitTask {
 
     private Map<String,Object> errorDataStorageParameter;
 
-    private TaskParameter parameter;
+    private JobExecutionParameter parameter;
 
     private Integer retryTimes = 0;
 

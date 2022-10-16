@@ -147,7 +147,7 @@ alter table QRTZ_LOCKS add primary key(SCHED_NAME,LOCK_NAME);
 DROP TABLE IF EXISTS dv_actual_values;
 CREATE TABLE dv_actual_values (
     id bigserial NOT NULL,
-    task_id int8 DEFAULT NULL,
+    job_execution_id int8 DEFAULT NULL,
     metric_name varchar(255) DEFAULT NULL,
     unique_code varchar(255) DEFAULT NULL,
     actual_value float8 DEFAULT NULL,
@@ -162,7 +162,7 @@ CREATE TABLE dv_command (
     id bigserial NOT NULL ,
     type int2 DEFAULT 0 ,
     parameter text ,
-    task_id int8 NOT NULL ,
+    job_execution_id int8 NOT NULL ,
     priority int4 DEFAULT NULL ,
     create_time timestamp(0) NOT NULL DEFAULT current_timestamp ,
     update_time timestamp(0) NOT NULL DEFAULT current_timestamp ,
@@ -229,8 +229,8 @@ CREATE TABLE dv_server (
     CONSTRAINT server_un UNIQUE (host,port)
 ) ;
 
-DROP TABLE IF EXISTS dv_task;
-CREATE TABLE dv_task (
+DROP TABLE IF EXISTS dv_job_execution;
+CREATE TABLE dv_job_execution (
     id bigserial NOT NULL,
     name varchar(255) NOT NULL,
     job_id int8 NOT NULL DEFAULT '-1',
@@ -266,10 +266,10 @@ CREATE TABLE dv_task (
     CONSTRAINT task_pk PRIMARY KEY (id)
 );
 
-DROP TABLE IF EXISTS dv_task_result;
-CREATE TABLE dv_task_result (
+DROP TABLE IF EXISTS dv_job_execution_result;
+CREATE TABLE dv_job_execution_result (
     id bigserial NOT NULL,
-    task_id int8 DEFAULT NULL,
+    job_execution_id int8 DEFAULT NULL,
     metric_type varchar(255) DEFAULT NULL,
     metric_dimension varchar(255) DEFAULT NULL,
     metric_name varchar(255) DEFAULT NULL,

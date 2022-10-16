@@ -25,7 +25,7 @@ import java.util.Locale;
 /**
  * job Log Discriminator
  */
-public class TaskLogDiscriminator extends AbstractDiscriminator<ILoggingEvent> {
+public class JobExecutionLogDiscriminator extends AbstractDiscriminator<ILoggingEvent> {
 
     private String key;
 
@@ -34,13 +34,13 @@ public class TaskLogDiscriminator extends AbstractDiscriminator<ILoggingEvent> {
     @Override
     public String getDiscriminatingValue(ILoggingEvent event) {
         String loggerName = event.getLoggerName().split("=")[1];
-        String prefix = LoggerUtils.TASK_LOGGER_INFO_PREFIX + "-";
+        String prefix = LoggerUtils.JOB_LOGGER_INFO_PREFIX + "-";
         if (loggerName.startsWith(prefix)) {
             return loggerName
                     .toLowerCase()
                     .replace("-","/");
         } else {
-            return "unknown_task";
+            return "unknown_job_execution";
         }
     }
 

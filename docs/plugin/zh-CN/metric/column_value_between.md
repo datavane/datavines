@@ -27,7 +27,7 @@ max value
 
 ## Example
 
-> POST localhost:5600/api/v1/task/submit
+> POST localhost:5600/api/v1/jobExecution/submit
 ```json
 
 {
@@ -35,7 +35,7 @@ max value
     "parameter":{
         "metricType":"column_value_between",
         "metricParameter":{
-            "table":"task",
+            "table":"jobExecution",
             "column":"parameter",
             "min": 0,
             "max": 50

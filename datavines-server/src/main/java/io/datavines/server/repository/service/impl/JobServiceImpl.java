@@ -41,13 +41,13 @@ import io.datavines.server.api.dto.vo.JobVO;
 import io.datavines.server.api.dto.vo.SlaVO;
 import io.datavines.server.repository.entity.Command;
 import io.datavines.server.repository.entity.DataSource;
-import io.datavines.server.repository.entity.Task;
+import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.mapper.CommandMapper;
-import io.datavines.server.repository.mapper.TaskMapper;
+import io.datavines.server.repository.mapper.JobExecutionMapper;
 import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.server.repository.service.JobService;
 import io.datavines.server.repository.entity.Job;
-import io.datavines.server.repository.service.TaskService;
+import io.datavines.server.repository.service.JobExecutionService;
 import io.datavines.server.enums.CommandType;
 import io.datavines.common.enums.JobType;
 import io.datavines.server.enums.Priority;
@@ -70,10 +70,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobService {
 
     @Autowired
-    private TaskMapper taskMapper;
+    private JobExecutionMapper jobExecutionMapper;
 
     @Autowired
-    private TaskService taskService;
+    private JobExecutionService jobExecutionService;
 
     @Autowired
     private CommandMapper commandMapper;
@@ -201,7 +201,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         jobList.forEach(job -> {
             baseMapper.deleteById(job.getId());
-            taskService.deleteByJobId(job.getId());
+            jobExecutionService.deleteByJobId(job.getId());
         });
 
         return 1;
@@ -264,32 +264,32 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         }
 
         for (String param: taskParameterList) {
-            // add a task
+            // add a jobExecution
             job.setId(null);
-            Task task = new Task();
-            BeanUtils.copyProperties(job, task);
-            task.setJobId(jobId);
-            task.setParameter(param);
-            task.setName(job.getName() + "_task_" + System.currentTimeMillis());
-            task.setJobType(job.getType());
-            task.setErrorDataStorageType(errorDataStorageType);
-            task.setErrorDataStorageParameter(errorDataStorageParameter);
-            task.setErrorDataFileName(getErrorDataFileName(job.getParameter()));
-            task.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
-            task.setTenantCode(tenantStr);
-            task.setEnv(envStr);
-            task.setSubmitTime(LocalDateTime.now());
-            task.setScheduleTime(scheduleTime);
-            task.setCreateTime(LocalDateTime.now());
-            task.setUpdateTime(LocalDateTime.now());
+            JobExecution jobExecution = new JobExecution();
+            BeanUtils.copyProperties(job, jobExecution);
+            jobExecution.setJobId(jobId);
+            jobExecution.setParameter(param);
+            jobExecution.setName(job.getName() + "_task_" + System.currentTimeMillis());
+            jobExecution.setJobType(job.getType());
+            jobExecution.setErrorDataStorageType(errorDataStorageType);
+            jobExecution.setErrorDataStorageParameter(errorDataStorageParameter);
+            jobExecution.setErrorDataFileName(getErrorDataFileName(job.getParameter()));
+            jobExecution.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
+            jobExecution.setTenantCode(tenantStr);
+            jobExecution.setEnv(envStr);
+            jobExecution.setSubmitTime(LocalDateTime.now());
+            jobExecution.setScheduleTime(scheduleTime);
+            jobExecution.setCreateTime(LocalDateTime.now());
+            jobExecution.setUpdateTime(LocalDateTime.now());
 
-            taskMapper.insert(task);
+            jobExecutionMapper.insert(jobExecution);
 
             // add a command
             Command command = new Command();
             command.setType(CommandType.START);
             command.setPriority(Priority.MEDIUM);
-            command.setTaskId(task.getId());
+            command.setJobExecutionId(jobExecution.getId());
             commandMapper.insert(command);
         }
     }

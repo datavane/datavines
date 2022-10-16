@@ -18,7 +18,7 @@
 
 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.datavines.server.repository.mapper.CatalogEntityMetricJobRel">
+<mapper namespace="io.datavines.server.repository.mapper.CatalogEntityMetricJobRelMapper">
 
     <sql id="basic_sql">
         select metric_job_id from dv_catalog_entity_metric_job_rel where entity_uuid = #{uuid}

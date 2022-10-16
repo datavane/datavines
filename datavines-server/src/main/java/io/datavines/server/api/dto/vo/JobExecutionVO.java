@@ -14,33 +14,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.dqc.executor.cache;
+package io.datavines.server.api.dto.vo;
 
-import java.util.concurrent.ConcurrentHashMap;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.datavines.common.enums.ExecutionStatus;
+import io.datavines.common.enums.JobType;
+import lombok.Data;
 
-public class TaskExecutionCache {
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
-    private final ConcurrentHashMap<Long, TaskExecutionContext> cache = new ConcurrentHashMap<>();
+@Data
+public class JobExecutionVO implements Serializable {
 
-    private TaskExecutionCache(){}
+    private static final long serialVersionUID = -1L;
 
-    private static class Singleton{
-        static TaskExecutionCache instance = new TaskExecutionCache();
+    private Long id;
+
+    private String name;
+
+    private JobType jobType;
+
+    private ExecutionStatus status;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime updateTime;
+
+    public String getJobType() {
+        return jobType.getDescription();
     }
 
-    public static TaskExecutionCache getInstance(){
-        return Singleton.instance;
-    }
-
-    public TaskExecutionContext getById(Long taskId){
-        return cache.get(taskId);
-    }
-
-    public void cache(TaskExecutionContext taskExecutionContext){
-        cache.put(taskExecutionContext.getTaskRequest().getTaskId(), taskExecutionContext);
-    }
-
-    public void remove(Long taskId){
-        cache.remove(taskId);
+    public String getStatus() {
+        return status.getDescription();
     }
 }

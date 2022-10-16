@@ -17,6 +17,7 @@
 package io.datavines.metric.result.formula;
 
 import io.datavines.metric.api.ResultFormula;
+import io.datavines.metric.api.ResultFormulaType;
 
 public class Count implements ResultFormula {
 
@@ -43,5 +44,10 @@ public class Count implements ResultFormula {
     @Override
     public String getSymbol() {
         return "#";
+    }
+
+    @Override
+    public ResultFormulaType getType() {
+        return ResultFormulaType.VALUE;
     }
 }

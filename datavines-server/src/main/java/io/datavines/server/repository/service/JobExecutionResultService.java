@@ -14,26 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.repository.service;
 
-import lombok.Data;
+import io.datavines.server.api.dto.vo.JobExecutionResultVO;
+import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
+import io.datavines.server.repository.entity.JobExecutionResult;
 
-import java.io.Serializable;
-import java.util.Map;
+import java.util.List;
 
-@Data
-public class TaskResultVO implements Serializable {
+public interface JobExecutionResultService {
 
-    private String checkSubject;
+    long insert(JobExecutionResult jobExecutionResult);
 
-    private String metricName;
+    int update(JobExecutionResult jobExecutionResult);
 
-    private Map<String,Object> metricParameter;
+    int deleteByJobExecutionId(long taskId);
 
-    private String checkResult;
+    JobExecutionResult getById(long id);
 
-    private String expectedType;
+    JobExecutionResult getByJobExecutionId(long taskId);
 
-    private String resultFormulaFormat;
+    JobExecutionResultVO getResultVOByJobExecutionId(long taskId);
 
+    List<JobExecutionResult> listByJobIdAndTimeRange(Long jobId, String startTime, String endTime);
 }

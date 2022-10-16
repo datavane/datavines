@@ -24,7 +24,7 @@ import io.datavines.registry.api.Event;
 import io.datavines.registry.api.Registry;
 import io.datavines.registry.api.ServerInfo;
 import io.datavines.registry.api.SubscribeListener;
-import io.datavines.server.dqc.coordinator.failover.TaskFailover;
+import io.datavines.server.dqc.coordinator.failover.JobExecutionFailover;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -34,14 +34,14 @@ public class Register {
 
     private final Registry registry;
 
-    private final TaskFailover taskFailover;
+    private final JobExecutionFailover jobExecutionFailover;
 
     private final String FAILOVER_KEY =
             CommonPropertyUtils.getString(CommonPropertyUtils.FAILOVER_KEY, CommonPropertyUtils.FAILOVER_KEY_DEFAULT);
 
-    public Register(Registry registry, TaskFailover taskFailover) {
+    public Register(Registry registry, JobExecutionFailover jobExecutionFailover) {
         this.registry = registry;
-        this.taskFailover = taskFailover;
+        this.jobExecutionFailover = jobExecutionFailover;
     }
 
     public void start() {
@@ -49,7 +49,7 @@ public class Register {
             if (Event.Type.REMOVE == event.type()) {
                 try {
                     blockUtilAcquireLock(FAILOVER_KEY);
-                    taskFailover.handleTaskFailover(event.key());
+                    jobExecutionFailover.handleJobExecutionFailover(event.key());
                 } finally {
                     registry.release(FAILOVER_KEY);
                 }
@@ -61,11 +61,11 @@ public class Register {
             //Query whether the current server has any tasks that need fault tolerance according to the ip:port
             String host = NetUtils.getAddr(CommonPropertyUtils.getInt(
                     CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT));
-            taskFailover.handleTaskFailover(host);
+            jobExecutionFailover.handleJobExecutionFailover(host);
 
             List<ServerInfo> activeServerList = registry.getActiveServerList();
             //Get the current active server, and then get all running tasks of the server other than the active server list
-            taskFailover.handleTaskFailover(
+            jobExecutionFailover.handleJobExecutionFailover(
                     activeServerList
                             .stream()
                             .map(ServerInfo::toString)

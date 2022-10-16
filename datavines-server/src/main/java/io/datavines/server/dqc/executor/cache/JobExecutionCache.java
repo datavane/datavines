@@ -16,28 +16,33 @@
  */
 package io.datavines.server.dqc.executor.cache;
 
-import io.datavines.common.entity.TaskRequest;
-import io.datavines.server.dqc.executor.runner.TaskRunner;
+import lombok.Data;
 
-public class TaskExecutionContext {
+import java.util.concurrent.ConcurrentHashMap;
 
-    private TaskRequest taskRequest;
+public class JobExecutionCache {
 
-    private TaskRunner taskRunner;
+    private final ConcurrentHashMap<Long, JobExecutionContext> cache = new ConcurrentHashMap<>();
 
-    public TaskRequest getTaskRequest() {
-        return taskRequest;
+    private JobExecutionCache(){}
+
+    private static class Singleton{
+        static JobExecutionCache instance = new JobExecutionCache();
     }
 
-    public void setTaskRequest(TaskRequest taskRequest) {
-        this.taskRequest = taskRequest;
+    public static JobExecutionCache getInstance(){
+        return Singleton.instance;
     }
 
-    public TaskRunner getTaskRunner() {
-        return taskRunner;
+    public JobExecutionContext getById(Long taskId){
+        return cache.get(taskId);
     }
 
-    public void setTaskRunner(TaskRunner taskRunner) {
-        this.taskRunner = taskRunner;
+    public void cache(JobExecutionContext jobExecutionContext){
+        cache.put(jobExecutionContext.getJobExecutionRequest().getJobExecutionId(), jobExecutionContext);
+    }
+
+    public void remove(Long taskId){
+        cache.remove(taskId);
     }
 }

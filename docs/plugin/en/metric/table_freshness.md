@@ -32,7 +32,7 @@ column value datetime format
 
 ## Example
 
-> POST localhost:5600/api/v1/task/submit
+> POST localhost:5600/api/v1/jobExecution/submit
 ```json
 
 {
@@ -40,7 +40,7 @@ column value datetime format
     "parameter":{
         "metricType":"table_freshness",
         "metricParameter":{
-            "table":"task",
+            "table":"jobExecution",
             "column":"parameter",
             "begin_time": "2021-02-22",
             "deadline_time": "2021-02-22",

@@ -16,11 +16,7 @@
  */
 package io.datavines.server.repository.service;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
-import io.datavines.server.api.dto.bo.task.SubmitTask;
-import io.datavines.server.api.dto.vo.TaskVO;
 import io.datavines.server.repository.entity.catalog.CatalogTask;
 
 import java.util.List;

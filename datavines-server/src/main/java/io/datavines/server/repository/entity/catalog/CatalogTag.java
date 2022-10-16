@@ -14,37 +14,44 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.repository.entity.catalog;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.datavines.common.enums.ExecutionStatus;
-import io.datavines.common.enums.JobType;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class TaskVO implements Serializable {
+@TableName("dv_catalog_tag")
+public class CatalogTag implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
+    @TableId(type = IdType.AUTO)
     private Long id;
 
+    @TableField(value = "uuid")
+    private String uuid;
+
+    @TableField(value = "name")
     private String name;
 
-    private JobType jobType;
+    @TableField(value = "create_by")
+    private Long createBy;
 
-    private ExecutionStatus status;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @TableField(value = "create_time")
+    private LocalDateTime createTime;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    @TableField(value = "update_by")
+    private Long updateBy;
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    @TableField(value = "update_time")
     private LocalDateTime updateTime;
-
-    public String getJobType() {
-        return jobType.getDescription();
-    }
-
-    public String getStatus() {
-        return status.getDescription();
-    }
 }

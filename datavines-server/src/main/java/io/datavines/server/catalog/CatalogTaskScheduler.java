@@ -1,12 +1,7 @@
 package io.datavines.server.catalog;
 
-import io.datavines.common.entity.TaskRequest;
 import io.datavines.common.utils.*;
-import io.datavines.server.dqc.coordinator.cache.TaskExecuteManager;
-import io.datavines.server.enums.CommandType;
 import io.datavines.server.registry.Register;
-import io.datavines.server.repository.entity.Command;
-import io.datavines.server.repository.entity.Task;
 import io.datavines.server.repository.entity.catalog.CatalogCommand;
 import io.datavines.server.repository.entity.catalog.CatalogTask;
 import io.datavines.server.repository.service.impl.JobExternalService;

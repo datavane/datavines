@@ -45,8 +45,8 @@ public class Command implements Serializable {
     @TableField(value = "parameter")
     private String parameter;
 
-    @TableField(value = "task_id")
-    private Long taskId;
+    @TableField(value = "job_execution_id")
+    private Long jobExecutionId;
 
     @TableField(value = "priority")
     private Priority priority;

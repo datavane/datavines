@@ -15,7 +15,7 @@ need metric table
 
 ## Example
 
-> POST localhost:5600/api/v1/task/submit
+> POST localhost:5600/api/v1/jobExecution/submit
 ```json
 
 {
@@ -23,7 +23,7 @@ need metric table
     "parameter":{
         "metricType":"table_row_count",
         "metricParameter":{
-            "table":"task"
+            "table":"jobExecution"
         },
         "srcConnectorParameter":{
             "type":"postgresql",

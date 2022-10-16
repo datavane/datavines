@@ -40,11 +40,11 @@ public abstract class AbstractYarnEngineExecutor extends AbstractEngineExecutor 
     private void killYarnApplication() {
 
         try {
-            String applicationId = YarnUtils.getYarnAppId(taskRequest.getTenantCode(), taskRequest.getTaskUniqueId());
+            String applicationId = YarnUtils.getYarnAppId(jobExecutionRequest.getTenantCode(), jobExecutionRequest.getJobExecutionUniqueId());
 
             if (StringUtils.isNotEmpty(applicationId)) {
                 // sudo -u user command to run command
-                String cmd = String.format("sudo -u %s yarn application -kill %s", taskRequest.getTenantCode(), applicationId);
+                String cmd = String.format("sudo -u %s yarn application -kill %s", jobExecutionRequest.getTenantCode(), applicationId);
 
                 logger.info("yarn application -kill {}", applicationId);
 
