@@ -21,8 +21,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datavines.common.CommonConstants;
 import io.datavines.common.datasource.jdbc.*;
+import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
+import io.datavines.common.datasource.jdbc.entity.DatabaseInfo;
+import io.datavines.common.datasource.jdbc.entity.TableInfo;
 import io.datavines.common.entity.QueryColumn;
-import io.datavines.common.entity.TableInfo;
+import io.datavines.common.datasource.jdbc.entity.TableColumnInfo;
 import io.datavines.common.param.*;
 import io.datavines.common.param.form.PluginParams;
 import io.datavines.common.param.form.PropsType;
@@ -66,9 +69,9 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         Connection connection = executorClient.getConnection();
 
         ResultSet rs = getMetadataDatabases(connection);
-        List<QueryColumn> databaseList = new ArrayList<>();
+        List<DatabaseInfo> databaseList = new ArrayList<>();
         while (rs.next()) {
-            databaseList.add(new QueryColumn(rs.getString(1), DATABASE));
+            databaseList.add(new DatabaseInfo(rs.getString(1), DATABASE));
         }
         JdbcDataSourceUtils.releaseConnection(connection);
         builder.result(databaseList);
@@ -99,7 +102,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         JdbcExecutorClient executorClient = getJdbcExecutorClient(dataSourceParam, jdbcConnectionInfo);
         Connection connection = executorClient.getConnection();
 
-        List<QueryColumn> tableList = null;
+        List<TableInfo> tableList = null;
         ResultSet tables = null;
 
         try {
@@ -122,7 +125,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
                     } catch (Exception e) {
                         // ignore
                     }
-                    tableList.add(new QueryColumn(name, type, tables.getString("REMARKS")));
+                    tableList.add(new TableInfo(schema, name, type, tables.getString("REMARKS")));
                 }
             }
 
@@ -147,15 +150,15 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         JdbcExecutorClient executorClient = getJdbcExecutorClient(dataSourceParam, jdbcConnectionInfo);
         Connection connection = executorClient.getConnection();
 
-        TableInfo tableInfo = null;
+        TableColumnInfo tableColumnInfo = null;
         try {
             String dbName = param.getDataBase();
             String tableName = param.getTable();
             if (null != connection) {
                 DatabaseMetaData metaData = connection.getMetaData();
                 List<String> primaryKeys = getPrimaryKeys(jdbcConnectionInfo.getCatalog(), dbName, tableName, metaData);
-                List<QueryColumn> columns = getColumns(jdbcConnectionInfo.getCatalog(), dbName, tableName, metaData);
-                tableInfo = new TableInfo(tableName, primaryKeys, columns);
+                List<ColumnInfo> columns = getColumns(jdbcConnectionInfo.getCatalog(), dbName, tableName, metaData);
+                tableColumnInfo = new TableColumnInfo(tableName, primaryKeys, columns);
             }
         } catch (SQLException e) {
             logger.error(e.toString(), e);
@@ -164,7 +167,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
             JdbcDataSourceUtils.releaseConnection(connection);
         }
 
-        return builder.result(tableInfo).build();
+        return builder.result(tableColumnInfo).build();
     }
 
     @Override
@@ -291,9 +294,9 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         return primaryKeys;
     }
 
-    public List<QueryColumn> getColumns(String catalog, String schema, String tableName, DatabaseMetaData metaData) {
+    public List<ColumnInfo> getColumns(String catalog, String schema, String tableName, DatabaseMetaData metaData) {
         ResultSet rs = null;
-        List<QueryColumn> columnList = new ArrayList<>();
+        List<ColumnInfo> columnList = new ArrayList<>();
         try {
             rs = getMetadataColumns(metaData, catalog, schema, tableName, "%");
             if (rs == null) {
@@ -303,7 +306,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
                 String name = rs.getString("COLUMN_NAME");
                 String rawType = rs.getString("TYPE_NAME");
                 String comment = rs.getString("REMARKS");
-                columnList.add(new QueryColumn(name, rawType, comment));
+                columnList.add(new ColumnInfo(name, rawType, comment,false));
             }
         } catch (Exception e) {
             logger.error(e.toString(), e);

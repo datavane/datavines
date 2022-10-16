@@ -19,7 +19,7 @@ table column need to check
 
 ## Example
 
-> POST localhost:5600/api/v1/task/submit
+> POST localhost:5600/api/v1/jobExecution/submit
 ```json
 
 {
@@ -27,7 +27,7 @@ table column need to check
     "parameter":{
         "metricType":"column_not_null",
         "metricParameter":{
-            "table":"task",
+            "table":"jobExecution",
             "column":"parameter"
         },
         "srcConnectorParameter":{

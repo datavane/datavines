@@ -22,7 +22,7 @@ enum_list value like `'1','2','3'` or `1,2,3`
 
 ## Example
 
-> POST localhost:5600/api/v1/task/submit
+> POST localhost:5600/api/v1/jobExecution/submit
 ```json
 
 {
@@ -30,7 +30,7 @@ enum_list value like `'1','2','3'` or `1,2,3`
     "parameter":{
         "metricType":"column_not_in_enums",
         "metricParameter":{
-            "table":"task",
+            "table":"jobExecution",
             "column":"parameter",
             "enum_list": "'1','2','3'"
         },

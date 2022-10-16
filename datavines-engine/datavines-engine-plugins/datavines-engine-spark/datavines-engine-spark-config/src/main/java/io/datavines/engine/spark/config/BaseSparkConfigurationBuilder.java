@@ -18,17 +18,13 @@ package io.datavines.engine.spark.config;
 
 import io.datavines.common.config.*;
 import io.datavines.common.config.enums.SinkType;
-import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.*;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.engine.api.ConfigConstants;
 import io.datavines.engine.config.BaseDataQualityConfigurationBuilder;
-import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
-import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
 import io.datavines.storage.api.StorageFactory;
 
@@ -39,14 +35,13 @@ import java.util.Map;
 
 import static io.datavines.common.CommonConstants.TABLE2;
 import static io.datavines.engine.api.ConfigConstants.*;
-import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfigurationBuilder {
 
     @Override
     protected EnvConfig getEnvConfig() {
         EnvConfig envConfig = new EnvConfig();
-        envConfig.setEngine(taskInfo.getEngineType());
+        envConfig.setEngine(jobExecutionInfo.getEngineType());
         return envConfig;
     }
 
@@ -54,8 +49,8 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
     protected List<SourceConfig> getSourceConfigs() throws DataVinesException {
         List<SourceConfig> sourceConfigs = new ArrayList<>();
 
-        if (taskParameter.getConnectorParameter() != null) {
-            ConnectorParameter connectorParameter = taskParameter.getConnectorParameter();
+        if (jobExecutionParameter.getConnectorParameter() != null) {
+            ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
             SourceConfig sourceConfig = new SourceConfig();
 
             Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter.getParameters());
@@ -77,8 +72,8 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
             sourceConfigs.add(sourceConfig);
         }
 
-        if (taskParameter.getConnectorParameter2() != null && taskParameter.getConnectorParameter2().getParameters() !=null) {
-            ConnectorParameter connectorParameter2 = taskParameter.getConnectorParameter2();
+        if (jobExecutionParameter.getConnectorParameter2() != null && jobExecutionParameter.getConnectorParameter2().getParameters() !=null) {
+            ConnectorParameter connectorParameter2 = jobExecutionParameter.getConnectorParameter2();
             SourceConfig sourceConfig = new SourceConfig();
 
             Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter2.getParameters());
@@ -102,8 +97,8 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
 
         inputParameter.put("actual_value", "actual_value");
 
-        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
-        if (StringUtils.isEmpty(taskParameter.getExpectedType())) {
+        String expectedType = jobExecutionInfo.getEngineType() + "_" + jobExecutionParameter.getExpectedType();
+        if (StringUtils.isEmpty(jobExecutionParameter.getExpectedType())) {
             return sourceConfigs;
         }
 
@@ -120,22 +115,22 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
 
     protected SinkConfig getErrorSinkConfig() {
         SinkConfig errorDataSinkConfig = null;
-        if (StringUtils.isNotEmpty(taskInfo.getErrorDataStorageType())
-                && StringUtils.isNotEmpty(taskInfo.getErrorDataStorageParameter())) {
+        if (StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageType())
+                && StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageParameter())) {
             errorDataSinkConfig = new SinkConfig();
             errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
 
-            Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(taskInfo.getErrorDataStorageParameter(),String.class, Object.class));
+            Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, Object.class));
             connectorParameterMap.putAll(inputParameter);
             StorageFactory storageFactory = PluginLoader
                     .getPluginLoader(StorageFactory.class)
-                    .getNewPlugin(taskInfo.getErrorDataStorageType());
+                    .getNewPlugin(jobExecutionInfo.getErrorDataStorageType());
 
             if (storageFactory != null) {
                 connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
                 errorDataSinkConfig.setPlugin(storageFactory.getCategory());
-                connectorParameterMap.put(ERROR_DATA_FILE_NAME, taskInfo.getErrorDataFileName());
-                connectorParameterMap.put(TABLE, taskInfo.getErrorDataFileName());
+                connectorParameterMap.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
+                connectorParameterMap.put(TABLE, jobExecutionInfo.getErrorDataFileName());
                 connectorParameterMap.put(SQL, "SELECT * FROM "+ inputParameter.get(INVALIDATE_ITEMS_TABLE));
                 errorDataSinkConfig.setConfig(connectorParameterMap);
             }

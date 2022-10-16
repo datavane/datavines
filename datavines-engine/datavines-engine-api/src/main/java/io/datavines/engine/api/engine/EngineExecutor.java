@@ -16,17 +16,17 @@
  */
 package io.datavines.engine.api.engine;
 
+import io.datavines.common.entity.JobExecutionRequest;
 import org.slf4j.Logger;
 
 import io.datavines.common.config.Configurations;
-import io.datavines.common.entity.TaskRequest;
 import io.datavines.common.entity.ProcessResult;
 import io.datavines.spi.SPI;
 
 @SPI
 public interface EngineExecutor {
 
-    void init(TaskRequest taskRequest, Logger logger, Configurations configurations) throws Exception;
+    void init(JobExecutionRequest jobExecutionRequest, Logger logger, Configurations configurations) throws Exception;
 
     void execute() throws Exception;
 
@@ -38,5 +38,5 @@ public interface EngineExecutor {
 
     ProcessResult getProcessResult();
 
-    TaskRequest getTaskRequest();
+    JobExecutionRequest getTaskRequest();
 }

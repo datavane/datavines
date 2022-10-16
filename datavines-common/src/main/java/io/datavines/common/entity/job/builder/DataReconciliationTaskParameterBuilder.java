@@ -18,7 +18,7 @@ package io.datavines.common.entity.job.builder;
 
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.ConnectorParameter;
-import io.datavines.common.entity.TaskParameter;
+import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.job.DataReconciliationJobParameter;
 import io.datavines.common.utils.JSONUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,36 +36,36 @@ public class DataReconciliationTaskParameterBuilder implements ParameterBuilder 
         if (CollectionUtils.isNotEmpty(jobParameters)) {
             List<String> taskParameters = new ArrayList<>();
             jobParameters.forEach(jobParam -> {
-                TaskParameter taskParameter = new TaskParameter();
-                taskParameter.setMetricType(jobParam.getMetricType());
+                JobExecutionParameter jobExecutionParameter = new JobExecutionParameter();
+                jobExecutionParameter.setMetricType(jobParam.getMetricType());
                 Map<String,Object> metricParameters = jobParam.getMetricParameter();
                 String database = (String)metricParameters.get("database");
                 metricParameters.remove("database");
                 metricParameters.put("metric_database", database);
                 metricParameters.putAll(jobParam.getMetricParameter2());
                 metricParameters.put("mappingColumns", JSONUtils.toJsonString(jobParam.getMappingColumns()));
-                taskParameter.setMetricParameter(metricParameters);
-                taskParameter.setExpectedType(jobParam.getExpectedType());
-                taskParameter.setExpectedParameter(jobParam.getExpectedParameter());
-                taskParameter.setResultFormula(jobParam.getResultFormula());
-                taskParameter.setOperator(jobParam.getOperator());
-                taskParameter.setThreshold(jobParam.getThreshold());
+                jobExecutionParameter.setMetricParameter(metricParameters);
+                jobExecutionParameter.setExpectedType(jobParam.getExpectedType());
+                jobExecutionParameter.setExpectedParameter(jobParam.getExpectedParameter());
+                jobExecutionParameter.setResultFormula(jobParam.getResultFormula());
+                jobExecutionParameter.setOperator(jobParam.getOperator());
+                jobExecutionParameter.setThreshold(jobParam.getThreshold());
 
                 ConnectorParameter connectorParameter = new ConnectorParameter();
                 connectorParameter.setType(connectionInfo.getType());
                 Map<String,Object> connectorParameterMap = connectionInfo.configMap();
                 connectorParameterMap.put("database", database);
                 connectorParameter.setParameters(connectorParameterMap);
-                taskParameter.setConnectorParameter(connectorParameter);
+                jobExecutionParameter.setConnectorParameter(connectorParameter);
 
                 ConnectorParameter connectorParameter2 = new ConnectorParameter();
                 connectorParameter2.setType(connectionInfo2.getType());
                 Map<String,Object> connectorParameter2Map = connectionInfo2.configMap();
                 connectorParameter2Map.put("database", jobParam.getMetricParameter2().get("database2"));
                 connectorParameter2.setParameters(connectorParameter2Map);
-                taskParameter.setConnectorParameter2(connectorParameter2);
+                jobExecutionParameter.setConnectorParameter2(connectorParameter2);
 
-                String taskParameterStr = JSONUtils.toJsonString(taskParameter);
+                String taskParameterStr = JSONUtils.toJsonString(jobExecutionParameter);
                 taskParameters.add(taskParameterStr);
             });
 

@@ -32,21 +32,21 @@
 
     <conversionRule conversionWord="message"
                     converterClass="io.datavines.common.log.SensitiveDataConverter"/>
-    <appender name="TASK_LOG_FILE" class="ch.qos.logback.classic.sift.SiftingAppender">
+    <appender name="JOB_LOG_FILE" class="ch.qos.logback.classic.sift.SiftingAppender">
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
             <level>INFO</level>
         </filter>
 
-        <filter class="io.datavines.common.log.TaskLogFilter"/>
+        <filter class="io.datavines.common.log.JobExecutionLogFilter"/>
 
-        <Discriminator class="io.datavines.common.log.TaskLogDiscriminator">
-            <key>taskUniqueId</key>
+        <Discriminator class="io.datavines.common.log.JobExecutionLogDiscriminator">
+            <key>jobExecutionUniqueId</key>
             <logBase>${log.base}</logBase>
         </Discriminator>
 
         <sift>
-            <appender name="FILE-${taskUniqueId}" class="ch.qos.logback.core.FileAppender">
-                <file>${log.base}/${taskUniqueId}.log</file>
+            <appender name="FILE-${jobExecutionUniqueId}" class="ch.qos.logback.core.FileAppender">
+                <file>${log.base}/${jobExecutionUniqueId}.log</file>
                 <encoder>
                     <pattern>
                         [%level] %date{yyyy-MM-dd HH:mm:ss.SSS} %logger{96}:[%line] - %message%n
@@ -78,7 +78,7 @@
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="TASK_LOG_FILE"/>
+        <appender-ref ref="JOB_LOG_FILE"/>
         <appender-ref ref="SERVER_LOG_FILE"/>
     </root>
 

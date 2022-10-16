@@ -16,19 +16,20 @@
  */
 package io.datavines.engine.config.entity;
 
-import io.datavines.common.entity.TaskInfo;
+import io.datavines.common.entity.JobExecutionInfo;
+
 import java.util.Map;
 
 public class ConfigRequest {
     private Map<String, String> inputParameter;
-    private TaskInfo taskInfo;
+    private JobExecutionInfo jobExecutionInfo;
 
     public ConfigRequest() {
     }
 
-    public ConfigRequest(Map<String, String> inputParameter, TaskInfo taskInfo) {
+    public ConfigRequest(Map<String, String> inputParameter, JobExecutionInfo jobExecutionInfo) {
         this.inputParameter = inputParameter;
-        this.taskInfo = taskInfo;
+        this.jobExecutionInfo = jobExecutionInfo;
     }
 
     public Map<String, String> getInputParameter() {
@@ -39,11 +40,11 @@ public class ConfigRequest {
         this.inputParameter = inputParameter;
     }
 
-    public TaskInfo getTaskInfo() {
-        return taskInfo;
+    public JobExecutionInfo getJobExecutionInfo() {
+        return jobExecutionInfo;
     }
 
-    public void setTaskInfo(TaskInfo taskInfo) {
-        this.taskInfo = taskInfo;
+    public void setJobExecutionInfo(JobExecutionInfo jobExecutionInfo) {
+        this.jobExecutionInfo = jobExecutionInfo;
     }
 }

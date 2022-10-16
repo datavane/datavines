@@ -16,9 +16,6 @@
  */
 package io.datavines.common.datasource.jdbc;
 
-/**
- * IJdbcDataSourceInfo
- */
 public interface IJdbcDataSourceInfo {
 
     BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo);

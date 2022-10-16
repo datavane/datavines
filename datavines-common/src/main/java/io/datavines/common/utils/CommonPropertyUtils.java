@@ -47,6 +47,9 @@ public class CommonPropertyUtils {
     public static final String TASK_LOCK_KEY = "registry.task.lock.key";
     public static final String TASK_LOCK_KEY_DEFAULT = "/datavines/taskLock";
 
+    public static final String CATALOG_TASK_LOCK_KEY = "registry.catalog.task.lock.key";
+    public static final String CATALOG_TASK_LOCK_KEY_DEFAULT = "/datavines/catalog/taskLock";
+
     public static final String SERVERS_KEY = "registry.servers.key";
     public static final String SERVERS_KEY_DEFAULT = "/datavines/servers";
 

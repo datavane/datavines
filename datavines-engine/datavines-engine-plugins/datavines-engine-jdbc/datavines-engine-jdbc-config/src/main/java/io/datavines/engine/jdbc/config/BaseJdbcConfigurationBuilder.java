@@ -18,16 +18,12 @@ package io.datavines.engine.jdbc.config;
 
 import io.datavines.common.config.*;
 import io.datavines.common.config.enums.SourceType;
-import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.*;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.config.BaseDataQualityConfigurationBuilder;
-import io.datavines.engine.api.ConfigConstants;
-import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
-import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
 
 import java.util.ArrayList;
@@ -36,14 +32,13 @@ import java.util.List;
 import java.util.Map;
 
 import static io.datavines.engine.api.ConfigConstants.*;
-import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfigurationBuilder {
 
     @Override
     protected EnvConfig getEnvConfig() {
         EnvConfig envConfig = new EnvConfig();
-        envConfig.setEngine(taskInfo.getEngineType());
+        envConfig.setEngine(jobExecutionInfo.getEngineType());
         return envConfig;
     }
 
@@ -51,8 +46,8 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
     protected List<SourceConfig> getSourceConfigs() throws DataVinesException {
         List<SourceConfig> sourceConfigs = new ArrayList<>();
 
-        if (taskParameter.getConnectorParameter() != null) {
-            ConnectorParameter connectorParameter = taskParameter.getConnectorParameter();
+        if (jobExecutionParameter.getConnectorParameter() != null) {
+            ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
             SourceConfig sourceConfig = new SourceConfig();
 
             Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter.getParameters());
@@ -77,8 +72,8 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
             sourceConfigs.add(sourceConfig);
         }
 
-        if (taskParameter.getConnectorParameter2() != null && taskParameter.getConnectorParameter2().getParameters() !=null) {
-            ConnectorParameter connectorParameter2 = taskParameter.getConnectorParameter2();
+        if (jobExecutionParameter.getConnectorParameter2() != null && jobExecutionParameter.getConnectorParameter2().getParameters() !=null) {
+            ConnectorParameter connectorParameter2 = jobExecutionParameter.getConnectorParameter2();
             SourceConfig sourceConfig = new SourceConfig();
 
             Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter2.getParameters());
@@ -100,7 +95,7 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
             sourceConfigs.add(sourceConfig);
         }
 
-        String expectedType = taskInfo.getEngineType() + "_" + taskParameter.getExpectedType();
+        String expectedType = jobExecutionInfo.getEngineType() + "_" + jobExecutionParameter.getExpectedType();
         if (StringUtils.isEmpty(expectedType)) {
             return sourceConfigs;
         }

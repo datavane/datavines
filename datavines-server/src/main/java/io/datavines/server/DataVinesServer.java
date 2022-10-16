@@ -22,10 +22,13 @@ import io.datavines.common.utils.Stopper;
 import io.datavines.common.utils.ThreadUtils;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.registry.api.Registry;
-import io.datavines.server.coordinator.registry.Register;
-import io.datavines.server.coordinator.server.cache.TaskExecuteManager;
-import io.datavines.server.coordinator.server.failover.TaskFailover;
-import io.datavines.server.coordinator.server.runner.JobScheduler;
+import io.datavines.server.catalog.CatalogTaskManager;
+import io.datavines.server.catalog.CatalogTaskScheduler;
+import io.datavines.server.registry.Register;
+import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
+import io.datavines.server.dqc.coordinator.failover.JobExecutionFailover;
+import io.datavines.server.dqc.coordinator.runner.JobScheduler;
+import io.datavines.server.registry.RegistryHolder;
 import io.datavines.server.utils.SpringApplicationContext;
 import io.datavines.spi.PluginLoader;
 import org.slf4j.Logger;
@@ -48,11 +51,14 @@ public class DataVinesServer {
     @Autowired
     private Environment environment;
 
+    @Autowired
+    private RegistryHolder registryHolder;
+
     private Register register;
 
-    private TaskExecuteManager taskExecuteManager;
+    private JobExecuteManager jobExecuteManager;
 
-    private TaskFailover taskFailover;
+    private JobExecutionFailover jobExecutionFailover;
 
     public static void main(String[] args) {
         Thread.currentThread().setName(DataVinesConstants.THREAD_NAME_COORDINATOR_SERVER);
@@ -65,23 +71,30 @@ public class DataVinesServer {
 
         initCommonProperties();
 
-        taskExecuteManager = new TaskExecuteManager();
-        taskExecuteManager.start();
+        jobExecuteManager = new JobExecuteManager();
+        jobExecuteManager.start();
 
-        taskFailover = new TaskFailover(taskExecuteManager);
+        CatalogTaskManager catalogTaskManager = new CatalogTaskManager();
+        catalogTaskManager.start();
+
+        jobExecutionFailover = new JobExecutionFailover(jobExecuteManager);
 
         Registry registry = PluginLoader
                 .getPluginLoader(Registry.class)
                 .getOrCreatePlugin(CommonPropertyUtils
                         .getString(CommonPropertyUtils.REGISTRY_TYPE, CommonPropertyUtils.REGISTRY_TYPE_DEFAULT));
         registry.init(CommonPropertyUtils.getProperties());
+        registryHolder.setRegistry(registry);
 
-        register = new Register(registry, taskFailover);
+        register = new Register(registry, jobExecutionFailover);
         register.start();
 
         //start job scheduler
-        JobScheduler jobScheduler = new JobScheduler(taskExecuteManager, register);
+        JobScheduler jobScheduler = new JobScheduler(jobExecuteManager, register);
         jobScheduler.start();
+
+        CatalogTaskScheduler catalogTaskScheduler = new CatalogTaskScheduler(catalogTaskManager, register);
+        catalogTaskScheduler.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> close("shutdownHook")));
     }
@@ -98,16 +111,16 @@ public class DataVinesServer {
                 return;
             }
 
-            logger.info("coordinator server is stopping ..., cause : {}", cause);
+            logger.info("server is stopping ..., cause : {}", cause);
 
             // set stop signal is true
             Stopper.stop();
 
             ThreadUtils.sleep(2000);
 
-            this.taskExecuteManager.close();
+            this.jobExecuteManager.close();
             this.register.close();
-            this.taskFailover.close();
+            this.jobExecutionFailover.close();
 
         } catch (Exception e) {
             logger.error("coordinator server stop exception ", e);

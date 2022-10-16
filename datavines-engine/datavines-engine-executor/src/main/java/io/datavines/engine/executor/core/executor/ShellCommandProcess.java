@@ -17,7 +17,7 @@
 package io.datavines.engine.executor.core.executor;
 
 import io.datavines.common.config.Configurations;
-import io.datavines.common.entity.TaskRequest;
+import io.datavines.common.entity.JobExecutionRequest;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 
@@ -35,19 +35,19 @@ public class ShellCommandProcess extends BaseCommandProcess {
 
     public ShellCommandProcess(Consumer<List<String>> logHandler,
                                Logger logger,
-                               TaskRequest taskRequest,
+                               JobExecutionRequest jobExecutionRequest,
                                Configurations configurations){
-        super(logHandler, logger, taskRequest, configurations);
+        super(logHandler, logger, jobExecutionRequest, configurations);
     }
 
     @Override
     protected String buildCommandFilePath() {
-        return String.format("%s/%s.command", taskRequest.getExecuteFilePath(), taskRequest.getTaskId());
+        return String.format("%s/%s.command", jobExecutionRequest.getExecuteFilePath(), jobExecutionRequest.getJobExecutionId());
     }
 
     @Override
     protected void createCommandFileIfNotExists(String execCommand, String commandFile) throws IOException {
-        logger.info("tenant {},job dir:{}" , taskRequest.getTenantCode(), taskRequest.getExecuteFilePath());
+        logger.info("tenant {},job dir:{}" , jobExecutionRequest.getTenantCode(), jobExecutionRequest.getExecuteFilePath());
 
         if(Files.exists(Paths.get(commandFile))){
             Files.delete(Paths.get(commandFile));
@@ -60,8 +60,8 @@ public class ShellCommandProcess extends BaseCommandProcess {
         sb.append("BASEDIR=$(cd `dirname $0`; pwd)\n");
         sb.append("cd $BASEDIR\n");
 
-        if (taskRequest.getEnv() != null) {
-            sb.append(taskRequest.getEnv()).append("\n");
+        if (jobExecutionRequest.getEnv() != null) {
+            sb.append(jobExecutionRequest.getEnv()).append("\n");
         }
 
         sb.append("\n");

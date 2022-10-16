@@ -18,8 +18,8 @@ package io.datavines.engine.executor.core.executor;
 
 import io.datavines.common.config.Configurations;
 import io.datavines.common.config.CoreConfig;
+import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.entity.ProcessResult;
-import io.datavines.common.entity.TaskRequest;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.LoggerUtils;
 import io.datavines.common.utils.ProcessUtils;
@@ -53,7 +53,7 @@ public abstract class BaseCommandProcess {
     /**
      * execution job
      */
-    protected TaskRequest taskRequest;
+    protected JobExecutionRequest jobExecutionRequest;
 
     /**
      *  logger
@@ -69,10 +69,10 @@ public abstract class BaseCommandProcess {
 
     public BaseCommandProcess(Consumer<List<String>> logHandler,
                               Logger logger,
-                              TaskRequest taskRequest,
+                              JobExecutionRequest jobExecutionRequest,
                               Configurations configurations){
         this.logHandler = logHandler;
-        this.taskRequest = taskRequest;
+        this.jobExecutionRequest = jobExecutionRequest;
         this.logger = logger;
         this.logBuffer = Collections.synchronizedList(new ArrayList<>());
         this.configurations = configurations;
@@ -96,7 +96,7 @@ public abstract class BaseCommandProcess {
 
             int exitValue = process.waitFor();
 
-            String appId = YarnUtils.getYarnAppId(taskRequest.getTenantCode(), taskRequest.getTaskUniqueId());
+            String appId = YarnUtils.getYarnAppId(jobExecutionRequest.getTenantCode(), jobExecutionRequest.getJobExecutionName());
             result.setApplicationId(appId);
 
             // if yarn job , yarn state is final state
@@ -107,7 +107,7 @@ public abstract class BaseCommandProcess {
             }
 
             result.setExitStatusCode(exitStatusCode);
-            logger.info("process has exited, work dir:{}, pid:{} ,exitStatusCode:{}", taskRequest.getExecuteFilePath(), pid, exitStatusCode);
+            logger.info("process has exited, work dir:{}, pid:{} ,exitStatusCode:{}", jobExecutionRequest.getExecuteFilePath(), pid, exitStatusCode);
 
         } catch (InterruptedException e) {
             logger.error("interrupt exception:{0}, job may be cancelled or killed", e);
@@ -130,14 +130,14 @@ public abstract class BaseCommandProcess {
         //init process builder
         ProcessBuilder processBuilder = new ProcessBuilder();
         // setting up a working directory
-        processBuilder.directory(new File(taskRequest.getExecuteFilePath()));
+        processBuilder.directory(new File(jobExecutionRequest.getExecuteFilePath()));
         // merge error information to standard output stream
         processBuilder.redirectErrorStream(true);
         // setting up user to run commands
         List<String> command = new LinkedList<>();
         command.add("sudo");
         command.add("-u");
-        command.add(taskRequest.getTenantCode());
+        command.add(jobExecutionRequest.getTenantCode());
         command.add(commandInterpreter());
         command.addAll(commandOptions());
         command.add(commandFile);
@@ -224,7 +224,7 @@ public abstract class BaseCommandProcess {
                 // sudo -u user command to run command
                 String cmd = String.format("sudo kill %d", processId);
 
-                logger.info("soft kill job:{}, process id:{}, cmd:{}", taskRequest.getTaskName(), processId, cmd);
+                logger.info("soft kill job:{}, process id:{}, cmd:{}", jobExecutionRequest.getJobExecutionName(), processId, cmd);
 
                 Runtime.getRuntime().exec(cmd);
             } catch (IOException e) {
@@ -245,7 +245,7 @@ public abstract class BaseCommandProcess {
             try {
                 String cmd = String.format("sudo kill -9 %d", processId);
 
-                logger.info("hard kill job:{}, process id:{}, cmd:{}", taskRequest.getTaskName(), processId, cmd);
+                logger.info("hard kill job:{}, process id:{}, cmd:{}", jobExecutionRequest.getJobExecutionName(), processId, cmd);
 
                 Runtime.getRuntime().exec(cmd);
             } catch (IOException e) {
@@ -259,7 +259,7 @@ public abstract class BaseCommandProcess {
      * @param process process
      */
     private void parseProcessOutput(Process process) {
-        String threadLoggerInfoName = String.format(LoggerUtils.TASK_LOGGER_THREAD_NAME + "-%s", taskRequest.getTaskName());
+        String threadLoggerInfoName = String.format(LoggerUtils.JOB_LOGGER_THREAD_NAME + "-%s", jobExecutionRequest.getJobExecutionName());
         ExecutorService parseProcessOutputExecutorService = ThreadUtils.newDaemonSingleThreadExecutor(threadLoggerInfoName);
         parseProcessOutputExecutorService.submit(new Runnable(){
             @Override

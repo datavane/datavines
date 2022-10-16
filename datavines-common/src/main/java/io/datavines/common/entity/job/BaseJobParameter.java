@@ -22,7 +22,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Map;
 
 @Data
-@NotNull(message = "TaskParameter cannot be null")
+@NotNull(message = "JobExecutionParameter cannot be null")
 public class BaseJobParameter {
 
     private String metricType;

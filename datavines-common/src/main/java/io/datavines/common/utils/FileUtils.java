@@ -102,7 +102,7 @@ public class FileUtils {
         logger.info("create user name success {}", userName);
     }
 
-    public static String getTaskExecDir(String jobType, long taskId) {
+    public static String getJobExecutionExecDir(String jobType, long taskId) {
         String taskLocalTmpDir = CommonPropertyUtils.getString(CommonPropertyUtils.LOCAL_TMP_WORKDIR, CommonPropertyUtils.LOCAL_TMP_WORKDIR_DEFAULT);
         String fileName = String.format("%s/exec/job/%s/%s", taskLocalTmpDir, jobType, taskId);
         File file = new File(fileName);

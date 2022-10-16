@@ -40,7 +40,7 @@ NotificationServer主要负责告警，用户在平台上配置告警规则，�
 - Engine是平台核心组成部分，是定义数据监控任务在计算引擎中的执行逻辑，不同的Engine对应不同的执行引擎，例如Spark、Flink、Presto等。执行逻辑主要由Sources、Transformers和Sinks组成，由Source来执行数据源的连接和数据读取，由Transformer来执行各种聚合统计处理，由Sink来执行执行结果的输出。不同的计算引擎实现方式有所不同，但是核心的流程就是读取数据，执行统计和输出数据。插件化设计允许用户自定义Engine来增加新的计算引擎。
 # 流程设计
 ## 任务执行流程
-![任务执行流程](../../img/task-execute-flow.png)
+![任务执行流程](../../img/jobExecution-execute-flow.png)
 
 ## 数据监控参数生成流程
 ![参数的构造和转换流程](../../img/engine-config-parser.png)

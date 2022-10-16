@@ -37,12 +37,12 @@ public class JdbcSingleTableCustomSqlMetricBuilder extends JdbcSingleTableMetric
     @Override
     public void buildTransformConfigs() {
 
-        String metricType = taskParameter.getMetricType();
+        String metricType = jobExecutionParameter.getMetricType();
         SqlMetric sqlMetric = PluginLoader
                 .getPluginLoader(SqlMetric.class)
                 .getNewPlugin(metricType);
 
-        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
+        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, jobExecutionInfo);
 
         List<TransformConfig> transformConfigs = new ArrayList<>();
         //get custom aggregate sql
@@ -53,7 +53,7 @@ public class JdbcSingleTableCustomSqlMetricBuilder extends JdbcSingleTableMetric
                 TransformType.ACTUAL_VALUE.getDescription());
 
         // get expected value transform sql
-        String expectedType = taskInfo.getEngineType() + "_" +taskParameter.getExpectedType();
+        String expectedType = jobExecutionInfo.getEngineType() + "_" + jobExecutionParameter.getExpectedType();
         expectedValue = PluginLoader
                 .getPluginLoader(ExpectedValue.class)
                 .getNewPlugin(expectedType);

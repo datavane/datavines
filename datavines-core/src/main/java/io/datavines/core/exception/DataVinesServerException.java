@@ -17,7 +17,7 @@
 package io.datavines.core.exception;
 
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.enums.Status;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.text.MessageFormat;
@@ -25,7 +25,7 @@ import java.util.Arrays;
 
 public class DataVinesServerException extends DataVinesException {
 
-    private ApiStatus status;
+    private Status status;
 
     public DataVinesServerException(String message) {
         super(message);
@@ -43,22 +43,22 @@ public class DataVinesServerException extends DataVinesException {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 
-    public DataVinesServerException(ApiStatus status) {
+    public DataVinesServerException(Status status) {
         super(status.getMsg());
         this.status = status;
     }
 
-    public DataVinesServerException(ApiStatus status, Throwable cause) {
+    public DataVinesServerException(Status status, Throwable cause) {
         super(status.getMsg(), cause);
         this.status = status;
     }
 
-    public DataVinesServerException(ApiStatus status, Object... statusParams) {
+    public DataVinesServerException(Status status, Object... statusParams) {
         super(CollectionUtils.isEmpty(Arrays.asList(statusParams)) ? status.getMsg() : MessageFormat.format(status.getMsg(), statusParams));
         this.status = status;
     }
 
-    public ApiStatus getStatus() {
+    public Status getStatus() {
         return status;
     }
 }

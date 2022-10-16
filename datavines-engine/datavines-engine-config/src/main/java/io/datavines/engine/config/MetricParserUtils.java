@@ -16,7 +16,7 @@
  */
 package io.datavines.engine.config;
 
-import io.datavines.common.entity.TaskInfo;
+import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.utils.Md5Utils;
 import io.datavines.common.utils.StringUtils;
 
@@ -39,7 +39,7 @@ public class MetricParserUtils {
 
     public static void operateInputParameter(Map<String, String> inputParameter,
                                              SqlMetric sqlMetric,
-                                             TaskInfo task) {
+                                             JobExecutionInfo task) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
         LocalDateTime time = LocalDateTime.now();
         String now = df.format(time);

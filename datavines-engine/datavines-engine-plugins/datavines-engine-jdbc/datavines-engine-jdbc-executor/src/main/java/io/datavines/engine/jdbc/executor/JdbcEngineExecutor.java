@@ -17,8 +17,8 @@
 package io.datavines.engine.jdbc.executor;
 
 import io.datavines.common.config.Configurations;
+import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.entity.ProcessResult;
-import io.datavines.common.entity.TaskRequest;
 import io.datavines.common.utils.LoggerUtils;
 import io.datavines.engine.executor.core.base.AbstractEngineExecutor;
 import io.datavines.engine.jdbc.core.JdbcBaseDataVinesBootstrap;
@@ -31,10 +31,10 @@ public class JdbcEngineExecutor extends AbstractEngineExecutor {
     private JdbcBaseDataVinesBootstrap bootstrap;
 
     @Override
-    public void init(TaskRequest taskRequest, Logger logger, Configurations configurations) throws Exception {
-        String threadLoggerInfoName = String.format(LoggerUtils.TASK_LOG_INFO_FORMAT, taskRequest.getTaskUniqueId());
+    public void init(JobExecutionRequest jobExecutionRequest, Logger logger, Configurations configurations) throws Exception {
+        String threadLoggerInfoName = String.format(LoggerUtils.JOB_LOG_INFO_FORMAT, jobExecutionRequest.getJobExecutionUniqueId());
         Thread.currentThread().setName(threadLoggerInfoName);
-        this.taskRequest = taskRequest;
+        this.jobExecutionRequest = jobExecutionRequest;
         this.logger = logger;
         this.configurations = configurations;
     }
@@ -42,7 +42,7 @@ public class JdbcEngineExecutor extends AbstractEngineExecutor {
     @Override
     public void execute() throws Exception {
         String[] args = new String[1];
-        args[0] = taskRequest.getApplicationParameter();
+        args[0] = jobExecutionRequest.getApplicationParameter();
         bootstrap = new JdbcBaseDataVinesBootstrap(this.logger);
         this.processResult = bootstrap.execute(args);
     }
@@ -66,8 +66,8 @@ public class JdbcEngineExecutor extends AbstractEngineExecutor {
     }
 
     @Override
-    public TaskRequest getTaskRequest() {
-        return this.taskRequest;
+    public JobExecutionRequest getTaskRequest() {
+        return this.jobExecutionRequest;
     }
 
     @Override

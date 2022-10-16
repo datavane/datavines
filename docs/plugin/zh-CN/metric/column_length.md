@@ -27,7 +27,7 @@ table column length
 
 ## Example
 
-> POST localhost:5600/api/v1/task/submit
+> POST localhost:5600/api/v1/jobExecution/submit
 ```json
 
 {
@@ -35,7 +35,7 @@ table column length
     "parameter":{
         "metricType":"column_length",
         "metricParameter":{
-            "table":"task",
+            "table":"jobExecution",
             "column":"parameter",
             "comparator": ">",
             "length": 50

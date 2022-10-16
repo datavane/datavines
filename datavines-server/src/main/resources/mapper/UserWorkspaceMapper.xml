@@ -18,9 +18,9 @@
 
 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.datavines.server.coordinator.repository.mapper.UserWorkspaceMapper">
+<mapper namespace="io.datavines.server.repository.mapper.UserWorkspaceMapper">
 
-    <select id="listWorkspaceByUserId" resultType="io.datavines.server.coordinator.api.dto.vo.WorkspaceVO" >
+    <select id="listWorkspaceByUserId" resultType="io.datavines.server.api.dto.vo.WorkspaceVO" >
         SELECT
           *
         FROM
@@ -36,7 +36,7 @@
         select user_id, update_time from dv_user_workspace where workspace_id = #{workspaceId}
     </sql>
 
-    <select id="getWorkspaceUserPage" resultType="io.datavines.server.coordinator.api.dto.vo.UserVO">
+    <select id="getWorkspaceUserPage" resultType="io.datavines.server.api.dto.vo.UserVO">
         select du.id, du.username, du.email, du.phone, duw.update_time
           from dv_user du
         join

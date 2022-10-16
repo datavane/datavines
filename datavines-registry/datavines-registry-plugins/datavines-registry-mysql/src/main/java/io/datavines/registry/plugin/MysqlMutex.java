@@ -26,13 +26,11 @@ public class MysqlMutex {
 
     private Connection connection;
     private final Properties properties;
-    private Statement statement;
     private String lockKey;
 
     public MysqlMutex(Connection connection, Properties properties) throws SQLException {
         this.connection = connection;
         this.properties = properties;
-        statement = connection.createStatement();
     }
 
     public boolean acquire(String key, long time) throws SQLException {
@@ -57,7 +55,7 @@ public class MysqlMutex {
             connection = ConnectionUtils.getConnection(properties);
         }
 
-        statement = connection.createStatement();
+        Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);
 
         if (resultSet == null) {

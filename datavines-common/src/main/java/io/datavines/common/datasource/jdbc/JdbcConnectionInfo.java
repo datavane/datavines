@@ -20,9 +20,6 @@ import io.datavines.common.utils.Md5Utils;
 import io.datavines.common.utils.StringUtils;
 import lombok.Data;
 
-/**
- * JdbcConnectionInfo
- */
 @Data
 public class JdbcConnectionInfo {
 

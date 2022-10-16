@@ -19,7 +19,6 @@ package io.datavines.engine.spark.config;
 import io.datavines.common.config.SinkConfig;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.config.MetricParserUtils;
-import io.datavines.metric.api.MetricConstants;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
 
@@ -30,12 +29,12 @@ public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfig
 
     @Override
     public void buildTransformConfigs() {
-        String metricType = taskParameter.getMetricType();
+        String metricType = jobExecutionParameter.getMetricType();
         SqlMetric sqlMetric = PluginLoader
                 .getPluginLoader(SqlMetric.class)
                 .getNewPlugin(metricType);
 
-        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, taskInfo);
+        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, jobExecutionInfo);
     }
 
     @Override
@@ -46,7 +45,7 @@ public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfig
         List<SinkConfig> sinkConfigs = new ArrayList<>();
 
         //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(SparkSinkSqlBuilder.getMultiTableComparisonSinkSql(), "dv_task_result");
+        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(SparkSinkSqlBuilder.getMultiTableComparisonSinkSql(), "dv_job_execution_result");
         sinkConfigs.add(taskResultSinkConfig);
 
         configuration.setSinkParameters(sinkConfigs);

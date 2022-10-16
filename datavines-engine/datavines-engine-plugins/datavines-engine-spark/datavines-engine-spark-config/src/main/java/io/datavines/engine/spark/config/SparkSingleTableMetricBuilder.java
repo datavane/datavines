@@ -43,7 +43,7 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
         }
 
         //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "dv_task_result");
+        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(taskSinkSql, "dv_job_execution_result");
         sinkConfigs.add(taskResultSinkConfig);
 
         //get the error data storage parameter

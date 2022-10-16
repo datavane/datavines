@@ -25,6 +25,7 @@ import static com.fasterxml.jackson.databind.DeserializationFeature.READ_UNKNOWN
 import static com.fasterxml.jackson.databind.MapperFeature.REQUIRE_SETTERS_FOR_GETTERS;
 import static com.fasterxml.jackson.databind.SerializationFeature.FAIL_ON_EMPTY_BEANS;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.commons.lang3.StringUtils;
 
@@ -76,6 +77,7 @@ public class JSONUtils {
             .configure(FAIL_ON_EMPTY_BEANS,false)
             .setTimeZone(TimeZone.getDefault())
             .registerModule(new JavaTimeModule())
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .setDateFormat(new SimpleDateFormat(CommonConstants.YYYY_MM_DD_HH_MM_SS));
 
     private JSONUtils() {

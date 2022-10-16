@@ -16,6 +16,8 @@
  */
 package io.datavines.connector.api;
 
+import java.util.List;
+
 public interface Dialect {
 
     String getDriver();
@@ -27,4 +29,6 @@ public interface Dialect {
     String getRegexKey();
 
     String getNotRegexKey();
+
+    List<String> getExcludeDatabases();
 }

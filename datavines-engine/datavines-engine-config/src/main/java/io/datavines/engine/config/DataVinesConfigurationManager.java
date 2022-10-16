@@ -18,8 +18,8 @@ package io.datavines.engine.config;
 
 import io.datavines.common.config.DataVinesQualityConfig;
 import io.datavines.common.entity.ConnectionInfo;
-import io.datavines.common.entity.TaskInfo;
-import io.datavines.common.entity.TaskParameter;
+import io.datavines.common.entity.JobExecutionInfo;
+import io.datavines.common.entity.JobExecutionParameter;
 
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
@@ -41,20 +41,20 @@ public class DataVinesConfigurationManager {
 
     public static DataVinesQualityConfig generateConfiguration(
             Map<String, String> inputParameter,
-            TaskInfo taskInfo,
+            JobExecutionInfo jobExecutionInfo,
             ConnectionInfo connectionInfo) throws DataVinesException {
 
-        if(taskInfo == null){
-            throw new DataVinesException("taskInfo can not be null");
+        if(jobExecutionInfo == null){
+            throw new DataVinesException("jobExecutionInfo can not be null");
         }
 
-        if(taskInfo.getTaskParameter() == null){
+        if(jobExecutionInfo.getJobExecutionParameter() == null){
             throw new DataVinesException("task parameter can not be null");
         }
 
-        TaskParameter taskParameter = taskInfo.getTaskParameter();
+        JobExecutionParameter jobExecutionParameter = jobExecutionInfo.getJobExecutionParameter();
 
-        String metricType = taskParameter.getMetricType();
+        String metricType = jobExecutionParameter.getMetricType();
         if (StringUtils.isEmpty(metricType)) {
             throw new DataVinesException("metric type can not be null");
         }
@@ -69,8 +69,8 @@ public class DataVinesConfigurationManager {
 
         DataQualityConfigurationBuilder builder = PluginLoader
                 .getPluginLoader(DataQualityConfigurationBuilder.class)
-                .getOrCreatePlugin(taskInfo.getEngineType() + "_" + sqlMetric.getType().getDescription());
-        builder.init(inputParameter, taskInfo, connectionInfo);
+                .getOrCreatePlugin(jobExecutionInfo.getEngineType() + "_" + sqlMetric.getType().getDescription());
+        builder.init(inputParameter, jobExecutionInfo, connectionInfo);
 
         return buildDataQualityConfiguration(builder);
     }

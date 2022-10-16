@@ -18,7 +18,7 @@
 
 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="io.datavines.server.coordinator.repository.mapper.SlaNotificationMapper">
+<mapper namespace="io.datavines.server.repository.mapper.SlaNotificationMapper">
 
     <sql id="workspaceData">
         SELECT *
@@ -26,7 +26,7 @@
         WHERE workspace_id = #{workspaceId}
     </sql>
 
-    <select id="pageListNotification" resultType="io.datavines.server.coordinator.api.dto.vo.SlaNotificationVO" >
+    <select id="pageListNotification" resultType="io.datavines.server.api.dto.vo.SlaNotificationVO" >
         SELECT
             dsn.id,
             dsn.sla_id as sla_id,

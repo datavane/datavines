@@ -17,6 +17,7 @@
 package io.datavines.metric.plugin.base;
 
 import io.datavines.metric.api.ConfigItem;
+import io.datavines.metric.api.MetricLevel;
 
 import java.util.Map;
 
@@ -31,5 +32,10 @@ public abstract class BaseSingleTableColumn extends BaseSingleTable {
     @Override
     public Map<String, ConfigItem> getConfigMap() {
         return configMap;
+    }
+
+    @Override
+    public MetricLevel getLevel() {
+        return MetricLevel.COLUMN;
     }
 }

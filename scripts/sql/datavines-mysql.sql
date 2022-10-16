@@ -162,7 +162,7 @@ CREATE TABLE `QRTZ_TRIGGERS` (
 
 CREATE TABLE `dv_actual_values` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `task_id` bigint(20) DEFAULT NULL,
+    `job_execution_id` bigint(20) DEFAULT NULL,
     `metric_name` varchar(255) DEFAULT NULL,
     `unique_code` varchar(255) DEFAULT NULL,
     `actual_value` double DEFAULT NULL,
@@ -174,9 +174,9 @@ CREATE TABLE `dv_actual_values` (
 
 CREATE TABLE `dv_command` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `type` tinyint(4) DEFAULT '0' COMMENT 'Command type: 0 start task, 1 stop task, 2 recover fault-tolerant task, 3 resume waiting thread',
+    `type` tinyint(4) DEFAULT '0' COMMENT 'Command type: 0 start jobExecution, 1 stop jobExecution, 2 recover fault-tolerant jobExecution, 3 resume waiting thread',
     `parameter` text COMMENT 'json command parameters',
-    `task_id` bigint(20) NOT NULL COMMENT 'task id',
+    `job_execution_id` bigint(20) NOT NULL COMMENT 'jobExecution id',
     `priority` int(11) DEFAULT NULL COMMENT 'process instance priority: 0 Highest,1 High,2 Medium,3 Low,4 Lowest',
     `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
     `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
@@ -239,7 +239,7 @@ CREATE TABLE `dv_server` (
     UNIQUE KEY `server_un` (`host`,`port`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `dv_task` (
+CREATE TABLE `dv_job_execution` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `name` varchar(255) NOT NULL,
     `job_id` bigint(20) NOT NULL DEFAULT '-1',
@@ -275,9 +275,9 @@ CREATE TABLE `dv_task` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE `dv_task_result` (
+CREATE TABLE `dv_job_execution_result` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
-    `task_id` bigint(20) DEFAULT NULL,
+    `job_execution_id` bigint(20) DEFAULT NULL,
     `metric_type` varchar(255) DEFAULT NULL,
     `metric_dimension` varchar(255) DEFAULT NULL,
     `metric_name` varchar(255) DEFAULT NULL,
@@ -298,6 +298,7 @@ CREATE TABLE `dv_task_result` (
 
 CREATE TABLE `dv_datasource` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `uuid` varchar(64) NOT NULL COMMENT '唯一ID',
     `name` varchar(255) NOT NULL,
     `type` varchar(255) NOT NULL,
     `param` text NOT NULL,
@@ -447,3 +448,126 @@ CREATE TABLE `dv_user_workspace` (
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`, `create_time`, `update_time`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0', NULL, '2022-05-04 22:08:24');
 INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1', "admin\'s default", '1', '2022-05-20 23:01:18', '1', '2022-05-20 23:01:21');
 INSERT INTO `dv_user_workspace` (`id`, `user_id`, `workspace_id`, `role_id`,`create_by`, `create_time`, `update_by`, `update_time`) VALUES ('1', '1', '1', '1','1', '2022-07-16 20:34:02', '1', '2022-07-16 20:34:02');
+
+CREATE TABLE `dv_catalog_entity_definition` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL COMMENT '唯一ID',
+  `name` varchar(255) NOT NULL COMMENT '实体定义的名字',
+  `description` varchar(255) DEFAULT NULL COMMENT '描述',
+  `properties` text COMMENT '实体参数，用List存储 例如 [{"name":"id","type":"string"}]',
+  `super_uuid` varchar(64) NOT NULL DEFAULT '-1' COMMENT '父类ID',
+  `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  `updated_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `dv_entity_definition_un` (`uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体定义';
+
+CREATE TABLE `dv_catalog_entity_instance` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL COMMENT '唯一ID',
+  `type` varchar(127) NOT NULL COMMENT '实体类型',
+  `datasource_id` bigint(20) NOT NULL COMMENT '数据源id',
+  `fully_qualified_name` varchar(255) NOT NULL COMMENT '全限定名',
+  `display_name` varchar(255) NOT NULL COMMENT '展示名字',
+  `description` varchar(1024) DEFAULT NULL COMMENT '描述',
+  `properties` text COMMENT '其他参数，用map存储',
+  `owner` varchar(255) DEFAULT NULL COMMENT '拥有者',
+  `version` varchar(64) NOT NULL DEFAULT '1.0' COMMENT '版本',
+  `status` varchar(255) DEFAULT 'active' COMMENT '实体状态：active/deleted',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `dv_entity_instance_un` (`uuid`),
+  FULLTEXT KEY `full_idx_display_name_description` (`display_name`,`description`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体';
+
+CREATE TABLE `dv_catalog_entity_rel` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `entity1_uuid` varchar(64) NOT NULL COMMENT '实体1uuid',
+  `entity2_uuid` varchar(64) NOT NULL COMMENT '实体2uuid',
+  `direction` varchar(64) NOT NULL COMMENT '关系方向，up-2是1上游，down-2是1下游',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `dv_entity_rel_un` (`entity1_uuid`,`entity2_uuid`,`direction`),
+  KEY `idx_entity2_uuid` (`entity2_uuid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体关联关系';
+
+CREATE TABLE `dv_catalog_schema_change` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `entity_uuid` varchar(64) NOT NULL COMMENT '实体uuid',
+    `change_type` varchar(64) NOT NULL COMMENT '变更类型',
+    `database` varchar(64) DEFAULT NULL COMMENT '数据库',
+    `table` varchar(64) DEFAULT NULL COMMENT '表',
+    `column` varchar(64) DEFAULT NULL COMMENT '列',
+    `change_before` text NOT NULL COMMENT '变更前',
+    `change_after` text NOT NULL COMMENT '变更后',
+    `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='Schema变更记录表';
+
+CREATE TABLE `dv_catalog_command` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `task_id` bigint(20) NOT NULL COMMENT 'jobExecution id',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `dv_catalog_task` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `datasource_id` bigint(20) NOT NULL DEFAULT '-1',
+    `status` int(11) DEFAULT NULL,
+    `parameter` text NULL,
+    `execute_host` varchar(255) DEFAULT NULL COMMENT '执行任务的主机',
+    `submit_time` datetime DEFAULT NULL,
+    `schedule_time` datetime DEFAULT NULL,
+    `start_time` datetime DEFAULT NULL,
+    `end_time` datetime DEFAULT NULL,
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `dv_catalog_entity_metric_job_rel` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `entity_uuid` varchar(64) NOT NULL COMMENT '实体uuid',
+    `metric_job_id` bigint(20) NOT NULL COMMENT 'metric job id',
+    `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `dv_catalog_entity_metric_rel_un` (`entity_uuid`,`metric_job_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体和规则作业关联关系';
+
+DROP TABLE IF EXISTS `dv_catalog_entity_tag`;
+CREATE TABLE `dv_catalog_tag` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL ,
+  `name` varchar(256) NOT NULL,
+  `create_by` bigint(20) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `dv_tag_uuid_un` (`uuid`),
+  UNIQUE KEY `dv_tag_name_un` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `dv_catalog_entity_tag_rel`;
+CREATE TABLE `dv_catalog_entity_tag_rel` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `entity_uuid` varchar(64) NOT NULL ,
+  `tag_uuid` varchar(64) NOT NULL ,
+  `create_by` bigint(20) NOT NULL,
+  `create_time` datetime NOT NULL,
+  `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `dv_entity_tag_rel_un` (`entity_uuid`,`tag_uuid`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COMMENT='实体标签关联关系';

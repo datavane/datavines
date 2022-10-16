@@ -17,7 +17,7 @@
 package io.datavines.core.entity;
 
 import io.datavines.core.constant.DataVinesConstants;
-import io.datavines.core.enums.ApiStatus;
+import io.datavines.core.enums.Status;
 import io.datavines.core.utils.TokenManager;
 import org.apache.commons.lang3.StringUtils;
 
@@ -61,7 +61,7 @@ public class ResultMap extends HashMap<String, Object> {
         if(StringUtils.isEmpty(token)) {
             token = (String)request.getAttribute(DataVinesConstants.TOKEN_HEADER_STRING);
         }
-        this.code = ApiStatus.SUCCESS.getCode();
+        this.code = Status.SUCCESS.getCode();
         this.put("code", this.code);
         this.put("msg", "Success");
         this.put("token", this.tokenManager.refreshToken(token));
@@ -84,9 +84,9 @@ public class ResultMap extends HashMap<String, Object> {
     }
 
     public ResultMap failAndRefreshToken(HttpServletRequest request) {
-        this.code = ApiStatus.FAIL.getCode();
+        this.code = Status.FAIL.getCode();
         this.put("code", code);
-        this.put("msg", ApiStatus.FAIL.getMsg());
+        this.put("msg", Status.FAIL.getMsg());
 
         String token = request.getHeader(DataVinesConstants.TOKEN_HEADER_STRING);
 
