@@ -17,11 +17,13 @@
 package io.datavines.server.api.dto.vo;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class CatalogDatabaseDetailVO extends CatalogEntityBaseDetailVO {
+public class CatalogTagVO implements Serializable {
 
-    private Long tables = 0L;
+    private String name;
+
+    private String uuid;
 }

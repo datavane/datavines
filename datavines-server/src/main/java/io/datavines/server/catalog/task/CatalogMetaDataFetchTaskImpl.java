@@ -655,7 +655,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
         schemaChangeService.save(columnTypeChange);
     }
 
-    public boolean isCommentChange(String oldComment, String newComment) {
+    private boolean isCommentChange(String oldComment, String newComment) {
         if (StringUtils.isEmpty(oldComment) && StringUtils.isNotEmpty(newComment)) {
             return true;
         }
@@ -667,7 +667,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
         return StringUtils.isNotEmpty(newComment) && StringUtils.isNotEmpty(oldComment) && !oldComment.equals(newComment);
     }
 
-    public boolean isTypeChange(String oldType, String newType) {
+    private boolean isTypeChange(String oldType, String newType) {
         if (StringUtils.isEmpty(oldType) && StringUtils.isNotEmpty(newType)) {
             return true;
         }

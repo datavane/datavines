@@ -28,7 +28,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.job.BaseJobParameter;
-import io.datavines.common.entity.job.builder.TaskParameterBuilderFactory;
+import io.datavines.common.entity.job.builder.JobExecutionParameterBuilderFactory;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
@@ -235,7 +235,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     private void executeJob(Job job, LocalDateTime scheduleTime) {
 
-        List<String> taskParameterList = buildTaskParameter(job);
+        List<String> jobExecutionParameterList = buildJobExecutionParameter(job);
 
         long jobId = job.getId();
         Env env = envMapper.selectById(job.getEnv());
@@ -263,7 +263,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             }
         }
 
-        for (String param: taskParameterList) {
+        for (String param: jobExecutionParameterList) {
             // add a jobExecution
             job.setId(null);
             JobExecution jobExecution = new JobExecution();
@@ -344,7 +344,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         return String.format("%s_%s_%s", metric.toLowerCase(), column, System.currentTimeMillis());
     }
 
-    private List<String> buildTaskParameter(Job job) {
+    private List<String> buildJobExecutionParameter(Job job) {
         DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
         Map<String, Object> srcSourceConfigMap = JSONUtils.toMap(dataSource.getParam(), String.class, Object.class);
         ConnectionInfo srcConnectionInfo = new ConnectionInfo();
@@ -359,7 +359,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             targetConnectionInfo.setConfig(targetSourceConfigMap);
         }
 
-        return TaskParameterBuilderFactory.builder(job.getType())
-                .buildTaskParameter(job.getParameter(), srcConnectionInfo, targetConnectionInfo);
+        return JobExecutionParameterBuilderFactory.builder(job.getType())
+                .buildJobExecutionParameter(job.getParameter(), srcConnectionInfo, targetConnectionInfo);
     }
 }

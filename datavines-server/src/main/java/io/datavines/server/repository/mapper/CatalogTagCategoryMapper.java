@@ -14,14 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.repository.mapper;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.datavines.server.repository.entity.catalog.CatalogTagCategory;
+import org.apache.ibatis.annotations.Mapper;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class CatalogDatabaseDetailVO extends CatalogEntityBaseDetailVO {
+@Mapper
+public interface CatalogTagCategoryMapper extends BaseMapper<CatalogTagCategory>  {
 
-    private Long tables = 0L;
 }

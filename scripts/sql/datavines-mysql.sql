@@ -545,18 +545,34 @@ CREATE TABLE `dv_catalog_entity_metric_job_rel` (
     UNIQUE KEY `dv_catalog_entity_metric_rel_un` (`entity_uuid`,`metric_job_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体和规则作业关联关系';
 
-DROP TABLE IF EXISTS `dv_catalog_entity_tag`;
+DROP TABLE IF EXISTS `dv_catalog_tag`;
 CREATE TABLE `dv_catalog_tag` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `uuid` varchar(64) NOT NULL ,
   `name` varchar(256) NOT NULL,
   `create_by` bigint(20) NOT NULL,
-  `create_time` datetime NOT NULL,
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `dv_tag_uuid_un` (`uuid`),
   UNIQUE KEY `dv_tag_name_un` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+DROP TABLE IF EXISTS `dv_catalog_tag_category`;
+CREATE TABLE `dv_catalog_tag` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `uuid` varchar(64) NOT NULL,
+  `category_uuid` varchar(64) NOT NULL,
+  `name` varchar(256) NOT NULL,
+  `workspace_id` bigint(20) NOT NULL,
+  `create_by` bigint(20) NOT NULL,
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `dv_tag_category_uuid_un` (`uuid`),
+  UNIQUE KEY `dv_tag_category_name_un` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `dv_catalog_entity_tag_rel`;
@@ -565,7 +581,7 @@ CREATE TABLE `dv_catalog_entity_tag_rel` (
   `entity_uuid` varchar(64) NOT NULL ,
   `tag_uuid` varchar(64) NOT NULL ,
   `create_by` bigint(20) NOT NULL,
-  `create_time` datetime NOT NULL,
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),

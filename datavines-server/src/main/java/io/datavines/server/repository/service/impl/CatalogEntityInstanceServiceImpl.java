@@ -29,6 +29,7 @@ import io.datavines.server.api.dto.vo.*;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 import io.datavines.server.repository.entity.catalog.CatalogEntityRel;
+import io.datavines.server.repository.entity.catalog.CatalogEntityTagRel;
 import io.datavines.server.repository.mapper.CatalogEntityInstanceMapper;
 import io.datavines.server.repository.mapper.CatalogEntityMetricJobRelMapper;
 import io.datavines.server.repository.mapper.CatalogEntityRelMapper;
@@ -62,10 +63,7 @@ public class CatalogEntityInstanceServiceImpl
     private CatalogEntityMetricJobRelMapper catalogEntityMetricJobRelMapper;
 
     @Autowired
-    private JobExecutionService jobExecutionService;
-
-    @Autowired
-    private JobExecutionResultService jobExecutionResultService;
+    private CatalogEntityTagRelService catalogEntityTagRelService;
 
     @Override
     public String create(CatalogEntityInstance entityInstance) {
@@ -222,7 +220,7 @@ public class CatalogEntityInstanceServiceImpl
             table.setUuid(item.getUuid());
             table.setUpdateTime(item.getUpdateTime());
             List<CatalogEntityInstance> columnList = getCatalogEntityInstances(upstreamId);
-            table.setColumns(CollectionUtils.isEmpty(columnList)? 0 : columnList.size());
+            table.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
             result.add(table);
         });
 
@@ -242,7 +240,7 @@ public class CatalogEntityInstanceServiceImpl
         detail.setUuid(uuid);
         detail.setUpdateTime(databaseInstance.getUpdateTime());
         List<CatalogEntityInstance> tableList = getCatalogEntityInstances(uuid);
-        detail.setTables(CollectionUtils.isEmpty(tableList)? 0 : tableList.size());
+        detail.setTables((long)(CollectionUtils.isEmpty(tableList)? 0 : tableList.size()));
 
         return detail;
     }
@@ -260,15 +258,14 @@ public class CatalogEntityInstanceServiceImpl
         detail.setUuid(uuid);
         detail.setUpdateTime(databaseInstance.getUpdateTime());
         List<CatalogEntityInstance> columnList = getCatalogEntityInstances(uuid);
-        detail.setColumns(CollectionUtils.isEmpty(columnList)? 0 : columnList.size());
+        detail.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
         detail.setComment(databaseInstance.getDescription());
-
+        detail.setTags(getEntityTagCount(uuid));
         return detail;
     }
 
     private CatalogEntityInstance getCatalogEntityInstance(String uuid) {
-        CatalogEntityInstance databaseInstance = getOne(new QueryWrapper<CatalogEntityInstance>().eq("uuid", uuid));
-        return databaseInstance;
+        return getOne(new QueryWrapper<CatalogEntityInstance>().eq("uuid", uuid));
     }
 
     @Override
@@ -284,6 +281,7 @@ public class CatalogEntityInstanceServiceImpl
         detail.setUuid(uuid);
         detail.setUpdateTime(databaseInstance.getUpdateTime());
         detail.setComment(databaseInstance.getDescription());
+        detail.setTags(getEntityTagCount(uuid));
 
         return detail;
     }
@@ -348,5 +346,9 @@ public class CatalogEntityInstanceServiceImpl
         IPage<CatalogEntityMetricVO> entityMetricPage = catalogEntityMetricJobRelMapper.getEntityMetricPage(page, uuid);
 
         return entityMetricPage;
+    }
+
+    private long getEntityTagCount(String uuid) {
+        return catalogEntityTagRelService.count(new QueryWrapper<CatalogEntityTagRel>().eq("entity_uuid", uuid));
     }
 }

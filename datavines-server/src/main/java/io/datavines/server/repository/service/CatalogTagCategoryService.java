@@ -14,21 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.entity.job.builder;
+package io.datavines.server.repository.service;
 
-import io.datavines.common.enums.JobType;
+import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.api.dto.bo.catalog.tag.TagCategoryCreate;
+import io.datavines.server.repository.entity.catalog.CatalogTagCategory;
 
-public class TaskParameterBuilderFactory {
+import java.util.List;
 
-    public static ParameterBuilder builder(JobType jobType){
-        switch (jobType) {
-            case DATA_QUALITY:
-            case DATA_PROFILE:
-                return new DataQualityTaskParameterBuilder();
-            case DATA_RECONCILIATION:
-                return new DataReconciliationTaskParameterBuilder();
-            default:
-                return new DataQualityTaskParameterBuilder();
-        }
-    }
+public interface CatalogTagCategoryService extends IService<CatalogTagCategory> {
+
+    long create(TagCategoryCreate categoryCreate);
+
+    boolean delete(String uuid);
+
+    List<CatalogTagCategory> listByWorkSpaceId(Long workSpaceId);
 }

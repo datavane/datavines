@@ -31,11 +31,11 @@ public class CatalogEntityBaseDetailVO implements Serializable {
 
     private String type;
 
-    private int metrics;
+    private Long metrics = 0L;
 
-    private int usages;
+    private Long usages = 0L;
 
-    private int tags;
+    private Long tags = 0L;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private LocalDateTime updateTime;

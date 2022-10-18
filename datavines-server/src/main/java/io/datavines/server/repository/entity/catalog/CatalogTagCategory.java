@@ -27,8 +27,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("dv_catalog_tag")
-public class CatalogTag implements Serializable {
+@TableName("dv_catalog_tag_category")
+public class CatalogTagCategory implements Serializable {
 
     private static final long serialVersionUID = -1L;
 
@@ -38,11 +38,11 @@ public class CatalogTag implements Serializable {
     @TableField(value = "uuid")
     private String uuid;
 
-    @TableField(value = "category_uuid")
-    private String categoryUuid;
-
     @TableField(value = "name")
     private String name;
+
+    @TableField(value = "workspace_id")
+    private Long workspaceId;
 
     @TableField(value = "create_by")
     private Long createBy;

@@ -14,14 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.common.entity.job.builder;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import io.datavines.common.enums.JobType;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-public class CatalogDatabaseDetailVO extends CatalogEntityBaseDetailVO {
+public class JobExecutionParameterBuilderFactory {
 
-    private Long tables = 0L;
+    public static ParameterBuilder builder(JobType jobType){
+        switch (jobType) {
+            case DATA_QUALITY:
+            case DATA_PROFILE:
+                return new DataQualityJobParameterBuilder();
+            case DATA_RECONCILIATION:
+                return new DataReconciliationJobParameterBuilder();
+            default:
+                return new DataQualityJobParameterBuilder();
+        }
+    }
 }

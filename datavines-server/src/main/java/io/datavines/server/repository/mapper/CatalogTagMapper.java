@@ -17,10 +17,16 @@
 package io.datavines.server.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.datavines.server.api.dto.vo.CatalogTagVO;
 import io.datavines.server.repository.entity.catalog.CatalogTag;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 @Mapper
 public interface CatalogTagMapper extends BaseMapper<CatalogTag>  {
 
+    @Select("SELECT name, uuid from dv_catalog_tag WHERE category_uuid in (select category_uuid from dv_catalog_tag_category where workspace_id = #{workspaceId})")
+    List<CatalogTagVO> listByWorkSpaceId(Long workspaceId);
 }

@@ -14,14 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.api.dto.bo.catalog.tag;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class CatalogDatabaseDetailVO extends CatalogEntityBaseDetailVO {
+@NotNull(message = "Tag Create cannot be null")
+public class TagCreate {
 
-    private Long tables = 0L;
+    @NotBlank(message = "Tag categoryUuid cannot be empty")
+    private String categoryUuid;
+
+    @NotBlank(message = "Tag name cannot be empty")
+    private String name;
 }
