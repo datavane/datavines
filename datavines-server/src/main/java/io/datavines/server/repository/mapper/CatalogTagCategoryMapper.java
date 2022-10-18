@@ -14,30 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.repository.mapper;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.datavines.server.repository.entity.catalog.CatalogTagCategory;
+import org.apache.ibatis.annotations.Mapper;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+@Mapper
+public interface CatalogTagCategoryMapper extends BaseMapper<CatalogTagCategory>  {
 
-@Data
-public class CatalogEntityBaseDetailVO implements Serializable {
-
-    private String name;
-
-    private String uuid;
-
-    private String type;
-
-    private Long metrics = 0L;
-
-    private Long usages = 0L;
-
-    private Long tags = 0L;
-
-
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private LocalDateTime updateTime;
 }

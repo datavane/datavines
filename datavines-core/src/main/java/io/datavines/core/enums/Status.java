@@ -93,17 +93,23 @@ public enum Status {
     UPDATE_ENV_ERROR(16010004, "Update Env {0} Error", "更新运行环境参数 {0} 错误"),
 
     CREATE_ERROR_DATA_STORAGE_ERROR(17010001, "Create Error Data Storage {0} Error", "创建错误数据存储 {0} 错误"),
-    ERROR_DATA_STORAGE_NOT_EXIST_ERROR(17010002, "Error Data Storage {0} Not Exist Error", "错误数据存储 {0} 不存在错误"),
-    ERROR_DATA_STORAGE_EXIST_ERROR(17010003, "Error Data Storage {0} is Exist error", "错误数据存储 {0} 已存在错误"),
+    ERROR_DATA_STORAGE_NOT_EXIST_ERROR(17010002, "Error Data Storage {0} Not Exist Error", "错误数据存储 {0} 不存在"),
+    ERROR_DATA_STORAGE_EXIST_ERROR(17010003, "Error Data Storage {0} is Exist error", "错误数据存储 {0} 已存在"),
     UPDATE_ERROR_DATA_STORAGE_ERROR(17010004, "Update Error Data Storage {0} Error", "更新 错误数据存储 {0} 错误"),
 
     SLA_ALREADY_EXIST_ERROR(18010001, "SLAS {0} Already exist", "SLAS {0} 已经存在"),
     SLA_SENDER_ALREADY_EXIST_ERROR(18020001, "SLAS Sender {0}  Already exist", "SLAS 发送器 {0} 已经存在"),
     SLA_JOB_IS_NOT_EXIST_ERROR(18010003, "SLA job {0} is not exist", "SLA job {0} 存在"),
 
-    CATALOG_FETCH_DATASOURCE_NULL_ERROR(19010001, "获取元数据时数据源为空", "DataSource must not be null when fetch metadata")
+    CATALOG_FETCH_DATASOURCE_NULL_ERROR(19010001, "获取元数据时数据源为空", "DataSource must not be null when fetch metadata"),
 
-    ;
+    CATALOG_TAG_CATEGORY_CREATE_ERROR(20010001, "Create Tag Category {0} Error", "创建标签类别 {0} 错误"),
+    CATALOG_TAG_CATEGORY_NOT_EXIST_ERROR(20010002, "Tag Category {0} Not Exist Error", "标签类别 {0} 不存在"),
+    CATALOG_TAG_CATEGORY_EXIST_ERROR(20010003, "Tag Category {0} is Exist error", "标签类别 {0} 已存在"),
+    CATALOG_TAG_CREATE_ERROR(20020001, "Create Tag {0} Error", "创建标签 {0} 错误"),
+    CATALOG_TAG_NOT_EXIST_ERROR(20020002, "Tag {0} Not Exist Error", "标签 {0} 不存在"),
+    CATALOG_TAG_EXIST_ERROR(20020003, "Tag {0} is Exist error", "标签 {0} 已存在"),
+   ;
 
     private final int code;
     private final String enMsg;

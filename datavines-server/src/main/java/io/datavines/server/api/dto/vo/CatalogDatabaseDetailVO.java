@@ -23,5 +23,5 @@ import lombok.EqualsAndHashCode;
 @EqualsAndHashCode(callSuper = true)
 public class CatalogDatabaseDetailVO extends CatalogEntityBaseDetailVO {
 
-    private int tables;
+    private Long tables = 0L;
 }

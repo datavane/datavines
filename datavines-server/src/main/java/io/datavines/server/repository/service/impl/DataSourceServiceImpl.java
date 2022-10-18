@@ -50,6 +50,7 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
 
@@ -80,6 +81,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
             throw new DataVinesException("encrypt datasource param error : {}", e);
         }
 
+        dataSource.setUuid(UUID.randomUUID().toString());
         dataSource.setParam(param);
         dataSource.setCreateTime(LocalDateTime.now());
         dataSource.setUpdateTime(LocalDateTime.now());

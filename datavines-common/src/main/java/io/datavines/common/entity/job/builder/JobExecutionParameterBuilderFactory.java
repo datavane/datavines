@@ -14,30 +14,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.common.entity.job.builder;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
+import io.datavines.common.enums.JobType;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+public class JobExecutionParameterBuilderFactory {
 
-@Data
-public class CatalogEntityBaseDetailVO implements Serializable {
-
-    private String name;
-
-    private String uuid;
-
-    private String type;
-
-    private Long metrics = 0L;
-
-    private Long usages = 0L;
-
-    private Long tags = 0L;
-
-
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private LocalDateTime updateTime;
+    public static ParameterBuilder builder(JobType jobType){
+        switch (jobType) {
+            case DATA_QUALITY:
+            case DATA_PROFILE:
+                return new DataQualityJobParameterBuilder();
+            case DATA_RECONCILIATION:
+                return new DataReconciliationJobParameterBuilder();
+            default:
+                return new DataQualityJobParameterBuilder();
+        }
+    }
 }

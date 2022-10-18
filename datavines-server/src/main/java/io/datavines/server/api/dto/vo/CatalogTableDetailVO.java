@@ -25,5 +25,6 @@ public class CatalogTableDetailVO extends CatalogEntityBaseDetailVO {
 
     private String comment;
 
-    private int columns;
+    private Long columns = 0L;
+
 }

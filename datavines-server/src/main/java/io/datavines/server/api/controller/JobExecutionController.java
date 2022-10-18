@@ -49,9 +49,15 @@ public class JobExecutionController {
     @Autowired
     private JobExecutionResultService jobExecutionResultService;
 
-    @ApiOperation(value = "submit external job", response = Long.class)
-    @PostMapping(value = "/submit", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object submitTask(@Valid @RequestBody SubmitJob submitJob) throws DataVinesServerException {
+    @ApiOperation(value = "submit external data quality job", response = Long.class)
+    @PostMapping(value = "/submit/data-quality", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object submitDataQualityJob(@Valid @RequestBody SubmitJob submitJob) throws DataVinesServerException {
+        return jobExecutionService.submitJob(submitJob);
+    }
+
+    @ApiOperation(value = "submit external data reconciliation job", response = Long.class)
+    @PostMapping(value = "/submit/data-reconciliation", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object submitDataReconJob(@Valid @RequestBody SubmitJob submitJob) throws DataVinesServerException {
         return jobExecutionService.submitJob(submitJob);
     }
 
@@ -69,13 +75,13 @@ public class JobExecutionController {
 
     @ApiOperation(value = "get job execution list by job id", response = JobExecution.class, responseContainer = "list")
     @GetMapping(value = "/list/{jobId}")
-    public Object getTaskListByJobId(@PathVariable("jobId") Long jobId) {
+    public Object getJobExecutionListByJobId(@PathVariable("jobId") Long jobId) {
         return jobExecutionService.listByJobId(jobId);
     }
 
     @ApiOperation(value = "get job execution result", response = JobExecutionResultVO.class)
     @GetMapping(value = "/result/{executionId}")
-    public Object getTaskResultInfo(@PathVariable("executionId") Long executionId) {
+    public Object getJobExecutionResultInfo(@PathVariable("executionId") Long executionId) {
         return jobExecutionResultService.getResultVOByJobExecutionId(executionId);
     }
 

@@ -19,7 +19,7 @@ package io.datavines.common.entity.job.builder;
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.JobExecutionParameter;
-import io.datavines.common.entity.job.DataQualityJobParameter;
+import io.datavines.common.entity.job.DataReconciliationJobParameter;
 import io.datavines.common.utils.JSONUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -27,11 +27,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class DataQualityTaskParameterBuilder implements ParameterBuilder {
+public class DataReconciliationJobParameterBuilder implements ParameterBuilder {
 
     @Override
-    public List<String> buildTaskParameter(String jobParameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo) {
-        List<DataQualityJobParameter> jobParameters = JSONUtils.toList(jobParameter, DataQualityJobParameter.class);
+    public List<String> buildJobExecutionParameter(String jobParameter, ConnectionInfo connectionInfo, ConnectionInfo connectionInfo2) {
+        List<DataReconciliationJobParameter> jobParameters = JSONUtils.toList(jobParameter, DataReconciliationJobParameter.class);
 
         if (CollectionUtils.isNotEmpty(jobParameters)) {
             List<String> taskParameters = new ArrayList<>();
@@ -41,7 +41,9 @@ public class DataQualityTaskParameterBuilder implements ParameterBuilder {
                 Map<String,Object> metricParameters = jobParam.getMetricParameter();
                 String database = (String)metricParameters.get("database");
                 metricParameters.remove("database");
-                metricParameters.put("metric_database",database);
+                metricParameters.put("metric_database", database);
+                metricParameters.putAll(jobParam.getMetricParameter2());
+                metricParameters.put("mappingColumns", JSONUtils.toJsonString(jobParam.getMappingColumns()));
                 jobExecutionParameter.setMetricParameter(metricParameters);
                 jobExecutionParameter.setExpectedType(jobParam.getExpectedType());
                 jobExecutionParameter.setExpectedParameter(jobParam.getExpectedParameter());
@@ -49,12 +51,19 @@ public class DataQualityTaskParameterBuilder implements ParameterBuilder {
                 jobExecutionParameter.setOperator(jobParam.getOperator());
                 jobExecutionParameter.setThreshold(jobParam.getThreshold());
 
-                ConnectorParameter srcConnectorParameter = new ConnectorParameter();
-                srcConnectorParameter.setType(srcConnectionInfo.getType());
-                Map<String,Object> srcConnectorParameterMap = srcConnectionInfo.configMap();
-                srcConnectorParameterMap.put("database", database);
-                srcConnectorParameter.setParameters(srcConnectorParameterMap);
-                jobExecutionParameter.setConnectorParameter(srcConnectorParameter);
+                ConnectorParameter connectorParameter = new ConnectorParameter();
+                connectorParameter.setType(connectionInfo.getType());
+                Map<String,Object> connectorParameterMap = connectionInfo.configMap();
+                connectorParameterMap.put("database", database);
+                connectorParameter.setParameters(connectorParameterMap);
+                jobExecutionParameter.setConnectorParameter(connectorParameter);
+
+                ConnectorParameter connectorParameter2 = new ConnectorParameter();
+                connectorParameter2.setType(connectionInfo2.getType());
+                Map<String,Object> connectorParameter2Map = connectionInfo2.configMap();
+                connectorParameter2Map.put("database", jobParam.getMetricParameter2().get("database2"));
+                connectorParameter2.setParameters(connectorParameter2Map);
+                jobExecutionParameter.setConnectorParameter2(connectorParameter2);
 
                 String taskParameterStr = JSONUtils.toJsonString(jobExecutionParameter);
                 taskParameters.add(taskParameterStr);
@@ -65,4 +74,5 @@ public class DataQualityTaskParameterBuilder implements ParameterBuilder {
 
         return null;
     }
+
 }

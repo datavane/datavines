@@ -38,6 +38,9 @@ public class CatalogTag implements Serializable {
     @TableField(value = "uuid")
     private String uuid;
 
+    @TableField(value = "category_uuid")
+    private String categoryUuid;
+
     @TableField(value = "name")
     private String name;
 

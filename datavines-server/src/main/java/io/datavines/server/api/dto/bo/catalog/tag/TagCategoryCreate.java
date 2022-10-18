@@ -14,30 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.api.dto.bo.catalog.tag;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
-public class CatalogEntityBaseDetailVO implements Serializable {
+@NotNull(message = "TagCategory Create cannot be null")
+public class TagCategoryCreate {
 
+    @NotBlank(message = "TagCategory workspaceId cannot be empty")
+    private long workspaceId;
+
+    @NotBlank(message = "DataSource name cannot be empty")
     private String name;
-
-    private String uuid;
-
-    private String type;
-
-    private Long metrics = 0L;
-
-    private Long usages = 0L;
-
-    private Long tags = 0L;
-
-
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private LocalDateTime updateTime;
 }

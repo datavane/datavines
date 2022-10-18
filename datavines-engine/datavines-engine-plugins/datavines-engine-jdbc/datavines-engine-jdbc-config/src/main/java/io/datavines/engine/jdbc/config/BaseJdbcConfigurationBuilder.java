@@ -110,6 +110,4 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
 
         return sourceConfigs;
     }
-
-
 }
