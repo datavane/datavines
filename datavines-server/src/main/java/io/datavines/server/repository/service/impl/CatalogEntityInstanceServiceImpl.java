@@ -221,6 +221,7 @@ public class CatalogEntityInstanceServiceImpl
             table.setUpdateTime(item.getUpdateTime());
             List<CatalogEntityInstance> columnList = getCatalogEntityInstances(upstreamId);
             table.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
+
             result.add(table);
         });
 
@@ -261,10 +262,12 @@ public class CatalogEntityInstanceServiceImpl
         detail.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
         detail.setComment(databaseInstance.getDescription());
         detail.setTags(getEntityTagCount(uuid));
+
         return detail;
     }
 
     private CatalogEntityInstance getCatalogEntityInstance(String uuid) {
+
         return getOne(new QueryWrapper<CatalogEntityInstance>().eq("uuid", uuid));
     }
 
@@ -351,4 +354,5 @@ public class CatalogEntityInstanceServiceImpl
     private long getEntityTagCount(String uuid) {
         return catalogEntityTagRelService.count(new QueryWrapper<CatalogEntityTagRel>().eq("entity_uuid", uuid));
     }
+
 }

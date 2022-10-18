@@ -37,4 +37,5 @@ public interface CatalogTagService extends IService<CatalogTag> {
     boolean deleteEntityTagRel(String entityUUID, String tagUUID);
 
     List<CatalogTagVO> listByWorkSpaceId(Long workSpaceId);
+
 }

@@ -109,7 +109,7 @@ public enum Status {
     CATALOG_TAG_CREATE_ERROR(20020001, "Create Tag {0} Error", "创建标签 {0} 错误"),
     CATALOG_TAG_NOT_EXIST_ERROR(20020002, "Tag {0} Not Exist Error", "标签 {0} 不存在"),
     CATALOG_TAG_EXIST_ERROR(20020003, "Tag {0} is Exist error", "标签 {0} 已存在"),
-    ;
+   ;
 
     private final int code;
     private final String enMsg;

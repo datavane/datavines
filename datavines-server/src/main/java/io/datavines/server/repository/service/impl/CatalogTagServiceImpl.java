@@ -99,4 +99,5 @@ public class CatalogTagServiceImpl extends ServiceImpl<CatalogTagMapper, Catalog
         CatalogTag tag = baseMapper.selectOne(new QueryWrapper<CatalogTag>().eq("name", name));
         return tag != null;
     }
+
 }
