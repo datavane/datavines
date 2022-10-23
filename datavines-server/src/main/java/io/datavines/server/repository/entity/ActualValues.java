@@ -35,7 +35,7 @@ public class ActualValues implements Serializable {
     @TableId(type= IdType.AUTO)
     private Long id;
 
-    @TableField(value = "task_id")
+    @TableField(value = "job_execution_id")
     private Long jobExecutionId;
 
     @TableField(value = "metric_name")

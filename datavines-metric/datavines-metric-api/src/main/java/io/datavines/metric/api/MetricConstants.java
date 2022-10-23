@@ -26,7 +26,7 @@ public class MetricConstants {
     public static final List<ColumnInfo> ACTUAL_COLUMN_LIST = new ArrayList<>();
 
     static {
-        RESULT_COLUMN_LIST.add(new ColumnInfo("task_id",false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("job_execution_id",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_type",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_name",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_dimension",false));
@@ -42,7 +42,7 @@ public class MetricConstants {
         RESULT_COLUMN_LIST.add(new ColumnInfo("create_time",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("update_time",false));
 
-        ACTUAL_COLUMN_LIST.add(new ColumnInfo("task_id",false));
+        ACTUAL_COLUMN_LIST.add(new ColumnInfo("job_execution_id",false));
         ACTUAL_COLUMN_LIST.add(new ColumnInfo("metric_name",false));
         ACTUAL_COLUMN_LIST.add(new ColumnInfo("unique_code",false));
         ACTUAL_COLUMN_LIST.add(new ColumnInfo("actual_value",false));

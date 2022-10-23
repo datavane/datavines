@@ -45,6 +45,14 @@ public class JobExecutionRequest implements Serializable {
 
     private String errorDataStorageParameter;
 
+    private String validateResultDataStorageType;
+
+    private String validateResultDataStorageParameter;
+
+    private String notificationType;
+
+    private String notificationParameter;
+
     private String applicationParameter;
 
     private String tenantCode;

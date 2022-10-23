@@ -31,6 +31,7 @@
     <artifactId>datavines-metric-result-formula-plugins</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>datavines-metric-result-formula-all</module>
         <module>datavines-metric-result-formula-diff</module>
         <module>datavines-metric-result-formula-percentage</module>
         <module>datavines-metric-result-formula-diff-percentage</module>

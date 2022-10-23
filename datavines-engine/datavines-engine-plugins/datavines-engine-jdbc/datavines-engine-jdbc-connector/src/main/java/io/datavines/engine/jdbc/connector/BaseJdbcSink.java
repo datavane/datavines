@@ -97,23 +97,7 @@ public class BaseJdbcSink implements JdbcSink {
         }
 
         Map<String,String> inputParameter = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(resultList)) {
-            resultList.forEach(item -> {
-                if(item != null) {
-                    item.getResultList().forEach(x -> {
-                        x.forEach((k,v) -> {
-                            String expectedValue = config.getString(EXPECTED_VALUE);
-                            if (StringUtils.isNotEmpty(expectedValue)) {
-                                if (expectedValue.equals(k)) {
-                                    inputParameter.put(EXPECTED_VALUE, String.valueOf(v));
-                                }
-                            }
-                            inputParameter.put(k, String.valueOf(v));
-                        });
-                    });
-                }
-            });
-        }
+        setExceptedValue(config, resultList, inputParameter);
 
         try {
             switch (SinkType.of(config.getString(PLUGIN_TYPE))){

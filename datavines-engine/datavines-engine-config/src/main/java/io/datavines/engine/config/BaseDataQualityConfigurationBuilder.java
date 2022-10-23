@@ -52,15 +52,12 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
 
     protected ExpectedValue expectedValue;
 
-    private ConnectionInfo connectionInfo;
-
     @Override
-    public void init(Map<String, String> inputParameter, JobExecutionInfo jobExecutionInfo, ConnectionInfo connectionInfo) {
+    public void init(Map<String, String> inputParameter, JobExecutionInfo jobExecutionInfo) {
         this.inputParameter = inputParameter;
         this.inputParameter.put(COLUMN, "");
         this.jobExecutionInfo = jobExecutionInfo;
         this.jobExecutionParameter = jobExecutionInfo.getJobExecutionParameter();
-        this.connectionInfo = connectionInfo;
 
         if (jobExecutionParameter.getMetricParameter() != null) {
             jobExecutionParameter.getMetricParameter().forEach((k, v) -> {
@@ -116,7 +113,7 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
 
         inputParameter.put(INVALIDATE_ITEMS_TABLE,
                 sqlMetric.getInvalidateItems().getResultTable()
-                        + "_" + inputParameter.get(ConfigConstants.TASK_ID));
+                        + "_" + inputParameter.get(ConfigConstants.JOB_EXECUTION_ID));
 
         MetricParserUtils.setTransformerConfig(
                 inputParameter, transformConfigs,
@@ -166,47 +163,51 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
 
     protected abstract List<SourceConfig> getSourceConfigs() throws DataVinesException;
 
-    protected SourceConfig getDefaultSourceConfig() throws DataVinesException {
+    protected SourceConfig getValidateResultSourceConfig() throws DataVinesException {
 
         SourceConfig actualValueSourceConfig = new SourceConfig();
-        if (connectionInfo == null) {
-            throw new DataVinesException("can not get the default datasource info");
-        }
-        actualValueSourceConfig.setPlugin("jdbc");
+        actualValueSourceConfig.setPlugin(jobExecutionInfo.getValidateResultDataStorageType());
         actualValueSourceConfig.setType(SourceType.METADATA.getDescription());
-        actualValueSourceConfig.setConfig(getDefaultSourceConfigMap(null,"dv_actual_values"));
+        actualValueSourceConfig.setConfig(getValidateResultSourceConfigMap(null,"dv_actual_values"));
         return actualValueSourceConfig;
     }
 
-    protected SinkConfig getDefaultSinkConfig(String sql, String dbTable) throws DataVinesException {
+    protected SinkConfig getValidateResultDataSinkConfig(String sql, String dbTable) throws DataVinesException {
 
-        SinkConfig actualValueSinkConfig = new SinkConfig();
-        if (connectionInfo == null) {
-            throw new DataVinesException("can not get the default datasource info");
-        }
-        actualValueSinkConfig.setPlugin("jdbc");
+        SinkConfig validateResultDataStorageConfig = new SinkConfig();
+        validateResultDataStorageConfig.setPlugin(jobExecutionInfo.getValidateResultDataStorageType());
+        Map<String, Object> configMap = getValidateResultSourceConfigMap(
+                PlaceholderUtils.replacePlaceholders(
+                        sql, inputParameter,true),dbTable);
+        configMap.put(JOB_EXECUTION_ID, jobExecutionInfo.getId());
+        validateResultDataStorageConfig.setConfig(configMap);
 
-        actualValueSinkConfig.setConfig(
-                getDefaultSourceConfigMap(
-                        PlaceholderUtils.replacePlaceholders(
-                                sql, inputParameter,true),dbTable));
-        return actualValueSinkConfig;
+        return validateResultDataStorageConfig;
+
     }
 
-    protected Map<String,Object> getDefaultSourceConfigMap(String sql, String dbTable) {
-        Map<String,Object> actualValueConfigMap = new HashMap<>();
-        actualValueConfigMap.put(URL, connectionInfo.getUrl());
-        actualValueConfigMap.put(USER, connectionInfo.getUsername());
-        actualValueConfigMap.put(PASSWORD, connectionInfo.getPassword());
-        actualValueConfigMap.put(DRIVER, connectionInfo.getDriverName());
-        actualValueConfigMap.put(TABLE, dbTable);
-        actualValueConfigMap.put(OUTPUT_TABLE, dbTable);
+    private Map<String,Object> getValidateResultSourceConfigMap(String sql, String dbTable) {
+
+        Map<String, Object> configMap = new HashMap<>();
+        if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {
+            configMap = JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class);
+        }
+        configMap.put(TABLE, dbTable);
+        configMap.put(OUTPUT_TABLE, dbTable);
         if (StringUtils.isNotEmpty(sql)) {
-            actualValueConfigMap.put(SQL, sql);
+            configMap.put(SQL, sql);
         }
 
-        actualValueConfigMap.put(EXPECTED_VALUE, expectedValue.getName().replace(expectedValue.getOutputTable()+".", ""));
+        configMap.put(EXPECTED_VALUE, expectedValue.getName().replace(expectedValue.getOutputTable()+".", ""));
 
-        return actualValueConfigMap;
+        return configMap;
+    }
+
+    protected Map<String, Object> getValidateResultDataStorageConfigMap() {
+        Map<String, Object> configMap = new HashMap<>();
+        if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {
+            configMap = JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class);
+        }
+        return configMap;
     }
 }

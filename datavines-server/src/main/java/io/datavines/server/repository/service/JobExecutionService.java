@@ -19,7 +19,7 @@ package io.datavines.server.repository.service;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.datavines.server.api.dto.bo.job.SubmitJob;
+import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
 import io.datavines.server.repository.entity.JobExecution;

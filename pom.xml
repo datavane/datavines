@@ -42,6 +42,7 @@
         <module>datavines-registry</module>
         <module>datavines-core</module>
         <module>datavines-storage</module>
+        <module>datavines-runner</module>
     </modules>
 
     <properties>
@@ -199,6 +200,12 @@
                 <groupId>com.github.jsqlparser</groupId>
                 <artifactId>jsqlparser</artifactId>
                 <version>${jsqlparser.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-metric-all</artifactId>
+                <version>${project.version}</version>
             </dependency>
 
             <dependency>

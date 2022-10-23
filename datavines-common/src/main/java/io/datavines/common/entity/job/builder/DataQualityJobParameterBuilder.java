@@ -34,7 +34,7 @@ public class DataQualityJobParameterBuilder implements ParameterBuilder {
         List<DataQualityJobParameter> jobParameters = JSONUtils.toList(jobParameter, DataQualityJobParameter.class);
 
         if (CollectionUtils.isNotEmpty(jobParameters)) {
-            List<String> taskParameters = new ArrayList<>();
+            List<String> jobExecutionParameters = new ArrayList<>();
             jobParameters.forEach(jobParam -> {
                 JobExecutionParameter jobExecutionParameter = new JobExecutionParameter();
                 jobExecutionParameter.setMetricType(jobParam.getMetricType());
@@ -56,11 +56,11 @@ public class DataQualityJobParameterBuilder implements ParameterBuilder {
                 srcConnectorParameter.setParameters(srcConnectorParameterMap);
                 jobExecutionParameter.setConnectorParameter(srcConnectorParameter);
 
-                String taskParameterStr = JSONUtils.toJsonString(jobExecutionParameter);
-                taskParameters.add(taskParameterStr);
+                String jobExecutionParameterStr = JSONUtils.toJsonString(jobExecutionParameter);
+                jobExecutionParameters.add(jobExecutionParameterStr);
             });
 
-            return taskParameters;
+            return jobExecutionParameters;
         }
 
         return null;

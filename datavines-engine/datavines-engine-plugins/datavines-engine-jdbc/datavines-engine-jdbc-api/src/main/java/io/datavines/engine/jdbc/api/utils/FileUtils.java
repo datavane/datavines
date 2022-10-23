@@ -102,6 +102,50 @@ public class FileUtils {
         }
     }
 
+    public static void writeToLocal(List<String> resultList,
+                                    String directory,
+                                    String name) {
+
+        BufferedWriter bw = null;
+        try {
+
+            File localErrorDir = new File(directory);
+
+            if (!localErrorDir.exists()){
+                org.apache.commons.io.FileUtils.forceMkdir(localErrorDir);
+            }
+
+            bw = new BufferedWriter(new FileWriter(directory + File.separator + name +".csv",true));
+
+            if (CollectionUtils.isNotEmpty(resultList)) {
+
+                for(String string: resultList) {
+                    bw.write(string);
+                    bw.newLine();
+                }
+                bw.flush();
+                bw.close();
+            }
+        } catch (IOException e) {
+            log.error("write data error {}", e);
+            try {
+                if (bw != null) {
+                    bw.close();
+                }
+            } catch (IOException ioe) {
+                log.error("close buffer writer error {}", ioe);
+            }
+        } finally {
+            try {
+                if (bw != null) {
+                    bw.close();
+                }
+            } catch (IOException ioe) {
+                log.error("close buffer writer error {}", ioe);
+            }
+        }
+    }
+
     public static List<String> readPartFileContent(String filePath,
                                              int skipLine,
                                              int limit){

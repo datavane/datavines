@@ -16,7 +16,7 @@
  */
 package io.datavines.common.utils;
 
-import org.apache.commons.lang3.StringUtils;
+import io.datavines.common.utils.StringUtils;
 
 /**
  *  sensitive log Util

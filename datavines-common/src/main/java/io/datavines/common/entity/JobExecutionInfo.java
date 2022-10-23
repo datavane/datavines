@@ -35,6 +35,10 @@ public class JobExecutionInfo {
 
     private String errorDataFileName;
 
+    private String validateResultDataStorageType;
+
+    private String validateResultDataStorageParameter;
+
     private JobExecutionParameter jobExecutionParameter;
 
     public JobExecutionInfo() {
@@ -43,6 +47,7 @@ public class JobExecutionInfo {
     public JobExecutionInfo(Long id, String name,
                             String engineType, String engineParameter,
                             String errorDataStorageType, String errorDataStorageParameter, String errorDataFileName,
+                            String validateResultDataStorageType, String validateResultDataStorageParameter,
                             JobExecutionParameter jobExecutionParameter) {
         this.id = id;
         this.name = name;
@@ -51,6 +56,8 @@ public class JobExecutionInfo {
         this.errorDataStorageType = errorDataStorageType;
         this.errorDataStorageParameter = errorDataStorageParameter;
         this.errorDataFileName = errorDataFileName;
+        this.validateResultDataStorageType = validateResultDataStorageType;
+        this.validateResultDataStorageParameter = validateResultDataStorageParameter;
         this.jobExecutionParameter = jobExecutionParameter;
     }
 }

@@ -27,7 +27,7 @@ import java.util.Map;
 @SPI
 public interface DataQualityConfigurationBuilder {
 
-    void init(Map<String, String> inputParameter, JobExecutionInfo jobExecutionInfo, ConnectionInfo connectionInfo);
+    void init(Map<String, String> inputParameter, JobExecutionInfo jobExecutionInfo);
 
     void buildName();
 

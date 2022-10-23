@@ -33,7 +33,7 @@ import io.datavines.engine.config.DataQualityConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
-import io.datavines.server.api.dto.bo.job.SubmitJob;
+import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;

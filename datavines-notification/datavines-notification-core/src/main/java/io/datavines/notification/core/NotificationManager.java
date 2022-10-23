@@ -42,7 +42,6 @@ public class NotificationManager {
                 .getSupportedPlugins();
     }
 
-
     public SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config){
         if (config == null || config.isEmpty()){
             throw new DataVinesException("message cannot be send without sender and receiver");

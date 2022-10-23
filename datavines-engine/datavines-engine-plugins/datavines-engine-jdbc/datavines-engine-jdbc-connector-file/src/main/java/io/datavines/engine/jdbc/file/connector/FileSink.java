@@ -18,17 +18,31 @@ package io.datavines.engine.jdbc.file.connector;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
+import io.datavines.common.config.enums.SinkType;
+import io.datavines.common.utils.JSONUtils;
+import io.datavines.common.utils.StringUtils;
+import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcRuntimeEnvironment;
 import io.datavines.engine.jdbc.api.JdbcSink;
 import io.datavines.engine.jdbc.api.entity.ResultList;
+import io.datavines.engine.jdbc.api.utils.FileUtils;
 import io.datavines.engine.jdbc.api.utils.LoggerFactory;
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.*;
 import java.util.stream.Collectors;
+
+import static io.datavines.engine.api.ConfigConstants.EXPECTED_VALUE;
+import static io.datavines.engine.api.ConfigConstants.JOB_EXECUTION_ID;
+import static io.datavines.engine.api.ConfigConstants.SQL;
+import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
 public class FileSink implements JdbcSink {
 
@@ -36,9 +50,27 @@ public class FileSink implements JdbcSink {
 
     private Config config = new Config();
 
-
     @Override
     public void output(List<ResultList> resultList, JdbcRuntimeEnvironment env) {
+
+        Map<String,String> inputParameter = new HashMap<>();
+        setExceptedValue(config, resultList, inputParameter);
+
+        String validateResultDataDir = config.getString("result_data_file_dir") + File.separator + config.getString(JOB_EXECUTION_ID);
+
+        switch (SinkType.of(config.getString(PLUGIN_TYPE))){
+            case ERROR_DATA:
+                break;
+            case ACTUAL_VALUE:
+            case TASK_RESULT:
+                String sql = config.getString(SQL);
+                sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
+                FileUtils.writeToLocal(parseSqlToList(sql), validateResultDataDir,config.getString(PLUGIN_TYPE).toLowerCase());
+                logger.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
+                break;
+            default:
+                break;
+        }
 
     }
 
@@ -61,24 +93,21 @@ public class FileSink implements JdbcSink {
 
     @Override
     public CheckResult checkConfig() {
-//        List<String> requiredOptions = Arrays.asList("path","format");
-//
-//        List<String> nonExistsOptions = new ArrayList<>();
-//        requiredOptions.forEach(x->{
-//            if(!config.has(x)){
-//                nonExistsOptions.add(x);
-//            }
-//        });
-//
-//        if (!nonExistsOptions.isEmpty()) {
-//            return new CheckResult(
-//                    false,
-//                    "please specify " + nonExistsOptions.stream().map(option ->
-//                            "[" + option + "]").collect(Collectors.joining(",")) + " as non-empty string");
-//        } else {
-//            return new CheckResult(true, "");
-//        }
-
         return new CheckResult(true, "");
+    }
+
+    private static List<String> parseSqlToList(String sql) {
+        if (StringUtils.isEmpty(sql)) {
+            return null;
+        }
+
+        String[] values = sql.substring(sql.indexOf("("))
+                .replaceAll("\\(","")
+                .replaceAll("\\)","")
+                .replaceAll("`","")
+                .replaceAll("'","")
+                .split("VALUES");
+
+        return Arrays.asList(values);
     }
 }

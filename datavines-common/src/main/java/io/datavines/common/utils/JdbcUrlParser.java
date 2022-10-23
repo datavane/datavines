@@ -23,7 +23,6 @@ import static io.datavines.common.CommonConstants.SEMICOLON;
 import static io.datavines.common.CommonConstants.SINGLE_SLASH;
 
 import io.datavines.common.entity.ConnectionInfo;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * JdbcUrlParser

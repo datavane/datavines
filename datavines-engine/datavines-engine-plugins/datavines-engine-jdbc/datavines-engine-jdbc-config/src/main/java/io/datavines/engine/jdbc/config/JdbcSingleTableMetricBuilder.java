@@ -38,12 +38,12 @@ public class JdbcSingleTableMetricBuilder extends BaseJdbcConfigurationBuilder {
 
         List<SinkConfig> sinkConfigs = new ArrayList<>();
         //get the actual value storage parameter
-        SinkConfig actualValueSinkConfig = getDefaultSinkConfig(SinkSqlBuilder.getActualValueSql(), "dv_actual_values");
+        SinkConfig actualValueSinkConfig = getValidateResultDataSinkConfig(SinkSqlBuilder.getActualValueSql(), "dv_actual_values");
         actualValueSinkConfig.setType(SinkType.ACTUAL_VALUE.getDescription());
         sinkConfigs.add(actualValueSinkConfig);
 
         //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(SinkSqlBuilder.getTaskResultSql(),  "dv_job_execution_result");
+        SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(SinkSqlBuilder.getTaskResultSql(),  "dv_job_execution_result");
         taskResultSinkConfig.setType(SinkType.TASK_RESULT.getDescription());
         sinkConfigs.add(taskResultSinkConfig);
 
@@ -66,7 +66,7 @@ public class JdbcSingleTableMetricBuilder extends BaseJdbcConfigurationBuilder {
                 connectorParameterMap.put(ERROR_DATA_FILE_DIR, inputParameter.get(ERROR_DATA_FILE_DIR));
                 connectorParameterMap.put(METRIC_NAME, inputParameter.get(METRIC_NAME));
                 connectorParameterMap.put(SRC_CONNECTOR_TYPE, inputParameter.get(SRC_CONNECTOR_TYPE));
-                connectorParameterMap.put(TASK_ID, inputParameter.get(TASK_ID));
+                connectorParameterMap.put(JOB_EXECUTION_ID, inputParameter.get(JOB_EXECUTION_ID));
                 errorDataSinkConfig.setConfig(connectorParameterMap);
 
                 sinkConfigs.add(errorDataSinkConfig);

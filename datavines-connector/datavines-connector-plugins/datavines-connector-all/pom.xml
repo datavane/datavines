@@ -45,6 +45,38 @@
                     <artifactId>slf4j-log4j12</artifactId>
                     <groupId>org.slf4j</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>apache-log4j-extras</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-1.2-api</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-web</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>servlet-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>javax.servlet</artifactId>
+                    <groupId>org.eclipse.jetty.orbit</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>servlet-api-2.5</artifactId>
+                    <groupId>org.mortbay.jetty</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
@@ -69,6 +101,18 @@
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-connector-presto</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-registry-mysql</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-registry-postgresql</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
