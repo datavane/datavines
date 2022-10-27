@@ -63,8 +63,9 @@ public class JdbcSingleTableMetricBuilder extends BaseJdbcConfigurationBuilder {
                 connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
                 errorDataSinkConfig.setPlugin(storageFactory.getCategory());
                 connectorParameterMap.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
-                connectorParameterMap.put(ERROR_DATA_FILE_DIR, inputParameter.get(ERROR_DATA_FILE_DIR));
+                connectorParameterMap.put(ERROR_DATA_DIR, inputParameter.get(ERROR_DATA_DIR));
                 connectorParameterMap.put(METRIC_NAME, inputParameter.get(METRIC_NAME));
+                // use to get source type converter in sink
                 connectorParameterMap.put(SRC_CONNECTOR_TYPE, inputParameter.get(SRC_CONNECTOR_TYPE));
                 connectorParameterMap.put(JOB_EXECUTION_ID, inputParameter.get(JOB_EXECUTION_ID));
                 errorDataSinkConfig.setConfig(connectorParameterMap);

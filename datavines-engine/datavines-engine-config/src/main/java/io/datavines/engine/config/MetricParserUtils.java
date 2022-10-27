@@ -98,7 +98,7 @@ public class MetricParserUtils {
         config.put(SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult,true));
         config.put(OUTPUT_TABLE, isInvalidateItems(type)? inputParameterValueResult.get(INVALIDATE_ITEMS_TABLE): executeSql.getResultTable());
         config.put(INVALIDATE_ITEMS_TABLE, inputParameterValueResult.get(INVALIDATE_ITEMS_TABLE));
-        config.put(ERROR_DATA_FILE_DIR, inputParameterValueResult.get(ERROR_DATA_FILE_DIR));
+        config.put(ERROR_DATA_DIR, inputParameterValueResult.get(ERROR_DATA_DIR));
         config.put(ERROR_DATA_FILE_NAME, inputParameterValueResult.get(ERROR_DATA_FILE_NAME));
         config.put(SRC_CONNECTOR_TYPE, inputParameterValueResult.get(SRC_CONNECTOR_TYPE));
 
@@ -132,7 +132,7 @@ public class MetricParserUtils {
         newInputParameterValue.remove(THRESHOLD);
         newInputParameterValue.remove(DATA_TIME);
         newInputParameterValue.remove(ERROR_DATA_FILE_NAME);
-        newInputParameterValue.remove(ERROR_DATA_FILE_DIR);
+        newInputParameterValue.remove(ERROR_DATA_DIR);
         newInputParameterValue.remove(EXPECTED_TYPE);
         newInputParameterValue.remove(EXPECTED_NAME);
         newInputParameterValue.remove(EXPECTED_VALUE);

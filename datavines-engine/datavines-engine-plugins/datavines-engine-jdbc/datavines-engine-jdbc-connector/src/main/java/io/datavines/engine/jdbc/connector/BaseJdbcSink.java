@@ -168,13 +168,8 @@ public class BaseJdbcSink implements JdbcSink {
     }
 
     private void sinkErrorData() throws SQLException {
-        //判断错误数据文件是否存在，如果存在则读取第一行数据
-        //获取header生成建表语句
-        //执行drop if exist
-        //执行建表语句
-        //执行批量插入语句
         String tableName = config.getString(ERROR_DATA_FILE_NAME);
-        String filePath = config.getString(ERROR_DATA_FILE_DIR) + "/" + tableName + ".csv";
+        String filePath = config.getString(ERROR_DATA_DIR) + "/" + tableName + ".csv";
         logger.info("log file path : {}", filePath);
         File file = new File(filePath);
         if (file.exists()) {
@@ -205,48 +200,48 @@ public class BaseJdbcSink implements JdbcSink {
                                         statement.setNull(i+1, 0);
                                         break;
                                     case BOOLEAN_TYPE:
-                                        statement.setBoolean(i+1, Boolean.valueOf(rowContent));
+                                        statement.setBoolean(i+1, Boolean.parseBoolean(rowContent));
                                         break;
                                     case BYTE_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setByte(i+1, Byte.valueOf(rowContent));
+                                            statement.setByte(i+1, Byte.parseByte(rowContent));
                                         } else {
-                                            statement.setByte(i+1,Byte.valueOf(""));
+                                            statement.setByte(i+1,Byte.parseByte(""));
                                         }
                                         break;
                                     case SHORT_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setShort(i+1, Short.valueOf(rowContent));
+                                            statement.setShort(i+1, Short.parseShort(rowContent));
                                         } else {
-                                            statement.setShort(i+1, Short.valueOf("0"));
+                                            statement.setShort(i+1, Short.parseShort("0"));
                                         }
                                         break;
                                     case INT_TYPE :
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setInt(i+1, Integer.valueOf(rowContent));
+                                            statement.setInt(i+1, Integer.parseInt(rowContent));
                                         } else {
                                             statement.setInt(i+1, 0);
                                         }
                                         break;
                                     case LONG_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setLong(i+1, Long.valueOf(rowContent));
+                                            statement.setLong(i+1, Long.parseLong(rowContent));
                                         } else {
                                             statement.setLong(i+1, 0);
                                         }
                                         break;
                                     case FLOAT_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setLong(i+1, Long.valueOf(rowContent));
+                                            statement.setLong(i+1, Long.parseLong(rowContent));
                                         } else {
                                             statement.setLong(i+1, 0);
                                         }
                                         break;
                                     case DOUBLE_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setLong(i+1, Long.valueOf(rowContent));
+                                            statement.setDouble(i+1, Double.parseDouble(rowContent));
                                         } else {
-                                            statement.setLong(i+1, 0);
+                                            statement.setDouble(i+1, 0);
                                         }
                                         break;
                                     case TIME_TYPE:

@@ -33,6 +33,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+
 @Slf4j
 public class LocalFileStorageExecutor implements StorageExecutor {
 
@@ -44,7 +45,7 @@ public class LocalFileStorageExecutor implements StorageExecutor {
         int pageSize  = param.getPageSize();
 
         Map<String,String> parameterMap = JSONUtils.toMap(param.getDataSourceParam(), String.class, String.class);
-        String dir = parameterMap.get("error_data_file_dir");
+        String dir = parameterMap.get("data_dir");
         String filePath = dir +"/" + param.getScript() + ".csv";
 
         if (pageNumber < 1) {

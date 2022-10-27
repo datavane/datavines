@@ -56,11 +56,11 @@ public class InvalidateItemsExecutor implements ITransformExecutor {
             int pageSize = 1000;
             int totalPage = count/pageSize + count%pageSize>0 ? 1:0;
             for (int i=0; i<totalPage; i++) {
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM " + outputTable +" limit "+(i * pageSize) + "," + pageSize);
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM " + outputTable + " limit "+(i * pageSize) + "," + pageSize);
                 ResultListWithColumns resultList = SqlUtils.getListWithHeaderFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins("select * from " + outputTable));
                 //执行文件下载到本地
                 FileUtils.writeToLocal(resultList,
-                        config.getString(ERROR_DATA_FILE_DIR),
+                        config.getString(ERROR_DATA_DIR),
                         config.getString(ERROR_DATA_FILE_NAME),
                         i==0,
                         typeConverter

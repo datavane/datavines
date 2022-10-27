@@ -83,13 +83,13 @@ public class FileUtils {
                 bw.close();
             }
         } catch (IOException e) {
-            log.error("write data error {}", e);
+            log.error("write data error {1}", e);
             try {
                 if (bw != null) {
                     bw.close();
                 }
             } catch (IOException ioe) {
-                log.error("close buffer writer error {}", ioe);
+                log.error("close buffer writer error {1}", ioe);
             }
         } finally {
             try {
@@ -97,7 +97,7 @@ public class FileUtils {
                     bw.close();
                 }
             } catch (IOException ioe) {
-                log.error("close buffer writer error {}", ioe);
+                log.error("close buffer writer error {1}", ioe);
             }
         }
     }
@@ -127,13 +127,13 @@ public class FileUtils {
                 bw.close();
             }
         } catch (IOException e) {
-            log.error("write data error {}", e);
+            log.error("write data error {1}", e);
             try {
                 if (bw != null) {
                     bw.close();
                 }
             } catch (IOException ioe) {
-                log.error("close buffer writer error {}", ioe);
+                log.error("close buffer writer error {1}", ioe);
             }
         } finally {
             try {
@@ -141,7 +141,7 @@ public class FileUtils {
                     bw.close();
                 }
             } catch (IOException ioe) {
-                log.error("close buffer writer error {}", ioe);
+                log.error("close buffer writer error {1}", ioe);
             }
         }
     }

@@ -21,10 +21,12 @@ import io.datavines.common.utils.StringUtils;
 public class CommonConstants {
 
     public static final String DOT = ".";
+
     /**
      * QUESTION ?
      */
     public static final String QUESTION = "?";
+
     /**
      * comma ,
      */
@@ -114,26 +116,32 @@ public class CommonConstants {
      * SUCCEEDED
      */
     public static final String SUCCEEDED = "SUCCEEDED";
+
     /**
      * NEW
      */
     public static final String NEW = "NEW";
+
     /**
      * NEW_SAVING
      */
     public static final String NEW_SAVING = "NEW_SAVING";
+
     /**
      * SUBMITTED
      */
     public static final String SUBMITTED = "SUBMITTED";
+
     /**
      * FAILED
      */
     public static final String FAILED = "FAILED";
+
     /**
      * KILLED
      */
     public static final String KILLED = "KILLED";
+
     /**
      * RUNNING
      */
@@ -169,5 +177,4 @@ public class CommonConstants {
     public static final String TABLE = "table";
 
     public static final String TABLE2 = "table2";
-
 }

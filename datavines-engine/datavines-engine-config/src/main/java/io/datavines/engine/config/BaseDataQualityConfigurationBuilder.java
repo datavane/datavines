@@ -30,6 +30,7 @@ import io.datavines.engine.api.ConfigConstants;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
+import org.apache.commons.collections4.MapUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -78,11 +79,11 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
         inputParameter.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
 
         if ("local-file".equalsIgnoreCase(jobExecutionInfo.getErrorDataStorageType())) {
-            inputParameter.putAll(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, String.class));
+            Map<String,String> errorDataParameterMap = JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, String.class);
+            inputParameter.put(ERROR_DATA_DIR, errorDataParameterMap.get("data_dir"));
         } else {
-            inputParameter.put(ERROR_DATA_FILE_DIR, CommonPropertyUtils.getString(ERROR_DATA_FILE_DIR,CommonPropertyUtils.ERROR_DATA_FILE_DIR_DEFAULT));
+            inputParameter.put(ERROR_DATA_DIR, CommonPropertyUtils.getString(ERROR_DATA_DIR, CommonPropertyUtils.ERROR_DATA_DIR_DEFAULT));
         }
-
     }
 
     @Override
@@ -116,8 +117,10 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
                         + "_" + inputParameter.get(ConfigConstants.JOB_EXECUTION_ID));
 
         MetricParserUtils.setTransformerConfig(
-                inputParameter, transformConfigs,
-                sqlMetric.getInvalidateItems(), TransformType.INVALIDATE_ITEMS.getDescription());
+                inputParameter,
+                transformConfigs,
+                sqlMetric.getInvalidateItems(),
+                TransformType.INVALIDATE_ITEMS.getDescription());
 
         MetricParserUtils.setTransformerConfig(
                 inputParameter,
@@ -200,14 +203,6 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
 
         configMap.put(EXPECTED_VALUE, expectedValue.getName().replace(expectedValue.getOutputTable()+".", ""));
 
-        return configMap;
-    }
-
-    protected Map<String, Object> getValidateResultDataStorageConfigMap() {
-        Map<String, Object> configMap = new HashMap<>();
-        if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {
-            configMap = JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class);
-        }
         return configMap;
     }
 }

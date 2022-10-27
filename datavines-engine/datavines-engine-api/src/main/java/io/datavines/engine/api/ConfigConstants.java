@@ -63,7 +63,7 @@ public class ConfigConstants {
     public static final String CREATE_TIME = "create_time";
     public static final String UPDATE_TIME = "update_time";
     public static final String JOB_EXECUTION_ID = "job_execution_id";
-    public static final String ERROR_DATA_FILE_DIR = "error_data_file_dir";
+    public static final String ERROR_DATA_DIR = "error_data_dir";
     public static final String ERROR_DATA_FILE_NAME = "error_data_file_name";
 
     public static final String DATABASE = "database";

@@ -39,14 +39,28 @@ public class LocalFileStorageConnector implements StorageConnector {
 
     @Override
     public String getConfigJson(boolean isEn) {
-        InputParam errorDataFileDir = getInputParam("error_data_file_dir",
-                isEn ? "file dir" : "目录路径",
-                isEn ? "please enter file dir" : "请填入目录路径", 1, Validate.newBuilder()
-                .setRequired(true).setMessage(isEn ? "please enter file dir" : "请填入目录路径")
-                .build());
+        InputParam errorDataFileDir = getInputParam("data_dir",
+                        isEn ? "data dir" : "目录路径",
+                        isEn ? "data dir" : "请填入目录路径", Validate.newBuilder()
+                        .setRequired(true).setMessage(isEn ? "please enter file dir" : "请填入目录路径")
+                        .build(),"");
+
+        InputParam lineSeparator = getInputParam("line_separator",
+                        isEn ? "line separator" : "行分隔符",
+                        isEn ? "please enter line separator" : "请填入行分隔符",  Validate.newBuilder()
+                        .setRequired(false).setMessage(isEn ? "please enter line separator" : "请填入行分隔符")
+                        .build(), "\r\n");
+        
+        InputParam columnSeparator = getInputParam("column_separator",
+                        isEn ? "column separator" : "列分隔符",
+                        isEn ? "please enter column separator" : "请填入列分隔符",  Validate.newBuilder()
+                        .setRequired(false).setMessage(isEn ? "please enter column separator" : "请填入列分隔符")
+                        .build(),",");
 
         List<PluginParams> params = new ArrayList<>();
         params.add(errorDataFileDir);
+        params.add(lineSeparator);
+        params.add(columnSeparator);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -61,16 +75,17 @@ public class LocalFileStorageConnector implements StorageConnector {
         return result;
     }
 
-    private InputParam getInputParam(String field, String title, String placeholder, int rows, Validate validate) {
+    private InputParam getInputParam(String field, String title, String placeholder, Validate validate, String defaultValue) {
         return InputParam
                 .newBuilder(field, title)
                 .addValidate(validate)
                 .setProps(new InputParamsProps().setDisabled(false))
                 .setSize(CommonConstants.SMALL)
                 .setType(PropsType.TEXT)
-                .setRows(rows)
+                .setRows(1)
                 .setPlaceholder(placeholder)
                 .setEmit(null)
+                .setValue(defaultValue)
                 .build();
     }
 

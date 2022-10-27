@@ -62,8 +62,20 @@ public class CommonPropertyUtils {
     public static final String LOCAL_TMP_WORKDIR = "local.tmp.workdir";
     public static final String LOCAL_TMP_WORKDIR_DEFAULT = "/tmp/datavines";
 
-    public static final String ERROR_DATA_FILE_DIR = "error.data.file_dir";
-    public static final String ERROR_DATA_FILE_DIR_DEFAULT = "/tmp/datavines/errordata";
+    public static final String LOCAL_DATA_DIR = "local.data.dir";
+    public static final String LOCAL_DATA_DIR_DEFAULT = "/tmp/datavines/data";
+
+    public static final String ERROR_DATA_DIR = "error.data.dir";
+    public static final String ERROR_DATA_DIR_DEFAULT = "/tmp/datavines/error-data";
+
+    public static final String VALIDATE_RESULT_DATA_DIR = "validate.result.data.dir";
+    public static final String VALIDATE_RESULT_DATA_DIR_DEFAULT = "/tmp/datavines/validate-result-data";
+
+    public static final String LINE_SEPERATOR = "line.seperator";
+    public static final String LINE_SEPERATOR_DEFAULT = "\r\n";
+
+    public static final String COLUMN_SEPERATOR = "column.seperator";
+    public static final String COLUMN_SEPERATOR_DEFAULT = ",";
 
     public static final String AES_KEY = "aes.key";
     public static final String AES_KEY_DEFAULT = "1234567890123456";
