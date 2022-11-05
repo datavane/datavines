@@ -533,6 +533,23 @@ CREATE TABLE `dv_catalog_task` (
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+DROP TABLE IF EXISTS `dv_catalog_task_schedule`;
+CREATE TABLE `dv_catalog_task_schedule` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `type` varchar(255) NOT NULL,
+  `param` text,
+  `datasource_id` bigint(20) NOT NULL,
+  `cron_expression` varchar(255) DEFAULT NULL,
+  `status` tinyint(1) DEFAULT NULL,
+  `start_time` datetime DEFAULT NULL,
+  `end_time` datetime DEFAULT NULL,
+  `create_by` bigint(20) DEFAULT NULL,
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `update_by` bigint(20) DEFAULT NULL,
+  `update_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE `dv_catalog_entity_metric_job_rel` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `entity_uuid` varchar(64) NOT NULL COMMENT '实体uuid',
