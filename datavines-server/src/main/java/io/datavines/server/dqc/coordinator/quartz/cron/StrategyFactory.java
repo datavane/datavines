@@ -16,12 +16,22 @@
  */
 package io.datavines.server.dqc.coordinator.quartz.cron;
 
-import io.datavines.server.repository.entity.JobSchedule;
-import org.springframework.beans.factory.InitializingBean;
+import io.datavines.server.dqc.coordinator.quartz.cron.FunCron;
+import org.springframework.util.Assert;
 
-public interface FunCron extends InitializingBean {
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-    public String funcDeal(String param);
+public class StrategyFactory {
 
-    public String getFuncName();
+    private static final Map<String, FunCron> services = new ConcurrentHashMap<>();
+
+    public static FunCron getByType(String type) {
+        return services.get(type);
+    }
+
+    public static void register(String type, FunCron cronService) {
+        Assert.notNull(type, "type can't be null");
+        services.put(type, cronService);
+    }
 }

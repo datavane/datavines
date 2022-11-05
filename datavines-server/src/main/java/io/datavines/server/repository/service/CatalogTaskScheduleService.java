@@ -14,14 +14,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.dqc.coordinator.quartz.cron;
 
+package io.datavines.server.repository.service;
+
+
+import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.server.api.dto.bo.catalog.schedule.CatalogTaskScheduleCreateOrUpdate;
+import io.datavines.server.api.dto.bo.job.schedule.JobScheduleCreateOrUpdate;
+import io.datavines.server.api.dto.bo.job.schedule.MapParam;
 import io.datavines.server.repository.entity.JobSchedule;
-import org.springframework.beans.factory.InitializingBean;
+import io.datavines.server.repository.entity.catalog.CatalogTaskSchedule;
 
-public interface FunCron extends InitializingBean {
+import java.util.List;
 
-    public String funcDeal(String param);
+public interface CatalogTaskScheduleService {
 
-    public String getFuncName();
+    CatalogTaskSchedule createOrUpdate(CatalogTaskScheduleCreateOrUpdate scheduleCreate) throws DataVinesServerException;
+
+    int deleteById(long id);
+
+    CatalogTaskSchedule getById(long id);
+
+    CatalogTaskSchedule getByDataSourceId(Long dataSourceId);
+
+    List<String> getCron(MapParam mapParam);
+
 }

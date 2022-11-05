@@ -21,9 +21,8 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.job.schedule.MapParam;
-import io.datavines.server.dqc.coordinator.quartz.StrategyFactory;
+import io.datavines.server.dqc.coordinator.quartz.cron.StrategyFactory;
 import io.datavines.server.dqc.coordinator.quartz.cron.FunCron;
-import io.datavines.server.repository.entity.JobSchedule;
 
 import org.springframework.stereotype.Service;
 import com.cronutils.builder.CronBuilder;
@@ -36,9 +35,9 @@ import static io.datavines.server.utils.VerificationUtil.verifyIsNeedParam;
 
 @Service
 public class DayCronImpl implements FunCron {
+
     @Override
-    public String funcDeal(JobSchedule jobschedule) {
-        String param = jobschedule.getParam();
+    public String funcDeal(String param) {
         MapParam mapParam = JSONUtils.parseObject(param,MapParam.class);
         Map<String ,String>   parameter = mapParam.getParameter();
         String[]  times = {"hour", "minute"};

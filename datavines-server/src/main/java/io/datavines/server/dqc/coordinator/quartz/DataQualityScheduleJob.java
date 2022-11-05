@@ -34,12 +34,12 @@ import io.datavines.server.repository.entity.Job;
 /**
  * process schedule job
  */
-public class ScheduleJob implements org.quartz.Job {
+public class DataQualityScheduleJob implements org.quartz.Job {
 
     /**
      * logger of FlowScheduleJob
      */
-    private static final Logger logger = LoggerFactory.getLogger(ScheduleJob.class);
+    private static final Logger logger = LoggerFactory.getLogger(DataQualityScheduleJob.class);
 
     public JobExternalService getJobExternalService(){
         return SpringApplicationContext.getBean(JobExternalService.class);

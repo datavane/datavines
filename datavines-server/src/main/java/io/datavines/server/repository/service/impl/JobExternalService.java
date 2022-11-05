@@ -192,4 +192,8 @@ public class JobExternalService {
     public DataSourceService getDataSourceService() {
         return dataSourceService;
     }
+
+    public CatalogTaskService getCatalogTaskService() {
+        return  catalogTaskService;
+    }
 }

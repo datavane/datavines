@@ -38,10 +38,6 @@ public class DataVinesConstants {
      */
     public static final String SCHEDULE = "schedule";
 
-    public static final String QUARTZ_JOB_GROUP_PREFIX = "job_group";
-
-    public static final String QUARTZ_JOB_PREFIX = "job";
-
     /**
      * string true
      */
