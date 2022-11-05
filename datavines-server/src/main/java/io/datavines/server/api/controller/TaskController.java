@@ -21,7 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import io.datavines.core.aop.RefreshToken;
-import io.datavines.server.api.dto.bo.job.SubmitJob;
+import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.server.repository.service.JobExecutionResultService;
 import io.datavines.core.exception.DataVinesServerException;
 import org.springframework.beans.factory.annotation.Autowired;

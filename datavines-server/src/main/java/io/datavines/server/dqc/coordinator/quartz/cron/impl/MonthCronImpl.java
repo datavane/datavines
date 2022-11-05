@@ -24,8 +24,7 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.job.schedule.MapParam;
-import io.datavines.server.dqc.coordinator.quartz.StrategyFactory;
-import io.datavines.server.repository.entity.JobSchedule;
+import io.datavines.server.dqc.coordinator.quartz.cron.StrategyFactory;
 import io.datavines.server.dqc.coordinator.quartz.cron.FunCron;
 import org.springframework.stereotype.Service;
 
@@ -37,9 +36,9 @@ import static io.datavines.server.utils.VerificationUtil.verifyIsNeedParam;
 
 @Service
 public class MonthCronImpl implements FunCron {
+
     @Override
-    public String funcDeal(JobSchedule jobschedule) {
-        String param = jobschedule.getParam();
+    public String funcDeal(String param) {
         MapParam mapParam = JSONUtils.parseObject(param,MapParam.class);
         Map<String ,String> parameter = mapParam.getParameter();
         String[]  times = {"day", "hour", "minute"};
@@ -49,7 +48,7 @@ public class MonthCronImpl implements FunCron {
         }
         String day = parameter.get("day");
         String hour = parameter.get("hour");
-        String mintute = parameter.get("minute");
+        String minute = parameter.get("minute");
 
         Cron cron = CronBuilder.cron(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ))
                 .withYear(always())
@@ -57,7 +56,7 @@ public class MonthCronImpl implements FunCron {
                 .withMonth(always())
                 .withDoM(on(Integer.parseInt(day)))
                 .withHour(on(Integer.parseInt(hour)))
-                .withMinute(on(Integer.parseInt(mintute)))
+                .withMinute(on(Integer.parseInt(minute)))
                 .withSecond(on (0))
                 .instance();
 

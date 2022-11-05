@@ -45,7 +45,7 @@ public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfig
         List<SinkConfig> sinkConfigs = new ArrayList<>();
 
         //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getDefaultSinkConfig(SparkSinkSqlBuilder.getMultiTableComparisonSinkSql(), "dv_job_execution_result");
+        SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(SparkSinkSqlBuilder.getMultiTableComparisonSinkSql(), "dv_job_execution_result");
         sinkConfigs.add(taskResultSinkConfig);
 
         configuration.setSinkParameters(sinkConfigs);

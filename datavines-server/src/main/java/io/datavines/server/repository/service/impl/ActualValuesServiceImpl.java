@@ -28,7 +28,7 @@ public class ActualValuesServiceImpl extends ServiceImpl<ActualValuesMapper, Act
 
     @Override
     public int deleteByJobExecutionId(long taskId) {
-        return baseMapper.delete(new QueryWrapper<ActualValues>().eq("task_id",taskId));
+        return baseMapper.delete(new QueryWrapper<ActualValues>().eq("job_execution_id",taskId));
     }
 
 }

@@ -25,7 +25,6 @@ import io.datavines.spi.SPI;
 import java.util.Map;
 import java.util.Set;
 
-
 @SPI
 public interface SlasHandlerPlugin {
     /**

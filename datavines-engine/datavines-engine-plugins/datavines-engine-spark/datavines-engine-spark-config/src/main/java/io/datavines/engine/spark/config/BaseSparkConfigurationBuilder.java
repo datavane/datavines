@@ -107,7 +107,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseDataQualityConfi
                 .getNewPlugin(expectedType);
 
         if (expectedValue.isNeedDefaultDatasource()) {
-            sourceConfigs.add(getDefaultSourceConfig());
+            sourceConfigs.add(getValidateResultSourceConfig());
         }
 
         return sourceConfigs;

@@ -14,24 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.dqc.coordinator.quartz;
 
-import io.datavines.server.dqc.coordinator.quartz.cron.FunCron;
-import org.springframework.util.Assert;
+package io.datavines.server.repository.mapper;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.datavines.server.repository.entity.JobSchedule;
+import io.datavines.server.repository.entity.catalog.CatalogTaskSchedule;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
-public class StrategyFactory {
+@Mapper
+public interface CatalogTaskScheduleMapper extends BaseMapper<CatalogTaskSchedule> {
 
-    private static final Map<String, FunCron> services = new ConcurrentHashMap<>();
+    @Select("SELECT * from dv_catalog_task_schedule WHERE datasource_id = #{datasourceId} limit 1")
+    CatalogTaskSchedule getByDataSourceId(long datasourceId);
 
-    public static FunCron getByType(String type) {
-        return services.get(type);
-    }
-
-    public static void register(String type, FunCron cronService) {
-        Assert.notNull(type, "type can't be null");
-        services.put(type, cronService);
-    }
 }

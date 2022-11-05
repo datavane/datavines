@@ -17,7 +17,7 @@
 package io.datavines.common.utils;
 
 import io.datavines.common.utils.SensitiveLogUtils;
-import org.apache.commons.lang3.StringUtils;
+import io.datavines.common.utils.StringUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

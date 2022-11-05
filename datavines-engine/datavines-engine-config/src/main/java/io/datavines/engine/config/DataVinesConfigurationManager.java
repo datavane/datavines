@@ -41,14 +41,13 @@ public class DataVinesConfigurationManager {
 
     public static DataVinesQualityConfig generateConfiguration(
             Map<String, String> inputParameter,
-            JobExecutionInfo jobExecutionInfo,
-            ConnectionInfo connectionInfo) throws DataVinesException {
+            JobExecutionInfo jobExecutionInfo) throws DataVinesException {
 
-        if(jobExecutionInfo == null){
+        if (jobExecutionInfo == null) {
             throw new DataVinesException("jobExecutionInfo can not be null");
         }
 
-        if(jobExecutionInfo.getJobExecutionParameter() == null){
+        if (jobExecutionInfo.getJobExecutionParameter() == null) {
             throw new DataVinesException("task parameter can not be null");
         }
 
@@ -70,7 +69,7 @@ public class DataVinesConfigurationManager {
         DataQualityConfigurationBuilder builder = PluginLoader
                 .getPluginLoader(DataQualityConfigurationBuilder.class)
                 .getOrCreatePlugin(jobExecutionInfo.getEngineType() + "_" + sqlMetric.getType().getDescription());
-        builder.init(inputParameter, jobExecutionInfo, connectionInfo);
+        builder.init(inputParameter, jobExecutionInfo);
 
         return buildDataQualityConfiguration(builder);
     }

@@ -39,7 +39,7 @@ public class MetricParserUtils {
 
     public static void operateInputParameter(Map<String, String> inputParameter,
                                              SqlMetric sqlMetric,
-                                             JobExecutionInfo task) {
+                                             JobExecutionInfo jobExecutionInfo) {
         DateTimeFormatter df = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
         LocalDateTime time = LocalDateTime.now();
         String now = df.format(time);
@@ -49,7 +49,7 @@ public class MetricParserUtils {
         inputParameter.put(METRIC_DIMENSION, StringUtils.wrapperSingleQuotes(sqlMetric.getDimension().getDescription()));
         inputParameter.put(CREATE_TIME, StringUtils.wrapperSingleQuotes(now));
         inputParameter.put(UPDATE_TIME, StringUtils.wrapperSingleQuotes(now));
-        inputParameter.put(TASK_ID, String.valueOf(task.getId()));
+        inputParameter.put(JOB_EXECUTION_ID, String.valueOf(jobExecutionInfo.getId()));
 
         if (StringUtils.isEmpty(inputParameter.get(DATA_TIME))) {
             inputParameter.put(DATA_TIME, StringUtils.wrapperSingleQuotes(now));
@@ -126,7 +126,7 @@ public class MetricParserUtils {
         newInputParameterValue.remove(METRIC_DIMENSION);
         newInputParameterValue.remove(CREATE_TIME);
         newInputParameterValue.remove(UPDATE_TIME);
-        newInputParameterValue.remove(TASK_ID);
+        newInputParameterValue.remove(JOB_EXECUTION_ID);
         newInputParameterValue.remove(RESULT_FORMULA);
         newInputParameterValue.remove(OPERATOR);
         newInputParameterValue.remove(THRESHOLD);

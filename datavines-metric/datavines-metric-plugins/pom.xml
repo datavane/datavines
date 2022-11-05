@@ -30,6 +30,7 @@
     <artifactId>datavines-metric-plugins</artifactId>
     <packaging>pom</packaging>
     <modules>
+        <module>datavines-metric-all</module>
         <module>datavines-metric-base</module>
         <module>datavines-metric-custom-aggregate-sql</module>
         <module>datavines-metric-multi-table-accuracy</module>

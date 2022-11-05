@@ -20,7 +20,8 @@ import io.datavines.server.repository.entity.JobSchedule;
 import org.springframework.beans.factory.InitializingBean;
 
 public interface FunCron extends InitializingBean {
-    public String funcDeal(JobSchedule jobschedule);
+
+    public String funcDeal(String param);
 
     public String getFuncName();
 }

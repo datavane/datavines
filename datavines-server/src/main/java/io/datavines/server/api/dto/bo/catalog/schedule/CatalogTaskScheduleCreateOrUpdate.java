@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.bo.job.schedule;
+package io.datavines.server.api.dto.bo.catalog.schedule;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -23,9 +23,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@NotNull(message = "Job Schedule Update cannot be null")
-public class JobScheduleUpdate extends JobScheduleCreate {
-
-    @NotNull(message = "Job Schedule id cannot be null")
+@NotNull(message = "Catalog Task Schedule Create Or Update cannot be null")
+public class CatalogTaskScheduleCreateOrUpdate extends CatalogTaskScheduleCreate {
     private Long id;
 }

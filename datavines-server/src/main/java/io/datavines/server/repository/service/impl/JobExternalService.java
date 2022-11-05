@@ -143,12 +143,14 @@ public class JobExternalService {
         jobExecutionRequest.setEngineParameter(jobExecution.getEngineParameter());
         Map<String,String> inputParameter = new HashMap<>();
 
-        JobExecutionInfo jobExecutionInfo = new JobExecutionInfo(jobExecution.getId(), jobExecution.getName(),
-                                         jobExecution.getEngineType(), jobExecution.getEngineParameter(),
-                                         jobExecution.getErrorDataStorageType(), jobExecution.getErrorDataStorageParameter(), jobExecution.getErrorDataFileName(),
+        JobExecutionInfo jobExecutionInfo = new JobExecutionInfo(
+                jobExecution.getId(), jobExecution.getName(),
+                jobExecution.getEngineType(), jobExecution.getEngineParameter(),
+                jobExecution.getErrorDataStorageType(), jobExecution.getErrorDataStorageParameter(), jobExecution.getErrorDataFileName(),
+                "jdbc", JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
                 jobExecutionParameter);
         DataVinesQualityConfig qualityConfig =
-                DataVinesConfigurationManager.generateConfiguration(inputParameter, jobExecutionInfo, DefaultDataSourceInfoUtils.getDefaultConnectionInfo());
+                DataVinesConfigurationManager.generateConfiguration(inputParameter, jobExecutionInfo);
         jobExecutionRequest.setApplicationParameter(JSONUtils.toJsonString(qualityConfig));
         jobExecutionRequest.setTenantCode(jobExecution.getTenantCode());
         jobExecutionRequest.setRetryTimes(jobExecution.getRetryTimes());
@@ -189,5 +191,9 @@ public class JobExternalService {
 
     public DataSourceService getDataSourceService() {
         return dataSourceService;
+    }
+
+    public CatalogTaskService getCatalogTaskService() {
+        return  catalogTaskService;
     }
 }

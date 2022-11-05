@@ -501,12 +501,14 @@ public class JobExecuteManager {
         jobExecutionRequest.setErrorDataStorageParameter(jobExecution.getErrorDataStorageParameter());
         Map<String,String> inputParameter = new HashMap<>();
 
-        JobExecutionInfo jobExecutionInfo = new JobExecutionInfo(jobExecution.getId(), jobExecution.getName(),
+        JobExecutionInfo jobExecutionInfo = new JobExecutionInfo(
+                jobExecution.getId(), jobExecution.getName(),
                 jobExecution.getEngineType(), jobExecution.getEngineParameter(),
                 jobExecution.getErrorDataStorageType(), jobExecution.getErrorDataStorageParameter(), jobExecution.getErrorDataFileName(),
+                "jdbc", JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
                 jobExecutionParameter);
         DataVinesQualityConfig qualityConfig =
-                DataVinesConfigurationManager.generateConfiguration(inputParameter, jobExecutionInfo, DefaultDataSourceInfoUtils.getDefaultConnectionInfo());
+                DataVinesConfigurationManager.generateConfiguration(inputParameter, jobExecutionInfo);
 
         jobExecutionRequest.setExecuteFilePath(jobExecution.getExecuteFilePath());
         jobExecutionRequest.setLogPath(jobExecution.getLogPath());

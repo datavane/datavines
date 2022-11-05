@@ -40,11 +40,14 @@ import java.util.stream.Collectors;
 
 @Slf4j
 public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
-    private  final String STRING_YES = "YES";
-    private  final String STRING_NO = "NO";
-    private  final String STRING_TRUE = "TRUE";
-    private  final String STRING_FALSE = "FALSE";
 
+    private  final String STRING_YES = "YES";
+
+    private  final String STRING_NO = "NO";
+
+    private  final String STRING_TRUE = "TRUE";
+
+    private  final String STRING_FALSE = "FALSE";
 
     @Override
     public SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config) {
@@ -54,12 +57,12 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
         result.setStatus(true);
         String subject = slaNotificationMessage.getSubject();
         String message = slaNotificationMessage.getMessage();
-        for(SlaSenderMessage senderMessage: emailSenderSet){
+        for (SlaSenderMessage senderMessage: emailSenderSet) {
             EMailSender eMailSender = new EMailSender(senderMessage);
             Set<SlaConfigMessage> slaConfigMessageSet = config.get(senderMessage);
             HashSet<String> toReceivers = new HashSet<>();
             HashSet<String> ccReceivers = new HashSet<>();
-            for(SlaConfigMessage receiver: slaConfigMessageSet){
+            for (SlaConfigMessage receiver: slaConfigMessageSet) {
                 String receiverConfigStr = receiver.getConfig();
                 ReceiverConfig receiverConfig = JSONUtils.parseObject(receiverConfigStr, ReceiverConfig.class);
                 String to = receiverConfig.getTo();
@@ -73,17 +76,18 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
                 Set<String> toSet = Arrays.stream(toSplit).collect(Collectors.toSet());
                 toReceivers.addAll(toSet);
             }
+
             SlaNotificationResultRecord record = eMailSender.sendMails(toReceivers, ccReceivers, subject, message);
-            if (record.getStatus().equals(false)){
+            if (record.getStatus().equals(false)) {
                 String to = "";
                 String recordMessage = "";
 
-                if (!CollectionUtils.isEmpty(toReceivers)){
+                if (!CollectionUtils.isEmpty(toReceivers)) {
                     to = toReceivers.stream().collect(Collectors.joining(","));
                     recordMessage = String.format("send to %s fail", to);
                 }
                 String cc = "";
-                if (!CollectionUtils.isEmpty(ccReceivers)){
+                if (!CollectionUtils.isEmpty(ccReceivers)) {
                     cc = ccReceivers.stream().collect(Collectors.joining(","));
                     recordMessage += String.format("copy to %s fail", cc);
                 }
@@ -98,7 +102,6 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
 
     @Override
     public String getConfigSenderJson() {
-
 
         List<PluginParams> paramsList = new ArrayList<>();
 
@@ -177,7 +180,6 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
     @Override
     public String getConfigJson() {
 
-
         InputParam to = InputParam.newBuilder("to", "to")
                 .addValidate(Validate.newBuilder().setRequired(true).build())
                 .build();
@@ -188,7 +190,6 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
         List<PluginParams> paramsList = new ArrayList<>();
         paramsList.add(to);
         paramsList.add(cc);
-
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);

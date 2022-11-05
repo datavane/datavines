@@ -44,15 +44,25 @@ import static java.util.Objects.requireNonNull;
 public class EMailSender {
 
     private String mailProtocol = "SMTP";
+
     private String mailSmtpHost;
+
     private String mailSmtpPort;
+
     private String mailSenderEmail;
+
     private String enableSmtpAuth;
+
     private String mailUser;
+
     private String mailPasswd;
+
     private String mailUseStartTLS;
+
     private String mailUseSSL;
+
     private String sslTrust;
+
     private String mustNotNull = "must not be null";
 
     public EMailSender(SlaSenderMessage senderMessage) {
@@ -175,7 +185,4 @@ public class EMailSender {
         }
         return content;
     }
-
-
-
 }

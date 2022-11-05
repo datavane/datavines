@@ -16,12 +16,38 @@
  */
 package io.datavines.engine.jdbc.api;
 
+import io.datavines.common.config.Config;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.api.component.Component;
 import io.datavines.engine.jdbc.api.entity.ResultList;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
+
+import static io.datavines.engine.api.ConfigConstants.EXPECTED_VALUE;
 
 public interface JdbcSink extends Component {
 
     void output(List<ResultList> resultList, JdbcRuntimeEnvironment env);
+
+    default void setExceptedValue(Config config, List<ResultList> resultList, Map<String, String> inputParameter) {
+        if (CollectionUtils.isNotEmpty(resultList)) {
+            resultList.forEach(item -> {
+                if(item != null) {
+                    item.getResultList().forEach(x -> {
+                        x.forEach((k,v) -> {
+                            String expectedValue = config.getString(EXPECTED_VALUE);
+                            if (StringUtils.isNotEmpty(expectedValue)) {
+                                if (expectedValue.equals(k)) {
+                                    inputParameter.put(EXPECTED_VALUE, String.valueOf(v));
+                                }
+                            }
+                            inputParameter.put(k, String.valueOf(v));
+                        });
+                    });
+                }
+            });
+        }
+    }
 }

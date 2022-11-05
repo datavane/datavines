@@ -20,6 +20,11 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.utils.JdbcUrlParser;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import static io.datavines.engine.api.ConfigConstants.*;
+
 public class DefaultDataSourceInfoUtils {
 
     public static ConnectionInfo getDefaultConnectionInfo(){
@@ -35,5 +40,18 @@ public class DefaultDataSourceInfoUtils {
         }
 
         return connectionInfo;
+    }
+
+    public static Map<String, Object> getDefaultDataSourceConfigMap() {
+
+        ConnectionInfo connectionInfo = getDefaultConnectionInfo();
+
+        Map<String,Object> configMap = new HashMap<>();
+        configMap.put(URL, connectionInfo.getUrl());
+        configMap.put(USER, connectionInfo.getUsername());
+        configMap.put(PASSWORD, connectionInfo.getPassword());
+        configMap.put(DRIVER, connectionInfo.getDriverName());
+
+        return configMap;
     }
 }

@@ -16,7 +16,7 @@
  */
 package io.datavines.common.config;
 
-import org.apache.commons.lang3.StringUtils;
+import io.datavines.common.utils.StringUtils;
 
 import java.util.List;
 

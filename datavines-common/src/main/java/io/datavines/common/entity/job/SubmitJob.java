@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.bo.job;
+package io.datavines.common.entity.job;
 
 import java.util.Map;
 
@@ -40,11 +40,19 @@ public class SubmitJob {
 
     private Map<String,Object> engineParameter;
 
+    private JobExecutionParameter parameter;
+
     private String errorDataStorageType = "";
 
     private Map<String,Object> errorDataStorageParameter;
 
-    private JobExecutionParameter parameter;
+    private String validateResultDataStorageType = "";
+
+    private Map<String,Object> validateResultDataStorageParameter;
+
+    private String notificationType = "";
+
+    private Map<String,Object> notificationParameter;
 
     private Integer retryTimes = 0;
 

@@ -16,7 +16,7 @@
  */
 package io.datavines.common;
 
-import org.apache.commons.lang3.StringUtils;
+import io.datavines.common.utils.StringUtils;
 
 public class CommonConstants {
 
@@ -101,7 +101,7 @@ public class CommonConstants {
     public static final int HTTP_CONNECTION_REQUEST_TIMEOUT = 60 * 1000;
 
     /**
-     * httpclient soceket time out
+     * httpclient socket time out
      */
     public static final int SOCKET_TIMEOUT = 60 * 1000;
 
@@ -158,8 +158,8 @@ public class CommonConstants {
 
     public static final Boolean KUBERNETES_MODE = !StringUtils.isEmpty(System.getenv("KUBERNETES_SERVICE_HOST")) && !StringUtils.isEmpty(System.getenv("KUBERNETES_SERVICE_PORT"));
 
-
     public static final String REG_EMAIL_FORMAT = "^[a-z_0-9.-]{1,64}@([a-z0-9-]{1,200}.){1,5}[a-z]{1,6}$";
+
     public static final String REG_USER_PASSWORD = ".{6,20}";
 
     public static final String SMALL = "small";

@@ -105,7 +105,7 @@ public abstract class BaseJdbcConfigurationBuilder extends BaseDataQualityConfig
                 .getNewPlugin(expectedType);
 
         if (expectedValue.isNeedDefaultDatasource()) {
-            sourceConfigs.add(getDefaultSourceConfig());
+            sourceConfigs.add(getValidateResultSourceConfig());
         }
 
         return sourceConfigs;
