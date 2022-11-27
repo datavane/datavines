@@ -25,10 +25,18 @@ import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.enums.ExecutionStatus;
+import io.datavines.common.enums.OperatorType;
 import io.datavines.common.log.JobExecutionLogDiscriminator;
 import io.datavines.common.utils.*;
+import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.core.utils.BeanConvertUtils;
+import io.datavines.core.utils.LanguageUtils;
 import io.datavines.engine.config.DataVinesConfigurationManager;
 import io.datavines.engine.core.utils.JsonUtils;
+import io.datavines.metric.api.ExpectedValue;
+import io.datavines.metric.api.MetricExecutionResult;
+import io.datavines.metric.api.ResultFormula;
+import io.datavines.metric.api.SqlMetric;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
@@ -40,6 +48,7 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobExecution;
+import io.datavines.server.repository.entity.JobExecutionResult;
 import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.server.repository.service.JobService;
 import io.datavines.server.repository.service.SlaNotificationService;
@@ -51,21 +60,20 @@ import io.datavines.server.dqc.executor.runner.JobRunner;
 import io.datavines.server.utils.DefaultDataSourceInfoUtils;
 import io.datavines.server.utils.NamedThreadFactory;
 import io.datavines.server.utils.SpringApplicationContext;
+import io.datavines.spi.PluginLoader;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class JobExecuteManager {
@@ -313,7 +321,7 @@ public class JobExecuteManager {
                             } else if (ExecutionStatus.of(jobExecutionRequest.getStatus()).typeIsFailure()) {
                                 int retryNums = jobExecution.getRetryTimes();
                                 if (jobExecution.getRetryTimes() > 0) {
-                                    logger.info("retry jobExecution: "+JSONUtils.toJsonString(jobExecution));
+                                    logger.info("retry job execution: " + JSONUtils.toJsonString(jobExecution));
                                     CommandContext commandContext = new CommandContext();
                                     commandContext.setJobExecutionRequest(jobExternalService.buildJobExecutionRequest(jobExecution));
                                     commandContext.setJobExecutionId(jobExecutionRequest.getJobExecutionId());
@@ -355,7 +363,7 @@ public class JobExecuteManager {
         DataSource dataSource = dataSourceService.getDataSourceById(dataSourceId);
         String dataSourceName = dataSource.getName();
         String dataSourceType = dataSource.getType();
-        messageList.add(String.format("you has job %s on %s Datasource %s failure, please check detail", jobName, dataSourceType, dataSourceName));
+        messageList.add(String.format("job %s on %s Datasource %s failure, please check detail", jobName, dataSourceType, dataSourceName));
         message.setSubject(String.format("datavines job %s execute failure", jobName));
         String jsonMessage = JsonUtils.toJsonString(messageList);
         message.setMessage(jsonMessage);

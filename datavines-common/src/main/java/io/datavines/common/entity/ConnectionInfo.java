@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * JdbcConnectionInfo
+ * ConnectionInfo
  */
 public class ConnectionInfo {
 

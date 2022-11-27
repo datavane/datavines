@@ -17,29 +17,33 @@
 package io.datavines.server.dqc.coordinator.operator;
 
 import io.datavines.common.entity.JobExecutionRequest;
+import io.datavines.common.enums.OperatorType;
+import io.datavines.common.utils.JSONUtils;
+import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.core.utils.LanguageUtils;
 import io.datavines.engine.core.utils.JsonUtils;
-import io.datavines.metric.api.ResultFormula;
+import io.datavines.metric.api.*;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.client.NotificationClient;
 import io.datavines.server.api.dto.vo.JobExecutionResultVO;
 import io.datavines.server.enums.DqJobExecutionState;
+import io.datavines.server.repository.entity.DataSource;
+import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
+import io.datavines.server.repository.service.JobService;
 import io.datavines.server.repository.service.SlaNotificationService;
 import io.datavines.server.repository.service.JobExecutionResultService;
 import io.datavines.server.repository.service.JobExecutionService;
 import io.datavines.server.repository.service.impl.JobExternalService;
-import io.datavines.server.enums.OperatorType;
 import io.datavines.spi.PluginLoader;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component
 public class DataQualityResultOperator {
@@ -49,12 +53,6 @@ public class DataQualityResultOperator {
 
     @Autowired
     private NotificationClient notificationClient;
-
-    @Autowired
-    private JobExecutionResultService jobExecutionResultService;
-
-    @Autowired
-    private JobExecutionService jobExecutionService;
 
     @Autowired
     private SlaNotificationService slaNotificationService;
@@ -81,80 +79,80 @@ public class DataQualityResultOperator {
      * @param jobExecutionResult jobExecutionResult
      */
     private void checkDqExecuteResult(JobExecutionResult jobExecutionResult) {
-        if (isFailure(jobExecutionResult)) {
-            jobExecutionResult.setState(DqJobExecutionState.FAILURE.getCode());
-            Long taskId = jobExecutionResult.getJobExecutionId();
-            sendErrorEmail(taskId);
-        } else {
+        MetricExecutionResult metricExecutionResult = new MetricExecutionResult();
+        BeanUtils.copyProperties(jobExecutionResult, metricExecutionResult);
+        if (MetricValidator.isSuccess(metricExecutionResult)) {
             jobExecutionResult.setState(DqJobExecutionState.SUCCESS.getCode());
+        } else {
+            jobExecutionResult.setState(DqJobExecutionState.FAILURE.getCode());
+            Long jobExecutionId = jobExecutionResult.getJobExecutionId();
+            sendErrorEmail(jobExecutionId);
         }
 
         jobExternalService.updateJobExecutionResult(jobExecutionResult);
     }
-    
-    private void sendErrorEmail(Long taskId){
-        JobExecutionResultVO resultVO = jobExecutionResultService.getResultVOByJobExecutionId(taskId);
-        LinkedList<String> messageList = new LinkedList<>();
-        messageList.add(resultVO.getMetricName());
-        messageList.add(resultVO.getCheckSubject());
-        messageList.add(resultVO.getCheckResult());
-        messageList.add(resultVO.getExpectedType());
-        messageList.add(resultVO.getResultFormulaFormat());
-        String jsonMessage = JsonUtils.toJsonString(messageList);
+
+    private void sendErrorEmail(Long jobExecutionId){
+
         SlaNotificationMessage message = new SlaNotificationMessage();
-        message.setMessage(jsonMessage);
-        message.setSubject(String.format("datavines metric %s failure", resultVO.getMetricName()));
-        JobExecution jobExecution = jobExecutionService.getById(taskId);
+        JobExecution jobExecution = jobExternalService.getJobExecutionById(jobExecutionId);
         Long jobId = jobExecution.getJobId();
+        JobService jobService = jobExternalService.getJobService();
+        Job job = jobService.getById(jobId);
+        String jobName = job.getName();
+        Long dataSourceId = job.getDataSourceId();
+        DataSource dataSource = jobExternalService.getDataSourceService().getDataSourceById(dataSourceId);
+        String dataSourceName = dataSource.getName();
+        String dataSourceType = dataSource.getType();
+        JobExecutionResult jobExecutionResult = jobExternalService.getJobExecutionResultByJobExecutionId(jobExecution.getId());
+        boolean isEn = !LanguageUtils.isZhContext();
+        if (jobExecutionResult != null) {
+            MetricExecutionResult metricExecutionResult = new MetricExecutionResult();
+            BeanUtils.copyProperties(jobExecutionResult, metricExecutionResult);
+            List<String> messages = new ArrayList<>();
+            messages.add((isEn ? "Job Name : ": "作业名称: ") + jobName);
+            messages.add(String.format((isEn ? "Datasource : %s [%s] : ": "数据源 : %s [%s]: ") ,dataSourceType.toUpperCase(), dataSourceName));
+            message.setSubject(buildAlertSubject(metricExecutionResult, isEn));
+            message.setMessage(buildAlertMessage(messages, metricExecutionResult, jobExecution.getEngineType(), isEn));
 
-        Map<SlaSenderMessage, Set<SlaConfigMessage>> config = slaNotificationService.getSlasNotificationConfigurationByJobId(jobId);
-        if (config.isEmpty()){
-            return;
+            Map<SlaSenderMessage, Set<SlaConfigMessage>> config = slaNotificationService.getSlasNotificationConfigurationByJobId(jobId);
+            if (config.isEmpty()){
+                return;
+            }
+            notificationClient.notify(message, config);
         }
-        notificationClient.notify(message, config);
     }
 
-    /**
-     * It is used to judge whether the result of the data quality task is failed
-     * @param jobExecutionResult
-     * @return
-     */
-    private boolean isFailure(JobExecutionResult jobExecutionResult) {
+    private String buildAlertMessage(List<String> messages, MetricExecutionResult metricExecutionResult, String engineType, boolean isEn) {
+        Map<String,String> parameters = new HashMap<>();
+        parameters.put("actual_value", metricExecutionResult.getActualValue()+"");
+        parameters.put("expected_value", metricExecutionResult.getExpectedValue()+"");
+        parameters.put("threshold", metricExecutionResult.getThreshold()+"");
+        parameters.put("operator",OperatorType.of(metricExecutionResult.getOperator()).getSymbol());
 
-        Double actualValue = jobExecutionResult.getActualValue();
-        Double expectedValue = null;
-        if (jobExecutionResult.getExpectedValue() == null) {
-            expectedValue = jobExecutionResult.getActualValue();
-        } else {
-            expectedValue = jobExecutionResult.getExpectedValue();
-        }
-        Double threshold = jobExecutionResult.getThreshold();
+        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricExecutionResult.getMetricName());
+        messages.add((isEn ? "Metric" : "检查规则") + " : " + sqlMetric.getNameByLanguage(isEn));
 
-        OperatorType operatorType = OperatorType.of(jobExecutionResult.getOperator());
+        ResultFormula resultFormula =
+                PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(metricExecutionResult.getResultFormula());
 
-        ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class)
-                            .getOrCreatePlugin(jobExecutionResult.getResultFormula());
-        return getCompareResult(operatorType, resultFormula.getResult(actualValue, expectedValue), threshold);
+        messages.add((isEn ? "Check Subject" : "检查目标") + " : " + metricExecutionResult.getDatabaseName() + "." + metricExecutionResult.getTableName() + "." + metricExecutionResult.getColumnName());
+
+        ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(engineType + "_" + metricExecutionResult.getExpectedType());
+        messages.add((isEn ? "Expected Value Type" : "期望值类型") + " : " + expectedValue.getNameByLanguage(isEn));
+
+        String resultFormulaFormat = resultFormula.getResultFormat(isEn)+" ${operator} ${threshold}";
+        messages.add((isEn ? "Result Formula" : "检查公式") + " : " + PlaceholderUtils.replacePlaceholders(resultFormulaFormat, parameters, true));
+
+        messages.add(isEn ? "Check Result : Failure" : "检查结果 : 异常" );
+
+        return JSONUtils.toJsonString(messages);
     }
 
-    private boolean getCompareResult(OperatorType operatorType, Double srcValue, Double targetValue) {
-        BigDecimal src = BigDecimal.valueOf(srcValue);
-        BigDecimal target = BigDecimal.valueOf(targetValue);
-        switch (operatorType) {
-            case EQ:
-                return src.compareTo(target) == 0;
-            case LT:
-                return src.compareTo(target) <= -1;
-            case LTE:
-                return src.compareTo(target) == 0 || src.compareTo(target) <= -1;
-            case GT:
-                return src.compareTo(target) >= 1;
-            case GTE:
-                return src.compareTo(target) == 0 || src.compareTo(target) >= 1;
-            case NE:
-                return src.compareTo(target) != 0;
-            default:
-                return true;
-        }
+    private String buildAlertSubject(MetricExecutionResult metricExecutionResult, boolean isEn) {
+        String checkSubject = metricExecutionResult.getDatabaseName() + "." + metricExecutionResult.getTableName() + "." + metricExecutionResult.getColumnName();
+        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricExecutionResult.getMetricName());
+        return  isEn ? (sqlMetric.getNameByLanguage(true) + "alerting on " + checkSubject) :
+                checkSubject + "在" + sqlMetric.getNameByLanguage(false) + "中异常了";
     }
 }

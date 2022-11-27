@@ -257,8 +257,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             errorDataStorageType = errorDataStorage.getType();
             errorDataStorageParameter  = errorDataStorage.getParam();
         } else {
-            if ("jdbc".equalsIgnoreCase(job.getEngineType())) {
-                errorDataStorageType = "local-file";
+            if ("local".equalsIgnoreCase(job.getEngineType())) {
+                errorDataStorageType = "file";
                 errorDataStorageParameter  = "{\"error_data_dir\":\"/tmp/datavines/error-data\"}";
             }
         }

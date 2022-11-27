@@ -80,6 +80,9 @@ public class CommonPropertyUtils {
     public static final String AES_KEY = "aes.key";
     public static final String AES_KEY_DEFAULT = "1234567890123456";
 
+    public static final String FILE_MAX_LENGTH = "file.max.length";
+    public static final Long FILE_MAX_LENGTH_DEFAULT = 10 * 1024 * 1024L;
+
     private static final Logger logger = LoggerFactory.getLogger(CommonPropertyUtils.class);
 
     public static final String COMMON_PROPERTIES_PATH = "/common.properties";

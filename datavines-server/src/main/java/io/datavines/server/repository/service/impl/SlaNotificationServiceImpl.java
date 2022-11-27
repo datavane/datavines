@@ -50,7 +50,6 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
     @Autowired
     private SlaSenderService slaSenderService;
 
-
     @Autowired
     private SlaNotificationMapper slaNotificationMapper;
 
@@ -107,8 +106,6 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
     public Set<SlaConfigMessage> listReceiverMessageBySlaId(Long id){
         return slaNotificationMapper.listReceiverMessageBySlaId(id);
     }
-
-
 
     @Override
     public String getConfigJson(String type) {

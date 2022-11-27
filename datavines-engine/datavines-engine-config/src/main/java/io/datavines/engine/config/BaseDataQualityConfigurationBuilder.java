@@ -30,6 +30,7 @@ import io.datavines.engine.api.ConfigConstants;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
+import io.datavines.storage.api.StorageFactory;
 import org.apache.commons.collections4.MapUtils;
 
 import java.util.ArrayList;
@@ -78,11 +79,18 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
         inputParameter.put(EXPECTED_TYPE, StringUtils.wrapperSingleQuotes(jobExecutionParameter.getExpectedType()));
         inputParameter.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
 
-        if ("local-file".equalsIgnoreCase(jobExecutionInfo.getErrorDataStorageType())) {
+        if ("file".equalsIgnoreCase(jobExecutionInfo.getErrorDataStorageType())) {
             Map<String,String> errorDataParameterMap = JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, String.class);
             inputParameter.put(ERROR_DATA_DIR, errorDataParameterMap.get("data_dir"));
         } else {
-            inputParameter.put(ERROR_DATA_DIR, CommonPropertyUtils.getString(ERROR_DATA_DIR, CommonPropertyUtils.ERROR_DATA_DIR_DEFAULT));
+            inputParameter.put(ERROR_DATA_DIR, CommonPropertyUtils.getString(CommonPropertyUtils.ERROR_DATA_DIR, CommonPropertyUtils.ERROR_DATA_DIR_DEFAULT));
+        }
+
+        if ("file".equalsIgnoreCase(jobExecutionInfo.getValidateResultDataStorageType())) {
+            Map<String,String> validateResultDataParameterMap = JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(),String.class, String.class);
+            inputParameter.put(VALIDATE_RESULT_DATA_DIR, validateResultDataParameterMap.get("data_dir"));
+        } else {
+            inputParameter.put(VALIDATE_RESULT_DATA_DIR, CommonPropertyUtils.getString(CommonPropertyUtils.VALIDATE_RESULT_DATA_DIR, CommonPropertyUtils.VALIDATE_RESULT_DATA_DIR_DEFAULT));
         }
     }
 
@@ -141,7 +149,6 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
 
         if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
             inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
-            inputParameter.put(EXPECTED_VALUE, expectedValue.getName());
         }
 
         inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
@@ -166,7 +173,7 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
 
     protected abstract List<SourceConfig> getSourceConfigs() throws DataVinesException;
 
-    protected SourceConfig getValidateResultSourceConfig() throws DataVinesException {
+    protected SourceConfig getValidateResultDataSourceConfig() throws DataVinesException {
 
         SourceConfig actualValueSourceConfig = new SourceConfig();
         actualValueSourceConfig.setPlugin(jobExecutionInfo.getValidateResultDataStorageType());
@@ -183,25 +190,34 @@ public abstract class BaseDataQualityConfigurationBuilder implements DataQuality
                 PlaceholderUtils.replacePlaceholders(
                         sql, inputParameter,true),dbTable);
         configMap.put(JOB_EXECUTION_ID, jobExecutionInfo.getId());
+
+        if (StringUtils.isNotEmpty(expectedValue.getOutputTable())) {
+            inputParameter.put(EXPECTED_VALUE, expectedValue.getName());
+            configMap.put(EXPECTED_VALUE, expectedValue.getName());
+        }
+
         validateResultDataStorageConfig.setConfig(configMap);
 
         return validateResultDataStorageConfig;
-
     }
 
     private Map<String,Object> getValidateResultSourceConfigMap(String sql, String dbTable) {
-
         Map<String, Object> configMap = new HashMap<>();
-        if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {
-            configMap = JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class);
+        StorageFactory storageFactory =
+                PluginLoader.getPluginLoader(StorageFactory.class)
+                        .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
+        if (storageFactory != null) {
+            if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {
+                configMap = JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class);
+            }
+            configMap = storageFactory.getStorageConnector().getParamMap(configMap);
         }
+
         configMap.put(TABLE, dbTable);
         configMap.put(OUTPUT_TABLE, dbTable);
         if (StringUtils.isNotEmpty(sql)) {
             configMap.put(SQL, sql);
         }
-
-        configMap.put(EXPECTED_VALUE, expectedValue.getName().replace(expectedValue.getOutputTable()+".", ""));
 
         return configMap;
     }

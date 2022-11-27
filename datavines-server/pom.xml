@@ -315,7 +315,7 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-jdbc-executor</artifactId>
+            <artifactId>datavines-engine-local-executor</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -331,7 +331,7 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-jdbc-config</artifactId>
+            <artifactId>datavines-engine-local-config</artifactId>
             <version>${project.version}</version>
         </dependency>
 

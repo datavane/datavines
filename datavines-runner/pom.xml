@@ -79,7 +79,7 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-jdbc-executor</artifactId>
+            <artifactId>datavines-engine-local-executor</artifactId>
             <version>${project.version}</version>
             <exclusions>
                 <exclusion>
@@ -95,7 +95,7 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-jdbc-config</artifactId>
+            <artifactId>datavines-engine-local-config</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -116,6 +116,17 @@
             <artifactId>mysql-connector-java</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-notification-plugin-email</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-notification-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

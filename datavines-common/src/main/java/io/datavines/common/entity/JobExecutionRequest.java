@@ -49,11 +49,11 @@ public class JobExecutionRequest implements Serializable {
 
     private String validateResultDataStorageParameter;
 
-    private String notificationType;
-
-    private String notificationParameter;
+    private String notificationParameters;
 
     private String applicationParameter;
+
+    private boolean isEn;
 
     private String tenantCode;
 

@@ -62,6 +62,7 @@ import io.datavines.server.enums.Priority;
 import org.springframework.transaction.annotation.Transactional;
 
 import static io.datavines.core.constant.DataVinesConstants.JDBC;
+import static io.datavines.core.constant.DataVinesConstants.LOCAL;
 import static io.datavines.core.constant.DataVinesConstants.SPARK;
 
 @Service("jobExecutionService")
@@ -223,7 +224,7 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
                 throw new DataVinesServerException(String.format("%s connector does not supported", connectorType));
             }
 
-            if (JDBC.equals(engineType)) {
+            if (LOCAL.equals(engineType)) {
                 ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(connectorType);
                 if (!JDBC.equals(connectorFactory.getCategory())) {
                     throw new DataVinesServerException(String.format("jdbc engine does not supported %s connector", connectorType));
@@ -264,7 +265,10 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
         ExecuteRequestParam param = new ExecuteRequestParam();
         param.setType(errorDataStorageType);
         param.setDataSourceParam(errorDataStorageParameter);
-        param.setScript(errorDataFileName);
+
+        Map<String,String> scriptConfigMap = new HashMap<>();
+        scriptConfigMap.put("error_data_file_name", errorDataFileName);
+        param.setScript(storageFactory.getErrorDataScript(scriptConfigMap));
         param.setPageNumber(pageNumber);
         param.setPageSize(pageSize);
 

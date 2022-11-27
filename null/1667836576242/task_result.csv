@@ -1,0 +1,2 @@
+job_execution_id, metric_type, metric_name, metric_dimension, database_name, table_name, column_name, actual_value, expected_value, expected_type, result_formula, operator, threshold, create_time, update_time 
+ 1667836576242, single_table, column_duplicate, uniqueness, cbs, cbs_ratio, industry, 106, 10, fix_value, count, gt, 5.0, 2022-11-07 23:56:16, 2022-11-07 23:56:16

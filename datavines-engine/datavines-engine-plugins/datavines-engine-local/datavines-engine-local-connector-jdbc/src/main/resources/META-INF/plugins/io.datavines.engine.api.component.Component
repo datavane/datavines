@@ -1,0 +1,2 @@
+local-mysql-sink=io.datavines.engine.local.connector.MysqlSink
+local-jdbc-source=io.datavines.engine.local.connector.BaseJdbcSource

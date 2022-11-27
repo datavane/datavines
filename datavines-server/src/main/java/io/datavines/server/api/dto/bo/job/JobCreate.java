@@ -37,7 +37,7 @@ public class JobCreate {
 
     private String executePlatformParameter;
 
-    private String engineType = "jdbc";
+    private String engineType = "local";
 
     private String engineParameter;
 

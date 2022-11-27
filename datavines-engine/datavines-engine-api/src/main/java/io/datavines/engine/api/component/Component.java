@@ -22,5 +22,5 @@ import io.datavines.engine.api.plugin.Plugin;
 
 @SPI
 public interface Component extends Plugin {
-    void prepare(RuntimeEnvironment env);
+    void prepare(RuntimeEnvironment env) throws Exception;
 }

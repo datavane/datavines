@@ -98,9 +98,11 @@ public abstract class BaseDataVinesBootstrap {
     }
 
     @SafeVarargs
-    private final void prepare(RuntimeEnvironment env, List<? extends Component>... components) {
+    private final void prepare(RuntimeEnvironment env, List<? extends Component>... components) throws Exception{
         for (List<? extends Component> componentList : components) {
-            componentList.forEach(component -> component.prepare(env));
+            for (Component component : componentList) {
+                component.prepare(env);
+            }
         }
     }
 

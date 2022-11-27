@@ -24,7 +24,7 @@ public class DailyAvg implements ExpectedValue {
 
     @Override
     public String getName() {
-        return "daily_range.daily_avg";
+        return "daily_avg";
     }
 
     @Override

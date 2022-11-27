@@ -33,7 +33,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 @Slf4j
 public class LocalFileStorageExecutor implements StorageExecutor {
 
@@ -46,7 +45,7 @@ public class LocalFileStorageExecutor implements StorageExecutor {
 
         Map<String,String> parameterMap = JSONUtils.toMap(param.getDataSourceParam(), String.class, String.class);
         String dir = parameterMap.get("data_dir");
-        String filePath = dir +"/" + param.getScript() + ".csv";
+        String filePath = dir +"/" + param.getScript() ;
 
         if (pageNumber < 1) {
             pageNumber = 1;
@@ -56,8 +55,19 @@ public class LocalFileStorageExecutor implements StorageExecutor {
             pageSize = 10;
         }
 
-        builder.result(readForPage(filePath, pageNumber, pageSize));
+        builder.result(readForPage(filePath, pageNumber, pageSize, parameterMap.get("column_separator")));
 
+        return builder.build();
+    }
+
+    @Override
+    public ConnectorResponse queryForOne(ExecuteRequestParam param) throws Exception {
+        ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
+
+        Map<String,String> parameterMap = JSONUtils.toMap(param.getDataSourceParam(), String.class, String.class);
+        String dir = parameterMap.get("data_dir");
+        String filePath = dir +"/" + param.getScript();
+        builder.result(readForPage(filePath,1, 2, parameterMap.get("column_separator")));
         return builder.build();
     }
 
@@ -72,19 +82,53 @@ public class LocalFileStorageExecutor implements StorageExecutor {
         return Collections.emptyList();
     }
 
-    private ListWithQueryColumn readForPage(String filePath, int pageNumber, int pageSize) throws Exception{
+    private Map<String, Object> readForOne(String filePath, String columnSeparator) throws Exception {
+        Map<String, Object> rowMap = new LinkedHashMap<>();
+        List<String> headerList = readPartFileContent(filePath,0,1);
+        if (CollectionUtils.isNotEmpty(headerList)) {
+            String header = headerList.get(0);
+            String[] headerTypeList = header.split(columnSeparator);
+            Map<Integer, String> keyMap = new HashMap<>();
+            for (int i = 0; i < headerTypeList.length; i++) {
+                String[] columnSplit = headerTypeList[i].split("@@");
+                if (columnSplit.length == 2) {
+                    keyMap.put(i, columnSplit[0].trim());
+                } else {
+                    keyMap.put(i, headerTypeList[i].trim());
+                }
+            }
+            List<String> rowList = readPartFileContent(filePath,1,2);
+            if (CollectionUtils.isNotEmpty(rowList)) {
+                String content = rowList.get(0);
+                String[] rowDataList = content.split(columnSeparator);
+
+                for (int i=0; i<rowDataList.length; i++) {
+                    rowMap.put(keyMap.get(i),rowDataList[i].trim());
+                }
+            }
+        }
+
+        return rowMap;
+    }
+
+    private ListWithQueryColumn readForPage(String filePath, int pageNumber, int pageSize, String columnSeparator) throws Exception {
         int startRow = (pageNumber - 1) * pageSize + 1;
         ListWithQueryColumn listWithQueryColumn = new ListWithQueryColumn();
         List<String> headerList = readPartFileContent(filePath,0,1);
         if (CollectionUtils.isNotEmpty(headerList)) {
             String header = headerList.get(0);
-            String[] headerTypeList = header.split("\001");
+            String[] headerTypeList = header.split(columnSeparator);
             Map<Integer, String> keyMap = new HashMap<>();
             List<QueryColumn> queryColumns = new ArrayList<>();
             for (int i = 0; i < headerTypeList.length; i++) {
                 String[] columnSplit = headerTypeList[i].split("@@");
-                keyMap.put(i, columnSplit[0]);
-                queryColumns.add(new QueryColumn(columnSplit[0], columnSplit[1]));
+                keyMap.put(i, columnSplit[0].trim());
+                if (columnSplit.length == 2) {
+                    queryColumns.add(new QueryColumn(columnSplit[0], columnSplit[1]));
+                } else {
+                    queryColumns.add(new QueryColumn(columnSplit[0], ""));
+                }
+
             }
             listWithQueryColumn.setColumns(queryColumns);
 
@@ -93,10 +137,10 @@ public class LocalFileStorageExecutor implements StorageExecutor {
             rowList = readPartFileContent(filePath,startRow,pageSize);
             if (CollectionUtils.isNotEmpty(rowList)) {
                 for (String row: rowList) {
-                    String[] rowDataList = row.split("\001");
+                    String[] rowDataList = row.split(columnSeparator);
                     Map<String, Object> rowMap = new LinkedHashMap<>();
                     for (int i=0; i<rowDataList.length; i++) {
-                        rowMap.put(keyMap.get(i),rowDataList[i]);
+                        rowMap.put(keyMap.get(i).trim(),rowDataList[i].trim());
                     }
                     resultList.add(rowMap);
                 }

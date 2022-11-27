@@ -178,10 +178,10 @@ public class EMailSender {
             StringBuilder contents = new StringBuilder(100);
             for (JsonNode jsonNode : list) {
                 contents.append(EmailConstants.TR);
-                contents.append(EmailConstants.TD).append(jsonNode.toString()).append(EmailConstants.TD_END);
+                contents.append(EmailConstants.TD).append(jsonNode.toString().replace("\"", "")).append(EmailConstants.TD_END);
                 contents.append(EmailConstants.TR_END);
             }
-            return EmailConstants.HTML_HEADER_PREFIX + content + EmailConstants.BODY_HTML_TAIL;
+            return EmailConstants.HTML_HEADER_PREFIX + contents.toString() + EmailConstants.TABLE_HTML_TAIL + EmailConstants.BODY_HTML_TAIL;
         }
         return content;
     }

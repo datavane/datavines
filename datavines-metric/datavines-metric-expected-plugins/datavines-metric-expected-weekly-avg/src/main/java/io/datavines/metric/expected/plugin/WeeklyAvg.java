@@ -24,7 +24,7 @@ public class WeeklyAvg implements ExpectedValue {
 
     @Override
     public String getName() {
-        return "weekly_range.weekly_avg";
+        return "weekly_avg";
     }
 
     @Override

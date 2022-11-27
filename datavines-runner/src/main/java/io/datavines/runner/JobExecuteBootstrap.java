@@ -74,8 +74,8 @@ public class JobExecuteBootstrap {
         jobExecutionRequest.setErrorDataStorageParameter(JSONUtils.toJsonString(submitJob.getErrorDataStorageParameter()));
         jobExecutionRequest.setValidateResultDataStorageType(submitJob.getValidateResultDataStorageType());
         jobExecutionRequest.setValidateResultDataStorageParameter(JSONUtils.toJsonString(submitJob.getValidateResultDataStorageParameter()));
-        jobExecutionRequest.setNotificationType(submitJob.getNotificationType());
-        jobExecutionRequest.setNotificationParameter(JSONUtils.toJsonString(submitJob.getNotificationParameter()));
+        jobExecutionRequest.setNotificationParameters(JSONUtils.toJsonString(submitJob.getNotificationParameters()));
+        jobExecutionRequest.setEn(submitJob.isLanguageEn());
         Configurations configurations = new Configurations(CommonPropertyUtils.getProperties());
         JobRunner jobRunner = new JobRunner(jobExecutionRequest, configurations);
         jobRunner.run();

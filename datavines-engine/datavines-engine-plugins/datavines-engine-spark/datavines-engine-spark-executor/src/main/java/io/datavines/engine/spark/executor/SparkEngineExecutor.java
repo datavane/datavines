@@ -129,7 +129,7 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
         sparkParameters.setMainArgs("\""
                 + StringUtils.replaceDoubleBrackets(StringUtils.escapeJava(JSONUtils.toJsonString(configuration))) + "\"");
 
-        sparkParameters.setMainClass("io.datavines.engine.spark.core.SparkBaseDataVinesBootstrap");
+        sparkParameters.setMainClass("io.datavines.engine.spark.core.SparkDataVinesBootstrap");
 
         String others = sparkParameters.getOthers();
         if (StringUtils.isNotEmpty(others)) {

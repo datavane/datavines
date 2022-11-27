@@ -33,6 +33,6 @@
 
     <modules>
         <module>datavines-engine-spark</module>
-        <module>datavines-engine-jdbc</module>
+        <module>datavines-engine-local</module>
     </modules>
 </project>

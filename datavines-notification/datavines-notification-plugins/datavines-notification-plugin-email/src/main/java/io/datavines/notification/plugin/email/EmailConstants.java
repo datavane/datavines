@@ -62,8 +62,10 @@ public class EmailConstants {
             .append("<style type=\"text/css\">")
             .append("</style>")
             .append("</head>")
-            .append("<body style=\"margin:0;padding:0\"><table border=\"1px\" cellpadding=\"5px\" cellspacing=\"-10px\"> ")
+            .append("<body style=\"margin:0;padding:0\"><table border=\"1px\" cellpadding=\"5px\" cellspacing=\"-10px\" style=\"font-size: 15px;\"> ")
             .toString();
+
+    public static final String TABLE_HTML_TAIL = "</table></html>";
 
     public static final String BODY_HTML_TAIL = "</body></html>";
 

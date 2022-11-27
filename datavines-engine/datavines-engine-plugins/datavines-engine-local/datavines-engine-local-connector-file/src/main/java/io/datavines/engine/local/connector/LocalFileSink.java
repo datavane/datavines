@@ -1,0 +1,105 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+package io.datavines.engine.local.connector;
+
+import io.datavines.common.config.CheckResult;
+import io.datavines.common.config.Config;
+import io.datavines.common.config.enums.SinkType;
+import io.datavines.common.utils.StringUtils;
+import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.engine.api.env.RuntimeEnvironment;
+import io.datavines.engine.local.api.LocalRuntimeEnvironment;
+import io.datavines.engine.local.api.LocalSink;
+import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.engine.local.api.utils.FileUtils;
+import io.datavines.engine.local.api.utils.LoggerFactory;
+import org.slf4j.Logger;
+
+import java.io.File;
+import java.util.*;
+
+import static io.datavines.engine.api.ConfigConstants.JOB_EXECUTION_ID;
+import static io.datavines.engine.api.ConfigConstants.SQL;
+import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
+
+public class LocalFileSink implements LocalSink {
+
+    private Logger logger = LoggerFactory.getLogger(LocalFileSink.class);
+
+    private Config config = new Config();
+
+    @Override
+    public void output(List<ResultList> resultList, LocalRuntimeEnvironment env) {
+
+        Map<String,String> inputParameter = new HashMap<>();
+        setExceptedValue(config, resultList, inputParameter);
+
+        String validateResultDataDir = config.getString("data_dir") + File.separator + config.getString(JOB_EXECUTION_ID);
+
+        switch (SinkType.of(config.getString(PLUGIN_TYPE))){
+            case ERROR_DATA:
+                break;
+            case ACTUAL_VALUE:
+            case VALIDATE_RESULT:
+                String sql = config.getString(SQL);
+                sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
+                FileUtils.writeToLocal(parseSqlToList(sql), validateResultDataDir,config.getString(PLUGIN_TYPE).toLowerCase());
+                logger.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    @Override
+    public void prepare(RuntimeEnvironment env) {
+
+    }
+
+    @Override
+    public void setConfig(Config config) {
+        if(config != null) {
+            this.config = config;
+        }
+    }
+
+    @Override
+    public Config getConfig() {
+        return config;
+    }
+
+    @Override
+    public CheckResult checkConfig() {
+        return new CheckResult(true, "");
+    }
+
+    private static List<String> parseSqlToList(String sql) {
+        if (StringUtils.isEmpty(sql)) {
+            return null;
+        }
+
+        String[] values = sql.substring(sql.indexOf("("))
+                .replaceAll("\\(","")
+                .replaceAll("\\)","")
+                .replaceAll("`","")
+                .replaceAll("'","")
+                .split("VALUES");
+
+        return Arrays.asList(values);
+    }
+}

@@ -37,7 +37,7 @@ public class ColumnDuplicate extends BaseSingleTableColumn {
 
     @Override
     public String getZhName() {
-        return "重复值检测";
+        return "重复值检查";
     }
 
     @Override

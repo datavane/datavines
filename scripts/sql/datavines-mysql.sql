@@ -500,9 +500,9 @@ CREATE TABLE `dv_catalog_schema_change` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `entity_uuid` varchar(64) NOT NULL COMMENT '实体uuid',
     `change_type` varchar(64) NOT NULL COMMENT '变更类型',
-    `database` varchar(64) DEFAULT NULL COMMENT '数据库',
-    `table` varchar(64) DEFAULT NULL COMMENT '表',
-    `column` varchar(64) DEFAULT NULL COMMENT '列',
+    `database_name` varchar(64) DEFAULT NULL COMMENT '数据库',
+    `table_name` varchar(64) DEFAULT NULL COMMENT '表',
+    `column_name` varchar(64) DEFAULT NULL COMMENT '列',
     `change_before` text NOT NULL COMMENT '变更前',
     `change_after` text NOT NULL COMMENT '变更后',
     `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
@@ -577,7 +577,7 @@ CREATE TABLE `dv_catalog_tag` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `dv_catalog_tag_category`;
-CREATE TABLE `dv_catalog_tag` (
+CREATE TABLE `dv_catalog_tag_category` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `uuid` varchar(64) NOT NULL,
   `category_uuid` varchar(64) NOT NULL,

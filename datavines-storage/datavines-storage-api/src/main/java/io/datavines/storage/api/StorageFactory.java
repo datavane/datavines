@@ -18,6 +18,8 @@ package io.datavines.storage.api;
 
 import io.datavines.spi.SPI;
 
+import java.util.Map;
+
 @SPI
 public interface StorageFactory {
 
@@ -26,4 +28,8 @@ public interface StorageFactory {
     String getCategory();
 
     StorageExecutor getStorageExecutor();
+
+    String getErrorDataScript(Map<String, String> configMap);
+
+    String getValidateResultDataScript(Map<String, String> configMap);
 }

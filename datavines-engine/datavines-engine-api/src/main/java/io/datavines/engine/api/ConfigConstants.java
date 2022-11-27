@@ -65,6 +65,7 @@ public class ConfigConstants {
     public static final String JOB_EXECUTION_ID = "job_execution_id";
     public static final String ERROR_DATA_DIR = "error_data_dir";
     public static final String ERROR_DATA_FILE_NAME = "error_data_file_name";
+    public static final String VALIDATE_RESULT_DATA_DIR = "validate_result_data_dir";
 
     public static final String DATABASE = "database";
     public static final String USER = "user";
@@ -76,6 +77,7 @@ public class ConfigConstants {
     public static final String INPUT_TABLE = "input_table";
     public static final String OUTPUT_TABLE = "output_table";
     public static final String TMP_TABLE = "tmp_table";
+    public static final String COLUMN_SEPARATOR = "column_separator";
 
     //sql dialect on regex key
     public static final String REGEX_KEY = "regex_key";

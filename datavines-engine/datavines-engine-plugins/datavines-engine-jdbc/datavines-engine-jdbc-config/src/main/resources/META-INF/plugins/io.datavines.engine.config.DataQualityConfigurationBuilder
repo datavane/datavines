@@ -1,2 +1,0 @@
-jdbc_single_table=io.datavines.engine.jdbc.config.JdbcSingleTableMetricBuilder
-jdbc_single_table_custom_sql=io.datavines.engine.jdbc.config.JdbcSingleTableCustomSqlMetricBuilder

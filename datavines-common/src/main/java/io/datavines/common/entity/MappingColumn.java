@@ -25,7 +25,9 @@ import lombok.Data;
 public class MappingColumn {
 
     private String column;
+
     private String operator;
+
     private String column2;
 
     public MappingColumn() {}

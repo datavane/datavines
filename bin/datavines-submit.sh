@@ -24,25 +24,9 @@ if [ $# -le 1 ]; then
   exit 1
 fi
 
-startStop=$1
-shift
-command=$1
-shift
-profile=$1
-shift
+filePath=$1
 
-springProfleActive=
-
-if [ -n "$profile" ]; then
-	if [ "$profile" = "mysql" ]; then
-	  springProfleActive="-Dspring.profiles.active=mysql"
-	else
-	  echo "Error: No profile named \`$profile' was found."
-	  exit 1
-	fi
-fi
-
-echo "Begin $startStop $command $profile......"
+echo "Begin Execute......"
 
 BIN_DIR=`dirname $0`
 BIN_DIR=`cd "$BIN_DIR"; pwd`
@@ -51,79 +35,14 @@ DATAVINES_HOME=$BIN_DIR/..
 source /etc/profile
 
 export JAVA_HOME=$JAVA_HOME
-export HOSTNAME=`hostname`
-
-export DATAVINES_PID_DIR=$DATAVINES_HOME/pid
-export DATAVINES_LOG_DIR=$DATAVINES_HOME/logs
-export DATAVINES_CONF_DIR=$DATAVINES_HOME/conf
-export DATAVINES_LIB_JARS=$DATAVINES_HOME/libs/*
-
+export DATAVINES_LIB_JARS=$DATAVINES_HOME/libs/
 export DATAVINES_OPTS="-server -Xmx16g -Xms1g -Xss512k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
-export STOP_TIMEOUT=5
-
-if [ ! -d "$DATAVINES_LOG_DIR" ]; then
-  mkdir $DATAVINES_LOG_DIR
-fi
-
-log=$DATAVINES_LOG_DIR/datavines-$command-$HOSTNAME.out
-pid=$DATAVINES_PID_DIR/datavines-$command.pid
 
 cd $DATAVINES_HOME
 
-if [ "$command" = "server" ]; then
-  LOG_FILE="-Dlogging.config=classpath:server-logback.xml $springProfleActive"
-  CLASS=io.datavines.server.DataVinesServer
+if [ $filePath ]; then
+  $JAVA_HOME/bin/java $DATAVINES_OPTS -Djava.ext.dirs=$JAVA_HOME/jre/lib/ext:$DATAVINES_LIB_JARS -classpath $DATAVINES_LIB_JARS io.datavines.runner.JobExecuteBootstrap $filePath
 else
-  echo "Error: No command named \`$command' was found."
+  echo "Error: No filePath was found."
   exit 1
 fi
-
-case $startStop in
-  (start)
-    [ -w "$DATAVINES_PID_DIR" ] ||  mkdir -p "$DATAVINES_PID_DIR"
-
-    if [ -f $pid ]; then
-      if kill -0 `cat $pid` > /dev/null 2>&1; then
-        echo $command running as process `cat $pid`.  Stop it first.
-        exit 1
-      fi
-    fi
-
-    echo starting $command, logging to $log
-
-    exec_command="$LOG_FILE $DATAVINES_OPTS -classpath $DATAVINES_CONF_DIR:$DATAVINES_LIB_JARS $CLASS"
-
-    echo "nohup $JAVA_HOME/bin/java $exec_command > $log 2>&1 &"
-    nohup $JAVA_HOME/bin/java $exec_command > $log 2>&1 &
-    echo $! > $pid
-    ;;
-
-  (stop)
-
-      if [ -f $pid ]; then
-        TARGET_PID=`cat $pid`
-        if kill -0 $TARGET_PID > /dev/null 2>&1; then
-          echo stopping $command
-          kill $TARGET_PID
-          sleep $STOP_TIMEOUT
-          if kill -0 $TARGET_PID > /dev/null 2>&1; then
-            echo "$command did not stop gracefully after $STOP_TIMEOUT seconds: killing with kill -9"
-            kill -9 $TARGET_PID
-          fi
-        else
-          echo no $command to stop
-        fi
-        rm -f $pid
-      else
-        echo no $command to stop
-      fi
-      ;;
-
-  (*)
-    echo $usage
-    exit 1
-    ;;
-
-esac
-
-echo "End $startStop $command $profile."

@@ -18,11 +18,31 @@ package io.datavines.runner;
 
 import io.datavines.common.config.Configurations;
 import io.datavines.common.entity.JobExecutionRequest;
+import io.datavines.common.entity.ListWithQueryColumn;
+import io.datavines.common.entity.job.NotificationParameter;
+import io.datavines.common.enums.OperatorType;
+import io.datavines.common.param.ConnectorResponse;
+import io.datavines.common.param.ExecuteRequestParam;
+import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.LoggerUtils;
+import io.datavines.common.utils.StringUtils;
+import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.core.utils.LanguageUtils;
 import io.datavines.engine.api.engine.EngineExecutor;
+import io.datavines.engine.core.utils.JsonUtils;
+import io.datavines.metric.api.*;
+import io.datavines.notification.api.entity.SlaConfigMessage;
+import io.datavines.notification.api.entity.SlaNotificationMessage;
+import io.datavines.notification.api.entity.SlaSenderMessage;
+import io.datavines.notification.core.NotificationManager;
 import io.datavines.spi.PluginLoader;
+import io.datavines.storage.api.StorageFactory;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 public class JobRunner {
 
@@ -59,13 +79,100 @@ public class JobRunner {
             engineExecutor.after();
 
             Long jobExecutionId = jobExecutionRequest.getJobExecutionId();
-            // 获取存储插件，构造读取参数，读取结果数据，结合公式判断任务是否失败，如果失败则进行告警
-            // 获取告警插件，构造告警信息进行发送
+            String validateResultStorageType = jobExecutionRequest.getValidateResultDataStorageType();
+            StorageFactory validateResultStorageFactory =
+                    PluginLoader.getPluginLoader(StorageFactory.class).getOrCreatePlugin(validateResultStorageType);
+            if (validateResultStorageFactory == null) {
+                logger.error("validate result storage type {0} is not supported", validateResultStorageType);
+                return;
+            }
+
+            ExecuteRequestParam executeRequestParam = new ExecuteRequestParam();
+            String validateResultDataStorageParameter = jobExecutionRequest.getValidateResultDataStorageParameter();
+            executeRequestParam.setDataSourceParam(validateResultDataStorageParameter);
+
+            Map<String,String> scriptConfigMap = new HashMap<>();
+            scriptConfigMap.put("execution_id", jobExecutionId+"");
+            executeRequestParam.setScript(validateResultStorageFactory.getValidateResultDataScript(scriptConfigMap));
+            ConnectorResponse response = validateResultStorageFactory.getStorageExecutor().queryForOne(executeRequestParam);
+            if (response != null && response.getResult()!= null) {
+                ListWithQueryColumn validateResultDataList = (ListWithQueryColumn)response.getResult();
+                Map<String, Object> validateResultData = validateResultDataList.getResultList().get(0);
+                MetricExecutionResult metricExecutionResult = new MetricExecutionResult(validateResultData);
+                if (!MetricValidator.isSuccess(metricExecutionResult)) {
+                    if (StringUtils.isEmpty(jobExecutionRequest.getNotificationParameters())) {
+                        logger.warn("notification parameter is null");
+                        return;
+                    }
+
+                    List<NotificationParameter> notificationParameters =
+                            JSONUtils.toList(jobExecutionRequest.getNotificationParameters(), NotificationParameter.class);
+
+                    if (CollectionUtils.isEmpty(notificationParameters)) {
+                        logger.error("parse notification parameter error");
+                        return;
+                    }
+
+                    SlaNotificationMessage notificationMessage = new SlaNotificationMessage();
+                    notificationMessage.setMessage(buildAlertMessage(metricExecutionResult, jobExecutionRequest.getEngineType(), jobExecutionRequest.isEn()));
+                    notificationMessage.setSubject(buildAlertSubject(metricExecutionResult, jobExecutionRequest.isEn()));
+                    Map<SlaSenderMessage, Set<SlaConfigMessage>> configMap = new HashMap<>();
+                    for (NotificationParameter notificationParameter : notificationParameters) {
+                        SlaSenderMessage slaSenderMessage = new SlaSenderMessage();
+                        slaSenderMessage.setType(notificationParameter.getType());
+                        slaSenderMessage.setConfig(JSONUtils.toJsonString(notificationParameter.getConfig()));
+
+                        Set<SlaConfigMessage> set = new HashSet<>();
+                        if (MapUtils.isNotEmpty(notificationParameter.getReceiver())) {
+                            SlaConfigMessage slaConfigMessage = new SlaConfigMessage();
+                            slaConfigMessage.setType(notificationParameter.getType());
+                            slaConfigMessage.setConfig(JSONUtils.toJsonString(notificationParameter.getReceiver()));
+                            set.add(slaConfigMessage);
+                        }
+                        configMap.put(slaSenderMessage, set);
+                    }
+
+                    NotificationManager notificationManager = new NotificationManager();
+                    notificationManager.notify(notificationMessage, configMap);
+                }
+            }
+
         } catch (Exception e) {
-            logger.error("task execute failure", e);
-
-        } finally {
-
+            logger.error("validate job execute failure", e);
         }
+    }
+
+    private String buildAlertMessage(MetricExecutionResult metricExecutionResult, String engineType, boolean isEn) {
+        List<String> messages = new ArrayList<>();
+        Map<String,String> parameters = new HashMap<>();
+        parameters.put("actual_value", metricExecutionResult.getActualValue()+"");
+        parameters.put("expected_value", metricExecutionResult.getExpectedValue()+"");
+        parameters.put("threshold", metricExecutionResult.getThreshold()+"");
+        parameters.put("operator",OperatorType.of(metricExecutionResult.getOperator()).getSymbol());
+
+        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricExecutionResult.getMetricName());
+        messages.add((isEn ? "Metric" : "检查规则") + " : " + sqlMetric.getNameByLanguage(isEn));
+
+        ResultFormula resultFormula =
+                PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(metricExecutionResult.getResultFormula());
+
+        messages.add((isEn ? "Check Subject" : "检查目标") + " : " + metricExecutionResult.getDatabaseName() + "." + metricExecutionResult.getTableName() + "." + metricExecutionResult.getColumnName());
+
+        ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(engineType + "_" + metricExecutionResult.getExpectedType());
+        messages.add((isEn ? "Expected Value Type" : "期望值类型") + " : " + expectedValue.getNameByLanguage(isEn));
+
+        String resultFormulaFormat = resultFormula.getResultFormat(isEn)+" ${operator} ${threshold}";
+        messages.add((isEn ? "Result Formula" : "检查公式") + " : " + PlaceholderUtils.replacePlaceholders(resultFormulaFormat, parameters, true));
+
+        messages.add(isEn ? "Check Result : Failure" : "检查结果 : 异常" );
+
+        return JSONUtils.toJsonString(messages);
+    }
+
+    private String buildAlertSubject(MetricExecutionResult metricExecutionResult, boolean isEn) {
+        String checkSubject = metricExecutionResult.getDatabaseName() + "." + metricExecutionResult.getTableName() + "." + metricExecutionResult.getColumnName();
+        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricExecutionResult.getMetricName());
+        return  isEn ? (sqlMetric.getNameByLanguage(true) + " alerting on " + checkSubject) :
+                checkSubject + "在" + sqlMetric.getNameByLanguage(false) + "中异常";
     }
 }

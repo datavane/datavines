@@ -16,9 +16,12 @@
  */
 package io.datavines.storage.plugin;
 
+import io.datavines.common.utils.StringUtils;
 import io.datavines.storage.api.StorageConnector;
 import io.datavines.storage.api.StorageExecutor;
 import io.datavines.storage.api.StorageFactory;
+
+import java.util.Map;
 
 public class LocalFileStorageFactory implements StorageFactory {
 
@@ -35,5 +38,23 @@ public class LocalFileStorageFactory implements StorageFactory {
     @Override
     public StorageExecutor getStorageExecutor() {
         return new LocalFileStorageExecutor();
+    }
+
+    @Override
+    public String getErrorDataScript(Map<String, String> configMap) {
+        String errorDataFileName = configMap.get("error_data_file_name");
+        if (StringUtils.isNotEmpty(errorDataFileName)) {
+            return errorDataFileName + ".csv";
+        }
+        return null;
+    }
+
+    @Override
+    public String getValidateResultDataScript(Map<String, String> configMap) {
+        String executionId = configMap.get("execution_id");
+        if (StringUtils.isNotEmpty(executionId)) {
+            return executionId + "/validate_result.csv";
+        }
+        return null;
     }
 }

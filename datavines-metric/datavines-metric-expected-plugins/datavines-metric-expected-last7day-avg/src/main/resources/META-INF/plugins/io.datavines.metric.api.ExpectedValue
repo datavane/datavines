@@ -1,2 +1,2 @@
-jdbc_last_7d_avg=io.datavines.metric.expected.plugin.Last7DayAvg
+local_last_7d_avg=io.datavines.metric.expected.plugin.Last7DayAvg
 spark_last_7d_avg=io.datavines.metric.expected.plugin.SparkLast7DayAvg

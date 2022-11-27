@@ -47,7 +47,7 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
 
         List<SinkConfig> sinkConfigs = new ArrayList<>();
         //get the actual value storage parameter
-        SinkConfig actualValueSinkConfig = getValidateResultDataSinkConfig(SparkSinkSqlBuilder.getActualValueSql(),  "dv_actual_values");
+        SinkConfig actualValueSinkConfig = getValidateResultDataSinkConfig(SparkSinkSqlBuilder.getActualValueSql(),  "dv_actual_values" );
         sinkConfigs.add(actualValueSinkConfig);
 
         String taskSinkSql = SparkSinkSqlBuilder.getDefaultSinkSql();

@@ -20,6 +20,8 @@ import lombok.Data;
 
 @Data
 public class ConnectorRequestParam {
+
     private String type;
+
     protected String dataSourceParam;
 }

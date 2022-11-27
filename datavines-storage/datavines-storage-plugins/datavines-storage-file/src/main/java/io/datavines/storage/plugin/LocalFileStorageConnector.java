@@ -55,7 +55,7 @@ public class LocalFileStorageConnector implements StorageConnector {
                         isEn ? "column separator" : "列分隔符",
                         isEn ? "please enter column separator" : "请填入列分隔符",  Validate.newBuilder()
                         .setRequired(false).setMessage(isEn ? "please enter column separator" : "请填入列分隔符")
-                        .build(),",");
+                        .build(),"\001");
 
         List<PluginParams> params = new ArrayList<>();
         params.add(errorDataFileDir);

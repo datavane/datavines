@@ -128,7 +128,7 @@ const Index = ({ form, detail }: InnerProps) => {
                         {...layoutItem}
                         label={<span>{intl.formatMessage({ id: 'dv_metric_title_actuator_engine' })}</span>}
                         name="engineType"
-                        initialValue="jdbc"
+                        initialValue="local"
                         rules={[...requiredRule]}
                     >
                         <CustomSelect

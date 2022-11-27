@@ -24,7 +24,7 @@ public class MonthlyAvg implements ExpectedValue {
 
     @Override
     public String getName() {
-        return "monthly_range.monthly_avg";
+        return "monthly_avg";
     }
 
     @Override
