@@ -604,3 +604,16 @@ CREATE TABLE `dv_catalog_entity_tag_rel` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `dv_entity_tag_rel_un` (`entity_uuid`,`tag_uuid`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COMMENT='实体标签关联关系';
+
+DROP TABLE IF EXISTS `dv_catalog_entity_profile`;
+CREATE TABLE `dv_catalog_entity_profile` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `entity_uuid` varchar(64) NOT NULL COMMENT '实体UUID',
+  `metric_name` varchar(255) NOT NULL COMMENT '规则名',
+  `actual_value` text NOT NULL COMMENT '实际值',
+  `actual_value_type` varchar(255) DEFAULT NULL COMMENT '实际值类型',
+  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `dv_entity_definition_un` (`entity_uuid`,`metric_name`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体定义';
+
