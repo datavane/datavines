@@ -64,6 +64,12 @@ public class CatalogController {
         return catalogTaskService.refreshCatalog(catalogRefresh);
     }
 
+    @ApiOperation(value = "execute data profile job", response = Long.class)
+    @PostMapping(value = "/execute-data-profile-job")
+    public Object executeDataProfileJob(@RequestParam String uuid) {
+        return catalogEntityInstanceService.executeDataProfileJob(uuid);
+    }
+
     @ApiOperation(value = "get database list", response = OptionItem.class, responseContainer = "list")
     @GetMapping(value = "/list/database/{upstreamUuid}")
     public Object getDatabaseList(@PathVariable String upstreamUuid) {

@@ -61,7 +61,7 @@ public class CatalogTagController {
     }
 
     @ApiOperation(value = "create tag", response = Long.class)
-    @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createTag(@RequestBody TagCreate tagCreate) {
         return tagService.create(tagCreate);
     }
@@ -76,6 +76,12 @@ public class CatalogTagController {
     @GetMapping(value = "/list-in-category/{categoryUUID}")
     public Object listTagByCategoryUUID(@PathVariable String categoryUUID) {
         return tagService.listByCategoryUUID(categoryUUID);
+    }
+
+    @ApiOperation(value = "get tag list by entity uuid", response = CatalogTag.class, responseContainer = "list")
+    @GetMapping(value = "/list-in-entity/{entityUUID}")
+    public Object listTagByEntityUUID(@PathVariable String entityUUID) {
+        return tagService.listByEntityUUID(entityUUID);
     }
 
     @ApiOperation(value = "delete category", response = boolean.class)
@@ -97,6 +103,4 @@ public class CatalogTagController {
                                      @RequestParam("tagUUID") String tagUUID) {
         return tagService.deleteEntityTagRel(entityUUID, tagUUID);
     }
-
-
 }

@@ -61,4 +61,6 @@ public interface CatalogEntityInstanceService extends IService<CatalogEntityInst
     CatalogEntityMetricParameter getEntityMetricParameter(String uuid);
 
     IPage<CatalogEntityMetricVO> getEntityMetricList(String uuid, Integer pageNumber, Integer pageSize);
+
+    boolean executeDataProfileJob(String uuid);
 }

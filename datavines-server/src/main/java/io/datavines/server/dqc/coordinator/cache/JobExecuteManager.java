@@ -20,23 +20,16 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.sift.SiftingAppender;
 import io.datavines.common.CommonConstants;
 import io.datavines.common.config.Configurations;
-import io.datavines.common.config.DataVinesQualityConfig;
+import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.entity.JobExecutionRequest;
+import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.enums.ExecutionStatus;
-import io.datavines.common.enums.OperatorType;
 import io.datavines.common.log.JobExecutionLogDiscriminator;
 import io.datavines.common.utils.*;
-import io.datavines.common.utils.placeholder.PlaceholderUtils;
-import io.datavines.core.utils.BeanConvertUtils;
-import io.datavines.core.utils.LanguageUtils;
 import io.datavines.engine.config.DataVinesConfigurationManager;
 import io.datavines.engine.core.utils.JsonUtils;
-import io.datavines.metric.api.ExpectedValue;
-import io.datavines.metric.api.MetricExecutionResult;
-import io.datavines.metric.api.ResultFormula;
-import io.datavines.metric.api.SqlMetric;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
@@ -48,7 +41,6 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobExecution;
-import io.datavines.server.repository.entity.JobExecutionResult;
 import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.server.repository.service.JobService;
 import io.datavines.server.repository.service.SlaNotificationService;
@@ -60,13 +52,11 @@ import io.datavines.server.dqc.executor.runner.JobRunner;
 import io.datavines.server.utils.DefaultDataSourceInfoUtils;
 import io.datavines.server.utils.NamedThreadFactory;
 import io.datavines.server.utils.SpringApplicationContext;
-import io.datavines.spi.PluginLoader;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeanUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -513,10 +503,10 @@ public class JobExecuteManager {
                 jobExecution.getId(), jobExecution.getName(),
                 jobExecution.getEngineType(), jobExecution.getEngineParameter(),
                 jobExecution.getErrorDataStorageType(), jobExecution.getErrorDataStorageParameter(), jobExecution.getErrorDataFileName(),
-                "jdbc", JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
+                "mysql", JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
                 jobExecutionParameter);
-        DataVinesQualityConfig qualityConfig =
-                DataVinesConfigurationManager.generateConfiguration(inputParameter, jobExecutionInfo);
+        DataVinesJobConfig qualityConfig =
+                DataVinesConfigurationManager.generateConfiguration(jobExecution.getJobType(),inputParameter, jobExecutionInfo);
 
         jobExecutionRequest.setExecuteFilePath(jobExecution.getExecuteFilePath());
         jobExecutionRequest.setLogPath(jobExecution.getLogPath());

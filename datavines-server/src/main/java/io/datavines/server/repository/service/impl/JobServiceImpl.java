@@ -235,7 +235,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     private void executeJob(Job job, LocalDateTime scheduleTime) {
 
-        List<String> jobExecutionParameterList = buildJobExecutionParameter(job);
+        String executionParameter = buildJobExecutionParameter(job);
 
         long jobId = job.getId();
         Env env = envMapper.selectById(job.getEnv());
@@ -263,35 +263,34 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             }
         }
 
-        for (String param: jobExecutionParameterList) {
-           // add a jobExecution
-            job.setId(null);
-            JobExecution jobExecution = new JobExecution();
-            BeanUtils.copyProperties(job, jobExecution);
-            jobExecution.setJobId(jobId);
-            jobExecution.setParameter(param);
-            jobExecution.setName(job.getName() + "_task_" + System.currentTimeMillis());
-            jobExecution.setJobType(job.getType());
-            jobExecution.setErrorDataStorageType(errorDataStorageType);
-            jobExecution.setErrorDataStorageParameter(errorDataStorageParameter);
-            jobExecution.setErrorDataFileName(getErrorDataFileName(job.getParameter()));
-            jobExecution.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
-            jobExecution.setTenantCode(tenantStr);
-            jobExecution.setEnv(envStr);
-            jobExecution.setSubmitTime(LocalDateTime.now());
-            jobExecution.setScheduleTime(scheduleTime);
-            jobExecution.setCreateTime(LocalDateTime.now());
-            jobExecution.setUpdateTime(LocalDateTime.now());
+       // add a jobExecution
+        job.setId(null);
+        JobExecution jobExecution = new JobExecution();
+        BeanUtils.copyProperties(job, jobExecution);
+        jobExecution.setJobId(jobId);
+        jobExecution.setParameter(executionParameter);
+        jobExecution.setName(job.getName() + "_task_" + System.currentTimeMillis());
+        jobExecution.setJobType(job.getType());
+        jobExecution.setErrorDataStorageType(errorDataStorageType);
+        jobExecution.setErrorDataStorageParameter(errorDataStorageParameter);
+        jobExecution.setErrorDataFileName(getErrorDataFileName(job.getParameter()));
+        jobExecution.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
+        jobExecution.setTenantCode(tenantStr);
+        jobExecution.setEnv(envStr);
+        jobExecution.setSubmitTime(LocalDateTime.now());
+        jobExecution.setScheduleTime(scheduleTime);
+        jobExecution.setCreateTime(LocalDateTime.now());
+        jobExecution.setUpdateTime(LocalDateTime.now());
 
-            jobExecutionMapper.insert(jobExecution);
+        jobExecutionMapper.insert(jobExecution);
 
-            // add a command
-            Command command = new Command();
-            command.setType(CommandType.START);
-            command.setPriority(Priority.MEDIUM);
-            command.setJobExecutionId(jobExecution.getId());
-            commandMapper.insert(command);
-        }
+        // add a command
+        Command command = new Command();
+        command.setType(CommandType.START);
+        command.setPriority(Priority.MEDIUM);
+        command.setJobExecutionId(jobExecution.getId());
+        commandMapper.insert(command);
+
     }
 
     private String getJobName(String jobType, String parameter) {
@@ -344,7 +343,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         return String.format("%s_%s_%s", metric.toLowerCase(), column, System.currentTimeMillis());
     }
 
-    private List<String> buildJobExecutionParameter(Job job) {
+    private String buildJobExecutionParameter(Job job) {
         DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
         Map<String, Object> srcSourceConfigMap = JSONUtils.toMap(dataSource.getParam(), String.class, Object.class);
         ConnectionInfo srcConnectionInfo = new ConnectionInfo();

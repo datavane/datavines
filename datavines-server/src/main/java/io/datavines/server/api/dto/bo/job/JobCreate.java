@@ -33,7 +33,7 @@ public class JobCreate {
 
     private long dataSourceId2;
 
-    private String executePlatformType = "local";
+    private String executePlatformType = "client";
 
     private String executePlatformParameter;
 

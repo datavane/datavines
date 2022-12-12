@@ -58,7 +58,7 @@ public class MultiTableValueComparison implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getActualValue() {
+    public ExecuteSql getActualValue(String uniqueKey) {
         return null;
     }
 

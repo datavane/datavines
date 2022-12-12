@@ -29,6 +29,7 @@ import io.datavines.server.repository.mapper.CatalogTagMapper;
 import io.datavines.server.repository.service.CatalogEntityTagRelService;
 import io.datavines.server.repository.service.CatalogTagService;
 import io.datavines.server.utils.ContextHolder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service("catalogTagService")
 public class CatalogTagServiceImpl extends ServiceImpl<CatalogTagMapper, CatalogTag> implements CatalogTagService {
@@ -69,6 +71,18 @@ public class CatalogTagServiceImpl extends ServiceImpl<CatalogTagMapper, Catalog
     @Override
     public List<CatalogTag> listByCategoryUUID(String categoryUUID) {
         return list(new QueryWrapper<CatalogTag>().eq("category_uuid", categoryUUID));
+    }
+
+    @Override
+    public List<CatalogTag> listByEntityUUID(String entityUUID) {
+        List<CatalogEntityTagRel> relList = catalogEntityTagRelService
+                .list(new QueryWrapper<CatalogEntityTagRel>().eq("entity_uuid", entityUUID));
+
+        if (CollectionUtils.isEmpty(relList)) {
+            return null;
+        }
+
+        return list(new QueryWrapper<CatalogTag>().in("uuid", relList.stream().map(CatalogEntityTagRel::getTagUuid).collect(Collectors.toList())));
     }
 
     @Override

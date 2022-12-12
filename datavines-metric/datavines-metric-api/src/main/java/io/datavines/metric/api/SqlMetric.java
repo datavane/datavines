@@ -54,7 +54,7 @@ public interface SqlMetric {
      * get actual value execute sql
      * @return ExecuteSql
      */
-    ExecuteSql getActualValue();
+    ExecuteSql getActualValue(String uniqueKey);
 
     /**
      * get actual name

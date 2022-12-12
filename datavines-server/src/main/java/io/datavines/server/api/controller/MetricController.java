@@ -147,12 +147,12 @@ public class MetricController {
         Set<String> expectedValueList = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
         Set<String> afterFilterSet = new HashSet<>();
         expectedValueList.forEach(it -> {
-            afterFilterSet.add(it.replace("jdbc_", "").replace("spark_",""));
+            afterFilterSet.add(it.replace("local_", "").replace("spark_",""));
         });
 
         List<Item> items = new ArrayList<>();
         afterFilterSet.forEach(it -> {
-            ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin("jdbc_" + it);
+            ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin("local_" + it);
             if (expectedValue != null) {
                 Item item = new Item(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()),it);
                 items.add(item);

@@ -29,7 +29,7 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
-import io.datavines.engine.config.DataQualityConfigurationBuilder;
+import io.datavines.engine.config.JobConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
@@ -197,54 +197,54 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
     }
 
     private void checkJobExecutionParameter(JobExecutionParameter jobExecutionParameter, String engineType) throws DataVinesServerException {
-        String metricType = jobExecutionParameter.getMetricType();
-        Set<String> metricPluginSet = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
-        if (!metricPluginSet.contains(metricType)) {
-            throw new DataVinesServerException(String.format("%s metric does not supported", metricType));
-        }
-
-        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricType);
-        CheckResult checkResult = sqlMetric.validateConfig(jobExecutionParameter.getMetricParameter());
-        if (checkResult== null || !checkResult.isSuccess()) {
-            throw new DataVinesServerException(checkResult== null? "check error": checkResult.getMsg());
-        }
-
-        String configBuilder = engineType + "_" + sqlMetric.getType().getDescription();
-        Set<String> configBuilderPluginSet = PluginLoader.getPluginLoader(DataQualityConfigurationBuilder.class).getSupportedPlugins();
-        if (!configBuilderPluginSet.contains(configBuilder)) {
-            throw new DataVinesServerException(String.format("%s engine does not supported %s metric", engineType, metricType));
-        }
-
-        ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
-        if (connectorParameter != null) {
-            String connectorType = connectorParameter.getType();
-            Set<String> connectorFactoryPluginSet =
-                    PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
-            if (!connectorFactoryPluginSet.contains(connectorType)) {
-                throw new DataVinesServerException(String.format("%s connector does not supported", connectorType));
-            }
-
-            if (LOCAL.equals(engineType)) {
-                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(connectorType);
-                if (!JDBC.equals(connectorFactory.getCategory())) {
-                    throw new DataVinesServerException(String.format("jdbc engine does not supported %s connector", connectorType));
-                }
-            }
-        } else {
-            throw new DataVinesServerException("connector parameter should not be null");
-        }
-
-        String expectedMetric = jobExecutionParameter.getExpectedType();
-        Set<String> expectedValuePluginSet = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
-        if (!expectedValuePluginSet.contains(expectedMetric)) {
-            throw new DataVinesServerException(String.format("%s expected value does not supported", metricType));
-        }
-
-        String resultFormula = jobExecutionParameter.getResultFormula();
-        Set<String> resultFormulaPluginSet = PluginLoader.getPluginLoader(ResultFormula.class).getSupportedPlugins();
-        if (!resultFormulaPluginSet.contains(resultFormula)) {
-            throw new DataVinesServerException(String.format("%s result formula does not supported", metricType));
-        }
+//        String metricType = jobExecutionParameter.getMetricType();
+//        Set<String> metricPluginSet = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+//        if (!metricPluginSet.contains(metricType)) {
+//            throw new DataVinesServerException(String.format("%s metric does not supported", metricType));
+//        }
+//
+//        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricType);
+//        CheckResult checkResult = sqlMetric.validateConfig(jobExecutionParameter.getMetricParameter());
+//        if (checkResult== null || !checkResult.isSuccess()) {
+//            throw new DataVinesServerException(checkResult== null? "check error": checkResult.getMsg());
+//        }
+//
+//        String configBuilder = engineType + "_" + sqlMetric.getType().getDescription();
+//        Set<String> configBuilderPluginSet = PluginLoader.getPluginLoader(JobConfigurationBuilder.class).getSupportedPlugins();
+//        if (!configBuilderPluginSet.contains(configBuilder)) {
+//            throw new DataVinesServerException(String.format("%s engine does not supported %s metric", engineType, metricType));
+//        }
+//
+//        ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
+//        if (connectorParameter != null) {
+//            String connectorType = connectorParameter.getType();
+//            Set<String> connectorFactoryPluginSet =
+//                    PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
+//            if (!connectorFactoryPluginSet.contains(connectorType)) {
+//                throw new DataVinesServerException(String.format("%s connector does not supported", connectorType));
+//            }
+//
+//            if (LOCAL.equals(engineType)) {
+//                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(connectorType);
+//                if (!JDBC.equals(connectorFactory.getCategory())) {
+//                    throw new DataVinesServerException(String.format("jdbc engine does not supported %s connector", connectorType));
+//                }
+//            }
+//        } else {
+//            throw new DataVinesServerException("connector parameter should not be null");
+//        }
+//
+//        String expectedMetric = jobExecutionParameter.getExpectedType();
+//        Set<String> expectedValuePluginSet = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
+//        if (!expectedValuePluginSet.contains(expectedMetric)) {
+//            throw new DataVinesServerException(String.format("%s expected value does not supported", metricType));
+//        }
+//
+//        String resultFormula = jobExecutionParameter.getResultFormula();
+//        Set<String> resultFormulaPluginSet = PluginLoader.getPluginLoader(ResultFormula.class).getSupportedPlugins();
+//        if (!resultFormulaPluginSet.contains(resultFormula)) {
+//            throw new DataVinesServerException(String.format("%s result formula does not supported", metricType));
+//        }
     }
 
     @Override

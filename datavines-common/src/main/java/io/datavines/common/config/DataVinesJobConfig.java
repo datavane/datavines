@@ -23,7 +23,7 @@ import java.util.List;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Preconditions;
 
-public class DataVinesQualityConfig implements IConfig {
+public class DataVinesJobConfig implements IConfig {
 
     @JsonProperty("name")
     private String name;
@@ -40,13 +40,13 @@ public class DataVinesQualityConfig implements IConfig {
     @JsonProperty("sinks")
     private List<SinkConfig> sinkParameters;
 
-    public DataVinesQualityConfig(){}
+    public DataVinesJobConfig(){}
 
-    public DataVinesQualityConfig(String name,
-                                  EnvConfig envConfig,
-                                  List<SourceConfig> sourceParameters,
-                                  List<TransformConfig> transformParameters,
-                                  List<SinkConfig> sinkParameters) {
+    public DataVinesJobConfig(String name,
+                              EnvConfig envConfig,
+                              List<SourceConfig> sourceParameters,
+                              List<TransformConfig> transformParameters,
+                              List<SinkConfig> sinkParameters) {
         this.name = name;
         this.envConfig = envConfig;
         this.sourceParameters = sourceParameters;

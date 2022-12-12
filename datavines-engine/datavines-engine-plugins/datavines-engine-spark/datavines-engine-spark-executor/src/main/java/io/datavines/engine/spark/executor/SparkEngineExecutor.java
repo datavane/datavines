@@ -28,7 +28,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 
 import io.datavines.common.config.Configurations;
-import io.datavines.common.config.DataVinesQualityConfig;
+import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.entity.ProcessResult;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.LoggerUtils;
@@ -123,8 +123,8 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
             }
         }
 
-        DataVinesQualityConfig configuration =
-                JSONUtils.parseObject(jobExecutionRequest.getApplicationParameter(), DataVinesQualityConfig.class);
+        DataVinesJobConfig configuration =
+                JSONUtils.parseObject(jobExecutionRequest.getApplicationParameter(), DataVinesJobConfig.class);
 
         sparkParameters.setMainArgs("\""
                 + StringUtils.replaceDoubleBrackets(StringUtils.escapeJava(JSONUtils.toJsonString(configuration))) + "\"");

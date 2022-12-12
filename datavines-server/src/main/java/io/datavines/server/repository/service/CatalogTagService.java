@@ -32,6 +32,8 @@ public interface CatalogTagService extends IService<CatalogTag> {
 
     List<CatalogTag> listByCategoryUUID(String categoryUUID);
 
+    List<CatalogTag> listByEntityUUID(String entityUUID);
+
     boolean addEntityTagRel(String entityUUID, String tagUUID);
 
     boolean deleteEntityTagRel(String entityUUID, String tagUUID);

@@ -17,6 +17,7 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.connector.api.ConnectorParameterConverter;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.HashMap;
 import java.util.Map;

@@ -107,7 +107,7 @@ public class MultiTableAccuracy implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getActualValue() {
+    public ExecuteSql getActualValue(String uniqueKey) {
         ExecuteSql executeSql = new ExecuteSql();
         executeSql.setResultTable("invalidate_count");
         executeSql.setSql(actualValueSql.toString());

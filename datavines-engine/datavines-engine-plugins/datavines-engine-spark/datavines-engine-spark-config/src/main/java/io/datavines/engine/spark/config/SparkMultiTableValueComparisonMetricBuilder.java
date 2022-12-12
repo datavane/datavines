@@ -17,36 +17,56 @@
 package io.datavines.engine.spark.config;
 
 import io.datavines.common.config.SinkConfig;
+import io.datavines.common.entity.job.BaseJobParameter;
+import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfigurationBuilder {
 
     @Override
     public void buildTransformConfigs() {
-        String metricType = jobExecutionParameter.getMetricType();
-        SqlMetric sqlMetric = PluginLoader
-                .getPluginLoader(SqlMetric.class)
-                .getNewPlugin(metricType);
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
+            for (BaseJobParameter parameter : metricJobParameterList) {
+                String metricUniqueKey = getMetricUniqueKey(parameter);
+                Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
-        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, jobExecutionInfo);
+                String metricType = parameter.getMetricType();
+                SqlMetric sqlMetric = PluginLoader
+                        .getPluginLoader(SqlMetric.class)
+                        .getNewPlugin(metricType);
+
+                MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
+            }
+        }
     }
 
     @Override
     public void buildSinkConfigs() throws DataVinesException {
 
-        inputParameter.put("expected_value", "expected_value");
-
         List<SinkConfig> sinkConfigs = new ArrayList<>();
 
-        //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(SparkSinkSqlBuilder.getMultiTableComparisonSinkSql(), "dv_job_execution_result");
-        sinkConfigs.add(taskResultSinkConfig);
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
+            for (BaseJobParameter parameter : metricJobParameterList) {
+                String metricUniqueKey = getMetricUniqueKey(parameter);
+                Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
+                metricInputParameter.put("expected_value", "expected_value");
+
+                //get the task data storage parameter
+                SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(
+                        null, SparkSinkSqlBuilder.getMultiTableComparisonSinkSql(), "dv_job_execution_result", metricInputParameter);
+                sinkConfigs.add(taskResultSinkConfig);
+            }
+        }
 
         configuration.setSinkParameters(sinkConfigs);
     }

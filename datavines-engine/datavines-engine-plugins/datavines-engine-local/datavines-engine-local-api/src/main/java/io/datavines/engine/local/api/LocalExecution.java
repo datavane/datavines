@@ -90,7 +90,9 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
                 case VALIDATE_RESULT:
                     localSink.output(taskResult, localRuntimeEnvironment);
                     break;
-
+                case PROFILE_VALUE:
+                    localSink.output(actualValue, localRuntimeEnvironment);
+                    break;
                 default:
                     break;
             }

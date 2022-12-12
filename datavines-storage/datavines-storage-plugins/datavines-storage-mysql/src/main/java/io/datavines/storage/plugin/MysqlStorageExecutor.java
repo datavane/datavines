@@ -21,12 +21,9 @@ import io.datavines.common.datasource.jdbc.utils.SqlUtils;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.utils.Md5Utils;
 import io.datavines.storage.api.StorageExecutor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
-
-import java.sql.SQLException;
 
 public class MysqlStorageExecutor implements StorageExecutor, IJdbcDataSourceInfo {
 

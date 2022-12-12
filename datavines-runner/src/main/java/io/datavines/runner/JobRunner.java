@@ -19,7 +19,9 @@ package io.datavines.runner;
 import io.datavines.common.config.Configurations;
 import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.entity.ListWithQueryColumn;
+import io.datavines.common.entity.ProcessResult;
 import io.datavines.common.entity.job.NotificationParameter;
+import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.OperatorType;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.ExecuteRequestParam;
@@ -27,9 +29,8 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.LoggerUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
-import io.datavines.core.utils.LanguageUtils;
+import io.datavines.engine.api.ConfigConstants;
 import io.datavines.engine.api.engine.EngineExecutor;
-import io.datavines.engine.core.utils.JsonUtils;
 import io.datavines.metric.api.*;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
@@ -37,6 +38,7 @@ import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.NotificationManager;
 import io.datavines.spi.PluginLoader;
 import io.datavines.storage.api.StorageFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
@@ -44,9 +46,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
+@Slf4j
 public class JobRunner {
-
-    private final Logger logger = LoggerFactory.getLogger(JobRunner.class);
 
     private final JobExecutionRequest jobExecutionRequest;
 
@@ -78,77 +79,81 @@ public class JobRunner {
             engineExecutor.execute();
             engineExecutor.after();
 
-            Long jobExecutionId = jobExecutionRequest.getJobExecutionId();
-            String validateResultStorageType = jobExecutionRequest.getValidateResultDataStorageType();
-            StorageFactory validateResultStorageFactory =
-                    PluginLoader.getPluginLoader(StorageFactory.class).getOrCreatePlugin(validateResultStorageType);
-            if (validateResultStorageFactory == null) {
-                logger.error("validate result storage type {0} is not supported", validateResultStorageType);
-                return;
-            }
+            ProcessResult processResult = engineExecutor.getProcessResult();
+            if (ExecutionStatus.FAILURE.getCode() == processResult.getExitStatusCode()) {
+                //TODO task failure notification
+            } else {
+                Long jobExecutionId = jobExecutionRequest.getJobExecutionId();
+                String validateResultStorageType = jobExecutionRequest.getValidateResultDataStorageType();
+                StorageFactory validateResultStorageFactory =
+                        PluginLoader.getPluginLoader(StorageFactory.class).getOrCreatePlugin(validateResultStorageType);
+                if (validateResultStorageFactory == null) {
+                    log.error("validate result storage type {0} is not supported", validateResultStorageType);
+                    return;
+                }
 
-            ExecuteRequestParam executeRequestParam = new ExecuteRequestParam();
-            String validateResultDataStorageParameter = jobExecutionRequest.getValidateResultDataStorageParameter();
-            executeRequestParam.setDataSourceParam(validateResultDataStorageParameter);
+                ExecuteRequestParam executeRequestParam = new ExecuteRequestParam();
+                String validateResultDataStorageParameter = jobExecutionRequest.getValidateResultDataStorageParameter();
+                executeRequestParam.setDataSourceParam(validateResultDataStorageParameter);
 
-            Map<String,String> scriptConfigMap = new HashMap<>();
-            scriptConfigMap.put("execution_id", jobExecutionId+"");
-            executeRequestParam.setScript(validateResultStorageFactory.getValidateResultDataScript(scriptConfigMap));
-            ConnectorResponse response = validateResultStorageFactory.getStorageExecutor().queryForOne(executeRequestParam);
-            if (response != null && response.getResult()!= null) {
-                ListWithQueryColumn validateResultDataList = (ListWithQueryColumn)response.getResult();
-                Map<String, Object> validateResultData = validateResultDataList.getResultList().get(0);
-                MetricExecutionResult metricExecutionResult = new MetricExecutionResult(validateResultData);
-                if (!MetricValidator.isSuccess(metricExecutionResult)) {
-                    if (StringUtils.isEmpty(jobExecutionRequest.getNotificationParameters())) {
-                        logger.warn("notification parameter is null");
-                        return;
-                    }
-
-                    List<NotificationParameter> notificationParameters =
-                            JSONUtils.toList(jobExecutionRequest.getNotificationParameters(), NotificationParameter.class);
-
-                    if (CollectionUtils.isEmpty(notificationParameters)) {
-                        logger.error("parse notification parameter error");
-                        return;
-                    }
-
-                    SlaNotificationMessage notificationMessage = new SlaNotificationMessage();
-                    notificationMessage.setMessage(buildAlertMessage(metricExecutionResult, jobExecutionRequest.getEngineType(), jobExecutionRequest.isEn()));
-                    notificationMessage.setSubject(buildAlertSubject(metricExecutionResult, jobExecutionRequest.isEn()));
-                    Map<SlaSenderMessage, Set<SlaConfigMessage>> configMap = new HashMap<>();
-                    for (NotificationParameter notificationParameter : notificationParameters) {
-                        SlaSenderMessage slaSenderMessage = new SlaSenderMessage();
-                        slaSenderMessage.setType(notificationParameter.getType());
-                        slaSenderMessage.setConfig(JSONUtils.toJsonString(notificationParameter.getConfig()));
-
-                        Set<SlaConfigMessage> set = new HashSet<>();
-                        if (MapUtils.isNotEmpty(notificationParameter.getReceiver())) {
-                            SlaConfigMessage slaConfigMessage = new SlaConfigMessage();
-                            slaConfigMessage.setType(notificationParameter.getType());
-                            slaConfigMessage.setConfig(JSONUtils.toJsonString(notificationParameter.getReceiver()));
-                            set.add(slaConfigMessage);
+                Map<String,String> scriptConfigMap = new HashMap<>();
+                scriptConfigMap.put("execution_id", jobExecutionId+"");
+                executeRequestParam.setScript(validateResultStorageFactory.getValidateResultDataScript(scriptConfigMap));
+                ConnectorResponse response = validateResultStorageFactory.getStorageExecutor().queryForOne(executeRequestParam);
+                if (response != null && response.getResult()!= null) {
+                    ListWithQueryColumn validateResultDataList = (ListWithQueryColumn)response.getResult();
+                    Map<String, Object> validateResultData = validateResultDataList.getResultList().get(0);
+                    MetricExecutionResult metricExecutionResult = new MetricExecutionResult(validateResultData);
+                    if (!MetricValidator.isSuccess(metricExecutionResult)) {
+                        if (StringUtils.isEmpty(jobExecutionRequest.getNotificationParameters())) {
+                            log.warn("notification parameter is null");
+                            return;
                         }
-                        configMap.put(slaSenderMessage, set);
-                    }
 
-                    NotificationManager notificationManager = new NotificationManager();
-                    notificationManager.notify(notificationMessage, configMap);
+                        List<NotificationParameter> notificationParameters =
+                                JSONUtils.toList(jobExecutionRequest.getNotificationParameters(), NotificationParameter.class);
+
+                        if (CollectionUtils.isEmpty(notificationParameters)) {
+                            log.error("parse notification parameter error");
+                            return;
+                        }
+
+                        SlaNotificationMessage notificationMessage = new SlaNotificationMessage();
+                        notificationMessage.setMessage(buildAlertMessage(metricExecutionResult, jobExecutionRequest.getEngineType(), jobExecutionRequest.isEn()));
+                        notificationMessage.setSubject(buildAlertSubject(metricExecutionResult, jobExecutionRequest.isEn()));
+                        Map<SlaSenderMessage, Set<SlaConfigMessage>> configMap = new HashMap<>();
+                        for (NotificationParameter notificationParameter : notificationParameters) {
+                            SlaSenderMessage slaSenderMessage = new SlaSenderMessage();
+                            slaSenderMessage.setType(notificationParameter.getType());
+                            slaSenderMessage.setConfig(JSONUtils.toJsonString(notificationParameter.getConfig()));
+
+                            Set<SlaConfigMessage> set = new HashSet<>();
+                            if (MapUtils.isNotEmpty(notificationParameter.getReceiver())) {
+                                SlaConfigMessage slaConfigMessage = new SlaConfigMessage();
+                                slaConfigMessage.setType(notificationParameter.getType());
+                                slaConfigMessage.setConfig(JSONUtils.toJsonString(notificationParameter.getReceiver()));
+                                set.add(slaConfigMessage);
+                            }
+                            configMap.put(slaSenderMessage, set);
+                        }
+
+                        NotificationManager notificationManager = new NotificationManager();
+                        notificationManager.notify(notificationMessage, configMap);
+                    }
                 }
             }
-
         } catch (Exception e) {
-            logger.error("validate job execute failure", e);
+            log.error("validate job execute failure", e);
         }
     }
 
     private String buildAlertMessage(MetricExecutionResult metricExecutionResult, String engineType, boolean isEn) {
         List<String> messages = new ArrayList<>();
         Map<String,String> parameters = new HashMap<>();
-        parameters.put("actual_value", metricExecutionResult.getActualValue()+"");
-        parameters.put("expected_value", metricExecutionResult.getExpectedValue()+"");
-        parameters.put("threshold", metricExecutionResult.getThreshold()+"");
-        parameters.put("operator",OperatorType.of(metricExecutionResult.getOperator()).getSymbol());
+        parameters.put(ConfigConstants.ACTUAL_VALUE, metricExecutionResult.getActualValue()+"");
+        parameters.put(ConfigConstants.EXPECTED_VALUE, metricExecutionResult.getExpectedValue()+"");
+        parameters.put(ConfigConstants.THRESHOLD, metricExecutionResult.getThreshold()+"");
+        parameters.put(ConfigConstants.OPERATOR, OperatorType.of(metricExecutionResult.getOperator()).getSymbol());
 
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricExecutionResult.getMetricName());
         messages.add((isEn ? "Metric" : "检查规则") + " : " + sqlMetric.getNameByLanguage(isEn));

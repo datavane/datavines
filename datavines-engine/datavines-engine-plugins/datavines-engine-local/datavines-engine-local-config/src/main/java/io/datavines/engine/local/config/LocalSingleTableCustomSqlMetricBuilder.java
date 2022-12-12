@@ -19,13 +19,17 @@ package io.datavines.engine.local.config;
 import io.datavines.common.config.TransformConfig;
 import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.common.entity.job.BaseJobParameter;
+import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,44 +41,54 @@ public class LocalSingleTableCustomSqlMetricBuilder extends LocalSingleTableMetr
     @Override
     public void buildTransformConfigs() {
 
-        String metricType = jobExecutionParameter.getMetricType();
-        SqlMetric sqlMetric = PluginLoader
-                .getPluginLoader(SqlMetric.class)
-                .getNewPlugin(metricType);
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
+            for (BaseJobParameter parameter : metricJobParameterList) {
+                String metricUniqueKey = getMetricUniqueKey(parameter);
+                Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
-        MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, jobExecutionInfo);
+                String metricType = parameter.getMetricType();
+                SqlMetric sqlMetric = PluginLoader
+                        .getPluginLoader(SqlMetric.class)
+                        .getNewPlugin(metricType);
 
-        List<TransformConfig> transformConfigs = new ArrayList<>();
-        //get custom aggregate sql
-        MetricParserUtils.setTransformerConfig(
-                inputParameter,
-                transformConfigs,
-                getCustomExecuteSql(inputParameter),
-                TransformType.ACTUAL_VALUE.getDescription());
+                MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, jobExecutionInfo);
 
-        // get expected value transform sql
-        String expectedType = jobExecutionInfo.getEngineType() + "_" + jobExecutionParameter.getExpectedType();
-        expectedValue = PluginLoader
-                .getPluginLoader(ExpectedValue.class)
-                .getNewPlugin(expectedType);
+                List<TransformConfig> transformConfigs = new ArrayList<>();
+                //get custom aggregate sql
+                MetricParserUtils.setTransformerConfig(
+                        metricInputParameter,
+                        transformConfigs,
+                        getCustomExecuteSql(metricInputParameter),
+                        TransformType.ACTUAL_VALUE.getDescription());
 
-        ExecuteSql expectedValueExecuteSql =
-                new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
+                // get expected value transform sql
+                String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
+                ExpectedValue expectedValue = PluginLoader
+                        .getPluginLoader(ExpectedValue.class)
+                        .getNewPlugin(expectedType);
 
-        inputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
+                ExecuteSql expectedValueExecuteSql =
+                        new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
 
-        if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
-            inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
+                metricInputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(metricInputParameter)));
+
+                if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
+                    metricInputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
+                }
+
+                if (expectedValue.isNeedDefaultDatasource()) {
+                    MetricParserUtils.setTransformerConfig(metricInputParameter, transformConfigs,
+                            expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());
+                } else {
+                    MetricParserUtils.setTransformerConfig(metricInputParameter, transformConfigs,
+                            expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SOURCE.getDescription());
+                }
+                configuration.setTransformParameters(transformConfigs);
+
+                metric2InputParameter.put(metricUniqueKey, metricInputParameter);
+            }
         }
-
-        if (expectedValue.isNeedDefaultDatasource()) {
-            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());
-        } else {
-            MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs,
-                    expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SOURCE.getDescription());
-        }
-        configuration.setTransformParameters(transformConfigs);
     }
 
     private ExecuteSql getCustomExecuteSql(Map<String, String> inputParameterValueResult) {

@@ -16,8 +16,10 @@
  */
 package io.datavines.common.entity;
 
+import io.datavines.common.entity.job.BaseJobParameter;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotNull;
@@ -26,21 +28,9 @@ import javax.validation.constraints.NotNull;
 @NotNull(message = "JobExecutionParameter cannot be null")
 public class JobExecutionParameter {
 
-    private String metricType;
-
-    private Map<String,Object> metricParameter;
-
     private ConnectorParameter connectorParameter;
 
     private ConnectorParameter connectorParameter2;
 
-    private String expectedType;
-
-    private Map<String, Object> expectedParameter;
-
-    private String resultFormula = "count";
-
-    private String operator = "gt";
-
-    private double threshold = 0;
+    private List<BaseJobParameter> metricJobParameterList;
 }

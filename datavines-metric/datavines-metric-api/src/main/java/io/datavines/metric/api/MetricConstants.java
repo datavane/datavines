@@ -25,6 +25,8 @@ public class MetricConstants {
 
     public static final List<ColumnInfo> ACTUAL_COLUMN_LIST = new ArrayList<>();
 
+    public static final List<ColumnInfo> PROFILE_COLUMN_LIST = new ArrayList<>();
+
     static {
         RESULT_COLUMN_LIST.add(new ColumnInfo("job_execution_id",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_type",false));
@@ -49,5 +51,11 @@ public class MetricConstants {
         ACTUAL_COLUMN_LIST.add(new ColumnInfo("data_time",false));
         ACTUAL_COLUMN_LIST.add(new ColumnInfo("create_time",false));
         ACTUAL_COLUMN_LIST.add(new ColumnInfo("update_time",false));
+
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("entity_uuid",true));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("metric_name",false));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("actual_value",true));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("actual_value_type",true));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("update_time",false));
     }
 }

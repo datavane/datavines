@@ -41,6 +41,7 @@ public class ActualValueExecutor implements ITransformExecutor {
         if (StringUtils.isNotEmpty(outputTable) && !"null".equals(outputTable)) {
             statement.execute("DROP VIEW " + outputTable);
         }
+
         statement.close();
         resultSet.close();
         return resultList;

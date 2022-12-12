@@ -23,6 +23,7 @@ public class JobExecutionParameterBuilderFactory {
     public static ParameterBuilder builder(JobType jobType){
         switch (jobType) {
             case DATA_QUALITY:
+                return new DataQualityJobParameterBuilder();
             case DATA_PROFILE:
                 return new DataQualityJobParameterBuilder();
             case DATA_RECONCILIATION:

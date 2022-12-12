@@ -17,10 +17,11 @@
 package io.datavines.runner;
 
 import io.datavines.common.config.Configurations;
-import io.datavines.common.config.DataVinesQualityConfig;
+import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.entity.job.SubmitJob;
+import io.datavines.common.enums.JobType;
 import io.datavines.common.utils.*;
 import io.datavines.engine.config.DataVinesConfigurationManager;
 import lombok.extern.slf4j.Slf4j;
@@ -60,8 +61,8 @@ public class JobExecuteBootstrap {
 
         Map<String,String> inputParameter = new HashMap<>();
 
-        DataVinesQualityConfig qualityConfig =
-                DataVinesConfigurationManager.generateConfiguration(inputParameter, jobExecutionInfo);
+        DataVinesJobConfig qualityConfig =
+                DataVinesConfigurationManager.generateConfiguration(JobType.DATA_QUALITY, inputParameter, jobExecutionInfo);
 
         JobExecutionRequest jobExecutionRequest = new JobExecutionRequest();
         jobExecutionRequest.setJobExecutionName(submitJob.getName());

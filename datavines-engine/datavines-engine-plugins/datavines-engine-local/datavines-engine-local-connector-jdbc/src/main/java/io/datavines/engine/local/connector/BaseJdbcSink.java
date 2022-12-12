@@ -103,19 +103,14 @@ public abstract class BaseJdbcSink implements LocalSink {
                 case ERROR_DATA:
                     sinkErrorData();
                     break;
-                case ACTUAL_VALUE:
-                    if(!checkTableExist(env, "dv_actual_values")) {
-                        createTable(env, getActualValueTableSql());
-                    }
                 case VALIDATE_RESULT:
-                    if(!checkTableExist(env, "dv_job_execution_result")) {
-                        createTable(env, getExecutionResultTableSql());
-                    }
-
-                    String sql = config.getString(SQL);
-                    sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
-                    log.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
-                    executeInsert(sql, env);
+                    executeDataSink(env, "dv_job_execution_result", getExecutionResultTableSql(), inputParameter);
+                    break;
+                case ACTUAL_VALUE:
+                    executeDataSink(env, "dv_actual_values", getActualValueTableSql(), inputParameter);
+                    break;
+                case PROFILE_VALUE:
+                    executeDataSink(env, "dv_catalog_entity_profile", getProfileValueTableSql(), inputParameter);
                     break;
                 default:
                     break;
@@ -123,6 +118,17 @@ public abstract class BaseJdbcSink implements LocalSink {
         } catch (SQLException e){
             log.error("sink error : {}", e.getMessage());
         }
+    }
+
+    private void executeDataSink(LocalRuntimeEnvironment env, String tableName, String createTableSql, Map<String,String> inputParameter) throws SQLException {
+        if(!checkTableExist(env, tableName)) {
+            createTable(env, createTableSql);
+        }
+
+        String sql = config.getString(SQL);
+        sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
+        log.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
+        executeInsert(sql, env);
     }
 
     private void executeInsert(String sql, LocalRuntimeEnvironment env) throws SQLException {
@@ -160,6 +166,8 @@ public abstract class BaseJdbcSink implements LocalSink {
     protected abstract String getExecutionResultTableSql();
 
     protected abstract String getActualValueTableSql();
+
+    protected abstract String getProfileValueTableSql();
 
     private ConnectionItem getConnectionItem() {
         return new ConnectionItem(config);

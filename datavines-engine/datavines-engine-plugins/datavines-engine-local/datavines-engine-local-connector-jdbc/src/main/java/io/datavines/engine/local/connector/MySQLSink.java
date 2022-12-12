@@ -30,7 +30,7 @@ import static io.datavines.engine.api.ConfigConstants.S001;
 import static io.datavines.engine.api.ConfigConstants.SRC_CONNECTOR_TYPE;
 
 @Slf4j
-public class MysqlSink extends BaseJdbcSink {
+public class MySQLSink extends BaseJdbcSink {
 
     @Override
     protected String buildCreateTableSql(String tableName, String header) {
@@ -47,7 +47,7 @@ public class MysqlSink extends BaseJdbcSink {
         }
         createTableSql.append(String.join(",", columnList));
         createTableSql.append(" )");
-        log.info("error data create table sql : {}", createTableSql.toString());
+        log.info("create error data table sql : {}", createTableSql.toString());
         return createTableSql.toString();
     }
 
@@ -89,5 +89,19 @@ public class MysqlSink extends BaseJdbcSink {
                 "    `update_time` datetime DEFAULT NULL,\n" +
                 "    PRIMARY KEY (`id`)\n" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;";
+    }
+
+    @Override
+    protected String getProfileValueTableSql() {
+        return "CREATE TABLE `dv_catalog_entity_profile` (\n" +
+                "  `id` bigint(20) NOT NULL AUTO_INCREMENT,\n" +
+                "  `entity_uuid` varchar(64) NOT NULL,\n" +
+                "  `metric_name` varchar(255) NOT NULL,\n" +
+                "  `actual_value` text NOT NULL,\n" +
+                "  `actual_value_type` varchar(255) DEFAULT NULL,\n" +
+                "  `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ,\n" +
+                "  PRIMARY KEY (`id`),\n" +
+                "  UNIQUE KEY `dv_entity_definition_un` (`entity_uuid`)\n" +
+                ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;\n";
     }
 }

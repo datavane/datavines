@@ -29,7 +29,8 @@ public enum SinkType {
      **/
     ERROR_DATA(0, "error_data"),
     VALIDATE_RESULT(1, "validate_result"),
-    ACTUAL_VALUE(2, "actual_value");
+    ACTUAL_VALUE(2, "actual_value"),
+    PROFILE_VALUE(3, "profile_value");
 
     SinkType(int code, String description){
         this.code = code;

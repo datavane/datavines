@@ -66,4 +66,25 @@ public class SinkSqlBuilder {
                 + String.join(", ", columnList)+") VALUES ("
                 + String.join(", ", columnValueList)+ ")";
     }
+
+    public static String getProfileValueSql() {
+
+        List<String> columnList = new ArrayList<>();
+        List<String> columnValueList = new ArrayList<>();
+        for (ColumnInfo columnInfo : MetricConstants.PROFILE_COLUMN_LIST) {
+
+            columnList.add("`"+columnInfo.getName()+"`");
+
+            if (columnInfo.isNeedSingleQuotation()) {
+                columnValueList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getParameterName()+"}"));
+            } else {
+                columnValueList.add("${"+columnInfo.getName()+"}");
+            }
+
+        }
+
+        return "INSERT INTO dv_catalog_entity_profile ("
+                + String.join(", ", columnList)+") VALUES ("
+                + String.join(", ", columnValueList)+ ") ON DUPLICATE KEY UPDATE actual_value = '${actual_value}',actual_value_type='${actual_value_type}',update_time=${update_time}";
+    }
 }

@@ -32,7 +32,7 @@ public class CatalogEntityMetricVO implements Serializable {
 
     private String status;
 
-    private List<CatalogEntityMetricChartVO> charts;
+    private List<MetricExecutionDashBoard> charts;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private LocalDateTime updateTime;

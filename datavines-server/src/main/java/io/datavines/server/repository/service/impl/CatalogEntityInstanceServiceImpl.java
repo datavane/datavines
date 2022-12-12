@@ -21,9 +21,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
+import io.datavines.common.entity.job.BaseJobParameter;
+import io.datavines.common.enums.DataVinesDataType;
+import io.datavines.common.enums.JobType;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.*;
 import io.datavines.server.api.dto.bo.catalog.OptionItem;
+import io.datavines.server.api.dto.bo.job.JobCreate;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
 import io.datavines.server.api.dto.vo.*;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
@@ -40,9 +44,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("catalogEntityInstanceService")
@@ -55,6 +58,9 @@ public class CatalogEntityInstanceServiceImpl
 
     @Autowired
     private JobService jobService;
+
+    @Autowired
+    private JobExecutionService jobExecutionService;
 
     @Autowired
     private CatalogEntityMetricJobRelService catalogEntityMetricJobRelService;
@@ -219,7 +225,7 @@ public class CatalogEntityInstanceServiceImpl
             table.setName(item.getDisplayName());
             table.setUuid(item.getUuid());
             table.setUpdateTime(item.getUpdateTime());
-            List<CatalogEntityInstance> columnList = getCatalogEntityInstances(upstreamId);
+            List<CatalogEntityInstance> columnList = getCatalogEntityInstances(item.getUuid());
             table.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
 
             result.add(table);
@@ -242,6 +248,7 @@ public class CatalogEntityInstanceServiceImpl
         detail.setUpdateTime(databaseInstance.getUpdateTime());
         List<CatalogEntityInstance> tableList = getCatalogEntityInstances(uuid);
         detail.setTables((long)(CollectionUtils.isEmpty(tableList)? 0 : tableList.size()));
+        detail.setMetrics(getEntityMetricCount(uuid));
 
         return detail;
     }
@@ -262,6 +269,7 @@ public class CatalogEntityInstanceServiceImpl
         detail.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
         detail.setComment(databaseInstance.getDescription());
         detail.setTags(getEntityTagCount(uuid));
+        detail.setMetrics(getEntityMetricCount(uuid));
 
         return detail;
     }
@@ -285,6 +293,7 @@ public class CatalogEntityInstanceServiceImpl
         detail.setUpdateTime(databaseInstance.getUpdateTime());
         detail.setComment(databaseInstance.getDescription());
         detail.setTags(getEntityTagCount(uuid));
+        detail.setMetrics(getEntityMetricCount(uuid));
 
         return detail;
     }
@@ -347,12 +356,85 @@ public class CatalogEntityInstanceServiceImpl
     public IPage<CatalogEntityMetricVO> getEntityMetricList(String uuid, Integer pageNumber, Integer pageSize) {
         Page<CatalogEntityMetricVO> page = new Page<>(pageNumber, pageSize);
         IPage<CatalogEntityMetricVO> entityMetricPage = catalogEntityMetricJobRelMapper.getEntityMetricPage(page, uuid);
+        String startTime = DateUtils.dateToString(DateUtils.getSomeDay(new Date(), -14));
+        String endTime = DateUtils.dateToString(DateUtils.getSomeDay(new Date(), 1));
+        entityMetricPage.getRecords().forEach(catalogEntityMetricVO -> {
+            catalogEntityMetricVO.setCharts(jobExecutionService.getMetricExecutionDashBoard(catalogEntityMetricVO.getId(), startTime ,endTime));
+        });
 
         return entityMetricPage;
     }
 
+    @Override
+    public boolean executeDataProfileJob(String uuid) {
+        CatalogEntityInstance entityInstance = getCatalogEntityInstance(uuid);
+        if (entityInstance == null) {
+            return false;
+        }
+
+        if (!"table".equalsIgnoreCase(entityInstance.getType())) {
+            return false;
+        }
+
+        List<CatalogEntityInstance> columnInstanceList = getCatalogEntityInstances(entityInstance.getUuid());
+
+        if (CollectionUtils.isEmpty(columnInstanceList)) {
+            return false;
+        }
+
+        JobCreate jobCreate = new JobCreate();
+        jobCreate.setType(JobType.DATA_PROFILE.getDescription());
+        jobCreate.setDataSourceId(entityInstance.getDatasourceId());
+        List<BaseJobParameter> jobParameters = new ArrayList<>();
+        BaseJobParameter baseJobParameter = null;
+        for (CatalogEntityInstance catalogEntityInstance : columnInstanceList) {
+            String properties = catalogEntityInstance.getProperties();
+            if (StringUtils.isEmpty(properties)) {
+                continue;
+            }
+            Map<String,String> propertiesMap = JSONUtils.toMap(properties);
+
+            DataVinesDataType dataVinesDataType = DataVinesDataType.getType(propertiesMap.get("type"));
+            if (dataVinesDataType == null) {
+                continue;
+            }
+
+            List<String> type2MetricList = dataVinesDataType.getMetricList();
+            for (String metric : type2MetricList) {
+                baseJobParameter = new BaseJobParameter();
+                baseJobParameter.setMetricType(metric);
+                Map<String,Object> metricParameter = new HashMap<>();
+                String fqn = catalogEntityInstance.getFullyQualifiedName();
+                if (StringUtils.isEmpty(fqn)) {
+                    continue;
+                }
+                String[] values = fqn.split("\\.");
+                if (values.length < 3) {
+                    continue;
+                }
+                metricParameter.put("database", values[0]);
+                metricParameter.put("table", values[1]);
+                metricParameter.put("column", values[2]);
+                metricParameter.put("entity_uuid", catalogEntityInstance.getUuid());
+                metricParameter.put("actual_value_type", "count");
+                baseJobParameter.setMetricParameter(metricParameter);
+                baseJobParameter.setExpectedType("fix_value");
+                jobParameters.add(baseJobParameter);
+            }
+        }
+
+        jobCreate.setParameter(JSONUtils.toJsonString(jobParameters));
+        jobCreate.setRunningNow(1);
+
+        return jobService.create(jobCreate) > 0;
+    }
+
     private long getEntityTagCount(String uuid) {
         return catalogEntityTagRelService.count(new QueryWrapper<CatalogEntityTagRel>().eq("entity_uuid", uuid));
+    }
+
+    private long getEntityMetricCount(String uuid) {
+        return catalogEntityMetricJobRelService.count(new QueryWrapper<CatalogEntityMetricJobRel>().eq("entity_uuid", uuid));
     }
 
 }

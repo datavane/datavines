@@ -16,21 +16,25 @@
  */
 package io.datavines.engine.config;
 
-import io.datavines.common.config.DataVinesQualityConfig;
-import io.datavines.common.entity.ConnectionInfo;
+import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.entity.JobExecutionParameter;
 
+import io.datavines.common.entity.job.BaseJobParameter;
+import io.datavines.common.entity.job.DataQualityJobParameter;
+import io.datavines.common.enums.JobType;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
+import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.List;
 import java.util.Map;
 
 public class DataVinesConfigurationManager {
 
-    private static DataVinesQualityConfig buildDataQualityConfiguration(DataQualityConfigurationBuilder builder) throws DataVinesException {
+    private static DataVinesJobConfig buildDataQualityConfiguration(JobConfigurationBuilder builder) throws DataVinesException {
         builder.buildName();
         builder.buildEnvConfig();
         builder.buildSourceConfigs();
@@ -39,7 +43,7 @@ public class DataVinesConfigurationManager {
         return builder.build();
     }
 
-    public static DataVinesQualityConfig generateConfiguration(
+    public static DataVinesJobConfig generateConfiguration(JobType jobType,
             Map<String, String> inputParameter,
             JobExecutionInfo jobExecutionInfo) throws DataVinesException {
 
@@ -52,23 +56,43 @@ public class DataVinesConfigurationManager {
         }
 
         JobExecutionParameter jobExecutionParameter = jobExecutionInfo.getJobExecutionParameter();
-
-        String metricType = jobExecutionParameter.getMetricType();
-        if (StringUtils.isEmpty(metricType)) {
-            throw new DataVinesException("metric type can not be null");
+        List<BaseJobParameter> jobParameters = jobExecutionParameter.getMetricJobParameterList();
+        if (CollectionUtils.isEmpty(jobParameters)) {
+            throw new DataVinesException("metric parameter can not be null");
         }
 
-        SqlMetric sqlMetric = PluginLoader
-                .getPluginLoader(SqlMetric.class)
-                .getNewPlugin(metricType);
+        SqlMetric sqlMetric = null;
+        for (BaseJobParameter jobParameter : jobParameters) {
+            String metricType = jobParameter.getMetricType();
+            if (StringUtils.isEmpty(metricType)) {
+                throw new DataVinesException("metric type can not be null");
+            }
+
+            sqlMetric = PluginLoader
+                    .getPluginLoader(SqlMetric.class)
+                    .getNewPlugin(metricType);
+
+            if (sqlMetric == null) {
+                throw new DataVinesException("can not find the metric: " + metricType);
+            }
+        }
 
         if (sqlMetric == null) {
-            throw new DataVinesException("can not find the metric: " + metricType);
+            throw new DataVinesException("can not find the metric");
+        }
+        JobConfigurationBuilder builder = PluginLoader
+                .getPluginLoader(JobConfigurationBuilder.class)
+                .getOrCreatePlugin(jobExecutionInfo.getEngineType() + "_" + sqlMetric.getType().getDescription());
+        switch (jobType) {
+            case DATA_PROFILE:
+                builder = PluginLoader
+                        .getPluginLoader(JobConfigurationBuilder.class)
+                        .getOrCreatePlugin(jobExecutionInfo.getEngineType() + "_data_profile");
+                default:
+                    break;
         }
 
-        DataQualityConfigurationBuilder builder = PluginLoader
-                .getPluginLoader(DataQualityConfigurationBuilder.class)
-                .getOrCreatePlugin(jobExecutionInfo.getEngineType() + "_" + sqlMetric.getType().getDescription());
+
         builder.init(inputParameter, jobExecutionInfo);
 
         return buildDataQualityConfiguration(builder);
