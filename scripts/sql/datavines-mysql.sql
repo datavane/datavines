@@ -577,7 +577,7 @@ CREATE TABLE `dv_catalog_tag` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 DROP TABLE IF EXISTS `dv_catalog_tag_category`;
-CREATE TABLE `dv_catalog_tag` (
+CREATE TABLE `dv_catalog_tag_category` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `uuid` varchar(64) NOT NULL,
   `category_uuid` varchar(64) NOT NULL,
