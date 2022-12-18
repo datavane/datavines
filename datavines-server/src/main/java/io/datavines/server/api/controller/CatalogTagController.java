@@ -20,7 +20,7 @@ import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.api.dto.bo.catalog.tag.TagCategoryCreate;
 import io.datavines.server.api.dto.bo.catalog.tag.TagCreate;
-import io.datavines.server.api.dto.vo.*;
+import io.datavines.server.api.dto.vo.catalog.CatalogTagVO;
 import io.datavines.server.repository.entity.catalog.CatalogTag;
 import io.datavines.server.repository.entity.catalog.CatalogTagCategory;
 import io.datavines.server.repository.service.*;

@@ -17,11 +17,19 @@
 package io.datavines.server.api.dto.vo;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class CatalogColumnDetailVO extends CatalogEntityBaseDetailVO {
+public class MetricItem {
 
-    private String comment;
+    public MetricItem(String label, String key, String level) {
+        this.label = label;
+        this.key = key;
+        this.level = level;
+    }
+
+    private String label;
+
+    private String key;
+
+    private String level;
 }

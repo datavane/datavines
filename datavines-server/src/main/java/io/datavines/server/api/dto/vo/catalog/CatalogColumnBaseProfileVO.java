@@ -14,16 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.api.dto.vo.catalog;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
-public class CatalogEntityBaseDetailVO implements Serializable {
+public class CatalogColumnBaseProfileVO implements Serializable {
 
     private String name;
 
@@ -31,13 +30,21 @@ public class CatalogEntityBaseDetailVO implements Serializable {
 
     private String type;
 
-    private Long metrics = 0L;
+    private Long nullCount;
 
-    private Long usages = 0L;
+    private String nullPercentage;
 
-    private Long tags = 0L;
+    private Long notNullCount;
 
+    private String notNullPercentage;
 
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private LocalDateTime updateTime;
+    private Long uniqueCount;
+
+    private String uniquePercentage;
+
+    private Long duplicateCount;
+
+    private String duplicatePercentage;
+
+    private List<DistributionItem> top10Distribution;
 }

@@ -21,13 +21,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.job.JobCreate;
 import io.datavines.server.api.dto.bo.job.JobUpdate;
 import io.datavines.server.api.dto.vo.JobVO;
 import io.datavines.server.repository.entity.Job;
 
-public interface JobService {
+public interface JobService extends IService<Job> {
 
     long create(JobCreate jobCreate) throws DataVinesServerException;
 
@@ -44,4 +45,6 @@ public interface JobService {
     IPage<JobVO> getJobPage(String searchVal, Long dataSourceId, Integer pageNumber, Integer pageSize);
 
     boolean execute(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException;
+
+    String getJobName(String jobType, String parameter);
 }

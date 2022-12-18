@@ -63,6 +63,10 @@ public interface SqlMetric {
         return "actual_value";
     }
 
+    default String getActualValueType() {
+        return MetricActualValueType.COUNT.getDescription();
+    }
+
     CheckResult validateConfig(Map<String,Object> config);
 
     Map<String, ConfigItem> getConfigMap();

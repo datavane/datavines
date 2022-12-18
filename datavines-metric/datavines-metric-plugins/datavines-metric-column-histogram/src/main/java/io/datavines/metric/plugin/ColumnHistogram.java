@@ -16,33 +16,33 @@
  */
 package io.datavines.metric.plugin;
 
+import io.datavines.common.entity.ExecuteSql;
+import io.datavines.metric.api.MetricActualValueType;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
 import java.util.Map;
-import java.util.Set;
 
-public class ColumnDuplicate extends BaseSingleTableColumn {
+public class ColumnHistogram extends BaseSingleTableColumn {
 
-    public ColumnDuplicate(){
+    public ColumnHistogram(){
         super();
-        invalidateItemsSql = new StringBuilder("select ${column} from ${table}");
     }
 
     @Override
     public String getName() {
-        return "column_duplicate";
+        return "column_histogram";
     }
 
     @Override
     public String getZhName() {
-        return "重复值检查";
+        return "数据分布检查";
     }
 
     @Override
     public MetricDimension getDimension() {
-        return MetricDimension.UNIQUENESS;
+        return MetricDimension.COMPLETENESS;
     }
 
     @Override
@@ -57,13 +57,32 @@ public class ColumnDuplicate extends BaseSingleTableColumn {
 
     @Override
     public void prepare(Map<String, String> config) {
+        super.prepare(config);
+    }
 
-        if (config.containsKey("filter")) {
-            invalidateItemsSql.append(" where ").append(config.get("filter"));
+    @Override
+    public ExecuteSql getInvalidateItems() {
+       return null;
+    }
+
+    @Override
+    public ExecuteSql getActualValue(String uniqueKey) {
+        ExecuteSql executeSql = new ExecuteSql();
+        executeSql.setResultTable("invalidate_count_"+uniqueKey);
+        StringBuilder actualValueSql = new StringBuilder();
+        actualValueSql.append("select concat(k, ':', count) as actual_value_").append(uniqueKey).append(" from (select if(${column} is null, 'NULL', ${column}) as k, count(1) as count from ${table}");
+        if (filters.size() > 0) {
+            actualValueSql.append(" where ").append(String.join(" and ", filters));
         }
 
-        if (config.containsKey("column")) {
-            invalidateItemsSql.append(" group by ${column} having count(${column}) > 1");
-        }
+        actualValueSql.append(" group by ${column} order by count desc limit 50) T");
+        executeSql.setSql(actualValueSql.toString());
+        executeSql.setErrorOutput(false);
+        return executeSql;
+    }
+
+    @Override
+    public String getActualValueType() {
+        return MetricActualValueType.LIST.getDescription();
     }
 }

@@ -26,6 +26,10 @@ import io.datavines.server.api.dto.bo.catalog.OptionItem;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
 import io.datavines.server.api.dto.vo.*;
 
+import io.datavines.server.api.dto.vo.catalog.CatalogColumnDetailVO;
+import io.datavines.server.api.dto.vo.catalog.CatalogDatabaseDetailVO;
+import io.datavines.server.api.dto.vo.catalog.CatalogEntityMetricParameter;
+import io.datavines.server.api.dto.vo.catalog.CatalogTableDetailVO;
 import io.datavines.server.repository.entity.catalog.CatalogSchemaChange;
 import io.datavines.server.repository.service.CatalogEntityInstanceService;
 import io.datavines.server.repository.service.CatalogSchemaChangeService;
@@ -118,6 +122,18 @@ public class CatalogController {
         return catalogEntityInstanceService.getColumnEntityDetail(uuid);
     }
 
+    @ApiOperation(value = "get table entity profile", response = CatalogTableDetailVO.class)
+    @GetMapping(value = "/profile/table/{uuid}")
+    public Object getTableEntityProfile(@PathVariable String uuid) {
+        return catalogEntityInstanceService.getTableEntityProfile(uuid);
+    }
+
+    @ApiOperation(value = "get column entity profile", response = CatalogTableDetailVO.class)
+    @GetMapping(value = "/profile/column/{uuid}")
+    public Object getColumnEntityProfile(@PathVariable String uuid) {
+        return catalogEntityInstanceService.getColumnEntityProfile(uuid);
+    }
+
     @ApiOperation(value = "get column entity detail", response = CatalogSchemaChange.class, responseContainer = "list")
     @GetMapping(value = "/list/schema-change/{uuid}")
     public Object getSchemaChangeList(@PathVariable String uuid) {
@@ -133,6 +149,12 @@ public class CatalogController {
     @ApiOperation(value = "get entity metric parameter", response = CatalogEntityMetricParameter.class)
     @GetMapping(value = "/entity/metric/parameter/{uuid}")
     public Object getEntityMetricParameter(@PathVariable String uuid) {
+        return catalogEntityInstanceService.getEntityMetricParameter(uuid);
+    }
+
+    @ApiOperation(value = "get entity profile", response = CatalogEntityMetricParameter.class)
+    @GetMapping(value = "/entity/profile/{uuid}")
+    public Object getEntityProfile(@PathVariable String uuid) {
         return catalogEntityInstanceService.getEntityMetricParameter(uuid);
     }
 

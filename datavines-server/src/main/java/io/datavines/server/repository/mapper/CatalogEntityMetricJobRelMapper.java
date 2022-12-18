@@ -19,7 +19,7 @@ package io.datavines.server.repository.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.datavines.server.api.dto.vo.CatalogEntityMetricVO;
+import io.datavines.server.api.dto.vo.catalog.CatalogEntityMetricVO;
 import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

@@ -21,18 +21,17 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.HashMap;
 import java.util.Map;
 
-public enum MetricLevel {
+public enum MetricActualValueType {
     /**
      * 0-database
      * 1-table
      * 2-column
      */
-    NONE(0, "none"),
-    DATABASE(1,"database"),
-    TABLE(2,"table"),
-    COLUMN(3,"column");
+    COUNT(0, "count"),
+    PERCENTAGE(0,"percentage"),
+    LIST(1,"list");
 
-    MetricLevel(int code, String description) {
+    MetricActualValueType(int code, String description) {
         this.code = code;
         this.description = description;
     }
@@ -49,15 +48,15 @@ public enum MetricLevel {
         return description;
     }
 
-    private static final Map<Integer, MetricLevel> VALUES_MAP = new HashMap<>();
+    private static final Map<Integer, MetricActualValueType> VALUES_MAP = new HashMap<>();
 
     static {
-        for (MetricLevel type : MetricLevel.values()) {
+        for (MetricActualValueType type : MetricActualValueType.values()) {
             VALUES_MAP.put(type.code,type);
         }
     }
 
-    public static MetricLevel of(Integer status) {
+    public static MetricActualValueType of(Integer status) {
         if (VALUES_MAP.containsKey(status)) {
             return VALUES_MAP.get(status);
         }

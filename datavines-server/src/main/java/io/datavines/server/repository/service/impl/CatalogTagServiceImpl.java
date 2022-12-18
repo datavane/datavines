@@ -22,7 +22,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.catalog.tag.TagCreate;
-import io.datavines.server.api.dto.vo.CatalogTagVO;
+import io.datavines.server.api.dto.vo.catalog.CatalogTagVO;
 import io.datavines.server.repository.entity.catalog.CatalogEntityTagRel;
 import io.datavines.server.repository.entity.catalog.CatalogTag;
 import io.datavines.server.repository.mapper.CatalogTagMapper;

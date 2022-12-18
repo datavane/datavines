@@ -19,7 +19,7 @@ package io.datavines.server.repository.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import io.datavines.server.api.dto.bo.catalog.tag.TagCreate;
-import io.datavines.server.api.dto.vo.CatalogTagVO;
+import io.datavines.server.api.dto.vo.catalog.CatalogTagVO;
 import io.datavines.server.repository.entity.catalog.CatalogTag;
 
 import java.util.List;

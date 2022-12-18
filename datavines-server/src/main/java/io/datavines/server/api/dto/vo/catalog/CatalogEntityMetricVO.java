@@ -14,18 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.api.dto.vo.catalog;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
 import lombok.Data;
 
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Data
-public class CatalogEntityMetricParameter {
+public class CatalogEntityMetricVO implements Serializable {
 
-    private Long dataSourceId;
+    private Long id;
 
-    private String database;
+    private String name;
 
-    private String table;
+    private String status;
 
-    private String column;
+    private List<MetricExecutionDashBoard> charts;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime updateTime;
 }

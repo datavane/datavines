@@ -14,29 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.api.dto.vo.catalog;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
 @Data
-public class DataSourceVO implements Serializable {
+public class DistributionItem {
 
-    private Long id;
-
-    private String uuid;
+    public DistributionItem(String name, Long count, String percentage) {
+        this.name = name;
+        this.count = count;
+        this.percentage = percentage;
+    }
 
     private String name;
 
-    private String type;
+    private Long count;
 
-    private String param;
-
-    private String updater;
-
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private LocalDateTime updateTime;
+    private String percentage;
 }

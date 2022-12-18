@@ -23,20 +23,10 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-public class DataSourceVO implements Serializable {
+public class RecordChartVO implements Serializable {
 
-    private Long id;
-
-    private String uuid;
-
-    private String name;
-
-    private String type;
-
-    private String param;
-
-    private String updater;
+    private Long value;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private LocalDateTime updateTime;
+    private LocalDateTime dateTime;
 }

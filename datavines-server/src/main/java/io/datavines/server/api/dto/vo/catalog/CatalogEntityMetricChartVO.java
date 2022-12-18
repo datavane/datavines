@@ -14,14 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.api.dto.vo.catalog;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class CatalogDatabaseDetailVO extends CatalogEntityBaseDetailVO {
+public class CatalogEntityMetricChartVO implements Serializable {
 
-    private Long tables = 0L;
+    private String value;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime dateTime;
 }

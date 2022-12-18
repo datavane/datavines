@@ -138,6 +138,8 @@ public class MetricParserUtils {
         newInputParameterValue.remove(ACTUAL_TABLE);
         newInputParameterValue.remove(REGEX_KEY);
         newInputParameterValue.remove(NOT_REGEX_KEY);
+        newInputParameterValue.remove("validate_result_data_dir");
+        newInputParameterValue.remove("metric_unique_key");
 
         StringBuilder sb = new StringBuilder();
         for (String value : newInputParameterValue.values()) {

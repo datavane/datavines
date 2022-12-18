@@ -24,7 +24,7 @@
         select metric_job_id from dv_catalog_entity_metric_job_rel where entity_uuid = #{uuid}
     </sql>
 
-    <select id="getEntityMetricPage" resultType="io.datavines.server.api.dto.vo.CatalogEntityMetricVO">
+    <select id="getEntityMetricPage" resultType="io.datavines.server.api.dto.vo.catalog.CatalogEntityMetricVO">
         select job.id as id, job.name as name, 'active' as status, job.update_time from `dv_job` job join (<include refid="basic_sql"/>) rel on job.id = rel.metric_job_id
         order by job.update_time desc
 

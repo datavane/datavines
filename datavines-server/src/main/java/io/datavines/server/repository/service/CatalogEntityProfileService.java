@@ -14,16 +14,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.repository.service;
 
-import lombok.Data;
+import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.repository.entity.catalog.CatalogEntityProfile;
 
-import java.io.Serializable;
+import java.util.List;
 
-@Data
-public class CatalogTagVO implements Serializable {
+public interface CatalogEntityProfileService extends IService<CatalogEntityProfile> {
 
-    private String name;
+    List<CatalogEntityProfile> getEntityProfileByUUID(String uuid);
 
-    private String uuid;
+    List<CatalogEntityProfile> getEntityProfileByUUIDAndMetric(String uuid, String metricName);
 }

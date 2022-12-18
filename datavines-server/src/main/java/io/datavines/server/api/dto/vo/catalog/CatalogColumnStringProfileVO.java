@@ -14,29 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.vo;
+package io.datavines.server.api.dto.vo.catalog;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
-public class DataSourceVO implements Serializable {
+@EqualsAndHashCode(callSuper = true)
+public class CatalogColumnStringProfileVO extends CatalogColumnBaseProfileVO {
 
-    private Long id;
+    private Long blankCount;
 
-    private String uuid;
+    private String avgLength;
 
-    private String name;
+    private String maxLength;
 
-    private String type;
+    private String maxValue;
 
-    private String param;
+    private String minLength;
 
-    private String updater;
-
-    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
-    private LocalDateTime updateTime;
+    private String minValue;
 }

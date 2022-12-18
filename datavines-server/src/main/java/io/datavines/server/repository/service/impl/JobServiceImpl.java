@@ -293,7 +293,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     }
 
-    private String getJobName(String jobType, String parameter) {
+    @Override
+    public String getJobName(String jobType, String parameter) {
         List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
 
         if (CollectionUtils.isEmpty(jobParameters)) {

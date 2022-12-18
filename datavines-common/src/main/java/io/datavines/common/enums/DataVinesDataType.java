@@ -43,7 +43,9 @@ public enum DataVinesDataType {
                             "column_min_length",
                             "column_min",
 //                          "Unique Values",
-                            "column_unique"
+                            "column_unique",
+                            "column_duplicate",
+                            "column_histogram"
                     ));
         }
     },
@@ -60,12 +62,13 @@ public enum DataVinesDataType {
                     "column_sum",
                     "column_std_dev",
                     "column_variance",
-                    "column_unique"
+                    "column_unique",
+                    "column_duplicate",
 //                    "Unique Values",
 //                    "25th Percentile",
 //                    "50th Percentile",
 //                    "75th Percentile",
-//                    "Histogram",
+                    "column_histogram"
 //                    "Margin of Error"
             ));
         }
@@ -78,10 +81,11 @@ public enum DataVinesDataType {
             return new ArrayList<>(Arrays.asList(
                     "column_null",
                     "column_not_null",
-//                    "Date Histogram",
+                    "column_histogram",
                     "column_max",
                     "column_min",
-                    "column_unique"
+                    "column_unique",
+                    "column_duplicate"
 //                    "Unique Values"
             ));
         }
@@ -94,6 +98,7 @@ public enum DataVinesDataType {
         if (StringUtils.isEmpty(type)) {
             return null;
         }
+
         type = type.toLowerCase();
         if (type.contains("int") || "decimal".equalsIgnoreCase(type) || "float".equalsIgnoreCase(type) || "double".equalsIgnoreCase(type)) {
             return NUMERIC_TYPE;
