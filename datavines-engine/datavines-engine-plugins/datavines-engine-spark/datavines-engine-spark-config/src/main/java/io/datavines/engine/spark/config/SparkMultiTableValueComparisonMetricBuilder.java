@@ -33,7 +33,7 @@ public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfig
 
     @Override
     public void buildTransformConfigs() {
-        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
@@ -54,7 +54,7 @@ public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfig
 
         List<SinkConfig> sinkConfigs = new ArrayList<>();
 
-        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);

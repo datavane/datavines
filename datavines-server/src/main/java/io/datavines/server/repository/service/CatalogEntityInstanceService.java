@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.bo.catalog.OptionItem;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
+import io.datavines.server.api.dto.vo.DataTime2ValueItem;
 import io.datavines.server.api.dto.vo.catalog.*;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 
@@ -65,7 +66,11 @@ public interface CatalogEntityInstanceService extends IService<CatalogEntityInst
 
     IPage<CatalogEntityMetricVO> getEntityMetricList(String uuid, Integer pageNumber, Integer pageSize);
 
-    boolean executeDataProfileJob(String uuid);
+    long executeDataProfileJob(String uuid);
 
-//    List<CatalogEntityProfile> getEntityProfile();
+    long executeDataProfileJob(String uuid, int runningNow);
+
+    List<DataTime2ValueItem> listTableRecords(String uuid, String starTime, String endTime);
+
+    IPage<CatalogEntityIssueVO> getEntityIssueList(String uuid, Integer pageNumber, Integer pageSize);
 }

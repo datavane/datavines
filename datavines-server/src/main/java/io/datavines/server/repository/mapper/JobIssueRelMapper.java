@@ -14,16 +14,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.bo.catalog.schedule;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+package io.datavines.server.repository.mapper;
 
-import javax.validation.constraints.NotNull;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.datavines.server.repository.entity.JobIssueRel;
+import org.apache.ibatis.annotations.Mapper;
 
-@Data
-@EqualsAndHashCode(callSuper = true)
-@NotNull(message = "Catalog Task Schedule Create Or Update cannot be null")
-public class CatalogTaskScheduleCreateOrUpdate extends CatalogTaskScheduleCreate {
-    private Long id;
+@Mapper
+public interface JobIssueRelMapper extends BaseMapper<JobIssueRel> {
 }

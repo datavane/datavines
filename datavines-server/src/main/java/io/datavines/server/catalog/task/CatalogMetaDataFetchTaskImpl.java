@@ -21,6 +21,7 @@ import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.DatabaseInfo;
 import io.datavines.common.datasource.jdbc.entity.TableColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.TableInfo;
+import io.datavines.common.enums.EntityRelType;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.GetColumnsRequestParam;
 import io.datavines.common.param.GetDatabasesRequestParam;
@@ -219,7 +220,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 CatalogEntityRel dataSource2databaseRel = new CatalogEntityRel();
                 dataSource2databaseRel.setEntity1Uuid(dataSource.getUuid());
                 dataSource2databaseRel.setEntity2Uuid(tableUUID);
-                dataSource2databaseRel.setDirection("down");
+                dataSource2databaseRel.setType(EntityRelType.CHILD.getDescription());
                 dataSource2databaseRel.setUpdateTime(LocalDateTime.now());
                 dataSource2databaseRel.setUpdateBy(0L);
                 relService.save(dataSource2databaseRel);
@@ -410,7 +411,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 CatalogEntityRel entityRel = new CatalogEntityRel();
                 entityRel.setEntity1Uuid(oldDatabaseInstance.getUuid());
                 entityRel.setEntity2Uuid(tableUUID);
-                entityRel.setDirection("down");
+                entityRel.setType(EntityRelType.CHILD.getDescription());
                 entityRel.setUpdateTime(LocalDateTime.now());
                 entityRel.setUpdateBy(0L);
                 relService.save(entityRel);
@@ -628,7 +629,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 CatalogEntityRel entityRelDO = new CatalogEntityRel();
                 entityRelDO.setEntity1Uuid(oldTableInstance.getUuid());
                 entityRelDO.setEntity2Uuid(columnUUID);
-                entityRelDO.setDirection("down");
+                entityRelDO.setType(EntityRelType.CHILD.getDescription());
                 entityRelDO.setUpdateTime(LocalDateTime.now());
                 entityRelDO.setUpdateBy(0L);
                 relService.save(entityRelDO);

@@ -315,7 +315,7 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
             ResultFormula resultFormula =
                     PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(result.getResultFormula());
             MetricExecutionDashBoard executionDashBoard = new MetricExecutionDashBoard();
-            executionDashBoard.setValue(resultFormula.getResult(result.getActualValue(), result.getExpectedValue()));
+            executionDashBoard.setValue(resultFormula.getResult(result.getActualValue(), Objects.isNull(result.getExpectedValue()) ? 0 : result.getExpectedValue()));
             executionDashBoard.setType(resultFormula.getType().getDescription());
             executionDashBoard.setDatetime(result.getCreateTime().toString());
 

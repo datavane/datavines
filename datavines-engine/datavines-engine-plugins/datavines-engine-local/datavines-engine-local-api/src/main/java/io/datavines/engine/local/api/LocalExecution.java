@@ -102,7 +102,7 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
     }
 
     @Override
-    public void stop() {
-
+    public void stop() throws Exception{
+        localRuntimeEnvironment.close();
     }
 }

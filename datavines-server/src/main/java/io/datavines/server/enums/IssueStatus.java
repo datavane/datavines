@@ -17,43 +17,49 @@
 package io.datavines.server.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import com.fasterxml.jackson.annotation.JsonValue;
 
-public enum TaskExecutePlatformType {
+import java.util.HashMap;
+import java.util.Map;
+
+public enum IssueStatus {
+
     /**
-     * 资源调度平台类型
+     * 0-data quality task
+     * 1-catalog task
      */
-    LOCAL(0,"local"),
-    YARN(1,"yarn"),
-    K8S(2,"k8s");
-
-    TaskExecutePlatformType(int code, String description){
+    GOOD(0, "good"),
+    BAD(1, "bad")
+    ;
+    IssueStatus(int code, String description){
         this.code = code;
         this.description = description;
     }
 
     @EnumValue
-    @JsonValue
-    private final int code;
+    private int code;
 
-    private final String description;
+    private String description;
 
-    public static TaskExecutePlatformType of(int code){
-        for(TaskExecutePlatformType taskExecutePlatformType : values()){
-            if(taskExecutePlatformType.getCode() == code){
-                return taskExecutePlatformType;
-            }
+    private static final Map<Integer, IssueStatus> ISSUE_STATUS_MAP = new HashMap<>();
+
+    static {
+        for (IssueStatus issueStatus : IssueStatus.values()) {
+            ISSUE_STATUS_MAP.put(issueStatus.code, issueStatus);
         }
-        throw new IllegalArgumentException("invalid type : " + code);
     }
 
-    public static TaskExecutePlatformType of(String description){
-        for(TaskExecutePlatformType taskExecutePlatformType : values()){
-            if(taskExecutePlatformType.getDescription().equals(description)){
-                return taskExecutePlatformType;
-            }
+    public static IssueStatus of(Integer status) {
+        if (ISSUE_STATUS_MAP.containsKey(status)) {
+            return ISSUE_STATUS_MAP.get(status);
         }
-        throw new IllegalArgumentException("invalid type : " + description);
+        throw new IllegalArgumentException("invalid issue status : " + status);
+    }
+
+    public static boolean isValid(Integer status) {
+        if (ISSUE_STATUS_MAP.containsKey(status)) {
+            return true;
+        }
+        return false;
     }
 
     public int getCode() {

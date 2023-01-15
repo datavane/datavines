@@ -56,7 +56,7 @@ public class DataVinesConfigurationManager {
         }
 
         JobExecutionParameter jobExecutionParameter = jobExecutionInfo.getJobExecutionParameter();
-        List<BaseJobParameter> jobParameters = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> jobParameters = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isEmpty(jobParameters)) {
             throw new DataVinesException("metric parameter can not be null");
         }

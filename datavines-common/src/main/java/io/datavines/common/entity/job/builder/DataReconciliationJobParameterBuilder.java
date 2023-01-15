@@ -44,7 +44,7 @@ public class DataReconciliationJobParameterBuilder implements ParameterBuilder {
             metricParameters.putAll(dataReconciliationJobParameter.getMetricParameter2());
             metricParameters.put("mappingColumns", JSONUtils.toJsonString(dataReconciliationJobParameter.getMappingColumns()));
             dataReconciliationJobParameter.setMetricParameter(metricParameters);
-            jobExecutionParameter.setMetricJobParameterList(new ArrayList<>(Arrays.asList(dataReconciliationJobParameter)));
+            jobExecutionParameter.setMetricParameterList(new ArrayList<>(Arrays.asList(dataReconciliationJobParameter)));
 
             ConnectorParameter connectorParameter = new ConnectorParameter();
             connectorParameter.setType(connectionInfo.getType());

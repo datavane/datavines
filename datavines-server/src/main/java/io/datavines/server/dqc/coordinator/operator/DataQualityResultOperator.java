@@ -27,16 +27,14 @@ import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.client.NotificationClient;
+import io.datavines.server.api.dto.bo.issue.IssueCreate;
 import io.datavines.server.api.dto.vo.JobExecutionResultVO;
 import io.datavines.server.enums.DqJobExecutionState;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
-import io.datavines.server.repository.service.JobService;
-import io.datavines.server.repository.service.SlaNotificationService;
-import io.datavines.server.repository.service.JobExecutionResultService;
-import io.datavines.server.repository.service.JobExecutionService;
+import io.datavines.server.repository.service.*;
 import io.datavines.server.repository.service.impl.JobExternalService;
 import io.datavines.spi.PluginLoader;
 import org.springframework.beans.BeanUtils;
@@ -56,6 +54,9 @@ public class DataQualityResultOperator {
 
     @Autowired
     private SlaNotificationService slaNotificationService;
+
+    @Autowired
+    private IssueService issueService;
     
     /**
      * When the task type is data quality, it will get the statistics value、comparison value、
@@ -112,13 +113,18 @@ public class DataQualityResultOperator {
             List<String> messages = new ArrayList<>();
             messages.add((isEn ? "Job Name : ": "作业名称: ") + jobName);
             messages.add(String.format((isEn ? "Datasource : %s [%s] : ": "数据源 : %s [%s]: ") ,dataSourceType.toUpperCase(), dataSourceName));
+            String title = buildAlertSubject(metricExecutionResult, isEn);
+            String content = buildAlertMessage(messages, metricExecutionResult, jobExecution.getEngineType(), isEn);
             message.setSubject(buildAlertSubject(metricExecutionResult, isEn));
             message.setMessage(buildAlertMessage(messages, metricExecutionResult, jobExecution.getEngineType(), isEn));
+
+            saveIssue(jobId, title, content);
 
             Map<SlaSenderMessage, Set<SlaConfigMessage>> config = slaNotificationService.getSlasNotificationConfigurationByJobId(jobId);
             if (config.isEmpty()){
                 return;
             }
+
             notificationClient.notify(message, config);
         }
     }
@@ -154,5 +160,15 @@ public class DataQualityResultOperator {
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricExecutionResult.getMetricName());
         return  isEn ? (sqlMetric.getNameByLanguage(true) + "alerting on " + checkSubject) :
                 checkSubject + "在" + sqlMetric.getNameByLanguage(false) + "中异常了";
+    }
+
+    private void saveIssue(Long jobId, String title, String content) {
+        IssueCreate issueCreate = new IssueCreate();
+        issueCreate.setTitle(title);
+        issueCreate.setContent(content);
+        issueCreate.setJobId(jobId);
+        issueCreate.setStatus("good");
+
+        issueService.create(issueCreate);
     }
 }

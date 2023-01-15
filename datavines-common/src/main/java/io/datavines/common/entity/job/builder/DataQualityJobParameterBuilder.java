@@ -45,7 +45,7 @@ public class DataQualityJobParameterBuilder implements ParameterBuilder {
                 metricJobParameter.setMetricParameter(metricParameters);
             }
 
-            jobExecutionParameter.setMetricJobParameterList(jobParameters);
+            jobExecutionParameter.setMetricParameterList(jobParameters);
 
             ConnectorParameter srcConnectorParameter = new ConnectorParameter();
             srcConnectorParameter.setType(srcConnectionInfo.getType());

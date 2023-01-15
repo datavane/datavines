@@ -32,5 +32,5 @@ public class JobExecutionParameter {
 
     private ConnectorParameter connectorParameter2;
 
-    private List<BaseJobParameter> metricJobParameterList;
+    private List<BaseJobParameter> metricParameterList;
 }

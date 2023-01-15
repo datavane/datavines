@@ -51,7 +51,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
     @Override
     protected List<SourceConfig> getSourceConfigs() throws DataVinesException {
         List<SourceConfig> sourceConfigs = new ArrayList<>();
-        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         boolean isAddValidateResultDataSource = false;
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {

@@ -40,7 +40,7 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
     @Override
     public void buildTransformConfigs() {
         List<TransformConfig> transformConfigs = new ArrayList<>();
-        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
@@ -72,7 +72,7 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
     public void buildSinkConfigs() throws DataVinesException {
         List<SinkConfig> sinkConfigs = new ArrayList<>();
 
-        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);

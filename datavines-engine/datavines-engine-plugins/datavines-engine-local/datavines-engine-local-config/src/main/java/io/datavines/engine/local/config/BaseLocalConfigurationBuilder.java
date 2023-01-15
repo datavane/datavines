@@ -47,7 +47,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
         List<SourceConfig> sourceConfigs = new ArrayList<>();
         boolean isAddValidateResultDataSource = false;
         Set<String> connectorSet = new HashSet<>();
-        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);

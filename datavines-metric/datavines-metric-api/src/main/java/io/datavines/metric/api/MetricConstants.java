@@ -56,6 +56,7 @@ public class MetricConstants {
         PROFILE_COLUMN_LIST.add(new ColumnInfo("metric_name",false));
         PROFILE_COLUMN_LIST.add(new ColumnInfo("actual_value",true));
         PROFILE_COLUMN_LIST.add(new ColumnInfo("actual_value_type",true));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("data_date",false));
         PROFILE_COLUMN_LIST.add(new ColumnInfo("update_time",false));
     }
 }

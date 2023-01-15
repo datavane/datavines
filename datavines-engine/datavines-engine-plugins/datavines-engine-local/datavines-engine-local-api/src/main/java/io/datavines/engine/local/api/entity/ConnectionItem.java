@@ -44,4 +44,10 @@ public class ConnectionItem {
         }
         return connection;
     }
+
+    public void close() throws SQLException {
+        if (connection != null) {
+            connection.close();
+        }
+    }
 }

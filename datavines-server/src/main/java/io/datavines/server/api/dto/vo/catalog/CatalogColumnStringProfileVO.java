@@ -37,4 +37,5 @@ public class CatalogColumnStringProfileVO extends CatalogColumnBaseProfileVO {
     private String minLength;
 
     private String minValue;
+
 }

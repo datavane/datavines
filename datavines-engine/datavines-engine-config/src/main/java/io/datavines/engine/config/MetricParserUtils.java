@@ -40,9 +40,10 @@ public class MetricParserUtils {
     public static void operateInputParameter(Map<String, String> inputParameter,
                                              SqlMetric sqlMetric,
                                              JobExecutionInfo jobExecutionInfo) {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
+        DateTimeFormatter datetimeFormat = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(YYYY_MM_DD);
         LocalDateTime time = LocalDateTime.now();
-        String now = df.format(time);
+        String now = datetimeFormat.format(time);
 
         inputParameter.put(METRIC_TYPE, StringUtils.wrapperSingleQuotes(sqlMetric.getType().getDescription()));
         inputParameter.put(METRIC_NAME, StringUtils.wrapperSingleQuotes(sqlMetric.getName()));
@@ -53,6 +54,10 @@ public class MetricParserUtils {
 
         if (StringUtils.isEmpty(inputParameter.get(DATA_TIME))) {
             inputParameter.put(DATA_TIME, StringUtils.wrapperSingleQuotes(now));
+        }
+
+        if (StringUtils.isEmpty(inputParameter.get(DATA_DATE))) {
+            inputParameter.put(DATA_DATE, StringUtils.wrapperSingleQuotes(dateFormat.format(time)));
         }
 
         if (StringUtils.isNotEmpty(inputParameter.get(REGEXP_PATTERN))) {

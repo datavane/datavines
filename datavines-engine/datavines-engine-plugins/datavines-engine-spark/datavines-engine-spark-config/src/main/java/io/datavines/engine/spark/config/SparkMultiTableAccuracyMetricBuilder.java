@@ -46,7 +46,7 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
     @Override
     public void buildTransformConfigs() {
 
-        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
@@ -67,7 +67,7 @@ public class SparkMultiTableAccuracyMetricBuilder extends BaseSparkConfiguration
 
         List<SinkConfig> sinkConfigs = new ArrayList<>();
 
-        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);

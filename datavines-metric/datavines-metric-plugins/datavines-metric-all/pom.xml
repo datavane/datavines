@@ -164,6 +164,12 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-column-distinct</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-metric-table-freshness</artifactId>
             <version>${project.version}</version>
         </dependency>

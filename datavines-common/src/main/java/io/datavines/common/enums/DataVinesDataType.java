@@ -44,9 +44,15 @@ public enum DataVinesDataType {
                             "column_min",
 //                          "Unique Values",
                             "column_unique",
-                            "column_duplicate",
+//                            "column_duplicate",
+                            "column_distinct",
                             "column_histogram"
                     ));
+        }
+
+        @Override
+        public String getName() {
+            return "string";
         }
     },
 
@@ -63,7 +69,8 @@ public enum DataVinesDataType {
                     "column_std_dev",
                     "column_variance",
                     "column_unique",
-                    "column_duplicate",
+//                    "column_duplicate",
+                    "column_distinct",
 //                    "Unique Values",
 //                    "25th Percentile",
 //                    "50th Percentile",
@@ -73,6 +80,10 @@ public enum DataVinesDataType {
             ));
         }
 
+        @Override
+        public String getName() {
+            return "numeric";
+        }
     },
 
     DATE_TIME_TYPE() {
@@ -85,14 +96,22 @@ public enum DataVinesDataType {
                     "column_max",
                     "column_min",
                     "column_unique",
-                    "column_duplicate"
+//                    "column_duplicate",
+                    "column_distinct"
 //                    "Unique Values"
             ));
+        }
+
+        @Override
+        public String getName() {
+            return "date_time";
         }
 
     };
 
     public abstract List<String> getMetricList();
+
+    public abstract String getName();
 
     public static DataVinesDataType getType(String type) {
         if (StringUtils.isEmpty(type)) {

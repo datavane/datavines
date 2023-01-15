@@ -83,15 +83,15 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
 
     public void close() throws SQLException {
         if(sourceConnection != null) {
-            sourceConnection.getConnection().close();
+            sourceConnection.close();
         }
 
         if(targetConnection != null) {
-            targetConnection.getConnection().close();
+            targetConnection.close();
         }
 
         if(metadataConnection != null) {
-            metadataConnection.getConnection().close();
+            metadataConnection.close();
         }
     }
 }

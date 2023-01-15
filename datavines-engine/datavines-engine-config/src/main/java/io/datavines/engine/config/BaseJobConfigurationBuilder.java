@@ -76,7 +76,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
             this.inputParameter.put(VALIDATE_RESULT_DATA_DIR, CommonPropertyUtils.getString(CommonPropertyUtils.VALIDATE_RESULT_DATA_DIR, CommonPropertyUtils.VALIDATE_RESULT_DATA_DIR_DEFAULT));
         }
 
-        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
@@ -122,7 +122,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
     @Override
     public void buildTransformConfigs() {
         List<TransformConfig> transformConfigs = new ArrayList<>();
-        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricJobParameterList();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
@@ -235,7 +235,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                         .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
         if (storageFactory != null) {
             if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {
-                configMap = JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class);
+                configMap = storageFactory.getStorageConnector().getParamMap(JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class));
             }
         }
 

@@ -17,13 +17,30 @@
 package io.datavines.server.repository.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.server.api.dto.bo.catalog.profile.CatalogProfileScheduleCreateOrUpdate;
+import io.datavines.server.api.dto.bo.job.schedule.JobScheduleCreateOrUpdate;
+import io.datavines.server.api.dto.vo.DataTime2ValueItem;
+import io.datavines.server.repository.entity.JobSchedule;
 import io.datavines.server.repository.entity.catalog.CatalogEntityProfile;
 
 import java.util.List;
 
 public interface CatalogEntityProfileService extends IService<CatalogEntityProfile> {
 
-    List<CatalogEntityProfile> getEntityProfileByUUID(String uuid);
+    List<CatalogEntityProfile> getEntityProfileByUUID(String uuid, String dataDate);
 
-    List<CatalogEntityProfile> getEntityProfileByUUIDAndMetric(String uuid, String metricName);
+    List<CatalogEntityProfile> getEntityProfileByUUIDAndMetric(String uuid, String metricName, String dataDate);
+
+    DataTime2ValueItem getCurrentTableRecords(String uuid);
+
+    Double getColumnUniqueCount(String uuid, String dataDate);
+
+    List<DataTime2ValueItem> listTableRecords(String uuid, String starTime, String endTime);
+
+    JobSchedule createOrUpdate(CatalogProfileScheduleCreateOrUpdate createOrUpdate) throws DataVinesServerException;
+
+    JobSchedule getById(long id);
+
+    JobSchedule getByEntityUUID(String entityUUID);
 }

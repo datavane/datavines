@@ -26,8 +26,6 @@ import org.slf4j.Logger;
 
 public class LocalEngineExecutor extends AbstractEngineExecutor {
 
-    private Configurations configurations;
-
     private LocalDataVinesBootstrap bootstrap;
 
     @Override
@@ -36,7 +34,6 @@ public class LocalEngineExecutor extends AbstractEngineExecutor {
         Thread.currentThread().setName(threadLoggerInfoName);
         this.jobExecutionRequest = jobExecutionRequest;
         this.logger = logger;
-        this.configurations = configurations;
     }
 
     @Override

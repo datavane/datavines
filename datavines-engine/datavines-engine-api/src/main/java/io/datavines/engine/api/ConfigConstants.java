@@ -51,6 +51,7 @@ public class ConfigConstants {
     public static final String WRITER_DATASOURCE_ID = "writer_datasource_id";
     public static final String UNIQUE_CODE = "unique_code";
     public static final String DATA_TIME = "data_time";
+    public static final String DATA_DATE = "data_date";
     public static final String REGEXP_PATTERN = "regexp_pattern";
     public static final String ERROR_OUTPUT_PATH = "error_output_path";
     public static final String INDEX = "index";
@@ -78,6 +79,8 @@ public class ConfigConstants {
     public static final String OUTPUT_TABLE = "output_table";
     public static final String TMP_TABLE = "tmp_table";
     public static final String COLUMN_SEPARATOR = "column_separator";
+    public static final String LINE_SEPERATOR = "line_separator";
+    public static final String DATA_DIR = "data_dir";
 
     //sql dialect on regex key
     public static final String REGEX_KEY = "regex_key";
@@ -90,6 +93,11 @@ public class ConfigConstants {
      * date format of yyyy-MM-dd HH:mm:ss
      */
     public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * date format of yyyy-MM-dd HH:mm:ss
+     */
+    public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
     public static final String S001 = "\001";
 

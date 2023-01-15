@@ -305,6 +305,9 @@ public class JSONUtils {
      * @return json string
      */
     public static String toJsonString(Object object) {
+        if (object == null) {
+            return null;
+        }
         try {
             return OBJECT_MAPPER.writeValueAsString(object);
         } catch (Exception e) {

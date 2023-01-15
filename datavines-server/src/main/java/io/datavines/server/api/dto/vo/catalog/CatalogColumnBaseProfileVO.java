@@ -30,21 +30,23 @@ public class CatalogColumnBaseProfileVO implements Serializable {
 
     private String type;
 
-    private Long nullCount;
+    private String dataType;
+
+    private String nullCount;
 
     private String nullPercentage;
 
-    private Long notNullCount;
+    private String notNullCount;
 
     private String notNullPercentage;
 
-    private Long uniqueCount;
+    private String uniqueCount;
 
     private String uniquePercentage;
 
-    private Long duplicateCount;
+    private String distinctCount;
 
-    private String duplicatePercentage;
+    private String distinctPercentage;
 
     private List<DistributionItem> top10Distribution;
 }

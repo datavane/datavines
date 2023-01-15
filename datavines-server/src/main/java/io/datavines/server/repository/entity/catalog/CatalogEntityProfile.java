@@ -47,6 +47,9 @@ public class CatalogEntityProfile implements Serializable {
     @TableField(value = "actual_value_type")
     private String actualValueType;
 
+    @TableField(value = "data_date")
+    private String dataDate;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     @TableField(value = "update_time")
     private LocalDateTime updateTime;

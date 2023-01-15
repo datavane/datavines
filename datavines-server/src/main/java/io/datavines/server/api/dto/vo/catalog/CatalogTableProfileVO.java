@@ -16,7 +16,6 @@
  */
 package io.datavines.server.api.dto.vo.catalog;
 
-import io.datavines.server.api.dto.vo.RecordChartVO;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -30,8 +29,6 @@ public class CatalogTableProfileVO implements Serializable {
     private String uuid;
 
     private String type;
-
-    private List<RecordChartVO> recordTrend;
 
     private List<CatalogColumnBaseProfileVO> columnProfile;
 }

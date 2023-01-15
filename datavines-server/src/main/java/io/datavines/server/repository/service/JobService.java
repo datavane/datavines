@@ -36,7 +36,7 @@ public interface JobService extends IService<Job> {
 
     int deleteByDataSourceId(long datasourceId);
 
-    int update(JobUpdate jobUpdate);
+    long update(JobUpdate jobUpdate);
 
     Job getById(long id);
 

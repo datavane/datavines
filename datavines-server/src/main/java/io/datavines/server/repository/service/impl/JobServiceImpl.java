@@ -18,6 +18,7 @@
 package io.datavines.server.repository.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.entity.job.builder.JobExecutionParameterBuilderFactory;
+import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
@@ -42,6 +44,7 @@ import io.datavines.server.api.dto.vo.SlaVO;
 import io.datavines.server.repository.entity.Command;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.JobExecution;
+import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 import io.datavines.server.repository.mapper.CommandMapper;
 import io.datavines.server.repository.mapper.JobExecutionMapper;
 import io.datavines.server.repository.service.DataSourceService;
@@ -64,6 +67,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static io.datavines.engine.api.ConfigConstants.COLUMN_SEPARATOR;
+import static io.datavines.engine.api.ConfigConstants.DATA_DIR;
+import static io.datavines.engine.api.ConfigConstants.LINE_SEPERATOR;
 
 @Slf4j
 @Service("jobService")
@@ -92,6 +99,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     @Autowired
     private SlaMapper slaMapper;
+
+    @Autowired
+    private CatalogEntityMetricJobRelMapper catalogEntityMetricJobRelMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -135,13 +145,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
                 .eq("name",job.getName())
                 .eq("schema_name",job.getSchemaName())
                 .eq("table_name",job.getTableName())
-                .eq("column_name",job.getColumnName())
+                .eq(job.getColumnName()!=null, "column_name",job.getColumnName())
          );
          return CollectionUtils.isNotEmpty(list);
     }
 
     @Override
-    public int update(JobUpdate jobUpdate) {
+    public long update(JobUpdate jobUpdate) {
         Job job = getById(jobUpdate.getId());
         if ( job == null) {
             throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobUpdate.getId());
@@ -163,7 +173,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             executeJob(job, null);
         }
 
-        return 1;
+        return job.getId();
     }
 
     private void setJobAttribute(Job job, List<BaseJobParameter> jobParameters) {
@@ -187,8 +197,14 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public int deleteById(long id) {
-        return baseMapper.deleteById(id);
+        if (baseMapper.deleteById(id) > 0) {
+            catalogEntityMetricJobRelMapper.delete(new QueryWrapper<CatalogEntityMetricJobRel>().eq("metric_job_id", id));
+            return 1;
+        } else {
+            return 0;
+        }
     }
 
     @Override
@@ -259,14 +275,19 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         } else {
             if ("local".equalsIgnoreCase(job.getEngineType())) {
                 errorDataStorageType = "file";
-                errorDataStorageParameter  = "{\"error_data_dir\":\"/tmp/datavines/error-data\"}";
+                Map<String,String> errorDataStorageParameterMap = new HashMap<>();
+                errorDataStorageParameterMap.put(DATA_DIR, CommonPropertyUtils.getString(CommonPropertyUtils.ERROR_DATA_DIR, CommonPropertyUtils.ERROR_DATA_DIR_DEFAULT));
+                errorDataStorageParameterMap.put(COLUMN_SEPARATOR, CommonPropertyUtils.getString(CommonPropertyUtils.COLUMN_SEPERATOR, CommonPropertyUtils.COLUMN_SEPERATOR_DEFAULT));
+                errorDataStorageParameterMap.put(LINE_SEPERATOR, CommonPropertyUtils.getString(CommonPropertyUtils.LINE_SEPERATOR, CommonPropertyUtils.LINE_SEPERATOR_DEFAULT));
+
+                errorDataStorageParameter  = JSONUtils.toJsonString(errorDataStorageParameterMap);
             }
         }
 
        // add a jobExecution
-        job.setId(null);
         JobExecution jobExecution = new JobExecution();
         BeanUtils.copyProperties(job, jobExecution);
+        jobExecution.setId(null);
         jobExecution.setJobId(jobId);
         jobExecution.setParameter(executionParameter);
         jobExecution.setName(job.getName() + "_task_" + System.currentTimeMillis());
@@ -341,7 +362,11 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         String column = (String)metricParameter.get("column");
         String metric = baseJobParameter.getMetricType();
-        return String.format("%s_%s_%s", metric.toLowerCase(), column, System.currentTimeMillis());
+        if (StringUtils.isEmpty(column)) {
+            return String.format("%s_%s_%s", metric.toLowerCase(), column, System.currentTimeMillis());
+        } else {
+            return String.format("%s_%s", metric.toLowerCase(), System.currentTimeMillis());
+        }
     }
 
     private String buildJobExecutionParameter(Job job) {
