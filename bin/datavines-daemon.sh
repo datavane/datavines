@@ -16,33 +16,31 @@
 # limitations under the License.
 #
 
-usage="Usage: datavines-daemon.sh (start|stop) <command> <''|mysql>"
+usage="Usage: datavines-daemon.sh (start|stop) <''|mysql>"
 
 # if no args specified, show usage
-if [ $# -le 1 ]; then
+if [ $# -le 0 ]; then
   echo $usage
   exit 1
 fi
 
 startStop=$1
 shift
-command=$1
-shift
 profile=$1
 shift
 
-springProfleActive=
+springProfileActive=
 
 if [ -n "$profile" ]; then
 	if [ "$profile" = "mysql" ]; then
-	  springProfleActive="-Dspring.profiles.active=mysql"
+	  springProfileActive="-Dspring.profiles.active=mysql"
 	else
 	  echo "Error: No profile named \`$profile' was found."
 	  exit 1
 	fi
 fi
 
-echo "Begin $startStop $command $profile......"
+echo "Begin $startStop DataVinesServer $profile......"
 
 BIN_DIR=`dirname $0`
 BIN_DIR=`cd "$BIN_DIR"; pwd`
@@ -65,18 +63,13 @@ if [ ! -d "$DATAVINES_LOG_DIR" ]; then
   mkdir $DATAVINES_LOG_DIR
 fi
 
-log=$DATAVINES_LOG_DIR/datavines-$command-$HOSTNAME.out
-pid=$DATAVINES_PID_DIR/datavines-$command.pid
+log=$DATAVINES_LOG_DIR/datavines-server-$HOSTNAME.out
+pid=$DATAVINES_PID_DIR/datavines-server.pid
 
 cd $DATAVINES_HOME
 
-if [ "$command" = "server" ]; then
-  LOG_FILE="-Dlogging.config=classpath:server-logback.xml $springProfleActive"
-  CLASS=io.datavines.server.DataVinesServer
-else
-  echo "Error: No command named \`$command' was found."
-  exit 1
-fi
+LOG_FILE="-Dlogging.config=classpath:server-logback.xml $springProfileActive"
+CLASS=io.datavines.server.DataVinesServer
 
 case $startStop in
   (start)
@@ -84,12 +77,12 @@ case $startStop in
 
     if [ -f $pid ]; then
       if kill -0 `cat $pid` > /dev/null 2>&1; then
-        echo $command running as process `cat $pid`.  Stop it first.
+        echo DataVinesServer running as process `cat $pid`.  Stop it first.
         exit 1
       fi
     fi
 
-    echo starting $command, logging to $log
+    echo starting DataVinesServer, logging to $log
 
     exec_command="$LOG_FILE $DATAVINES_OPTS -classpath $DATAVINES_CONF_DIR:$DATAVINES_LIB_JARS $CLASS"
 
@@ -103,19 +96,19 @@ case $startStop in
       if [ -f $pid ]; then
         TARGET_PID=`cat $pid`
         if kill -0 $TARGET_PID > /dev/null 2>&1; then
-          echo stopping $command
+          echo stopping DataVinesServer
           kill $TARGET_PID
           sleep $STOP_TIMEOUT
           if kill -0 $TARGET_PID > /dev/null 2>&1; then
-            echo "$command did not stop gracefully after $STOP_TIMEOUT seconds: killing with kill -9"
+            echo "DataVinesServer did not stop gracefully after $STOP_TIMEOUT seconds: killing with kill -9"
             kill -9 $TARGET_PID
           fi
         else
-          echo no $command to stop
+          echo no DataVinesServer to stop
         fi
         rm -f $pid
       else
-        echo no $command to stop
+        echo no DataVinesServer to stop
       fi
       ;;
 
@@ -126,4 +119,4 @@ case $startStop in
 
 esac
 
-echo "End $startStop $command $profile."
+echo "End $startStop DataVinesServer $profile."

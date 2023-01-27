@@ -17,6 +17,7 @@
 package io.datavines.engine.local.api.utils;
 
 import io.datavines.common.config.Config;
+import io.datavines.common.utils.StringUtils;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -38,8 +39,9 @@ public class ConnectionUtils {
         }
 
         Connection connection = null;
+
         try {
-            connection = DriverManager.getConnection(url, username, password);
+            connection = DriverManager.getConnection(url, username, StringUtils.isEmpty(password) ? null : password);
         } catch (SQLException exception) {
             logger.error("get connection error: " + exception.getLocalizedMessage());
         }

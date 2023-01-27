@@ -48,7 +48,7 @@ public class BaseJdbcSource implements LocalSource {
 
     @Override
     public CheckResult checkConfig() {
-        List<String> requiredOptions = Arrays.asList("url", "user", "password");
+        List<String> requiredOptions = Arrays.asList("url", "user");
 
         List<String> nonExistsOptions = new ArrayList<>();
         requiredOptions.forEach(x->{

@@ -277,14 +277,14 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
                 errorDataStorageType = "file";
                 Map<String,String> errorDataStorageParameterMap = new HashMap<>();
                 errorDataStorageParameterMap.put(DATA_DIR, CommonPropertyUtils.getString(CommonPropertyUtils.ERROR_DATA_DIR, CommonPropertyUtils.ERROR_DATA_DIR_DEFAULT));
-                errorDataStorageParameterMap.put(COLUMN_SEPARATOR, CommonPropertyUtils.getString(CommonPropertyUtils.COLUMN_SEPERATOR, CommonPropertyUtils.COLUMN_SEPERATOR_DEFAULT));
-                errorDataStorageParameterMap.put(LINE_SEPERATOR, CommonPropertyUtils.getString(CommonPropertyUtils.LINE_SEPERATOR, CommonPropertyUtils.LINE_SEPERATOR_DEFAULT));
+                errorDataStorageParameterMap.put(COLUMN_SEPARATOR, CommonPropertyUtils.getString(CommonPropertyUtils.COLUMN_SEPARATOR, CommonPropertyUtils.COLUMN_SEPARATOR_DEFAULT));
+                errorDataStorageParameterMap.put(LINE_SEPERATOR, CommonPropertyUtils.getString(CommonPropertyUtils.LINE_SEPARATOR, CommonPropertyUtils.LINE_SEPARATOR_DEFAULT));
 
                 errorDataStorageParameter  = JSONUtils.toJsonString(errorDataStorageParameterMap);
             }
         }
 
-       // add a jobExecution
+        // add a jobExecution
         JobExecution jobExecution = new JobExecution();
         BeanUtils.copyProperties(job, jobExecution);
         jobExecution.setId(null);
@@ -311,7 +311,6 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         command.setPriority(Priority.MEDIUM);
         command.setJobExecutionId(jobExecution.getId());
         commandMapper.insert(command);
-
     }
 
     @Override
@@ -363,9 +362,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         String column = (String)metricParameter.get("column");
         String metric = baseJobParameter.getMetricType();
         if (StringUtils.isEmpty(column)) {
-            return String.format("%s_%s_%s", metric.toLowerCase(), column, System.currentTimeMillis());
-        } else {
             return String.format("%s_%s", metric.toLowerCase(), System.currentTimeMillis());
+        } else {
+            return String.format("%s_%s_%s", metric.toLowerCase(), column, System.currentTimeMillis());
         }
     }
 

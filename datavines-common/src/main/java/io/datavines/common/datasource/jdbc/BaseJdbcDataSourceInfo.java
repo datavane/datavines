@@ -94,10 +94,12 @@ public abstract class BaseJdbcDataSourceInfo {
      * @param jdbcUrl jdbc url
      */
     protected void appendCatalog(StringBuilder jdbcUrl) {
-        if (getAddress().lastIndexOf('/') != (jdbcUrl.length() - 1)) {
-            jdbcUrl.append("/");
+        if (StringUtils.isNotEmpty(getCatalog())) {
+            if (getAddress().lastIndexOf('/') != (jdbcUrl.length() - 1)) {
+                jdbcUrl.append("/");
+            }
+            jdbcUrl.append(getCatalog());
         }
-        jdbcUrl.append(getCatalog());
     }
 
     /**

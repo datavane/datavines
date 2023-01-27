@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static io.datavines.core.enums.Status.CATALOG_ENTITY_TAG_EXIST_ERROR;
+
 @Service("catalogTagService")
 public class CatalogTagServiceImpl extends ServiceImpl<CatalogTagMapper, CatalogTag> implements CatalogTagService {
 
@@ -88,6 +90,12 @@ public class CatalogTagServiceImpl extends ServiceImpl<CatalogTagMapper, Catalog
     @Override
     public boolean addEntityTagRel(String entityUUID, String tagUUID) {
         CatalogEntityTagRel rel = new CatalogEntityTagRel();
+        List<CatalogEntityTagRel> list = catalogEntityTagRelService.list(new QueryWrapper<CatalogEntityTagRel>()
+                .eq("entity_uuid", entityUUID)
+                .eq("tag_uuid", tagUUID));
+        if (CollectionUtils.isNotEmpty(list)) {
+            throw new DataVinesServerException(CATALOG_ENTITY_TAG_EXIST_ERROR);
+        }
         rel.setEntityUuid(entityUUID);
         rel.setTagUuid(tagUUID);
         rel.setCreateBy(ContextHolder.getUserId());

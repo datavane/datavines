@@ -328,7 +328,6 @@ public class CatalogEntityInstanceServiceImpl
             String columnUUID = column.getUuid();
             String dataType = "string";
 
-
             List<CatalogEntityProfile> columnProfileList = catalogEntityProfileService.getEntityProfileByUUID(columnUUID, latestDate);
             if (CollectionUtils.isEmpty(columnProfileList)) {
                 continue;
@@ -443,21 +442,23 @@ public class CatalogEntityInstanceServiceImpl
         DecimalFormat df = new DecimalFormat("#.00");
         for (CatalogEntityProfile entityProfile : columnProfileList) {
             String metricName = entityProfile.getMetricName();
-            if (StringUtils.isEmpty(metricName)) {
+            if (StringUtils.isEmpty(metricName)
+                    || StringUtils.isEmpty(entityProfile.getActualValue())
+                    || "null".equals(entityProfile.getActualValue().toLowerCase())) {
                 continue;
             }
             switch (metricName) {
                 case "column_null":
                     columnStringProfileVO.setNullCount(entityProfile.getActualValue());
-                    columnStringProfileVO.setNullPercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnStringProfileVO.setNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 case "column_not_null":
                     columnStringProfileVO.setNotNullCount(entityProfile.getActualValue());
-                    columnStringProfileVO.setNotNullPercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnStringProfileVO.setNotNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 case "column_unique":
                     columnStringProfileVO.setUniqueCount(entityProfile.getActualValue());
-                    columnStringProfileVO.setUniquePercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnStringProfileVO.setUniquePercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 case "column_histogram":
                     String histogram = entityProfile.getActualValue();
@@ -471,7 +472,7 @@ public class CatalogEntityInstanceServiceImpl
                     break;
                 case "column_distinct":
                     columnStringProfileVO.setDistinctCount(entityProfile.getActualValue());
-                    columnStringProfileVO.setDistinctPercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnStringProfileVO.setDistinctPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 case "column_avg_length":
                     columnStringProfileVO.setAvgLength(df.format(Double.valueOf(entityProfile.getActualValue())));
@@ -497,12 +498,12 @@ public class CatalogEntityInstanceServiceImpl
     }
 
     private List<DistributionItem> getDistributionItems(Double records, String histogram) {
-        String[] values = histogram.split(",");
+        String[] values = histogram.split("@#@");
         List<DistributionItem> distributionItems = new ArrayList<>();
         DistributionItem item;
         int size = Math.min(10, values.length);
         for (int i = 0; i < size; i++) {
-            String[] values2 = values[i].split(":");
+            String[] values2 = values[i].split("\001");
             if (values2.length == 2) {
                 item = new DistributionItem(values2[0], Long.valueOf(values2[1]), String.format("%.2f", (Double.valueOf(values2[1]) / records * 100)) + "%");
                 distributionItems.add(item);
@@ -524,22 +525,24 @@ public class CatalogEntityInstanceServiceImpl
 
         for (CatalogEntityProfile entityProfile : columnProfileList) {
             String metricName = entityProfile.getMetricName();
-            if (StringUtils.isEmpty(metricName)) {
+            if (StringUtils.isEmpty(metricName)
+                    || StringUtils.isEmpty(entityProfile.getActualValue())
+                    || "null".equals(entityProfile.getActualValue().toLowerCase())) {
                 continue;
             }
 
             switch (metricName) {
                 case "column_null":
                     columnNumericProfileVO.setNullCount(entityProfile.getActualValue());
-                    columnNumericProfileVO.setNullPercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnNumericProfileVO.setNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 case "column_not_null":
                     columnNumericProfileVO.setNotNullCount(entityProfile.getActualValue());
-                    columnNumericProfileVO.setNotNullPercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnNumericProfileVO.setNotNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 case "column_unique":
                     columnNumericProfileVO.setUniqueCount(entityProfile.getActualValue());
-                    columnNumericProfileVO.setUniquePercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnNumericProfileVO.setUniquePercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 case "column_histogram":
                     String histogram = entityProfile.getActualValue();
@@ -568,7 +571,7 @@ public class CatalogEntityInstanceServiceImpl
                     break;
                 case "column_distinct":
                     columnNumericProfileVO.setDistinctCount(entityProfile.getActualValue());
-                    columnNumericProfileVO.setDistinctPercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnNumericProfileVO.setDistinctPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 default:
                     break;
@@ -591,22 +594,24 @@ public class CatalogEntityInstanceServiceImpl
 
         for (CatalogEntityProfile entityProfile : columnProfileList) {
             String metricName = entityProfile.getMetricName();
-            if (StringUtils.isEmpty(metricName)) {
+            if (StringUtils.isEmpty(metricName)
+                    || StringUtils.isEmpty(entityProfile.getActualValue())
+                    || "null".equals(entityProfile.getActualValue().toLowerCase())) {
                 continue;
             }
 
             switch (metricName) {
                 case "column_null":
                     columnDateTimeProfileVO.setNullCount(entityProfile.getActualValue());
-                    columnDateTimeProfileVO.setNullPercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnDateTimeProfileVO.setNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 case "column_not_null":
                     columnDateTimeProfileVO.setNotNullCount(entityProfile.getActualValue());
-                    columnDateTimeProfileVO.setNotNullPercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnDateTimeProfileVO.setNotNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 case "column_unique":
                     columnDateTimeProfileVO.setUniqueCount(entityProfile.getActualValue());
-                    columnDateTimeProfileVO.setUniquePercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnDateTimeProfileVO.setUniquePercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 case "column_histogram":
                     String histogram = entityProfile.getActualValue();
@@ -623,7 +628,7 @@ public class CatalogEntityInstanceServiceImpl
                     break;
                 case "column_distinct":
                     columnDateTimeProfileVO.setDistinctCount(entityProfile.getActualValue());
-                    columnDateTimeProfileVO.setDistinctPercentage(String.format("%.2f", (Double.valueOf(entityProfile.getActualValue()) / records * 100)) + "%");
+                    columnDateTimeProfileVO.setDistinctPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
                     break;
                 default:
                     break;

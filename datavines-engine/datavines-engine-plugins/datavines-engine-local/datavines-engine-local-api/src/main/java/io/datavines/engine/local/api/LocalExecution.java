@@ -38,6 +38,11 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
     }
 
     @Override
+    public void prepare() throws Exception {
+
+    }
+
+    @Override
     public void execute(List<LocalSource> sources, List<LocalTransform> transforms, List<LocalSink> sinks) throws SQLException {
         if (CollectionUtils.isEmpty(sources)) {
             return;

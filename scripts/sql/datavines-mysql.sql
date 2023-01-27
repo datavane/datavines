@@ -276,7 +276,7 @@ CREATE TABLE `dv_catalog_entity_rel` (
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `dv_entity_rel_un` (`entity1_uuid`,`entity2_uuid`,`direction`),
+  UNIQUE KEY `dv_entity_rel_un` (`entity1_uuid`,`entity2_uuid`,`type`),
   KEY `idx_entity2_uuid` (`entity2_uuid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体关联关系';
 

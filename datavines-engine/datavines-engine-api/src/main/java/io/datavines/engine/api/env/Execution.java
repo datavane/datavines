@@ -26,4 +26,6 @@ public interface Execution<SR extends Component, TF extends Component, SK extend
     void execute(List<SR> sources, List<TF> transforms, List<SK> sinks) throws SQLException;
 
     void stop() throws Exception;
+
+    void prepare() throws Exception;
 }

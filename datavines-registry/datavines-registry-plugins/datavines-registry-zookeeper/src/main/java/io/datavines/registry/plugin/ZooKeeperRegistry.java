@@ -67,7 +67,7 @@ public class ZooKeeperRegistry implements Registry {
             put(serverKey, serverInfo.toString(), true);
             treeCacheMap.put(serverKey, new TreeCache(client, serverKey));
         } catch (Exception exception) {
-            logger.error("build zookeeper client error: {} ", exception);
+            logger.error("build zookeeper client error: {0} ", exception);
         }
     }
 

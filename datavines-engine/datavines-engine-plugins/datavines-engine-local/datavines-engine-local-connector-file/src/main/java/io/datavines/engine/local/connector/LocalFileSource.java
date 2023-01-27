@@ -94,7 +94,7 @@ public class LocalFileSource implements LocalSource {
         File file = new File(config.getString("path"));
         if (file.exists()) {
             long fileSize = file.length();
-            Long maxFileLength = CommonPropertyUtils.getLong(CommonPropertyUtils.FILE_MAX_LENGTH, CommonPropertyUtils.FILE_MAX_LENGTH_DEFAULT);
+            long maxFileLength = CommonPropertyUtils.getLong(CommonPropertyUtils.FILE_MAX_LENGTH, CommonPropertyUtils.FILE_MAX_LENGTH_DEFAULT);
             if (fileSize > maxFileLength) {
                 throw new Exception("Error: file length is greater than " + maxFileLength);
             }

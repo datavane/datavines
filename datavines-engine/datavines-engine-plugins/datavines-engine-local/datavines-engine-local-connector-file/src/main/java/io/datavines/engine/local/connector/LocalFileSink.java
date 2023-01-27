@@ -26,8 +26,7 @@ import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSink;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.FileUtils;
-import io.datavines.engine.local.api.utils.LoggerFactory;
-import org.slf4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.*;
@@ -36,9 +35,8 @@ import static io.datavines.engine.api.ConfigConstants.JOB_EXECUTION_ID;
 import static io.datavines.engine.api.ConfigConstants.SQL;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
+@Slf4j
 public class LocalFileSink implements LocalSink {
-
-    private Logger logger = LoggerFactory.getLogger(LocalFileSink.class);
 
     private Config config = new Config();
 
@@ -58,7 +56,7 @@ public class LocalFileSink implements LocalSink {
                 String sql = config.getString(SQL);
                 sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
                 FileUtils.writeToLocal(parseSqlToList(sql), validateResultDataDir,config.getString(PLUGIN_TYPE).toLowerCase());
-                logger.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
+                log.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
                 break;
             default:
                 break;

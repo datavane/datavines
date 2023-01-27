@@ -67,6 +67,7 @@ public class ConfigConstants {
     public static final String ERROR_DATA_DIR = "error_data_dir";
     public static final String ERROR_DATA_FILE_NAME = "error_data_file_name";
     public static final String VALIDATE_RESULT_DATA_DIR = "validate_result_data_dir";
+    public static final String INVALIDATE_ITEM_CAN_OUTPUT = "validate_item_can_output";
 
     public static final String DATABASE = "database";
     public static final String USER = "user";
@@ -81,11 +82,17 @@ public class ConfigConstants {
     public static final String COLUMN_SEPARATOR = "column_separator";
     public static final String LINE_SEPERATOR = "line_separator";
     public static final String DATA_DIR = "data_dir";
+    public static final String METRIC_DATABASE = "metric_database";
+
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
 
     //sql dialect on regex key
     public static final String REGEX_KEY = "regex_key";
     public static final String NOT_REGEX_KEY = "not_regex_key";
     public static final String UNIX_TIMESTAMP = "unix_timestamp";
+    public static final String STRING_TYPE = "string_type";
+    public static final String LIMIT_KEY = "limit_key";
 
     public static final String INVALIDATE_ITEMS_TABLE = "invalidate_items_table";
 

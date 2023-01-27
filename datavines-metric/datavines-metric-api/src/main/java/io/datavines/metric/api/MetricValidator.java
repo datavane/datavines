@@ -21,6 +21,8 @@ import io.datavines.spi.PluginLoader;
 
 import java.math.BigDecimal;
 
+import static io.datavines.common.enums.OperatorType.EQ;
+
 public class MetricValidator {
 
     /**
@@ -30,21 +32,22 @@ public class MetricValidator {
     public static boolean isSuccess(MetricExecutionResult executionResult) {
 
         Double actualValue = executionResult.getActualValue();
-        Double expectedValue = null;
-        if (executionResult.getExpectedValue() == null) {
-            expectedValue = actualValue;
-        } else {
-            expectedValue = executionResult.getExpectedValue();
-        }
+        Double expectedValue = executionResult.getExpectedValue();
 
         OperatorType operatorType = OperatorType.of(executionResult.getOperator());
 
         ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class)
                 .getOrCreatePlugin(executionResult.getResultFormula());
-        return getCompareResult(operatorType, resultFormula.getResult(actualValue, expectedValue), executionResult.getThreshold());
+        return getCompareResult(operatorType,
+                resultFormula.getResult(actualValue, expectedValue),
+                executionResult.getThreshold());
     }
 
     private static boolean getCompareResult(OperatorType operatorType, Double srcValue, Double targetValue) {
+        if (srcValue == null || targetValue == null) {
+            return false;
+        }
+
         BigDecimal src = BigDecimal.valueOf(srcValue);
         BigDecimal target = BigDecimal.valueOf(targetValue);
         switch (operatorType) {

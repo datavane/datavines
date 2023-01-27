@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorParameterConverter;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -30,10 +31,20 @@ public class PrestoConnectorParameterConverter implements ConnectorParameterConv
         config.put("table", parameter.get("table"));
         config.put("user", parameter.get("user"));
         config.put("password", parameter.get("password"));
-        config.put("url", String.format("jdbc:presto://%s:%s/%s",
-                parameter.get("host"),
-                parameter.get("port"),
-                parameter.get("database")));
+        String catalog = (String)parameter.get("catalog");
+        if (StringUtils.isNotEmpty(catalog)) {
+            config.put("url", String.format("jdbc:presto://%s:%s/%s/%s",
+                    parameter.get("host"),
+                    parameter.get("port"),
+                    parameter.get("catalog"),
+                    parameter.get("database")));
+        } else {
+            config.put("url", String.format("jdbc:presto://%s:%s/%s",
+                    parameter.get("host"),
+                    parameter.get("port"),
+                    parameter.get("database")));
+        }
+
         return config;
     }
 }

@@ -71,11 +71,11 @@ public class CommonPropertyUtils {
     public static final String VALIDATE_RESULT_DATA_DIR = "validate.result.data.dir";
     public static final String VALIDATE_RESULT_DATA_DIR_DEFAULT = "/tmp/datavines/validate-result-data";
 
-    public static final String LINE_SEPERATOR = "line.seperator";
-    public static final String LINE_SEPERATOR_DEFAULT = "\r\n";
+    public static final String LINE_SEPARATOR = "line.separator";
+    public static final String LINE_SEPARATOR_DEFAULT = "\r\n";
 
-    public static final String COLUMN_SEPERATOR = "column.seperator";
-    public static final String COLUMN_SEPERATOR_DEFAULT = ",";
+    public static final String COLUMN_SEPARATOR = "column.separator";
+    public static final String COLUMN_SEPARATOR_DEFAULT = ",";
 
     public static final String AES_KEY = "aes.key";
     public static final String AES_KEY_DEFAULT = "1234567890123456";

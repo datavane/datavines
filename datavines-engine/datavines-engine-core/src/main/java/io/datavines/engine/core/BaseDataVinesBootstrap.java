@@ -69,6 +69,7 @@ public abstract class BaseDataVinesBootstrap {
         if (execution == null) {
             throw new Exception("can not create execution , please check the config");
         }
+
         execution.execute(sources, transforms, sinks);
     }
 
@@ -77,7 +78,7 @@ public abstract class BaseDataVinesBootstrap {
         boolean configValid = true;
         for (List<? extends Component> componentList : components) {
             for (Component component : componentList) {
-                CheckResult checkResult = null;
+                CheckResult checkResult;
                 try {
                     checkResult = component.checkConfig();
                 } catch (Exception e) {

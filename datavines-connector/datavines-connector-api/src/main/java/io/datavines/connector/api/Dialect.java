@@ -31,4 +31,16 @@ public interface Dialect {
     String getNotRegexKey();
 
     List<String> getExcludeDatabases();
+
+    default String invalidateItemCanOutput(){
+        return "true";
+    }
+
+    default String getStringType() {
+        return "varchar";
+    }
+
+    default String getLimitKey() {
+        return "limit %s ,%s";
+    }
 }

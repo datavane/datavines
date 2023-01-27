@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 
 public class MysqlDataSourceInfo extends BaseJdbcDataSourceInfo {
 
-    private final Logger logger = LoggerFactory.getLogger(MysqlDataSourceInfo.class);
-
     public MysqlDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         super(jdbcConnectionInfo);
     }

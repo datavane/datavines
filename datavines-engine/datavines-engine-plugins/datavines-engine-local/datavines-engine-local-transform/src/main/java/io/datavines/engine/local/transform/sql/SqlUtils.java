@@ -69,6 +69,47 @@ public class SqlUtils {
         return resultListWithColumns;
     }
 
+    public static ResultListWithColumns getListWithHeaderFromResultSet(ResultSet rs, Set<String> queryFromsAndJoins, int start, int end) throws SQLException {
+
+        ResultListWithColumns resultListWithColumns = new ResultListWithColumns();
+
+        ResultSetMetaData metaData = rs.getMetaData();
+
+        List<QueryColumn> queryColumns = new ArrayList<>();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            String key = getColumnLabel(queryFromsAndJoins, metaData.getColumnLabel(i));
+            queryColumns.add(new QueryColumn(key, metaData.getColumnTypeName(i),""));
+        }
+        resultListWithColumns.setColumns(queryColumns);
+
+        List<Map<String, Object>> resultList = new ArrayList<>();
+
+        try {
+            if (start > 0) {
+                rs.absolute(start);
+            }
+            int current = start;
+            while (rs.next()) {
+                if (current >= start && current < end ){
+                    resultList.add(getResultObjectMap(rs, metaData, queryFromsAndJoins));
+                    if (current == end-1){
+                        break;
+                    }
+                    current++;
+                }
+
+                current++ ;
+            }
+        } catch (Throwable e) {
+            logger.error("get result set error: {0}", e);
+        }
+
+        resultListWithColumns.setResultList(resultList);
+
+        rs.close();
+        return resultListWithColumns;
+    }
+
     public static ResultList getListFromResultSet(ResultSet rs, Set<String> queryFromsAndJoins) throws SQLException {
 
         ResultList result = new ResultList();
@@ -143,7 +184,7 @@ public class SqlUtils {
             }
 
         } catch (JSQLParserException e) {
-            logger.error("get column error: {}", e);
+            logger.error("get column error: ", e);
         }
 
         return columnPrefixes;

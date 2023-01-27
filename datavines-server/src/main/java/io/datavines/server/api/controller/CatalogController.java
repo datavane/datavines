@@ -185,7 +185,7 @@ public class CatalogController {
         return catalogEntityInstanceService.getEntityIssueList(uuid, pageNumber, pageSize);
     }
 
-    @ApiOperation(value = "entity add metric", response = Long.class)
+    @ApiOperation(value = "update entity issue status", response = Long.class)
     @PostMapping(value = "/issue/update-status", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object issueUpdateStatus(@RequestBody IssueUpdate issueUpdate) {
         return issueService.updateStatus(issueUpdate);

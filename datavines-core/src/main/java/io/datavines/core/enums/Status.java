@@ -109,6 +109,7 @@ public enum Status {
     CATALOG_TAG_CREATE_ERROR(20020001, "Create Tag {0} Error", "创建标签 {0} 错误"),
     CATALOG_TAG_NOT_EXIST_ERROR(20020002, "Tag {0} Not Exist Error", "标签 {0} 不存在"),
     CATALOG_TAG_EXIST_ERROR(20020003, "Tag {0} is Exist error", "标签 {0} 已存在"),
+    CATALOG_ENTITY_TAG_EXIST_ERROR(20020004, "The tag is already associated with the entity", "该标签已与实体关联"),
     CATALOG_TASK_SCHEDULE_EXIST_ERROR(20030001, "Catalog Task Schedule is Exist error, id must be not null", "元数据抓取定时任务已存在,ID 不能为空"),
     CREATE_CATALOG_TASK_SCHEDULE_ERROR(20030002, "Create Catalog Task Schedule {0} Error", "创建元数据抓取定时任务 {0} 错误"),
     CATALOG_TASK_SCHEDULE_NOT_EXIST_ERROR(20030003, "Catalog Task Schedule {0} is not Exist error", "元数据抓取定时任务 {0} 不存在"),

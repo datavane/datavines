@@ -27,8 +27,7 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.datavines.engine.api.ConfigConstants.INVALIDATE_ITEMS_TABLE;
-import static io.datavines.engine.api.ConfigConstants.SQL;
+import static io.datavines.engine.api.ConfigConstants.*;
 
 public class ActualValueExecutor implements ITransformExecutor {
 
@@ -41,19 +40,18 @@ public class ActualValueExecutor implements ITransformExecutor {
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);
         ResultList resultList = SqlUtils.getListFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
-        if (resultList != null && CollectionUtils.isNotEmpty(resultList.getResultList())) {
+        if (CollectionUtils.isNotEmpty(resultList.getResultList())) {
             List<Map<String, Object>> dataList = resultList.getResultList();
-
             List<Map<String, Object>> newDataList = new ArrayList<>();
 
             List<String> valueList = new ArrayList<>();
             String key = new ArrayList<>(dataList.get(0).keySet()).get(0);
             for (Map<String, Object> item : dataList) {
-                valueList.addAll(item.values().stream().map(x -> String.valueOf(x)).collect(Collectors.toList()));
+                valueList.addAll(item.values().stream().map(String::valueOf).collect(Collectors.toList()));
             }
 
             Map<String, Object> dataMap = new HashMap<>();
-            dataMap.put(key, String.join(",",valueList.toArray(new String[]{})));
+            dataMap.put(key, String.join("@#@",valueList.toArray(new String[]{})));
             newDataList.add(dataMap);
             resultList.setResultList(newDataList);
         }

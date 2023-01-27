@@ -22,4 +22,9 @@ public class MysqlDialect extends JdbcDialect {
     public String getDriver() {
         return "com.mysql.cj.jdbc.Driver";
     }
+
+    @Override
+    public String getStringType() {
+        return "char";
+    }
 }

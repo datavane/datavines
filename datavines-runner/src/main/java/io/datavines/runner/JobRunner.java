@@ -88,7 +88,7 @@ public class JobRunner {
                 StorageFactory validateResultStorageFactory =
                         PluginLoader.getPluginLoader(StorageFactory.class).getOrCreatePlugin(validateResultStorageType);
                 if (validateResultStorageFactory == null) {
-                    log.error("validate result storage type {0} is not supported", validateResultStorageType);
+                    log.error("validate result storage type {} is not supported", validateResultStorageType);
                     return;
                 }
 
