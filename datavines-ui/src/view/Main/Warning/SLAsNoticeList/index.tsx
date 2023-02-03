@@ -11,8 +11,8 @@ export default () => {
     const intl = useIntl();
     return (
         <div style={{ paddingTop: 10 }}>
-            <Tabs activeKey={activeKey} type="card" onChange={(key) => (setActiveKey(key))}>
-                <TabPane tab="SLAs" key="SLAS">
+            <Tabs activeKey={activeKey} onChange={(key) => (setActiveKey(key))}>
+                <TabPane tab="SLA" key="SLAS">
                     <SLAsList />
                 </TabPane>
                 <TabPane tab={intl.formatMessage({ id: 'common_notice' })} key="Notice">

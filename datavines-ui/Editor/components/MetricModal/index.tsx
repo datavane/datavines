@@ -4,7 +4,7 @@ import {
 } from 'antd';
 import { useIntl } from 'react-intl';
 import {
-    useModal, useImmutable, usePersistFn, useLoading, IF
+    useModal, useImmutable, usePersistFn, useLoading, IF,
 } from '@/common';
 import useRequest from '../../hooks/useRequest';
 import RuleSelect from './RuleSelect';
@@ -28,7 +28,6 @@ type InnerProps = {
     },
     id: string,
     detail: TDetail,
-    modeType?: string
 }
 const keys = [
     'engineType',
@@ -42,10 +41,11 @@ const keys = [
 ];
 export const MetricConfig = (props: InnerProps) => {
     const { innerRef, detail } = props;
+    // console.log('detail', detail, props);
     const [form] = Form.useForm();
     const metricSelectRef = useRef<any>();
     const id = props.id || detail?.dataSourceId;
-    const [metricType, setMetricTypeParent] = useState('')
+    const [metricType, setMetricTypeParent] = useState('');
     const { datasourceReducer } = store.getState() as RootReducer;
     useImperativeHandle(innerRef, () => ({
         form,
@@ -67,7 +67,7 @@ export const MetricConfig = (props: InnerProps) => {
                     const parameter: any = {
                         ...(pickProps(values, ['metricType', 'expectedType', 'resultFormula', 'operator', 'threshold'])),
                         metricParameter: {
-                            ...(pickProps(values, ['database', 'table', 'column', 'filter',]))
+                            ...(pickProps(values, ['database', 'table', 'column', 'filter'])),
                         },
                     };
                     if (values.expectedType === 'fix_value') {
@@ -76,25 +76,25 @@ export const MetricConfig = (props: InnerProps) => {
                         };
                     }
                     if (datasourceReducer.modeType === 'comparison') {
-                        params['dataSourceId2'] = values.dataSourceId2
-                        Object.assign(parameter, pickProps(values, ['metricParameter', 'metricParameter2']))
+                        params.dataSourceId2 = values.dataSourceId2;
+                        Object.assign(parameter, pickProps(values, ['metricParameter', 'metricParameter2']));
                         if (values.metricType === 'multi_table_accuracy') {
                             values.mappingColumns.forEach((item: any) => {
-                                item['operator'] = '='
+                                item.operator = '=';
                             });
-                            parameter['mappingColumns'] = values.mappingColumns
+                            parameter.mappingColumns = values.mappingColumns;
                         }
                     } else if (datasourceReducer.modeType === 'quality') {
-                        parameter['metricParameter'] = {
-                            ...(pickProps(values, ['database', 'table', 'column', 'filter',])),
-                            ...metricSelectRef.current.getDynamicValues()
-                        }
+                        parameter.metricParameter = {
+                            ...(pickProps(values, ['database', 'table', 'column', 'filter'])),
+                            ...metricSelectRef.current.getDynamicValues(),
+                        };
                     }
                     params.parameter = JSON.stringify([parameter]);
                     console.log('params', params);
                     resolve(params);
                 }).catch((error) => {
-                    console.log('error', error)
+                    console.log('error', error);
                     reject(error);
                 });
             });
@@ -135,7 +135,7 @@ export const useMetricModal = () => {
         try {
             setLoading(true);
             const params = await innerRef.current.getValues();
-            console.log('params', params);
+            // console.log('params', params);
             const res = await $http.post('/job', { ...params, runningNow });
             console.log('res', res);
             message.success('Success!');
@@ -153,7 +153,7 @@ export const useMetricModal = () => {
     });
     const { Render, show, ...rest } = useModal<any>({
         title: (
-            <div className="dv-editor-flex-between">
+            <div className="dv-editor-flex-between" style={{ height: '100%' }}>
                 <span>
                     {'Metric '}
                     {

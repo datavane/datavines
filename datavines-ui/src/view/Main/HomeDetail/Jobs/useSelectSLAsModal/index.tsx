@@ -74,14 +74,16 @@ const SelectSLAs = ({ innerRef, jobId, id }: InnerProps) => {
     return <FormRender {...schema} form={form} />;
 };
 
-export const SelectSLAsComponent = ({ jobId, id }: { jobId: any, id: any}) => {
+export const SelectSLAsComponent = ({ jobId, id, style = {} }: { jobId: any, id: any, style?:any}) => {
     const innerRef = useRef<any>();
+    const intl = useIntl();
     const onSave = () => {
         innerRef.current.onSaveUpdate();
     };
     return (
         <PageContainer
-            footer={<Button type="primary" onClick={() => onSave()}>保存</Button>}
+            style={style}
+            footer={<Button type="primary" onClick={() => onSave()}>{intl.formatMessage({ id: 'common_save' })}</Button>}
         >
             <div style={{ width: 'calc(100vw - 80px)' }}>
                 <SelectSLAs jobId={jobId} id={id} innerRef={innerRef} />

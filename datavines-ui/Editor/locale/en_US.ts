@@ -57,7 +57,7 @@ export default {
     dev_metric_expected_value_execution: 'Expected value execution statement',
     editor_dv_metric_select_datasource: 'Please select datasource!',
     dv_metric_delete: 'Delete',
-    dv_metric_check_column:'Check column',
+    dv_metric_check_column: 'Check column',
     editor_dv_metric_input_actual_value_execution: 'Please enter the actual value to execute the statement!',
     editor_dv_metric_input_expected_value_execution: 'Please enter the actual value to execute the statement!',
     editor_dv_metric_select_rule: 'Please select rule!',

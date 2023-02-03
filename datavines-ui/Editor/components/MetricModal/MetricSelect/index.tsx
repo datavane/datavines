@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 import React, { useState, useImperativeHandle } from 'react';
 import {
     Row, Col, Form, Input, FormInstance,
@@ -12,6 +13,7 @@ import { useEditorContextState } from '../../../store/editor';
 import {
     CustomSelect, useMount, usePersistFn, IF,
 } from '../../../common';
+import { useSelector } from '@/store';
 
 type InnerProps = {
     form: FormInstance,
@@ -38,7 +40,7 @@ const Index = ({
     const [columns, setColumns] = useState([]);
     const [configsName, setConfigsName] = useState<dynamicConfigItem[]>([]);
     const [configsMap, setConfigsMap] = useState<Record<string, dynamicConfigItem>>({});
-
+    const { entityUuid, dsiabledEdit } = useSelector((r) => r.datasourceReducer);
     useImperativeHandle(metricSelectRef, () => ({
         getDynamicValues() {
             const values = form.getFieldsValue();
@@ -63,6 +65,7 @@ const Index = ({
         }
     };
     useMount(async () => {
+        // console.log('初次加载');
         try {
             const $metricList = await $http.get('metric/list/DATA_QUALITY');
             const $databases = await $http.get(`/datasource/${id}/databases`);
@@ -79,8 +82,16 @@ const Index = ({
             if (metricType) {
                 await getConfigsName(metricType);
             }
+            // console.log('$metricList', $metricList, entityUuid);
+            let $resmetricList = $metricList ? JSON.parse(JSON.stringify($metricList)) : [];
+            // console.log('dsiabledEdit', dsiabledEdit);
+            if (entityUuid || dsiabledEdit) {
+                const isTable = dsiabledEdit?.isTable;
+                $resmetricList = $resmetricList?.filter((item:any) => (isTable ? item.level === 'table' : item.level === 'column'));
+            }
+            // console.log('$resmetricList', $resmetricList);
             setDataBases($databases || []);
-            setMetricList($metricList || []);
+            setMetricList($resmetricList || []);
             const options: Record<string, any> = {
                 database,
                 table,
@@ -91,8 +102,10 @@ const Index = ({
             Object.keys(rest).forEach((item) => {
                 options[item] = rest[item];
             });
+            console.log('options', options, detail);
             form.setFieldsValue(options);
         } catch (error) {
+            console.log('error', error);
         }
     });
 
@@ -126,16 +139,29 @@ const Index = ({
         const values = form.getFieldsValue();
         getCloumn(values.database, values.table);
     };
-    const renderColumn = () => (
-        <Form.Item
-            {...layoutItem}
-            label={intl.formatMessage({ id: 'dv_metric_column' })}
-            name="column"
-            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_column' }) }]}
-        >
-            <CustomSelect allowClear source={columns} sourceValueMap="name" />
-        </Form.Item>
-    );
+    const renderColumn = () => {
+        const {
+            column,
+        } = detail?.parameterItem?.metricParameter || {} as TMetricParameter;
+        // if (column) {
+        //     setTimeout(() => {
+        //         form.setFieldsValue({
+        //             column,
+        //         });
+        //     }, 0);
+        // }
+        return (
+            <Form.Item
+                {...layoutItem}
+                label={intl.formatMessage({ id: 'dv_metric_column' })}
+                name="column"
+                rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_column' }) }]}
+            >
+                <CustomSelect defaultValue={column} disabled={(!!entityUuid || !dsiabledEdit?.isTable) && !!detail?.parameterItem?.metricParameter?.column} allowClear source={columns} sourceValueMap="name" />
+            </Form.Item>
+        );
+    };
+
     const dynamicRender = (item: dynamicConfigItem) => (
         <Form.Item
             {...layoutItem}
@@ -168,7 +194,7 @@ const Index = ({
                         name="database"
                         rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
                     >
-                        <CustomSelect onChange={databasesChange} allowClear source={databases} sourceValueMap="name" />
+                        <CustomSelect disabled={!!entityUuid || !!dsiabledEdit} onChange={databasesChange} allowClear source={databases} sourceValueMap="name" />
                     </Form.Item>
                     <IF visible={!!configsMap.table}>
                         <Form.Item
@@ -177,7 +203,13 @@ const Index = ({
                             name="table"
                             rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
                         >
-                            <CustomSelect onChange={tableChange} allowClear source={tables} sourceValueMap="name" />
+                            <CustomSelect
+                                disabled={(!!entityUuid || !!dsiabledEdit) && !!detail?.parameterItem?.metricParameter?.table}
+                                onChange={tableChange}
+                                allowClear
+                                source={tables}
+                                sourceValueMap="name"
+                            />
                         </Form.Item>
                     </IF>
                     <Form.Item noStyle dependencies={['table', 'metricType']}>

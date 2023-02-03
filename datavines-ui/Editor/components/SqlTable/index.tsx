@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Table } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import moment from 'moment';
 import { defaultRender } from '@/utils/helper';
 import { IDvSqlTable, IDvSqlTableResultItem } from '../../type';
@@ -38,8 +38,8 @@ const SqlTable = ({ style, tableData }: SqlTableProps) => {
         },
     }));
     return (
-        <div style={{ ...style, width: '100%'}}>
-            <div style={{ padding: '0 10px', }}>
+        <div style={{ ...style, width: '100%' }}>
+            <div style={{ padding: '0 10px' }}>
                 <Table<IDvSqlTableResultItem>
                     size="small"
                     rowKey="id"
@@ -49,9 +49,9 @@ const SqlTable = ({ style, tableData }: SqlTableProps) => {
                     className="dv-table-small"
                     scroll={{
                         x: '100%',
-                        y: 280
+                        y: 280,
                     }}
-                    sticky={true}
+                    sticky
                     pagination={{
                         size: 'small',
                         total: (tableData.resultList || []).length,

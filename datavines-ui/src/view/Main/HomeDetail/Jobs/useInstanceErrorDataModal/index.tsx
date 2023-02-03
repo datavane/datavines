@@ -1,7 +1,7 @@
 /* eslint-disable react/no-danger */
 import React, { useRef, useState } from 'react';
 import { ModalProps, Table } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import {
     useModal, useImmutable, usePersistFn, useWatch,
 } from 'src/common';
@@ -26,7 +26,7 @@ const Inner = (props: InnerProps) => {
     const getData = async () => {
         try {
             setLoading(true);
-            const res = (await $http.get('/task/errorDataPage', {
+            const res = (await $http.get('/job/execution/errorDataPage', {
                 taskId: props.record.id,
                 ...pageParams,
             })) || [];

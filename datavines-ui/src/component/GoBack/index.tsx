@@ -10,7 +10,7 @@ export default memo(({ style, children }: { style?: React.CSSProperties, childre
     return (
         <a onClick={onClick} style={{ ...(style || {}) }}>
             {
-                children || <ArrowLeftOutlined style={{ fontSize: 16, cursor: 'pointer' }} />
+                children || <ArrowLeftOutlined style={{ fontSize: 16, cursor: 'pointer', color: '#ffd56a' }} />
             }
 
         </a>

@@ -1,6 +1,6 @@
 import React, { useRef, useImperativeHandle } from 'react';
 import { Form, FormInstance } from 'antd';
-import { ModalProps } from 'antd/es/modal';
+import { ModalProps } from 'antd/lib/modal';
 import FormRender, { IFormRender } from '../FormRender';
 import useImmutable from '../useImmutable';
 import useModal, { useContextModal } from '../useModal';

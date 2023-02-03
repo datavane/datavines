@@ -75,7 +75,7 @@ const Inner = ({ form }: InnerProps) => {
     };
     const schema: IFormRender = {
         name: 'notice-form',
-        layout: 'vertical',
+        layout: 'horizontal',
         formItemProps: {
             style: { marginBottom: 10 },
         },

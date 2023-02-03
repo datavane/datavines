@@ -76,7 +76,7 @@ const Inner = ({ form }: InnerProps) => {
                 ],
                 initialValue: initData?.name,
                 // @ts-ignore
-                widget: <Input placeholder={`${tipText}${nameText}`} autocomplete="off" />,
+                widget: <Input placeholder={`${tipText}${nameText}`} />,
             },
             {
                 label: sourceTypeText,

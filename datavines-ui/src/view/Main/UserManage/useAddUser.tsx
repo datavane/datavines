@@ -28,6 +28,8 @@ export const CreateUserComponent = ({ form, detail, innerRef }: InnerProps) => {
     const schema: IFormRender = {
         name: 'sla-form',
         layout: 'vertical',
+        column: 1,
+        gutter: 20,
         formItemProps: {
             style: { marginBottom: 10 },
         },

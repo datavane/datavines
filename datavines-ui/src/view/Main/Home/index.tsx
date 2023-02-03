@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Form, Button, Radio } from 'antd';
-import { IdcardOutlined, TableOutlined } from '@ant-design/icons';
+import { IdcardOutlined, TableOutlined, PlusOutlined } from '@ant-design/icons';
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
+import { setEditorFn, useEditorActions } from '@Editor/store/editor';
 import { IDataSourceListItem, IDataSourceList } from '@/type/dataSource';
 import {
     IF, usePersistFn, useWatch, useLoading,
@@ -51,7 +52,14 @@ function App() {
         getData();
     }, { immediate: true });
     const goDetail = usePersistFn((record: IDataSourceListItem) => {
-        history.push(`/main/detail/${record.id}/editor`);
+        // const fns = useEditorActions({ setEditorFn });
+        // fns.setEditorFn({
+        //     selectDatabases: [{
+        //         id: record.id,
+        //         name: record.name,
+        //     }],
+        // });
+        history.push(`/main/detail/${record.id}/editor?name=${record.name}`);
     });
     const onSearch = usePersistFn((values) => {
         getData(values);
@@ -77,22 +85,30 @@ function App() {
     });
     return (
         <ContentLayout>
-            <div>
-                <Title>{intl.formatMessage({ id: 'datasource_list_title' })}</Title>
-                <div style={{ padding: '25px' }}>
+            <div style={{
+                height: '100%',
+            }}
+            >
+                <Title>
+                    {intl.formatMessage({ id: 'datasource_list_title' })}
+                    {' '}
+                    <Button
+                        type="primary"
+                        style={{ float: 'right', marginTop: '4px' }}
+                        onClick={() => {
+                            show(null);
+                        }}
+                        icon={<PlusOutlined />}
+                    >
+                        {intl.formatMessage({ id: 'home_create_datasource' })}
+
+                    </Button>
+
+                </Title>
+                <div style={{ padding: '20px 0px', height: 'calc(100% - 40px)' }}>
                     <div className="dv-flex-between">
                         <SearchForm form={form} onSearch={onSearch} />
                         <div>
-                            <Button
-                                type="primary"
-                                style={{ marginRight: 15 }}
-                                onClick={() => {
-                                    show(null);
-                                }}
-                            >
-                                {intl.formatMessage({ id: 'home_create_datasource' })}
-
-                            </Button>
                             <Radio.Group
                                 value={tableType}
                                 onChange={(e) => {

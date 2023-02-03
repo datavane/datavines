@@ -19,21 +19,29 @@ const { TabPane } = Tabs;
 
 type InnerProps = {
     innerRef: any,
-    hide: (...args: any[]) => any
+    hide?: (...args: any[]) => any,
+    baseData?:any,
+    styleChildren?:any,
+    styleTabContent?:any,
+    style?:any
 }
 
-const Inner = ({ innerRef, hide }: InnerProps) => {
+export const Inner = ({
+    innerRef, hide, baseData, styleChildren, styleTabContent, style,
+}: InnerProps) => {
     const [activeKey, setActiveKey] = useState('metric');
     const [loading, $setLoading] = useState(true);
     const setLoading = useLoading();
     const intl = useIntl();
-    const { data } = useContextModal();
+    const { data } = baseData || useContextModal();
+    // console.log('data', data);
     const [jobId, setJobId] = useState(data.record?.id);
     const [metricDetail, setMetricDetail] = useState(data.record?.parameterItem ? data.record : {});
     const metricConfigRef = useRef<any>();
     const { loginInfo } = useSelector((r) => r.userReducer);
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
     const { locale } = useSelector((r) => r.commonReducer);
+    const { entityUuid } = useSelector((r) => r.datasourceReducer);
     const editorParams = useMemo(() => ({
         baseURL: '/api/v1',
         workspaceId,
@@ -66,6 +74,7 @@ const Inner = ({ innerRef, hide }: InnerProps) => {
         }
         try {
             const res = await getData(data.record.id, false);
+            console.log('data.record?.id)', data.record?.id, '获取详情');
             setMetricDetail(res);
         } catch (error) {
         } finally {
@@ -81,12 +90,24 @@ const Inner = ({ innerRef, hide }: InnerProps) => {
             if (data.record?.id) {
                 await $http.put('/job', { ...params, id: data.record?.id, runningNow });
             } else {
-                const res = await $http.post('/job', { ...params, runningNow });
+                let resData = {};
+                let url = '/job';
+                if (entityUuid) {
+                    resData = {
+                        entityUuid,
+                        jobCreate: { ...params, runningNow },
+                    };
+                    url = '/catalog/add-metric';
+                } else {
+                    resData = { ...params, runningNow };
+                }
+                const res = await $http.post(url, resData);
                 setJobId(res);
             }
             message.success('Success!');
             if (runningNow) {
-                hide();
+                // eslint-disable-next-line no-unused-expressions
+                hide && hide();
             }
         } catch (error) {
             console.log('error', error);
@@ -99,7 +120,7 @@ const Inner = ({ innerRef, hide }: InnerProps) => {
     }
     const slaId = (data?.record?.slaList || [])[0]?.id;
     return (
-        <div>
+        <div style={style}>
             <Tabs
                 activeKey={activeKey}
                 onChange={(key) => {
@@ -111,24 +132,29 @@ const Inner = ({ innerRef, hide }: InnerProps) => {
                 }}
             >
                 <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_config' })} key="metric">
+
                     <PageContainer
+                        style={styleChildren || {}}
                         footer={(
                             <>
-                                <Button type="primary" onClick={() => onJob()}>{intl.formatMessage({ id: 'common_save' })}</Button>
+                                <Button type="primary" onClick={() => onJob()}>
+                                    {intl.formatMessage({ id: 'common_save' })}
+
+                                </Button>
                                 <Button style={{ marginLeft: 10 }} type="primary" onClick={() => onJob(1)}>{intl.formatMessage({ id: 'jobs_save_run' })}</Button>
                             </>
                         )}
                     >
-                        <div style={{ width: 'calc(100vw - 80px)' }}>
+                        <div style={{ width: 'calc(100% - 80px)' }}>
                             <DvEditor {...editorParams} locale={locale} innerRef={metricConfigRef} id={data.id} showMetricConfig detail={metricDetail} />
                         </div>
                     </PageContainer>
                 </TabPane>
                 <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_schedule' })} key="schedule">
-                    <IF visible={jobId}><Schedule jobId={jobId} /></IF>
+                    <IF visible={jobId}><Schedule jobId={jobId} style={styleTabContent || {}} /></IF>
                 </TabPane>
                 <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_SLA' })} key="SLA">
-                    <IF visible={jobId}><SelectSLAsComponent jobId={jobId} id={slaId} /></IF>
+                    <IF visible={jobId}><SelectSLAsComponent jobId={jobId} id={slaId} style={styleTabContent || {}} /></IF>
                 </TabPane>
             </Tabs>
         </div>

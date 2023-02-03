@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Table, Button, Input } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
 import { EyeOutlined } from '@ant-design/icons';
-import { ModalProps } from 'antd/es/modal';
+import { ModalProps } from 'antd/lib/modal';
 import {
     Popconfirm, useMount, useModal, useImmutable, useFormRender, IFormRender, useContextModal, IF,
 } from '../../../common';

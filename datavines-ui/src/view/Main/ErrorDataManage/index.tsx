@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import {
     Table, Button, message,
 } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
+import { PlusOutlined } from '@ant-design/icons';
 import { TWarnTableData, TWarnTableItem } from '@/type/warning';
 import { useAddErrorManage } from './useAddErrorManage';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
 import { useMount, Popconfirm } from '@/common';
+import Title from '@/component/Title';
 
 const Index = () => {
     const intl = useIntl();
@@ -106,33 +108,52 @@ const Index = () => {
         },
     ];
     return (
-        <div className="dv-page-paddinng">
-            <div style={{ paddingTop: '20px' }}>
+        <div
+            className="dv-page-paddinng"
+            style={{
+                padding: '20px 20px 0px 0px',
+            }}
+        >
+            <Title>
+                {intl.formatMessage({ id: 'error_title' })}
+                <Button style={{ float: 'right', marginTop: '4px' }} type="primary" icon={<PlusOutlined />} onClick={() => { show(null); }}>
+                    {intl.formatMessage({ id: 'error_create_btn' })}
+
+                </Button>
+            </Title>
+            {/* <div style={{ paddingTop: '20px' }}>
                 <div className="dv-flex-between">
                     <span />
                     <div style={{ textAlign: 'right', marginBottom: 10 }}>
-                        <Button type="primary" onClick={() => { show(null); }}>
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => { show(null); }}>
                             {intl.formatMessage({ id: 'error_create_btn' })}
                         </Button>
                     </div>
                 </div>
+            </div> */}
+            <div style={{
+                marginTop: '20px',
+            }}
+            >
+                <Table<TWarnTableItem>
+                    loading={loading}
+                    size="middle"
+                    rowKey="id"
+                    columns={columns}
+                    dataSource={tableData.list || []}
+                    onChange={onChange}
+                    pagination={{
+                        size: 'small',
+                        total: tableData.total,
+                        showSizeChanger: true,
+                        current: pageParams.pageNumber,
+                        pageSize: pageParams.pageSize,
+                    }}
+                    bordered
+                />
+                <RenderAddErrorModal />
             </div>
-            <Table<TWarnTableItem>
-                loading={loading}
-                size="middle"
-                rowKey="id"
-                columns={columns}
-                dataSource={tableData.list || []}
-                onChange={onChange}
-                pagination={{
-                    size: 'small',
-                    total: tableData.total,
-                    showSizeChanger: true,
-                    current: pageParams.pageNumber,
-                    pageSize: pageParams.pageSize,
-                }}
-            />
-            <RenderAddErrorModal />
+
         </div>
     );
 };

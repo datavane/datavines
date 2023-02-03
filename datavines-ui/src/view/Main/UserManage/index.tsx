@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import {
     Table, Button, message,
 } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
+import { PlusOutlined } from '@ant-design/icons';
 import { TUserItem } from '@/type/User';
 import { useAddUser } from './useAddUser';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
 import { useMount, Popconfirm } from '@/common';
+import Title from '@/component/Title';
 
 const Index = () => {
     const intl = useIntl();
@@ -103,33 +105,61 @@ const Index = () => {
         },
     ];
     return (
-        <div className="dv-page-paddinng">
-            <div style={{ paddingTop: '20px' }}>
+        <div
+            className="dv-page-paddinng"
+            style={
+                {
+                    padding: '20px 20px 20px 0px',
+                }
+            }
+        >
+            <Title>
+                {intl.formatMessage({ id: 'user_title' })}
+                <Button
+                    style={{
+                        float: 'right',
+                        marginTop: '4px',
+                    }}
+                    icon={<PlusOutlined />}
+                    type="primary"
+                    onClick={() => { show(null); }}
+                >
+                    {intl.formatMessage({ id: 'workspace_user_invite' })}
+                </Button>
+            </Title>
+            {/* <div style={{ paddingTop: '20px' }}>
                 <div className="dv-flex-between">
                     <span />
                     <div style={{ textAlign: 'right', marginBottom: 10 }}>
-                        <Button type="primary" onClick={() => { show(null); }}>
+                        <Button icon={<PlusOutlined />} type="primary" onClick={() => { show(null); }}>
                             {intl.formatMessage({ id: 'workspace_user_invite' })}
                         </Button>
                     </div>
                 </div>
+            </div> */}
+            <div style={{
+                marginTop: '20px',
+            }}
+            >
+                <Table<TUserItem>
+                    loading={loading}
+                    size="middle"
+                    rowKey="id"
+                    bordered
+                    columns={columns}
+                    dataSource={tableData.list || []}
+                    onChange={onChange}
+                    pagination={{
+                        size: 'small',
+                        total: tableData.total,
+                        showSizeChanger: true,
+                        current: pageParams.pageNumber,
+                        pageSize: pageParams.pageSize,
+                    }}
+                />
+                <RenderWidgetModal />
             </div>
-            <Table<TUserItem>
-                loading={loading}
-                size="middle"
-                rowKey="id"
-                columns={columns}
-                dataSource={tableData.list || []}
-                onChange={onChange}
-                pagination={{
-                    size: 'small',
-                    total: tableData.total,
-                    showSizeChanger: true,
-                    current: pageParams.pageNumber,
-                    pageSize: pageParams.pageSize,
-                }}
-            />
-            <RenderWidgetModal />
+
         </div>
     );
 };

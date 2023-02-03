@@ -2,14 +2,16 @@ import React from 'react';
 
 type TProps = {
     height?: number | string,
-    style?: React.CSSProperties
+    style?: React.CSSProperties,
+    children?:React.ReactNode
 }
 
 const ContentLayout: React.FC<TProps> = ({ height, style, children }) => (
     <div style={{
-        height: height || 'calc(100vh - 70px)',
+        height: height || '100vh',
         backgroundColor: '#fff',
         overflowY: 'auto',
+        padding: '20px 20px 20px 0px',
         ...(style || {}),
     }}
     >

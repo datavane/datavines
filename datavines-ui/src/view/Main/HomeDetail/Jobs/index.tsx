@@ -8,9 +8,10 @@ const Index = () => {
     const match = useRouteMatch();
     return (
         <Switch>
-            <Route path={match.path} exact component={List} />
-            <Route path={`${match.path}/instance`} exact component={Instance} />
+            <Route path={`${match.path}/jobs`} exact component={List} />
+            <Route path={`${match.path}/jobs/instance`} exact component={Instance} />
         </Switch>
+
     );
 };
 

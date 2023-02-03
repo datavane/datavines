@@ -1,10 +1,10 @@
 import React from 'react';
 import { ConfigProvider } from 'antd';
-import zhCN from 'antd/es/locale/zh_CN';
-import enUS from 'antd/es/locale/en_US';
+import zhCN from 'antd/locale/zh_CN';
+import enUS from 'antd/locale/en_US';
 import { useSelector } from '@/store';
 
-const ConfigProviderWrap:React.FC<{}> = ({ children }) => {
+const ConfigProviderWrap:React.FC<{children:React.ReactNode}> = ({ children }) => {
     const { prefixCls, locale } = useSelector((r) => r.commonReducer);
     const getLocale = () => {
         if (locale === 'zh_CN') {
@@ -13,7 +13,7 @@ const ConfigProviderWrap:React.FC<{}> = ({ children }) => {
         return enUS;
     };
     return (
-        <ConfigProvider locale={getLocale()} prefixCls={prefixCls}>
+        <ConfigProvider theme={{ token: { colorPrimary: '#FFD56A', borderRadius: 10 } }} locale={getLocale()} prefixCls={prefixCls}>
             {children}
         </ConfigProvider>
     );

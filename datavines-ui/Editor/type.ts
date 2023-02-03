@@ -55,13 +55,17 @@ export interface IDvEditorProps {
     innerRef?: any,
     locale?: any,
     onShowModal?: (...args: any[]) => any;
+    uuid?:number | string | null,
+    afterClose?: (...args: any[]) => any;
 }
 
 export interface IDvDataBaseItem{
     comment: string,
     name: string,
     type: string,
-    children?: IDvDataBaseItem[]
+    children?: IDvDataBaseItem[],
+    uuid:string;
+    isLoading?:boolean;
 }
 
 export interface IDvSqlTableColumnItem {

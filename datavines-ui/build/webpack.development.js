@@ -2,6 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const { launchEditorMiddleware } = require('react-dev-inspector/plugins/webpack');
+const path = require('path');
 const { resolve, host } = require('./utils');
 
 const TARGET_MAP = {
@@ -11,7 +12,7 @@ const TARGET_MAP = {
 let proxy = [];
 try {
     // eslint-disable-next-line global-require
-    const { targetMap, getProxy } = require('./.proxy.js');
+    const { targetMap, getProxy } = require('./.proxy.example.js');
     Object.assign(TARGET_MAP, targetMap);
     proxy = getProxy(TARGET_MAP[process.env.DV_ENV], host);
 } catch (error) {
@@ -65,6 +66,7 @@ module.exports = {
         new ReactRefreshWebpackPlugin(),
         new HtmlWebpackPlugin({
             template: resolve('./public/index-dev.html'),
+            favicon: resolve('./public/logo-light.png'),
         }),
     ],
 };

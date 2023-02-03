@@ -1,6 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/no-unstable-nested-components */
-import React, { useRef, useImperativeHandle, useState } from 'react';
+import React, {
+    useRef, useImperativeHandle, useState, useEffect,
+} from 'react';
 import { useIntl } from 'react-intl';
 import {
     Input, InputNumber, Form, Radio, DatePicker, Col, Row, Button, FormInstance, message, Spin,
@@ -142,10 +144,10 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 label=""
                 name="wday"
                 rules={requiredRule}
-                initialValue={detail?.param?.parameter?.wday}
-                style={{ width: 80, display: 'inline-block' }}
+                initialValue={detail?.param?.parameter?.wday ? +detail.param.parameter.wday : ''}
+                style={{ width: 120, display: 'inline-block' }}
             >
-                <CustomSelect source={WeekSrouce} style={{ width: 80 }} />
+                <CustomSelect source={WeekSrouce} style={{ width: 120 }} />
             </Form.Item>
         ),
         day: () => (
@@ -154,12 +156,12 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 name="day"
                 rules={requiredRule}
                 initialValue={detail?.param?.parameter?.day}
-                style={{ width: 100, display: 'inline-block' }}
+                style={{ width: 160, display: 'inline-block' }}
             >
                 <InputNumber
                     min={1}
                     max={31}
-                    style={{ width: 100 }}
+                    style={{ width: 160 }}
                     formatter={(value: any) => (value ? `${getIntl('jobs_every_month')}${value}${getIntl('jobs_every_month_day')}` : '')}
                     parser={(value: any) => (value || '').replace(getIntl('jobs_every_month'), '').replace(getIntl('jobs_every_month_day'), '')}
                 />
@@ -172,6 +174,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 return (
                     <>
                         {timeMap.day()}
+                        <span style={{ ...commonStyle, margin: '0 5px' }} />
                         {timeMap.hour()}
                         <span style={{ ...commonStyle, margin: '0 5px' }}>:</span>
                         {timeMap.minute()}
@@ -183,6 +186,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                     <>
                         <span style={{ ...commonStyle, marginRight: 5 }}>{getIntl('jobs_week_before')}</span>
                         {timeMap.wday()}
+                        <span style={{ ...commonStyle, margin: '0 5px' }} />
                         {timeMap.hour()}
                         <span style={{ ...commonStyle, margin: '0 5px' }}>:</span>
                         {timeMap.minute()}
@@ -239,7 +243,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 label={intl.formatMessage({ id: 'jobs_schedule_type' })}
                 name="type"
                 rules={requiredRule}
-                initialValue={detail?.type}
+                initialValue={detail?.type || 'cycle'}
             >
                 <Radio.Group>
                     <Radio value="cycle">{intl.formatMessage({ id: 'jobs_schedule_custom' })}</Radio>
@@ -268,9 +272,26 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                                     const cycleValue = form.getFieldValue('cycle');
                                     return (
                                         <Row>
-                                            <div className="ant-col ant-form-item-label">
+                                            <div
+                                                className="ant-col ant-form-item-label"
+                                                style={{
+                                                    marginLeft: '11px',
+                                                    height: '32px',
+                                                    marginBottom: '20px',
+                                                    lineHeight: '32px',
+                                                }}
+                                            >
                                                 <label className="ant-form-item-required">
-                                                    {intl.formatMessage({ id: 'jobs_schedule_time' })}
+                                                    {`${intl.formatMessage({ id: 'jobs_schedule_time' })}`}
+                                                    <span style={{
+                                                        marginBlock: '0',
+                                                        marginInlineStart: '2px',
+                                                        marginInlineEnd: '8px',
+                                                    }}
+                                                    >
+                                                        :
+
+                                                    </span>
                                                 </label>
                                             </div>
                                             {renderScheduleTime(cycleValue)}
@@ -348,7 +369,9 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
         </Form>
     );
 };
-const ScheduleContainer = ({ jobId }: {jobId: string}) => {
+const ScheduleContainer = ({
+    jobId, api = 'job', width, onSavaEnd, style = {}, isShowPush = false,
+}: {jobId: string | number, api?:string;width?:string;onSavaEnd?:()=>void;style?:any;isShowPush?:boolean}) => {
     const intl = useIntl();
     const globalSetLoading = useLoading();
     const [loading, setLoading] = useState(true);
@@ -382,31 +405,78 @@ const ScheduleContainer = ({ jobId }: {jobId: string}) => {
     };
     const getData = async () => {
         try {
-            const res = await $http.get(`/job/schedule/${jobId}`);
+            const res = await $http.get(`/${api}/schedule/${jobId}`);
             if (res) {
                 if (res.param) {
                     res.param = JSON.parse(res.param);
                 }
+                formRef?.current?.setFieldsValue({
+                    type: res?.type,
+                    nminute: res?.param?.parameter?.nminute,
+                    minute: res?.param?.parameter?.minute,
+                    nhour: res?.param?.parameter?.nhour,
+                    day: res?.param?.parameter?.day,
+                    wday: res?.param?.parameter?.wday ? +res.param.parameter.wday : '',
+                    hour: res?.param?.parameter?.hour,
+                    endTime: res?.endTime ? moment(detail?.endTime) : get100Years(),
+                    startTime: res?.startTime ? moment(detail?.startTime) : moment(),
+                    crontab: res?.param?.crontab,
+                    '': '',
+                    cycle: res?.param?.cycle,
+                });
                 setDetail(res);
+            } else {
+                formRef.current.setFieldsValue({
+                    type: 'cycle',
+                    nminute: '',
+                    minute: '',
+                    nhour: '',
+                    day: '',
+                    hour: '',
+                    endTime: '',
+                    startTime: '',
+                    crontab: '',
+                    '': '',
+                    cycle: '',
+                    wday: '',
+
+                });
+                setDetail(null);
             }
         } catch (error) {
         } finally {
             setLoading(false);
         }
     };
-    const onSave = () => {
+    useEffect(() => {
+        getData();
+    }, [jobId]);
+    const onSave = async (type:string = 'add') => {
+        if (type === 'push') {
+            await $http.post('/catalog/refresh', {
+                datasourceId: jobId,
+            });
+            // eslint-disable-next-line no-unused-expressions
+            onSavaEnd && onSavaEnd();
+            message.success(intl.formatMessage({ id: 'common_success' }));
+            return;
+        }
+
         getValues(async (params: any) => {
             globalSetLoading(true);
             try {
                 const $params = {
                     jobId,
+                    entityUUID: jobId,
                     ...params,
                 };
                 if (detail?.id) {
                     $params.id = detail?.id;
                 }
-                await $http.post('/job/schedule/createOrUpdate', $params);
+                await $http.post(`/${api}/schedule/createOrUpdate`, { ...$params, ...params.param });
                 getData();
+                // eslint-disable-next-line no-unused-expressions
+                onSavaEnd && onSavaEnd();
                 message.success(intl.formatMessage({ id: 'common_success' }));
             } catch (error) {
             } finally {
@@ -414,19 +484,22 @@ const ScheduleContainer = ({ jobId }: {jobId: string}) => {
             }
         });
     };
-    useMount(async () => {
-        getData();
-    });
+
+    // useMount(async () => {
+    //     getData();
+    // });
     if (loading) {
         return <Spin spinning={loading} />;
     }
     return (
         <PageContainer
-            footer={(
-                <Button type="primary" onClick={() => onSave()}>保存</Button>
-            )}
+            style={style}
+            footer={[
+                isShowPush ? <Button style={{ marginRight: '10px' }} type="primary" onClick={() => onSave('push')}>{intl.formatMessage({ id: 'home_Metadata_scraping' })}</Button> : undefined,
+                <Button type="primary" onClick={() => onSave('add')}>{intl.formatMessage({ id: 'common_save' })}</Button>,
+            ]}
         >
-            <div style={{ width: 'calc(100vw - 80px)' }}>
+            <div style={{ width: width || 'calc(100vw - 80px)' }}>
                 <Schedule formRef={formRef} detail={detail} />
             </div>
         </PageContainer>

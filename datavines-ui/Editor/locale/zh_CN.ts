@@ -57,7 +57,7 @@ export default {
     dev_metric_expected_value_execution: '期望值执行语句',
     editor_dv_metric_select_datasource: '请选择数据源!',
     dv_metric_delete: '删除',
-    dv_metric_check_column:'检查列',
+    dv_metric_check_column: '检查列',
     editor_dv_metric_input_actual_value_execution: '请输入实际值执行语句!',
     editor_dv_metric_input_expected_value_execution: '请输入期望值执行语句!',
     editor_dv_metric_select_rule: '请选择规则',

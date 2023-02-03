@@ -10,6 +10,7 @@ const { Header, Content, Sider } = Layout;
 type TMainProps = {
     menus: MenuItem[],
     visible?: boolean,
+    children?:React.ReactNode
 };
 
 const MenuLayout: React.FC<TMainProps> = ({ children, menus, visible = true }) => {
@@ -22,27 +23,27 @@ const MenuLayout: React.FC<TMainProps> = ({ children, menus, visible = true }) =
     }
     return (
         <Layout>
-            <Header className="dv-header-layout">
+            {/* <Header className="dv-header-layout">
                 <HeaderTop />
-            </Header>
+            </Header> */}
             <Layout>
                 <Sider
-                    theme="light"
-                    style={{ height: 'calc(100vh - 60px)', overflow: 'auto', borderTop: '1px solid #f0f0f0' }}
-                    width={180}
-                    collapsedWidth={50}
+                    style={{
+                        height: '100vh', overflow: 'auto', backgroundColor: 'transparent',
+                    }}
                     trigger={(
                         <div style={{ position: 'absolute', right: 15, fontSize: 16 }}>
                             {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
                         </div>
                     )}
-                    collapsible
                     collapsed={collapsed}
                     onCollapse={onCollapse}
                 >
-                    <AsideMenu menus={menus} />
+                    <AsideMenu
+                        menus={menus}
+                    />
                 </Sider>
-                <Layout style={{ padding: '10px' }}>
+                <Layout>
                     <Content>
                         {children}
                     </Content>

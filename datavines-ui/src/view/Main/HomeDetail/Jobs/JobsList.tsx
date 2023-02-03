@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import {
-    Table, Form, Button, Popconfirm, message, Dropdown,Menu
+    Table, Form, Button, Popconfirm, message, Dropdown, Menu,
 } from 'antd';
-import type {MenuProps} from 'antd'
-import { ColumnsType } from 'antd/es/table';
+import type { MenuProps } from 'antd';
+import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import { TJobsTableData, TJobsTableItem } from '@/type/Jobs';
@@ -14,6 +14,7 @@ import { defaultRender } from '@/utils/helper';
 import { useAddEditJobsModal } from './useAddEditJobsModal';
 import { useSelectSLAsModal } from './useSelectSLAsModal';
 import store from '@/store';
+
 type TJobs = {
     datasourceId?: any,
 }
@@ -24,9 +25,9 @@ const Jobs = ({ datasourceId }: TJobs) => {
     const [loading, setLoading] = useState(false);
     const history = useHistory();
     const match = useRouteMatch();
-    const [addType, setAddType] = useState('')
+    const [addType, setAddType] = useState('');
     const { Render: RenderJobsModal, show: showJobsModal } = useAddEditJobsModal({
-        title: intl.formatMessage({ id: addType === 'quality' ? 'jobs_tabs_title':'jobs_tabs_comparison_title' }),
+        title: intl.formatMessage({ id: addType === 'quality' ? 'jobs_tabs_title' : 'jobs_tabs_comparison_title' }),
         afterClose() {
             getData();
         },
@@ -41,34 +42,42 @@ const Jobs = ({ datasourceId }: TJobs) => {
         pageNumber: 1,
         pageSize: 10,
     });
-    const handleMenuClick: MenuProps['onClick'] = e => {
-        setAddType(e.key)
+    const handleMenuClick: MenuProps['onClick'] = (e) => {
+        setAddType(e.key);
         store.dispatch({
             type: 'save_datasource_modeType',
             payload: e.key,
         });
+        store.dispatch({
+            type: 'save_datasource_entityUuid',
+            payload: '',
+        });
+        store.dispatch({
+            type: 'save_datasource_dsiabledEdit',
+            payload: null,
+        });
         showJobsModal({
             id: (match.params as any).id,
             record: {
-                modeType: e.key
+                modeType: e.key,
             },
         });
-      };
+    };
     const menu = (
         <Menu
-          onClick={handleMenuClick}
-          items={[
-            {
-              key: 'quality',
-              label: intl.formatMessage({ id: 'jobs_tabs_title' }),
-            },
-            {
-              key: 'comparison',
-              label: intl.formatMessage({ id: 'jobs_tabs_comparison_title' }),
-            },
-          ]}
+            onClick={handleMenuClick}
+            items={[
+                {
+                    key: 'quality',
+                    label: intl.formatMessage({ id: 'jobs_tabs_title' }),
+                },
+                {
+                    key: 'comparison',
+                    label: intl.formatMessage({ id: 'jobs_tabs_comparison_title' }),
+                },
+            ]}
         />
-      );
+    );
     const getData = async (values: any = null) => {
         try {
             setLoading(true);
@@ -110,12 +119,12 @@ const Jobs = ({ datasourceId }: TJobs) => {
         }
     };
     const onEdit = (record: TJobsTableItem) => {
-        const type = record.type === 'DATA_RECONCILIATION' ? 'comparison' : 'quality'
+        const type = record.type === 'DATA_RECONCILIATION' ? 'comparison' : 'quality';
         store.dispatch({
             type: 'save_datasource_modeType',
-            payload: type
+            payload: type,
         });
-        setAddType(type)
+        setAddType(type);
         showJobsModal({
             id: (match.params as any).id,
             record,
@@ -220,14 +229,13 @@ const Jobs = ({ datasourceId }: TJobs) => {
         },
     ];
     return (
-        <div className="dv-page-paddinng">
-            <Title>{intl.formatMessage({ id: 'jobs_list' })}</Title>
-            <div style={{ paddingTop: '20px' }}>
+        <div className="dv-page-paddinng" style={{ height: 'calc(100vh - 73px)' }}>
+            {/* <Title>{intl.formatMessage({ id: 'jobs_list' })}</Title> */}
+            <div style={{ paddingTop: '0px' }}>
                 <div className="dv-flex-between">
                     <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
-
                     <div>
-                        <Dropdown overlay={menu} >
+                        <Dropdown overlay={menu}>
                             <Button
                                 type="primary"
                                 style={{ marginRight: 15 }}
@@ -242,6 +250,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
                 loading={loading}
                 size="middle"
                 rowKey="id"
+                bordered
                 columns={columns}
                 dataSource={tableData.list || []}
                 onChange={onChange}

@@ -12,7 +12,8 @@ export default ({ onClick, style }: {onClick?: () => void, style?: React.CSSProp
             okText={intl.formatMessage({ id: 'common_Ok' })}
             cancelText={intl.formatMessage({ id: 'common_Cancel' })}
         >
-            <a style={{ color: '#f81d22', marginLeft: 10, ...(style || {}) }}>{intl.formatMessage({ id: 'common_delete' })}</a>
+            {/* color: '#f81d22', */}
+            <a style={{ marginLeft: 10, ...(style || {}) }}>{intl.formatMessage({ id: 'common_delete' })}</a>
         </Popconfirm>
     );
 };

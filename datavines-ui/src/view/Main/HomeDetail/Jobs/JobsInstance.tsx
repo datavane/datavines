@@ -1,6 +1,7 @@
+/* eslint-disable react/no-children-prop */
 import React, { useState } from 'react';
 import { Table, Form } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
 import querystring from 'querystring';
 import { TJobsInstanceTableData, TJobsInstanceTableItem } from '@/type/JobsInstance';
@@ -28,7 +29,7 @@ const JobsInstance = () => {
     const getData = async (values?: any, $pageParams?: any) => {
         try {
             setLoading(true);
-            const res = (await $http.get('/task/page', {
+            const res = (await $http.get('/job/execution/page', {
                 jobId: qs.jobId,
                 ...($pageParams || pageParams),
                 ...(values || form.getFieldsValue()),
@@ -65,7 +66,7 @@ const JobsInstance = () => {
     const onStop = async (record: TJobsInstanceTableItem) => {
         try {
             setLoading(true);
-            await $http.delete(`/task/kill/${record.id}`);
+            await $http.delete(`job/execution/kill/${record.id}`);
             getData();
         } catch (error) {
         } finally {
@@ -131,9 +132,15 @@ const JobsInstance = () => {
         },
     ];
     return (
-        <div className="dv-page-paddinng">
-            <Title isBack>{intl.formatMessage({ id: 'jobs_task_title' })}</Title>
-            <div style={{ paddingTop: '20px' }}>
+        <div
+            className="dv-page-paddinng"
+            style={{
+                padding: '0px 20px 0px 0px',
+                height: 'auto',
+            }}
+        >
+            {/* <Title isBack children={undefined} /> */}
+            <div>
                 <div className="dv-flex-between">
                     <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
                 </div>
