@@ -37,7 +37,7 @@ public class PrestoConnector extends JdbcConnector {
 
     @Override
     protected ResultSet getPrimaryKeys(DatabaseMetaData metaData, String catalog, String schema, String tableName) throws SQLException {
-        return metaData.getPrimaryKeys(catalog, schema, tableName);
+        return null;
     }
 
     @Override
@@ -98,6 +98,12 @@ public class PrestoConnector extends JdbcConnector {
                 isEn ? "please enter catalog" : "请填入目录类型", 1, Validate.newBuilder()
                         .setRequired(true).setMessage(isEn ? "please enter catalog" : "请填入目录类型")
                         .build());
+
+        InputParam database = getInputParam("database",
+                isEn ? "database" : "数据库",
+                isEn ? "please enter database" : "请填入数据库", 1, Validate.newBuilder()
+                        .setRequired(true).setMessage(isEn ? "please enter database" : "请填入数据库")
+                        .build());
         InputParam user = getInputParam("user",
                 isEn ? "user" : "用户名",
                 isEn ? "please enter user" : "请填入用户名", 1, Validate.newBuilder()
@@ -116,6 +122,7 @@ public class PrestoConnector extends JdbcConnector {
         params.add(host);
         params.add(port);
         params.add(catalog);
+        params.add(database);
         params.add(user);
         params.add(password);
         params.add(properties);

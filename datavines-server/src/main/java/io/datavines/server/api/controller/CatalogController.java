@@ -23,15 +23,17 @@ import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
 import io.datavines.server.api.dto.bo.catalog.OptionItem;
 
+import io.datavines.server.api.dto.bo.issue.IssueUpdate;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
 import io.datavines.server.api.dto.vo.*;
 
+import io.datavines.server.api.dto.vo.catalog.CatalogColumnDetailVO;
+import io.datavines.server.api.dto.vo.catalog.CatalogDatabaseDetailVO;
+import io.datavines.server.api.dto.vo.catalog.CatalogEntityMetricParameter;
+import io.datavines.server.api.dto.vo.catalog.CatalogTableDetailVO;
 import io.datavines.server.repository.entity.catalog.CatalogSchemaChange;
-import io.datavines.server.repository.service.CatalogEntityInstanceService;
-import io.datavines.server.repository.service.CatalogSchemaChangeService;
-import io.datavines.server.repository.service.CatalogTaskService;
+import io.datavines.server.repository.service.*;
 
-import io.datavines.server.repository.service.JobExecutionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +58,24 @@ public class CatalogController {
     private CatalogSchemaChangeService catalogSchemaChangeService;
 
     @Autowired
+    private CatalogEntityProfileService catalogEntityProfileService;
+
+    @Autowired
     private JobExecutionService jobExecutionService;
+
+    @Autowired
+    private IssueService issueService;
 
     @ApiOperation(value = "refresh", response = Long.class)
     @PostMapping(value = "/refresh", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object refreshCatalog(@RequestBody CatalogRefresh catalogRefresh) {
         return catalogTaskService.refreshCatalog(catalogRefresh);
+    }
+
+    @ApiOperation(value = "execute data profile job", response = Long.class)
+    @PostMapping(value = "/profile/execute")
+    public Object executeDataProfileJob(@RequestParam String uuid) {
+        return catalogEntityInstanceService.executeDataProfileJob(uuid);
     }
 
     @ApiOperation(value = "get database list", response = OptionItem.class, responseContainer = "list")
@@ -112,6 +126,31 @@ public class CatalogController {
         return catalogEntityInstanceService.getColumnEntityDetail(uuid);
     }
 
+    @ApiOperation(value = "get table entity profile", response = CatalogTableDetailVO.class)
+    @GetMapping(value = "/profile/table/{uuid}")
+    public Object getTableEntityProfile(@PathVariable String uuid) {
+        return catalogEntityInstanceService.getTableEntityProfile(uuid);
+    }
+
+    @ApiOperation(value = "get column entity profile", response = CatalogTableDetailVO.class)
+    @GetMapping(value = "/profile/column/{uuid}")
+    public Object getColumnEntityProfile(@PathVariable String uuid) {
+        return catalogEntityInstanceService.getColumnEntityProfile(uuid);
+    }
+
+    @ApiOperation(value = "get entity metric dashboard", response = DataTime2ValueItem.class, responseContainer = "list")
+    @GetMapping(value = "/profile/table/records")
+    public Object getTableRecordList(@RequestParam String uuid,
+                                     @RequestParam(value = "startTime", required = false) String startTime,
+                                     @RequestParam(value = "endTime",required = false) String endTime) {
+        if (StringUtils.isEmpty(startTime) || StringUtils.isEmpty(endTime)) {
+            endTime = DateUtils.getCurrentTime();
+            startTime = DateUtils.format(DateUtils.getSomeDay(new Date(), -7), DateUtils.YYYY_MM_DD_HH_MM_SS);
+        }
+
+        return catalogEntityProfileService.listTableRecords(uuid, startTime ,endTime);
+    }
+
     @ApiOperation(value = "get column entity detail", response = CatalogSchemaChange.class, responseContainer = "list")
     @GetMapping(value = "/list/schema-change/{uuid}")
     public Object getSchemaChangeList(@PathVariable String uuid) {
@@ -136,6 +175,20 @@ public class CatalogController {
                                       @RequestParam("pageNumber") Integer pageNumber,
                                       @RequestParam("pageSize") Integer pageSize) {
         return catalogEntityInstanceService.getEntityMetricList(uuid, pageNumber, pageSize);
+    }
+
+    @ApiOperation(value = "get entity issue page", response = CatalogSchemaChange.class, responseContainer = "list")
+    @GetMapping(value = "/page/entity/issue")
+    public Object getEntityIssueList(@RequestParam String uuid,
+                                      @RequestParam("pageNumber") Integer pageNumber,
+                                      @RequestParam("pageSize") Integer pageSize) {
+        return catalogEntityInstanceService.getEntityIssueList(uuid, pageNumber, pageSize);
+    }
+
+    @ApiOperation(value = "update entity issue status", response = Long.class)
+    @PostMapping(value = "/issue/update-status", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object issueUpdateStatus(@RequestBody IssueUpdate issueUpdate) {
+        return issueService.updateStatus(issueUpdate);
     }
 
     @ApiOperation(value = "get entity metric dashboard", response = MetricExecutionDashBoard.class, responseContainer = "list")

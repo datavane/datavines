@@ -121,7 +121,7 @@ public class MysqlStorageConnector implements StorageConnector {
         config.put("table",parameter.get("table"));
         config.put("user",parameter.get("user"));
         config.put("password", parameter.get("password"));
-        config.put("url", getUrl(parameter));
+        config.put("url", parameter.get("url") == null ? getUrl(parameter) : parameter.get("url"));
         config.put("driver","com.mysql.cj.jdbc.Driver");
         return config;
     }

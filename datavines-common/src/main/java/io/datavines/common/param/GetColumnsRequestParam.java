@@ -22,6 +22,8 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class GetColumnsRequestParam extends ConnectorRequestParam {
+
     private String dataBase;
+
     private String table;
 }

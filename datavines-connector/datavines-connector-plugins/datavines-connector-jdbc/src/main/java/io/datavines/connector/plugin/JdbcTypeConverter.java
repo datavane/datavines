@@ -41,6 +41,7 @@ public class JdbcTypeConverter implements TypeConverter {
                 return DataType.SHORT_TYPE;
             case "SMALLINT_UNSIGNED":
             case "INT":
+            case "INTEGER":
             case "MEDIUMINT":
             case "MEDIUMINT_UNSIGNED":
                 return DataType.INT_TYPE;

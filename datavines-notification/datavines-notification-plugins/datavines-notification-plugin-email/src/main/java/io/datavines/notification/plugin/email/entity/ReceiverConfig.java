@@ -26,6 +26,7 @@ import java.util.Set;
 @EqualsAndHashCode
 @ToString
 public class ReceiverConfig {
+
     private String to;
 
     private String cc;

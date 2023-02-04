@@ -32,7 +32,7 @@ public class DiffPercentage implements ResultFormula {
     }
 
     @Override
-    public double getResult(double actualValue, double expectedValue) {
+    public Double getResult(Double actualValue, Double expectedValue) {
         double result = 0;
         if (expectedValue > 0) {
             result = Math.abs(expectedValue - actualValue) / expectedValue * 100;

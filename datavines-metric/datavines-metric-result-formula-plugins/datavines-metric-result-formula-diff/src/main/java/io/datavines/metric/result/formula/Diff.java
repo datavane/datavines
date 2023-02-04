@@ -32,7 +32,7 @@ public class Diff implements ResultFormula {
     }
 
     @Override
-    public double getResult(double actualValue, double expectedValue) {
+    public Double getResult(Double actualValue, Double expectedValue) {
         return Math.abs(actualValue - expectedValue);
     }
 

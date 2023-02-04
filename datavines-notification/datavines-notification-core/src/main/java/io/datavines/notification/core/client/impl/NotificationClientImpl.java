@@ -35,7 +35,6 @@ public class NotificationClientImpl implements NotificationClient {
     @Autowired
     private NotificationManager notificationManager;
 
-
     @Override
     public SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config) {
         SlaNotificationResult result = notificationManager.notify(slaNotificationMessage, config);

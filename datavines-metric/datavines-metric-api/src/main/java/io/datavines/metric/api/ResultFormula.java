@@ -29,7 +29,7 @@ public interface ResultFormula {
         return isEn ? getName() : getZhName();
     }
 
-    double getResult(double actualValue, double expectedValue);
+    Double getResult(Double actualValue, Double expectedValue);
 
     String getResultFormat(boolean isEn);
 

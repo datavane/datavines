@@ -41,13 +41,13 @@ import java.util.stream.Collectors;
 @Slf4j
 public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
 
-    private  final String STRING_YES = "YES";
+    private final String STRING_YES = "YES";
 
-    private  final String STRING_NO = "NO";
+    private final String STRING_NO = "NO";
 
-    private  final String STRING_TRUE = "TRUE";
+    private final String STRING_TRUE = "TRUE";
 
-    private  final String STRING_FALSE = "FALSE";
+    private final String STRING_FALSE = "FALSE";
 
     @Override
     public SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config) {

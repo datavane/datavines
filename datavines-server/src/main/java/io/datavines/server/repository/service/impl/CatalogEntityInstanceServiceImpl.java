@@ -21,15 +21,19 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
-import io.datavines.common.exception.DataVinesException;
+import io.datavines.common.entity.job.BaseJobParameter;
+import io.datavines.common.enums.DataVinesDataType;
+import io.datavines.common.enums.EntityRelType;
+import io.datavines.common.enums.JobType;
 import io.datavines.common.utils.*;
 import io.datavines.server.api.dto.bo.catalog.OptionItem;
+import io.datavines.server.api.dto.bo.job.JobCreate;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
-import io.datavines.server.api.dto.vo.*;
-import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
-import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
-import io.datavines.server.repository.entity.catalog.CatalogEntityRel;
-import io.datavines.server.repository.entity.catalog.CatalogEntityTagRel;
+import io.datavines.server.api.dto.bo.job.JobUpdate;
+import io.datavines.server.api.dto.vo.DataTime2ValueItem;
+import io.datavines.server.api.dto.vo.catalog.*;
+import io.datavines.server.repository.entity.Job;
+import io.datavines.server.repository.entity.catalog.*;
 import io.datavines.server.repository.mapper.CatalogEntityInstanceMapper;
 import io.datavines.server.repository.mapper.CatalogEntityMetricJobRelMapper;
 import io.datavines.server.repository.mapper.CatalogEntityRelMapper;
@@ -40,9 +44,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import javax.xml.crypto.Data;
+import java.text.DecimalFormat;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("catalogEntityInstanceService")
@@ -57,6 +62,9 @@ public class CatalogEntityInstanceServiceImpl
     private JobService jobService;
 
     @Autowired
+    private JobExecutionService jobExecutionService;
+
+    @Autowired
     private CatalogEntityMetricJobRelService catalogEntityMetricJobRelService;
 
     @Autowired
@@ -64,6 +72,9 @@ public class CatalogEntityInstanceServiceImpl
 
     @Autowired
     private CatalogEntityTagRelService catalogEntityTagRelService;
+
+    @Autowired
+    private CatalogEntityProfileService catalogEntityProfileService;
 
     @Override
     public String create(CatalogEntityInstance entityInstance) {
@@ -117,7 +128,7 @@ public class CatalogEntityInstanceServiceImpl
 
     private List<CatalogEntityInstance> getCatalogEntityInstances(String upstreamId) {
         List<CatalogEntityRel> entityRelList = entityRelMapper.selectList(new QueryWrapper<CatalogEntityRel>()
-                .eq("entity1_uuid", upstreamId).eq("direction","down"));
+                .eq("entity1_uuid", upstreamId).eq("type",EntityRelType.CHILD.getDescription()));
         List<String> uuidList = new ArrayList<>();
         entityRelList.forEach(x->{
             uuidList.add(x.getEntity2Uuid());
@@ -219,7 +230,7 @@ public class CatalogEntityInstanceServiceImpl
             table.setName(item.getDisplayName());
             table.setUuid(item.getUuid());
             table.setUpdateTime(item.getUpdateTime());
-            List<CatalogEntityInstance> columnList = getCatalogEntityInstances(upstreamId);
+            List<CatalogEntityInstance> columnList = getCatalogEntityInstances(item.getUuid());
             table.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
 
             result.add(table);
@@ -242,6 +253,8 @@ public class CatalogEntityInstanceServiceImpl
         detail.setUpdateTime(databaseInstance.getUpdateTime());
         List<CatalogEntityInstance> tableList = getCatalogEntityInstances(uuid);
         detail.setTables((long)(CollectionUtils.isEmpty(tableList)? 0 : tableList.size()));
+        detail.setMetrics(getEntityMetricCount(uuid));
+        detail.setTags(getEntityTagCount(uuid));
 
         return detail;
     }
@@ -262,6 +275,7 @@ public class CatalogEntityInstanceServiceImpl
         detail.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
         detail.setComment(databaseInstance.getDescription());
         detail.setTags(getEntityTagCount(uuid));
+        detail.setMetrics(getEntityMetricCount(uuid));
 
         return detail;
     }
@@ -285,8 +299,343 @@ public class CatalogEntityInstanceServiceImpl
         detail.setUpdateTime(databaseInstance.getUpdateTime());
         detail.setComment(databaseInstance.getDescription());
         detail.setTags(getEntityTagCount(uuid));
+        detail.setMetrics(getEntityMetricCount(uuid));
 
         return detail;
+    }
+
+    @Override
+    public CatalogTableProfileVO getTableEntityProfile(String uuid) {
+        CatalogTableProfileVO tableProfileVO = new CatalogTableProfileVO();
+        CatalogEntityInstance tableInstance = getCatalogEntityInstance(uuid);
+        tableProfileVO.setUuid(uuid);
+        tableProfileVO.setName(tableInstance.getDisplayName());
+        tableProfileVO.setType(tableInstance.getType());
+        DataTime2ValueItem tableRecords = catalogEntityProfileService.getCurrentTableRecords(uuid);
+        if (tableRecords == null) {
+            return tableProfileVO;
+        }
+        String latestDate = tableRecords.getDatetime();
+        Double records = Double.valueOf((String)tableRecords.getValue());
+        List<CatalogEntityInstance> columnList = getCatalogEntityInstances(uuid);
+        if (CollectionUtils.isEmpty(columnList)) {
+            return tableProfileVO;
+        }
+
+        List<CatalogColumnBaseProfileVO> columnBaseProfileVOS = new ArrayList<>();
+        CatalogColumnBaseProfileVO columnBaseProfileVO;
+        for (CatalogEntityInstance column : columnList) {
+            String columnUUID = column.getUuid();
+            String dataType = "string";
+
+            List<CatalogEntityProfile> columnProfileList = catalogEntityProfileService.getEntityProfileByUUID(columnUUID, latestDate);
+            if (CollectionUtils.isEmpty(columnProfileList)) {
+                continue;
+            }
+
+            columnBaseProfileVO = new CatalogColumnBaseProfileVO();
+            columnBaseProfileVO.setName(column.getDisplayName());
+            columnBaseProfileVO.setUuid(columnUUID);
+
+            if (StringUtils.isNotEmpty(column.getProperties())) {
+                ColumnInfo columnInfo = JSONUtils.parseObject(column.getProperties(), ColumnInfo.class);
+                if (columnInfo != null) {
+                    columnBaseProfileVO.setType(columnInfo.getType());
+                    DataVinesDataType dataVinesDataType = DataVinesDataType.getType(columnInfo.getType());
+                    if (dataVinesDataType != null) {
+                        dataType = dataVinesDataType.getName();
+                    }
+                }
+            }
+            columnBaseProfileVO.setDataType(dataType);
+            for (CatalogEntityProfile entityProfile : columnProfileList) {
+                String metricName = entityProfile.getMetricName();
+                if (StringUtils.isEmpty(metricName)) {
+                    continue;
+                }
+
+                switch (metricName) {
+                    case "column_null":
+                        columnBaseProfileVO.setNullCount(entityProfile.getActualValue());
+                        columnBaseProfileVO.setNullPercentage(String.format("%.2f",(Double.valueOf(entityProfile.getActualValue()) / records * 100)) +"%");
+                        break;
+                    case "column_not_null":
+                        columnBaseProfileVO.setNotNullCount(entityProfile.getActualValue());
+                        columnBaseProfileVO.setNotNullPercentage(String.format("%.2f",(Double.valueOf(entityProfile.getActualValue()) / records * 100)) +"%");
+                        break;
+                    case "column_unique":
+                        columnBaseProfileVO.setUniqueCount(entityProfile.getActualValue());
+                        columnBaseProfileVO.setUniquePercentage(String.format("%.2f",(Double.valueOf(entityProfile.getActualValue()) / records * 100)) +"%");
+                        break;
+                    case "column_distinct":
+                        columnBaseProfileVO.setDistinctCount(entityProfile.getActualValue());
+                        columnBaseProfileVO.setDistinctPercentage(String.format("%.2f",(Double.valueOf(entityProfile.getActualValue()) / records * 100)) +"%");
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            columnBaseProfileVOS.add(columnBaseProfileVO);
+        }
+
+        tableProfileVO.setColumnProfile(columnBaseProfileVOS);
+        return tableProfileVO;
+    }
+
+    @Override
+    public Object getColumnEntityProfile(String uuid) {
+        CatalogColumnBaseProfileVO catalogColumnBaseProfileVO = new CatalogColumnBaseProfileVO();
+        CatalogEntityInstance tableEntity = getParentEntity(uuid);
+        if (tableEntity == null) {
+            return catalogColumnBaseProfileVO;
+        }
+        DataTime2ValueItem tableRecords = catalogEntityProfileService.getCurrentTableRecords(tableEntity.getUuid());
+        if (tableRecords == null) {
+            return catalogColumnBaseProfileVO;
+        }
+        String latestDate = tableRecords.getDatetime();
+        Double records = Double.valueOf((String)tableRecords.getValue());
+        List<CatalogEntityProfile> columnProfileList = catalogEntityProfileService.getEntityProfileByUUID(uuid, latestDate);
+        if (CollectionUtils.isEmpty(columnProfileList)) {
+            return catalogColumnBaseProfileVO;
+        }
+
+        String columnType = "";
+        CatalogEntityInstance columnEntity = getCatalogEntityInstance(uuid);
+        if (StringUtils.isNotEmpty(columnEntity.getProperties())) {
+            ColumnInfo columnInfo = JSONUtils.parseObject(columnEntity.getProperties(), ColumnInfo.class);
+            if (columnInfo != null) {
+                columnType = columnInfo.getType();
+            }
+        }
+
+        DataVinesDataType dataVinesDataType = DataVinesDataType.getType(columnType);
+        if (dataVinesDataType == null) {
+            return catalogColumnBaseProfileVO;
+        }
+
+        switch (dataVinesDataType) {
+            case STRING_TYPE:
+                return getStringColumnProfile(columnEntity, columnProfileList, records);
+            case NUMERIC_TYPE:
+                return getNumericColumnProfile(columnEntity, columnProfileList, records);
+            case DATE_TIME_TYPE:
+                return getDateTimeColumnProfile(columnEntity, columnProfileList, records);
+            default:
+                break;
+        }
+
+        return null;
+    }
+
+    private CatalogColumnStringProfileVO getStringColumnProfile(CatalogEntityInstance columnEntity, List<CatalogEntityProfile> columnProfileList, Double records) {
+        CatalogColumnStringProfileVO columnStringProfileVO = new CatalogColumnStringProfileVO();
+        columnStringProfileVO.setName(columnEntity.getDisplayName());
+        columnStringProfileVO.setUuid(columnEntity.getUuid());
+        if (StringUtils.isNotEmpty(columnEntity.getProperties())) {
+            ColumnInfo columnInfo = JSONUtils.parseObject(columnEntity.getProperties(), ColumnInfo.class);
+            if (columnInfo != null) {
+                columnStringProfileVO.setType(columnInfo.getType());
+            }
+        }
+        DecimalFormat df = new DecimalFormat("#.00");
+        for (CatalogEntityProfile entityProfile : columnProfileList) {
+            String metricName = entityProfile.getMetricName();
+            if (StringUtils.isEmpty(metricName)
+                    || StringUtils.isEmpty(entityProfile.getActualValue())
+                    || "null".equals(entityProfile.getActualValue().toLowerCase())) {
+                continue;
+            }
+            switch (metricName) {
+                case "column_null":
+                    columnStringProfileVO.setNullCount(entityProfile.getActualValue());
+                    columnStringProfileVO.setNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                case "column_not_null":
+                    columnStringProfileVO.setNotNullCount(entityProfile.getActualValue());
+                    columnStringProfileVO.setNotNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                case "column_unique":
+                    columnStringProfileVO.setUniqueCount(entityProfile.getActualValue());
+                    columnStringProfileVO.setUniquePercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                case "column_histogram":
+                    String histogram = entityProfile.getActualValue();
+                    if (StringUtils.isNotEmpty(histogram)) {
+                        List<DistributionItem> distributionItems = getDistributionItems(records, histogram);
+                        columnStringProfileVO.setTop10Distribution(distributionItems);
+                    }
+                    break;
+                case "column_blank":
+                    columnStringProfileVO.setBlankCount(Long.valueOf(entityProfile.getActualValue()));
+                    break;
+                case "column_distinct":
+                    columnStringProfileVO.setDistinctCount(entityProfile.getActualValue());
+                    columnStringProfileVO.setDistinctPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                case "column_avg_length":
+                    columnStringProfileVO.setAvgLength(df.format(Double.valueOf(entityProfile.getActualValue())));
+                    break;
+                case "column_max_length":
+                    columnStringProfileVO.setMaxLength(df.format(Double.valueOf(entityProfile.getActualValue())));
+                    break;
+                case "column_max":
+                    columnStringProfileVO.setMaxValue(entityProfile.getActualValue());
+                    break;
+                case "column_min_length":
+                    columnStringProfileVO.setMinLength(df.format(Double.valueOf(entityProfile.getActualValue())));
+                    break;
+                case "column_min":
+                    columnStringProfileVO.setMinValue(entityProfile.getActualValue());
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return columnStringProfileVO;
+    }
+
+    private List<DistributionItem> getDistributionItems(Double records, String histogram) {
+        String[] values = histogram.split("@#@");
+        List<DistributionItem> distributionItems = new ArrayList<>();
+        DistributionItem item;
+        int size = Math.min(10, values.length);
+        for (int i = 0; i < size; i++) {
+            String[] values2 = values[i].split("\001");
+            if (values2.length == 2) {
+                item = new DistributionItem(values2[0], Long.valueOf(values2[1]), String.format("%.2f", (Double.valueOf(values2[1]) / records * 100)) + "%");
+                distributionItems.add(item);
+            }
+        }
+        return distributionItems;
+    }
+
+    private CatalogColumnNumericProfileVO getNumericColumnProfile(CatalogEntityInstance columnEntity, List<CatalogEntityProfile> columnProfileList, Double records) {
+        CatalogColumnNumericProfileVO columnNumericProfileVO = new CatalogColumnNumericProfileVO();
+        columnNumericProfileVO.setName(columnEntity.getDisplayName());
+        columnNumericProfileVO.setUuid(columnEntity.getUuid());
+        if (StringUtils.isNotEmpty(columnEntity.getProperties())) {
+            ColumnInfo columnInfo = JSONUtils.parseObject(columnEntity.getProperties(), ColumnInfo.class);
+            if (columnInfo != null) {
+                columnNumericProfileVO.setType(columnInfo.getType());
+            }
+        }
+
+        for (CatalogEntityProfile entityProfile : columnProfileList) {
+            String metricName = entityProfile.getMetricName();
+            if (StringUtils.isEmpty(metricName)
+                    || StringUtils.isEmpty(entityProfile.getActualValue())
+                    || "null".equals(entityProfile.getActualValue().toLowerCase())) {
+                continue;
+            }
+
+            switch (metricName) {
+                case "column_null":
+                    columnNumericProfileVO.setNullCount(entityProfile.getActualValue());
+                    columnNumericProfileVO.setNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                case "column_not_null":
+                    columnNumericProfileVO.setNotNullCount(entityProfile.getActualValue());
+                    columnNumericProfileVO.setNotNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                case "column_unique":
+                    columnNumericProfileVO.setUniqueCount(entityProfile.getActualValue());
+                    columnNumericProfileVO.setUniquePercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                case "column_histogram":
+                    String histogram = entityProfile.getActualValue();
+                    if (StringUtils.isNotEmpty(histogram)) {
+                        List<DistributionItem> distributionItems = getDistributionItems(records, histogram);
+                        columnNumericProfileVO.setTop10Distribution(distributionItems);
+                    }
+                    break;
+                case "column_max":
+                    columnNumericProfileVO.setMaxValue(entityProfile.getActualValue());
+                    break;
+                case "column_min":
+                    columnNumericProfileVO.setMinValue(entityProfile.getActualValue());
+                    break;
+                case "column_avg" :
+                    columnNumericProfileVO.setAvgValue(entityProfile.getActualValue());
+                    break;
+                case "column_sum" :
+                    columnNumericProfileVO.setSumValue(entityProfile.getActualValue());
+                    break;
+                case "column_std_dev" :
+                    columnNumericProfileVO.setStdDev(entityProfile.getActualValue());
+                    break;
+                case "column_variance" :
+                    columnNumericProfileVO.setVariance(entityProfile.getActualValue());
+                    break;
+                case "column_distinct":
+                    columnNumericProfileVO.setDistinctCount(entityProfile.getActualValue());
+                    columnNumericProfileVO.setDistinctPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return columnNumericProfileVO;
+    }
+
+    private CatalogColumnDateTimeProfileVO getDateTimeColumnProfile(CatalogEntityInstance columnEntity, List<CatalogEntityProfile> columnProfileList, Double records) {
+        CatalogColumnDateTimeProfileVO columnDateTimeProfileVO = new CatalogColumnDateTimeProfileVO();
+        columnDateTimeProfileVO.setName(columnEntity.getDisplayName());
+        columnDateTimeProfileVO.setUuid(columnEntity.getUuid());
+        if (StringUtils.isNotEmpty(columnEntity.getProperties())) {
+            ColumnInfo columnInfo = JSONUtils.parseObject(columnEntity.getProperties(), ColumnInfo.class);
+            if (columnInfo != null) {
+                columnDateTimeProfileVO.setType(columnInfo.getType());
+            }
+        }
+
+        for (CatalogEntityProfile entityProfile : columnProfileList) {
+            String metricName = entityProfile.getMetricName();
+            if (StringUtils.isEmpty(metricName)
+                    || StringUtils.isEmpty(entityProfile.getActualValue())
+                    || "null".equals(entityProfile.getActualValue().toLowerCase())) {
+                continue;
+            }
+
+            switch (metricName) {
+                case "column_null":
+                    columnDateTimeProfileVO.setNullCount(entityProfile.getActualValue());
+                    columnDateTimeProfileVO.setNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                case "column_not_null":
+                    columnDateTimeProfileVO.setNotNullCount(entityProfile.getActualValue());
+                    columnDateTimeProfileVO.setNotNullPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                case "column_unique":
+                    columnDateTimeProfileVO.setUniqueCount(entityProfile.getActualValue());
+                    columnDateTimeProfileVO.setUniquePercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                case "column_histogram":
+                    String histogram = entityProfile.getActualValue();
+                    if (StringUtils.isNotEmpty(histogram)) {
+                        List<DistributionItem> distributionItems = getDistributionItems(records, histogram);
+                        columnDateTimeProfileVO.setTop10Distribution(distributionItems);
+                    }
+                    break;
+                case "column_max":
+                    columnDateTimeProfileVO.setMaxValue(entityProfile.getActualValue());
+                    break;
+                case "column_min":
+                    columnDateTimeProfileVO.setMinValue(entityProfile.getActualValue());
+                    break;
+                case "column_distinct":
+                    columnDateTimeProfileVO.setDistinctCount(entityProfile.getActualValue());
+                    columnDateTimeProfileVO.setDistinctPercentage(String.format("%.2f", (Double.parseDouble(entityProfile.getActualValue()) / records * 100)) + "%");
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return columnDateTimeProfileVO;
     }
 
     @Override
@@ -300,6 +649,7 @@ public class CatalogEntityInstanceServiceImpl
             entityMetricJobRel.setEntityUuid(jobCreateWithEntityUuid.getEntityUuid());
             entityMetricJobRel.setCreateBy(ContextHolder.getUserId());
             entityMetricJobRel.setUpdateBy(ContextHolder.getUserId());
+            entityMetricJobRel.setMetricJobType(JobType.DATA_QUALITY.getDescription());
             catalogEntityMetricJobRelService.save(entityMetricJobRel);
 
             return entityMetricJobRel.getId();
@@ -333,7 +683,7 @@ public class CatalogEntityInstanceServiceImpl
                 if (values.length == 3) {
                     parameter.setDatabase(values[0]);
                     parameter.setTable(values[1]);
-                    parameter.setTable(values[2]);
+                    parameter.setColumn(values[2]);
                 }
                 break;
             default:
@@ -347,12 +697,171 @@ public class CatalogEntityInstanceServiceImpl
     public IPage<CatalogEntityMetricVO> getEntityMetricList(String uuid, Integer pageNumber, Integer pageSize) {
         Page<CatalogEntityMetricVO> page = new Page<>(pageNumber, pageSize);
         IPage<CatalogEntityMetricVO> entityMetricPage = catalogEntityMetricJobRelMapper.getEntityMetricPage(page, uuid);
+        String startTime = DateUtils.dateToString(DateUtils.getSomeDay(new Date(), -14));
+        String endTime = DateUtils.dateToString(DateUtils.getSomeDay(new Date(), 1));
+        entityMetricPage.getRecords().forEach(catalogEntityMetricVO -> {
+            catalogEntityMetricVO.setCharts(jobExecutionService.getMetricExecutionDashBoard(catalogEntityMetricVO.getId(), startTime ,endTime));
+        });
 
         return entityMetricPage;
+    }
+
+    @Override
+    public IPage<CatalogEntityIssueVO> getEntityIssueList(String uuid, Integer pageNumber, Integer pageSize) {
+        Page<CatalogEntityIssueVO> page = new Page<>(pageNumber, pageSize);
+        IPage<CatalogEntityIssueVO> entityMetricPage = catalogEntityMetricJobRelMapper.getEntityIssuePage(page, uuid);
+
+        return entityMetricPage;
+    }
+
+    @Override
+    public long executeDataProfileJob(String uuid) {
+        return executeDataProfileJob(uuid, 1);
+    }
+
+    @Override
+    public long executeDataProfileJob(String uuid, int runningNow) {
+        CatalogEntityInstance entityInstance = getCatalogEntityInstance(uuid);
+        if (entityInstance == null) {
+            return -1L;
+        }
+
+        if (!"table".equalsIgnoreCase(entityInstance.getType())) {
+            return -1L;
+        }
+
+        List<CatalogEntityInstance> columnInstanceList = getCatalogEntityInstances(entityInstance.getUuid());
+
+        if (CollectionUtils.isEmpty(columnInstanceList)) {
+            return -1L;
+        }
+
+        List<BaseJobParameter> jobParameters = new ArrayList<>();
+        BaseJobParameter baseJobParameter = new BaseJobParameter();
+        baseJobParameter.setMetricType("table_row_count");
+        Map<String,Object> metricParameter = new HashMap<>();
+        String fqn = entityInstance.getFullyQualifiedName();
+        if (StringUtils.isNotEmpty(fqn)) {
+            String[] values = fqn.split("\\.");
+            if (values.length == 2) {
+                metricParameter.put("database", values[0]);
+                metricParameter.put("table", values[1]);
+                metricParameter.put("entity_uuid", entityInstance.getUuid());
+                metricParameter.put("actual_value_type", "count");
+                baseJobParameter.setMetricParameter(metricParameter);
+                baseJobParameter.setExpectedType("fix_value");
+                jobParameters.add(baseJobParameter);
+            }
+        }
+
+        for (CatalogEntityInstance catalogEntityInstance : columnInstanceList) {
+            String properties = catalogEntityInstance.getProperties();
+            if (StringUtils.isEmpty(properties)) {
+                continue;
+            }
+            Map<String,String> propertiesMap = JSONUtils.toMap(properties);
+
+            DataVinesDataType dataVinesDataType = DataVinesDataType.getType(propertiesMap.get("type"));
+            if (dataVinesDataType == null) {
+                continue;
+            }
+
+            List<String> type2MetricList = dataVinesDataType.getMetricList();
+            for (String metric : type2MetricList) {
+                if ("true".equals(propertiesMap.get("primaryKey")) && "column_histogram".equalsIgnoreCase(metric)) {
+                    continue;
+                }
+                baseJobParameter = new BaseJobParameter();
+                baseJobParameter.setMetricType(metric);
+                Map<String,Object> metricParameter1 = new HashMap<>();
+                String fqn1 = catalogEntityInstance.getFullyQualifiedName();
+                if (StringUtils.isEmpty(fqn1)) {
+                    continue;
+                }
+                String[] values = fqn1.split("\\.");
+                if (values.length < 3) {
+                    continue;
+                }
+                metricParameter1.put("database", values[0]);
+                metricParameter1.put("table", values[1]);
+                metricParameter1.put("column", values[2]);
+                metricParameter1.put("entity_uuid", catalogEntityInstance.getUuid());
+                metricParameter1.put("actual_value_type", "count");
+                baseJobParameter.setMetricParameter(metricParameter1);
+                baseJobParameter.setExpectedType("fix_value");
+                jobParameters.add(baseJobParameter);
+            }
+        }
+
+        String jobName = jobService.getJobName(JobType.DATA_PROFILE.getDescription(), JSONUtils.toJsonString(jobParameters));
+        Job job = jobService.getOne(new QueryWrapper<Job>().eq("name", jobName));
+
+        long jobId = -1L;
+        if (job == null) {
+            JobCreate jobCreate = new JobCreate();
+            jobCreate.setType(JobType.DATA_PROFILE.getDescription());
+            jobCreate.setDataSourceId(entityInstance.getDatasourceId());
+            jobCreate.setParameter(JSONUtils.toJsonString(jobParameters));
+            jobCreate.setRunningNow(runningNow);
+            jobId = jobService.create(jobCreate);
+        } else {
+            JobUpdate jobUpdate = new JobUpdate();
+            jobUpdate.setId(job.getId());
+            jobUpdate.setType(JobType.DATA_PROFILE.getDescription());
+            jobUpdate.setDataSourceId(entityInstance.getDatasourceId());
+            jobUpdate.setParameter(JSONUtils.toJsonString(jobParameters));
+            jobUpdate.setRunningNow(runningNow);
+            jobId = jobService.update(jobUpdate);
+        }
+
+        if (jobId != -1L) {
+            List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelMapper.selectList(new QueryWrapper<CatalogEntityMetricJobRel>()
+                    .eq("entity_uuid", uuid)
+                    .eq("metric_job_id", jobId)
+                    .eq("metric_job_type", "DATA_PROFILE"));
+            if (CollectionUtils.isEmpty(listRel) || listRel.size() > 1) {
+                catalogEntityMetricJobRelMapper.delete(new QueryWrapper<CatalogEntityMetricJobRel>()
+                        .eq("entity_uuid", uuid)
+                        .eq("metric_job_id", jobId)
+                        .eq("metric_job_type", "DATA_PROFILE"));
+                CatalogEntityMetricJobRel entityMetricJobRel = new CatalogEntityMetricJobRel();
+                entityMetricJobRel.setEntityUuid(uuid);
+                entityMetricJobRel.setMetricJobId(jobId);
+                entityMetricJobRel.setMetricJobType("DATA_PROFILE");
+                entityMetricJobRel.setCreateBy(ContextHolder.getUserId());
+                entityMetricJobRel.setCreateTime(LocalDateTime.now());
+                entityMetricJobRel.setUpdateBy(ContextHolder.getUserId());
+                entityMetricJobRel.setUpdateTime(LocalDateTime.now());
+                catalogEntityMetricJobRelMapper.insert(entityMetricJobRel);
+            }
+        }
+
+        return jobId;
+    }
+
+    @Override
+    public List<DataTime2ValueItem> listTableRecords(String uuid, String starTime, String endTime) {
+        return catalogEntityProfileService.listTableRecords(uuid, starTime, endTime);
     }
 
     private long getEntityTagCount(String uuid) {
         return catalogEntityTagRelService.count(new QueryWrapper<CatalogEntityTagRel>().eq("entity_uuid", uuid));
     }
 
+    private long getEntityMetricCount(String uuid) {
+        return catalogEntityMetricJobRelService.count(new QueryWrapper<CatalogEntityMetricJobRel>().eq("entity_uuid", uuid));
+    }
+
+    private CatalogEntityInstance getParentEntity(String uuid) {
+        List<CatalogEntityRel> entityRelList = entityRelMapper.selectList(new QueryWrapper<CatalogEntityRel>()
+                .eq("entity2_uuid", uuid).eq("type", EntityRelType.CHILD.getDescription()));
+
+        if (CollectionUtils.isEmpty(entityRelList)) {
+            return null;
+        }
+
+        CatalogEntityRel entityRel = entityRelList.get(0);
+        String parentUUID = entityRel.getEntity1Uuid();
+        return getCatalogEntityInstance(parentUUID);
+    }
 }

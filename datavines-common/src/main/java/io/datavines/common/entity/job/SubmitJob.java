@@ -16,6 +16,7 @@
  */
 package io.datavines.common.entity.job;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
@@ -32,11 +33,11 @@ public class SubmitJob {
     @NotBlank(message = "task name cannot be empty")
     private String name;
 
-    private String executePlatformType = "local";
+    private String executePlatformType = "client";
 
     private Map<String,Object> executePlatformParameter;
 
-    private String engineType = "jdbc";
+    private String engineType = "local";
 
     private Map<String,Object> engineParameter;
 
@@ -50,9 +51,7 @@ public class SubmitJob {
 
     private Map<String,Object> validateResultDataStorageParameter;
 
-    private String notificationType = "";
-
-    private Map<String,Object> notificationParameter;
+    private List<NotificationParameter> notificationParameters;
 
     private Integer retryTimes = 0;
 
@@ -65,4 +64,6 @@ public class SubmitJob {
     private String tenantCode;
 
     private String env;
+
+    private boolean languageEn;
 }

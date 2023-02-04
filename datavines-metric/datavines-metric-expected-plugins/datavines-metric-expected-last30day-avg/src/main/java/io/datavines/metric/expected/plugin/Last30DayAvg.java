@@ -24,7 +24,7 @@ public class Last30DayAvg implements ExpectedValue {
 
     @Override
     public String getName() {
-        return "last_30d.last_30d_avg";
+        return "last_30d_avg";
     }
 
     @Override

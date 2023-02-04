@@ -24,11 +24,11 @@ public class SubmitTaskRequest {
 
     private String name;
 
-    private String executePlatformType = "local";
+    private String executePlatformType = "client";
 
     private Map<String,Object> executePlatformParameter;
 
-    private String engineType = "jdbc";
+    private String engineType = "local";
 
     private Map<String,Object> engineParameter;
 

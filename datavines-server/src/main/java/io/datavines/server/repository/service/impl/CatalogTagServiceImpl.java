@@ -22,13 +22,14 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.catalog.tag.TagCreate;
-import io.datavines.server.api.dto.vo.CatalogTagVO;
+import io.datavines.server.api.dto.vo.catalog.CatalogTagVO;
 import io.datavines.server.repository.entity.catalog.CatalogEntityTagRel;
 import io.datavines.server.repository.entity.catalog.CatalogTag;
 import io.datavines.server.repository.mapper.CatalogTagMapper;
 import io.datavines.server.repository.service.CatalogEntityTagRelService;
 import io.datavines.server.repository.service.CatalogTagService;
 import io.datavines.server.utils.ContextHolder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+
+import static io.datavines.core.enums.Status.CATALOG_ENTITY_TAG_EXIST_ERROR;
 
 @Service("catalogTagService")
 public class CatalogTagServiceImpl extends ServiceImpl<CatalogTagMapper, CatalogTag> implements CatalogTagService {
@@ -72,8 +76,26 @@ public class CatalogTagServiceImpl extends ServiceImpl<CatalogTagMapper, Catalog
     }
 
     @Override
+    public List<CatalogTag> listByEntityUUID(String entityUUID) {
+        List<CatalogEntityTagRel> relList = catalogEntityTagRelService
+                .list(new QueryWrapper<CatalogEntityTagRel>().eq("entity_uuid", entityUUID));
+
+        if (CollectionUtils.isEmpty(relList)) {
+            return null;
+        }
+
+        return list(new QueryWrapper<CatalogTag>().in("uuid", relList.stream().map(CatalogEntityTagRel::getTagUuid).collect(Collectors.toList())));
+    }
+
+    @Override
     public boolean addEntityTagRel(String entityUUID, String tagUUID) {
         CatalogEntityTagRel rel = new CatalogEntityTagRel();
+        List<CatalogEntityTagRel> list = catalogEntityTagRelService.list(new QueryWrapper<CatalogEntityTagRel>()
+                .eq("entity_uuid", entityUUID)
+                .eq("tag_uuid", tagUUID));
+        if (CollectionUtils.isNotEmpty(list)) {
+            throw new DataVinesServerException(CATALOG_ENTITY_TAG_EXIST_ERROR);
+        }
         rel.setEntityUuid(entityUUID);
         rel.setTagUuid(tagUUID);
         rel.setCreateBy(ContextHolder.getUserId());

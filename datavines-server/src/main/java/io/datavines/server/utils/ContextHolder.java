@@ -96,7 +96,4 @@ public class ContextHolder {
         Object obj = getContext().get(DataVinesConstants.LOGIN_USER);
         return null == obj ? null : (User)obj;
     }
-
-
-
 }

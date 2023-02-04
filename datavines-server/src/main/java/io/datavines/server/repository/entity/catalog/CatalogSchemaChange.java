@@ -36,6 +36,9 @@ public class CatalogSchemaChange implements Serializable {
     @TableId(type = IdType.AUTO)
     private Long id;
 
+    @TableField(value = "parent_uuid")
+    private String parentUuid;
+
     @TableField(value = "entity_uuid")
     private String entityUuid;
 

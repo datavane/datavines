@@ -20,10 +20,11 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.sift.SiftingAppender;
 import io.datavines.common.CommonConstants;
 import io.datavines.common.config.Configurations;
-import io.datavines.common.config.DataVinesQualityConfig;
+import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.entity.JobExecutionRequest;
+import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.log.JobExecutionLogDiscriminator;
 import io.datavines.common.utils.*;
@@ -62,17 +63,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.*;
 
 public class JobExecuteManager {
 
     private final Logger logger = LoggerFactory.getLogger(JobExecuteManager.class);
 
-    private final LinkedBlockingQueue<CommandContext> taskQueue = new LinkedBlockingQueue<>();
+    private final LinkedBlockingQueue<CommandContext> jobExecutionQueue = new LinkedBlockingQueue<>();
 
     private final ConcurrentHashMap<Long, JobExecutionRequest> unFinishedJobExecutionMap = new ConcurrentHashMap<>();
     
@@ -115,13 +113,13 @@ public class JobExecuteManager {
     }
 
     public void start() {
-        JobExecutionExecutor taskExecutor = new JobExecutionExecutor();
-        executorService.submit(taskExecutor);
-        logger.info("task sender start");
+        JobExecutionExecutor jobExecutionExecutor = new JobExecutionExecutor();
+        executorService.submit(jobExecutionExecutor);
+        logger.info("jobExecution sender start");
 
         JobExecutionResponseOperator responseOperator = new JobExecutionResponseOperator();
         executorService.submit(responseOperator);
-        logger.info("task response operator start");
+        logger.info("jobExecution response operator start");
     }
 
     public void addExecuteCommand(JobExecutionRequest jobExecutionRequest){
@@ -131,18 +129,18 @@ public class JobExecuteManager {
         commandContext.setCommandCode(CommandCode.JOB_EXECUTE_REQUEST);
         commandContext.setJobExecutionId(jobExecutionRequest.getJobExecutionId());
         commandContext.setJobExecutionRequest(jobExecutionRequest);
-        taskQueue.offer(commandContext);
+        jobExecutionQueue.offer(commandContext);
     }
 
-    public void addKillCommand(Long taskId){
+    public void addKillCommand(Long jobExecutionId){
         CommandContext commandContext = new CommandContext();
         commandContext.setCommandCode(CommandCode.JOB_KILL_REQUEST);
-        commandContext.setJobExecutionId(taskId);
-        taskQueue.offer(commandContext);
+        commandContext.setJobExecutionId(jobExecutionId);
+        jobExecutionQueue.offer(commandContext);
     }
 
-    public JobExecutionRequest getExecutingJobExecution(Long taskId){
-        return unFinishedJobExecutionMap.get(taskId);
+    public JobExecutionRequest getExecutingJobExecution(Long jobExecutionId){
+        return unFinishedJobExecutionMap.get(jobExecutionId);
     }
 
     class JobExecutionExecutor implements Runnable {
@@ -151,10 +149,10 @@ public class JobExecuteManager {
         public void run() {
             while(Stopper.isRunning()) {
                 try {
-                    CommandContext commandContext = taskQueue.take();
-                    Long taskId = commandContext.getJobExecutionId();
+                    CommandContext commandContext = jobExecutionQueue.take();
+                    Long jobExecutionId = commandContext.getJobExecutionId();
                     JobExecutionRequest jobExecutionRequest = commandContext.getJobExecutionRequest();
-                    if (unFinishedJobExecutionMap.get(taskId) == null) {
+                    if (unFinishedJobExecutionMap.get(jobExecutionId) == null) {
                         continue;
                     }
                     switch(commandContext.getCommandCode()){
@@ -162,11 +160,11 @@ public class JobExecuteManager {
                             executeJobExecution(jobExecutionRequest);
                             wheelTimer.newTimeout(
                                     new JobExecutionTimeoutTimerTask(
-                                            taskId, jobExecutionRequest.getRetryTimes()),
+                                            jobExecutionId, jobExecutionRequest.getRetryTimes()),
                                             jobExecutionRequest.getTimeout()+2, TimeUnit.SECONDS);
                             break;
                         case JOB_KILL_REQUEST:
-                            doKillCommand(taskId);
+                            doKillCommand(jobExecutionId);
                             break;
                         default:
                             break;
@@ -217,12 +215,12 @@ public class JobExecuteManager {
         jobExecuteService.submit(jobRunner);
     }
 
-    public String buildJobExecutionUniqueId(String executePlatformType, String engineType, long taskId){
+    public String buildJobExecutionUniqueId(String executePlatformType, String engineType, long jobExecutionId){
         // LOCAL_SPARK_1521012323213]
         return String.format("%s_%s_%s",
                 executePlatformType.toLowerCase(),
                 engineType.toLowerCase(),
-                taskId);
+                jobExecutionId);
     }
 
     private void doAck(JobExecutionRequest jobExecutionRequest){
@@ -283,10 +281,10 @@ public class JobExecuteManager {
         public void run() {
             while (Stopper.isRunning()) {
                 try {
-                    JobExecutionResponseContext taskResponse = responseQueue.take();
-                    JobExecutionRequest jobExecutionRequest = taskResponse.getJobExecutionRequest();
+                    JobExecutionResponseContext jobExecutionResponse = responseQueue.take();
+                    JobExecutionRequest jobExecutionRequest = jobExecutionResponse.getJobExecutionRequest();
                     JobExecution jobExecution = jobExternalService.getJobExecutionById(jobExecutionRequest.getJobExecutionId());
-                    switch (taskResponse.getCommandCode()) {
+                    switch (jobExecutionResponse.getCommandCode()) {
                         case JOB_EXECUTE_ACK:
                             if (jobExecution != null) {
                                 jobExecution.setStartTime(jobExecutionRequest.getStartTime());
@@ -313,12 +311,12 @@ public class JobExecuteManager {
                             } else if (ExecutionStatus.of(jobExecutionRequest.getStatus()).typeIsFailure()) {
                                 int retryNums = jobExecution.getRetryTimes();
                                 if (jobExecution.getRetryTimes() > 0) {
-                                    logger.info("retry jobExecution: "+JSONUtils.toJsonString(jobExecution));
+                                    logger.info("retry job execution: " + JSONUtils.toJsonString(jobExecution));
                                     CommandContext commandContext = new CommandContext();
                                     commandContext.setJobExecutionRequest(jobExternalService.buildJobExecutionRequest(jobExecution));
                                     commandContext.setJobExecutionId(jobExecutionRequest.getJobExecutionId());
                                     commandContext.setCommandCode(CommandCode.JOB_EXECUTE_REQUEST);
-                                    taskQueue.offer(commandContext);
+                                    jobExecutionQueue.offer(commandContext);
                                     jobExternalService.updateJobExecutionRetryTimes(jobExecutionRequest.getJobExecutionId(), retryNums - 1);
                                     jobExternalService.deleteJobExecutionResultByJobExecutionId(jobExecutionRequest.getJobExecutionId());
                                     jobExternalService.deleteActualValuesByJobExecutionId(jobExecutionRequest.getJobExecutionId());
@@ -355,7 +353,7 @@ public class JobExecuteManager {
         DataSource dataSource = dataSourceService.getDataSourceById(dataSourceId);
         String dataSourceName = dataSource.getName();
         String dataSourceType = dataSource.getType();
-        messageList.add(String.format("you has job %s on %s Datasource %s failure, please check detail", jobName, dataSourceType, dataSourceName));
+        messageList.add(String.format("job %s on %s Datasource %s failure, please check detail", jobName, dataSourceType, dataSourceName));
         message.setSubject(String.format("datavines job %s execute failure", jobName));
         String jsonMessage = JsonUtils.toJsonString(messageList);
         message.setMessage(jsonMessage);
@@ -389,41 +387,41 @@ public class JobExecuteManager {
 
     class JobExecutionTimeoutTimerTask implements TimerTask {
 
-        private final long taskId;
+        private final long jobExecutionId;
         private final int retryTimes;
 
-        public JobExecutionTimeoutTimerTask(long taskId, int retryTimes){
-            this.taskId = taskId;
+        public JobExecutionTimeoutTimerTask(long jobExecutionId, int retryTimes){
+            this.jobExecutionId = jobExecutionId;
             this.retryTimes = retryTimes;
         }
 
         @Override
         public void run(Timeout timeout) throws Exception {
-            JobExecutionRequest jobExecutionRequest = unFinishedJobExecutionMap.get(this.taskId);
+            JobExecutionRequest jobExecutionRequest = unFinishedJobExecutionMap.get(this.jobExecutionId);
             if (jobExecutionRequest == null) {
-                logger.info("task {} is finished, do nothing...",taskId);
+                logger.info("jobExecution {} is finished, do nothing...",jobExecutionId);
                 return;
             }
 
             if (this.retryTimes != jobExecutionRequest.getRetryTimes()) {
-                logger.info("task {} is finished, do nothing...",taskId);
+                logger.info("jobExecution {} is finished, do nothing...",jobExecutionId);
                 return;
             }
 
-            logger.info("task {} is timeout, do something",taskId);
+            logger.info("jobExecution {} is timeout, do something",jobExecutionId);
 
         }
     }
 
-    private void doKillCommand(Long taskId) {
-        JobExecutionContext jobExecutionContext = jobExecutionCache.getById(taskId);
+    private void doKillCommand(Long jobExecutionId) {
+        JobExecutionContext jobExecutionContext = jobExecutionCache.getById(jobExecutionId);
 
         if (jobExecutionContext != null){
             JobRunner jobRunner = jobExecutionContext.getJobRunner();
             jobRunner.kill();
         } else {
-            unFinishedJobExecutionMap.remove(taskId);
-            JobExecution jobExecution = jobExternalService.getJobExecutionById(taskId);
+            unFinishedJobExecutionMap.remove(jobExecutionId);
+            JobExecution jobExecution = jobExternalService.getJobExecutionById(jobExecutionId);
             if (jobExecution != null) {
                 jobExecution.setEndTime(LocalDateTime.now());
                 jobExecution.setStatus(ExecutionStatus.KILL);
@@ -505,10 +503,10 @@ public class JobExecuteManager {
                 jobExecution.getId(), jobExecution.getName(),
                 jobExecution.getEngineType(), jobExecution.getEngineParameter(),
                 jobExecution.getErrorDataStorageType(), jobExecution.getErrorDataStorageParameter(), jobExecution.getErrorDataFileName(),
-                "jdbc", JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
+                "mysql", JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
                 jobExecutionParameter);
-        DataVinesQualityConfig qualityConfig =
-                DataVinesConfigurationManager.generateConfiguration(inputParameter, jobExecutionInfo);
+        DataVinesJobConfig qualityConfig =
+                DataVinesConfigurationManager.generateConfiguration(jobExecution.getJobType(),inputParameter, jobExecutionInfo);
 
         jobExecutionRequest.setExecuteFilePath(jobExecution.getExecuteFilePath());
         jobExecutionRequest.setLogPath(jobExecution.getLogPath());

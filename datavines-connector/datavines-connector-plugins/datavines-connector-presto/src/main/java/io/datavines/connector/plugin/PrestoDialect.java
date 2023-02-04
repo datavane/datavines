@@ -16,7 +16,8 @@
  */
 package io.datavines.connector.plugin;
 
-public class PrestoDialect extends JdbcDialect{
+public class PrestoDialect extends JdbcDialect {
+
     @Override
     public String getDriver() {
         return "com.facebook.presto.jdbc.PrestoDriver";

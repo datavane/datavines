@@ -16,6 +16,8 @@
  */
 package io.datavines.connector.api;
 
+import io.datavines.common.enums.DataType;
+
 import java.util.List;
 
 public interface Dialect {
@@ -31,4 +33,32 @@ public interface Dialect {
     String getNotRegexKey();
 
     List<String> getExcludeDatabases();
+
+    default String invalidateItemCanOutput(){
+        return "true";
+    }
+
+    default String getStringType() {
+        return "varchar";
+    }
+
+    default String getJDBCType(DataType dataType){
+        return dataType.toString();
+    }
+
+    default DataType getDataType(String jdbcType) {
+        return DataType.STRING_TYPE;
+    }
+
+    default String quoteIdentifier(String column) {
+        return "`" + column + "`";
+    }
+
+    default String getTableExistsQuery(String table) {
+        return String.format("SELECT * FROM %s WHERE 1=0", table);
+    }
+
+    default String getSchemaQuery(String table) {
+        return String.format("SELECT * FROM %s WHERE 1=0", table);
+    }
 }

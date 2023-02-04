@@ -22,5 +22,5 @@ import java.util.List;
 
 public interface ParameterBuilder {
 
-    List<String> buildJobExecutionParameter(String jobParameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo);
+    String buildJobExecutionParameter(String jobParameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo);
 }

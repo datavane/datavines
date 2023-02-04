@@ -22,7 +22,6 @@ import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
 import java.util.Map;
-import java.util.Set;
 
 public class ColumnMatchNotRegex extends BaseSingleTableColumn {
 

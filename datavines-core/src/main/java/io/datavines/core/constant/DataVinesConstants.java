@@ -78,6 +78,8 @@ public class DataVinesConstants {
 
     public static final String JDBC = "jdbc";
 
+    public static final String LOCAL = "local";
+
     public static final String SPARK = "spark";
 
     public static final String LOCALE_LANGUAGE_COOKIE = "language";

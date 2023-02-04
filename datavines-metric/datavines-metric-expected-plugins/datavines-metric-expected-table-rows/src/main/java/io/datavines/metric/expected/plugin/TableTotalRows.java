@@ -22,7 +22,7 @@ import java.util.Map;
 
 public class TableTotalRows implements ExpectedValue {
 
-    private StringBuilder sql =
+    private final StringBuilder sql =
             new StringBuilder("select count(1) as expected_value from ${table}");
 
     @Override

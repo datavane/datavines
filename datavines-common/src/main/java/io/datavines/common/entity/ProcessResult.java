@@ -17,7 +17,9 @@
 package io.datavines.common.entity;
 
 import io.datavines.common.enums.ExecutionStatus;
+import lombok.Data;
 
+@Data
 public class ProcessResult {
 
     private Integer exitStatusCode;
@@ -34,29 +36,5 @@ public class ProcessResult {
     public ProcessResult(Integer exitStatusCode){
         this.exitStatusCode = exitStatusCode;
         this.processId = -1;
-    }
-
-    public Integer getExitStatusCode() {
-        return exitStatusCode;
-    }
-
-    public void setExitStatusCode(Integer exitStatusCode) {
-        this.exitStatusCode = exitStatusCode;
-    }
-
-    public String getApplicationId() {
-        return applicationId;
-    }
-
-    public void setApplicationId(String applicationId) {
-        this.applicationId = applicationId;
-    }
-
-    public Integer getProcessId() {
-        return processId;
-    }
-
-    public void setProcessId(Integer processId) {
-        this.processId = processId;
     }
 }

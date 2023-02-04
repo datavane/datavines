@@ -54,13 +54,17 @@ public interface SqlMetric {
      * get actual value execute sql
      * @return ExecuteSql
      */
-    ExecuteSql getActualValue();
+    ExecuteSql getActualValue(String uniqueKey);
 
     /**
      * get actual name
      */
     default String getActualName() {
         return "actual_value";
+    }
+
+    default String getActualValueType() {
+        return MetricActualValueType.COUNT.getDescription();
     }
 
     CheckResult validateConfig(Map<String,Object> config);

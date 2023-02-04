@@ -16,9 +16,19 @@
  */
 package io.datavines.connector.api;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import java.util.Map;
 
 public interface ConnectorParameterConverter {
 
     Map<String,Object> converter(Map<String,Object> parameter);
+
+    default String getConnectorUUID(Map<String,Object> parameter) {
+        Map<String, Object> convertResult = converter(parameter);
+        return DigestUtils.md5Hex(String.valueOf(convertResult.get("url")) +
+                String.valueOf(convertResult.get("table")) +
+                String.valueOf(convertResult.get("user")) +
+                String.valueOf(convertResult.get("password")));
+    }
 }

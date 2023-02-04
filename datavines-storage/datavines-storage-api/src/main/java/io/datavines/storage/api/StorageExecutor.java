@@ -30,6 +30,18 @@ public interface StorageExecutor {
         return null;
     }
 
+    default ConnectorResponse queryForPage(ExecuteRequestParam param) throws Exception {
+        return null;
+    }
+
+    default ConnectorResponse queryForList(ExecuteRequestParam param) throws Exception {
+        return null;
+    }
+
+    default ConnectorResponse queryForOne(ExecuteRequestParam param) throws Exception {
+        return null;
+    }
+
     /**
      * execute script
      * @param param param

@@ -23,12 +23,14 @@ import java.util.HashMap;
 public enum SinkType {
 
     /**
-     * 0 ending process when some tasks failed.
-     * 1 continue running when some tasks failed.
+     * 0 error data.
+     * 1 validate result
+     * 2 actual value
      **/
     ERROR_DATA(0, "error_data"),
-    TASK_RESULT(1, "task_result"),
-    ACTUAL_VALUE(2, "actual_value");
+    VALIDATE_RESULT(1, "validate_result"),
+    ACTUAL_VALUE(2, "actual_value"),
+    PROFILE_VALUE(3, "profile_value");
 
     SinkType(int code, String description){
         this.code = code;

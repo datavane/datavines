@@ -40,7 +40,7 @@ spring:
     jdbc:
       initialize-schema: never
     properties:
-      org.quartz.threadPool:threadPriority: 5
+      org.quartz.threadPool.threadPriority: 5
       org.quartz.jobStore.isClustered: true
       org.quartz.jobStore.class: org.quartz.impl.jdbcjobstore.JobStoreTX
       org.quartz.scheduler.instanceId: AUTO
@@ -78,7 +78,7 @@ spring:
       on-profile: mysql
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/datavines?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    url: jdbc:mysql://127.0.0.1:3306/datavines5?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: 123456
   quartz:

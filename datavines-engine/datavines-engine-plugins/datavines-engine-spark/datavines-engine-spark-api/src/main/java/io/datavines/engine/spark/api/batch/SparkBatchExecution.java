@@ -42,6 +42,11 @@ public class SparkBatchExecution implements Execution<SparkBatchSource, BaseSpar
     }
 
     @Override
+    public void prepare() throws Exception {
+
+    }
+
+    @Override
     public void execute(List<SparkBatchSource> sources, List<BaseSparkTransform> transforms, List<SparkBatchSink> sinks) {
         sources.forEach(s -> {
                 registerInputTempView(s, environment);

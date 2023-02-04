@@ -40,9 +40,10 @@ public class MetricParserUtils {
     public static void operateInputParameter(Map<String, String> inputParameter,
                                              SqlMetric sqlMetric,
                                              JobExecutionInfo jobExecutionInfo) {
-        DateTimeFormatter df = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
+        DateTimeFormatter datetimeFormat = DateTimeFormatter.ofPattern(YYYY_MM_DD_HH_MM_SS);
+        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(YYYY_MM_DD);
         LocalDateTime time = LocalDateTime.now();
-        String now = df.format(time);
+        String now = datetimeFormat.format(time);
 
         inputParameter.put(METRIC_TYPE, StringUtils.wrapperSingleQuotes(sqlMetric.getType().getDescription()));
         inputParameter.put(METRIC_NAME, StringUtils.wrapperSingleQuotes(sqlMetric.getName()));
@@ -53,6 +54,10 @@ public class MetricParserUtils {
 
         if (StringUtils.isEmpty(inputParameter.get(DATA_TIME))) {
             inputParameter.put(DATA_TIME, StringUtils.wrapperSingleQuotes(now));
+        }
+
+        if (StringUtils.isEmpty(inputParameter.get(DATA_DATE))) {
+            inputParameter.put(DATA_DATE, StringUtils.wrapperSingleQuotes(dateFormat.format(time)));
         }
 
         if (StringUtils.isNotEmpty(inputParameter.get(REGEXP_PATTERN))) {
@@ -96,19 +101,17 @@ public class MetricParserUtils {
         Map<String,Object> config = new HashMap<>();
         config.put(INDEX, index++);
         config.put(SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult,true));
-        config.put(OUTPUT_TABLE, isInvalidateItems(type)? inputParameterValueResult.get(INVALIDATE_ITEMS_TABLE): executeSql.getResultTable());
+        config.put(OUTPUT_TABLE, executeSql.getResultTable());
         config.put(INVALIDATE_ITEMS_TABLE, inputParameterValueResult.get(INVALIDATE_ITEMS_TABLE));
-        config.put(ERROR_DATA_FILE_DIR, inputParameterValueResult.get(ERROR_DATA_FILE_DIR));
+        config.put(ERROR_DATA_DIR, inputParameterValueResult.get(ERROR_DATA_DIR));
         config.put(ERROR_DATA_FILE_NAME, inputParameterValueResult.get(ERROR_DATA_FILE_NAME));
         config.put(SRC_CONNECTOR_TYPE, inputParameterValueResult.get(SRC_CONNECTOR_TYPE));
-
+        config.put(INVALIDATE_ITEM_CAN_OUTPUT, inputParameterValueResult.get(INVALIDATE_ITEM_CAN_OUTPUT));
+        config.put(METRIC_DATABASE, inputParameterValueResult.get(METRIC_DATABASE));
+        config.put(COLUMN_SEPARATOR, inputParameterValueResult.get(COLUMN_SEPARATOR));
         TransformConfig transformerConfig = new TransformConfig(SQL, config);
         transformerConfig.setType(type);
         transformerConfigList.add(transformerConfig);
-    }
-
-    private static boolean isInvalidateItems(String type) {
-        return "invalidate_items".equalsIgnoreCase(type);
     }
 
     /**
@@ -132,7 +135,7 @@ public class MetricParserUtils {
         newInputParameterValue.remove(THRESHOLD);
         newInputParameterValue.remove(DATA_TIME);
         newInputParameterValue.remove(ERROR_DATA_FILE_NAME);
-        newInputParameterValue.remove(ERROR_DATA_FILE_DIR);
+        newInputParameterValue.remove(ERROR_DATA_DIR);
         newInputParameterValue.remove(EXPECTED_TYPE);
         newInputParameterValue.remove(EXPECTED_NAME);
         newInputParameterValue.remove(EXPECTED_VALUE);
@@ -142,6 +145,8 @@ public class MetricParserUtils {
         newInputParameterValue.remove(ACTUAL_TABLE);
         newInputParameterValue.remove(REGEX_KEY);
         newInputParameterValue.remove(NOT_REGEX_KEY);
+        newInputParameterValue.remove("validate_result_data_dir");
+        newInputParameterValue.remove("metric_unique_key");
 
         StringBuilder sb = new StringBuilder();
         for (String value : newInputParameterValue.values()) {

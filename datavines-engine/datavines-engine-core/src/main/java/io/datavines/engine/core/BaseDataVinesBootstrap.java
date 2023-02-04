@@ -20,6 +20,7 @@ import io.datavines.common.entity.ProcessResult;
 import io.datavines.common.enums.ExecutionStatus;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
+import java.sql.SQLException;
 import java.util.List;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.ConfigRuntimeException;
@@ -50,7 +51,7 @@ public abstract class BaseDataVinesBootstrap {
         return new ProcessResult();
     }
 
-    public void stop(){
+    public void stop() throws Exception {
         if(execution != null) {
             execution.stop();
         }
@@ -68,6 +69,7 @@ public abstract class BaseDataVinesBootstrap {
         if (execution == null) {
             throw new Exception("can not create execution , please check the config");
         }
+
         execution.execute(sources, transforms, sinks);
     }
 
@@ -76,7 +78,7 @@ public abstract class BaseDataVinesBootstrap {
         boolean configValid = true;
         for (List<? extends Component> componentList : components) {
             for (Component component : componentList) {
-                CheckResult checkResult = null;
+                CheckResult checkResult;
                 try {
                     checkResult = component.checkConfig();
                 } catch (Exception e) {
@@ -98,9 +100,11 @@ public abstract class BaseDataVinesBootstrap {
     }
 
     @SafeVarargs
-    private final void prepare(RuntimeEnvironment env, List<? extends Component>... components) {
+    private final void prepare(RuntimeEnvironment env, List<? extends Component>... components) throws Exception{
         for (List<? extends Component> componentList : components) {
-            componentList.forEach(component -> component.prepare(env));
+            for (Component component : componentList) {
+                component.prepare(env);
+            }
         }
     }
 

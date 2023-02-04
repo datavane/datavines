@@ -16,6 +16,7 @@
  */
 package io.datavines.metric.plugin;
 
+import io.datavines.common.entity.ExecuteSql;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
@@ -63,5 +64,25 @@ public class TableRowCount extends BaseSingleTable {
     @Override
     public Map<String, ConfigItem> getConfigMap() {
         return configMap;
+    }
+
+    @Override
+    public ExecuteSql getInvalidateItems() {
+        return null;
+    }
+
+    @Override
+    public ExecuteSql getActualValue(String uniqueKey) {
+        ExecuteSql executeSql = new ExecuteSql();
+        executeSql.setResultTable("invalidate_count_" + uniqueKey);
+        StringBuilder actualValueSql = new StringBuilder();
+        actualValueSql.append("select count(1) as actual_value_").append(uniqueKey).append(" from ${table}");
+        if (filters.size() > 0) {
+            actualValueSql.append(" where ").append(String.join(" and ", filters));
+        }
+
+        executeSql.setSql(actualValueSql.toString());
+        executeSql.setErrorOutput(false);
+        return executeSql;
     }
 }

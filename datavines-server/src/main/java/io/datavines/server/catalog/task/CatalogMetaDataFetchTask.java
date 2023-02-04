@@ -21,5 +21,4 @@ import java.sql.SQLException;
 public interface CatalogMetaDataFetchTask {
 
     void execute() throws SQLException;
-
 }

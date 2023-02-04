@@ -21,6 +21,8 @@ import java.util.Map;
 
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorParameterConverter;
+import org.apache.commons.codec.cli.Digest;
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class JdbcConnectorParameterConverter implements ConnectorParameterConverter {
 
@@ -47,5 +49,4 @@ public class JdbcConnectorParameterConverter implements ConnectorParameterConver
 
         return url;
     }
-
 }

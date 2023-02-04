@@ -21,6 +21,7 @@ import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.DatabaseInfo;
 import io.datavines.common.datasource.jdbc.entity.TableColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.TableInfo;
+import io.datavines.common.enums.EntityRelType;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.GetColumnsRequestParam;
 import io.datavines.common.param.GetDatabasesRequestParam;
@@ -174,6 +175,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 instanceService.softDeleteEntityByDataSourceAndFQN(Long.valueOf(t.split("@@")[0]), t.split("@@")[1]);
                 CatalogEntityInstance databaseEntityInstance = databaseListFromDbMap.get(t);
                 CatalogSchemaChange databaseDeleteChange = new CatalogSchemaChange();
+                databaseDeleteChange.setParentUuid(dataSource.getUuid());
                 databaseDeleteChange.setEntityUuid(databaseEntityInstance.getUuid());
                 databaseDeleteChange.setChangeType(SchemaChangeType.DATABASE_DELETED);
                 databaseDeleteChange.setDatabaseName(t.split("@@")[1]);
@@ -204,6 +206,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 if (!isFirstFetch) {
                     // 记录 database added change
                     CatalogSchemaChange databaseAddChange = new CatalogSchemaChange();
+                    databaseAddChange.setParentUuid(dataSource.getUuid());
                     databaseAddChange.setEntityUuid(databaseEntityInstance.getUuid());
                     databaseAddChange.setChangeType(SchemaChangeType.DATABASE_ADDED);
                     databaseAddChange.setDatabaseName(databaseInfo.getName());
@@ -217,7 +220,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 CatalogEntityRel dataSource2databaseRel = new CatalogEntityRel();
                 dataSource2databaseRel.setEntity1Uuid(dataSource.getUuid());
                 dataSource2databaseRel.setEntity2Uuid(tableUUID);
-                dataSource2databaseRel.setDirection("down");
+                dataSource2databaseRel.setType(EntityRelType.CHILD.getDescription());
                 dataSource2databaseRel.setUpdateTime(LocalDateTime.now());
                 dataSource2databaseRel.setUpdateBy(0L);
                 relService.save(dataSource2databaseRel);
@@ -252,6 +255,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
             instanceService.create(oldDatabaseInstance);
         }
 
+        String databaseUUID = oldDatabaseInstance.getUuid();
         //获取数据源中的表列表
         GetTablesRequestParam getTablesRequestParam = new GetTablesRequestParam();
         getTablesRequestParam.setType(dataSource.getType());
@@ -280,7 +284,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
         //获取数据库中的表列表
         List<String> tableListFromDb = new ArrayList<>();
         List<CatalogEntityRel> tableEntityRelList =
-                relService.list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", oldDatabaseInstance.getUuid()));
+                relService.list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", databaseUUID));
         Map<String, CatalogEntityInstance> tableMapFromDb = new HashMap<>();
         if (CollectionUtils.isNotEmpty(tableEntityRelList)) {
             tableEntityRelList.forEach(item -> {
@@ -325,6 +329,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 CatalogEntityInstance tableEntityInstance = tableMapFromDb.get(t);
                 String[] values = t.split("@@")[1].split("\\.");
                 CatalogSchemaChange tableDeleteChange = new CatalogSchemaChange();
+                tableDeleteChange.setParentUuid(databaseUUID);
                 tableDeleteChange.setEntityUuid(tableEntityInstance.getUuid());
                 tableDeleteChange.setChangeType(SchemaChangeType.TABLE_DELETED);
                 tableDeleteChange.setDatabaseName(values[0]);
@@ -353,13 +358,13 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                     newComment = tableInfo.getComment();
 
                     if (isCommentChange(oldComment, newComment)) {
-                        addTableCommentChangeRecord(tableEntityInstance, database, tableInfo, oldComment, newComment);
+                        addTableCommentChangeRecord(databaseUUID, tableEntityInstance, database, tableInfo, oldComment, newComment);
                     }
 
                 } else {
                     if (tableInfo != null && StringUtils.isNotEmpty(tableInfo.getComment())) {
                         tableEntityInstance.setDescription(tableInfo.getComment());
-                        addTableCommentChangeRecord(tableEntityInstance, database, tableInfo, null, tableInfo.getComment());
+                        addTableCommentChangeRecord(databaseUUID, tableEntityInstance, database, tableInfo, null, tableInfo.getComment());
                     }
                 }
 
@@ -391,6 +396,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 String tableUUID = instanceService.create(tableEntityInstance);
                 if (!isFirstFetch) {
                     CatalogSchemaChange tableAddChange = new CatalogSchemaChange();
+                    tableAddChange.setParentUuid(databaseUUID);
                     tableAddChange.setEntityUuid(tableEntityInstance.getUuid());
                     tableAddChange.setChangeType(SchemaChangeType.TABLE_ADDED);
                     tableAddChange.setDatabaseName(database);
@@ -405,7 +411,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 CatalogEntityRel entityRel = new CatalogEntityRel();
                 entityRel.setEntity1Uuid(oldDatabaseInstance.getUuid());
                 entityRel.setEntity2Uuid(tableUUID);
-                entityRel.setDirection("down");
+                entityRel.setType(EntityRelType.CHILD.getDescription());
                 entityRel.setUpdateTime(LocalDateTime.now());
                 entityRel.setUpdateBy(0L);
                 relService.save(entityRel);
@@ -423,8 +429,9 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
 
     }
 
-    private void addTableCommentChangeRecord(CatalogEntityInstance tableEntityInstance, String database, TableInfo tableInfo, String oldComment, String newComment) {
+    private void addTableCommentChangeRecord(String parentUUID, CatalogEntityInstance tableEntityInstance, String database, TableInfo tableInfo, String oldComment, String newComment) {
         CatalogSchemaChange tableCommentChange = new CatalogSchemaChange();
+        tableCommentChange.setParentUuid(parentUUID);
         tableCommentChange.setEntityUuid(tableEntityInstance.getUuid());
         tableCommentChange.setChangeType(SchemaChangeType.TABLE_COMMENT_CHANGE);
         tableCommentChange.setDatabaseName(database);
@@ -446,6 +453,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
             return;
         }
 
+        String tableUUID = oldTableInstance.getUuid();
         //获取数据源中的列列表
         GetColumnsRequestParam getColumnsRequestParam = new GetColumnsRequestParam();
         getColumnsRequestParam.setType(dataSource.getType());
@@ -481,7 +489,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
         List<String> columnListFromDb = new ArrayList<>();
         //获取数据库中的列列表
         List<CatalogEntityRel> columnEntityRelList = relService
-                .list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", oldTableInstance.getUuid()));
+                .list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", tableUUID));
 
         Map<String, CatalogEntityInstance> columnMapFromDb = new HashMap<>();
         if (CollectionUtils.isNotEmpty(columnEntityRelList)) {
@@ -527,6 +535,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 CatalogEntityInstance columnEntityInstance = columnMapFromDb.get(t);
                 String[] values = t.split("@@")[1].split("\\.");
                 CatalogSchemaChange columnDeleteChange = new CatalogSchemaChange();
+                columnDeleteChange.setParentUuid(tableUUID);
                 columnDeleteChange.setEntityUuid(columnEntityInstance.getUuid());
                 columnDeleteChange.setChangeType(SchemaChangeType.COLUMN_DELETED);
                 columnDeleteChange.setDatabaseName(values[0]);
@@ -556,7 +565,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                     }
 
                     if (isCommentChange(oldComment, newComment)) {
-                        addColumnCommentChangeRecord(columnEntityInstance.getUuid(),database,table,columnEntityInstance.getDisplayName(),oldComment, newComment);
+                        addColumnCommentChangeRecord(tableUUID,columnEntityInstance.getUuid(),database,table,columnEntityInstance.getDisplayName(),oldComment, newComment);
                     }
 
                     String oldType = null;
@@ -570,17 +579,17 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                     }
 
                     if (isTypeChange(oldType, newType)) {
-                        addColumnTypeChangeRecord(columnEntityInstance.getUuid(), database, table, columnEntityInstance.getDisplayName(), oldType, newType);
+                        addColumnTypeChangeRecord(tableUUID, columnEntityInstance.getUuid(), database, table, columnEntityInstance.getDisplayName(), oldType, newType);
                     }
 
                 } else if (columnInfo != null) {
                     if (StringUtils.isNotEmpty(columnInfo.getComment())) {
                         columnEntityInstance.setDescription(columnInfo.getComment());
-                        addColumnCommentChangeRecord(columnEntityInstance.getUuid(),database,table,columnEntityInstance.getDisplayName(),null, columnInfo.getComment());
+                        addColumnCommentChangeRecord(tableUUID, columnEntityInstance.getUuid(),database,table,columnEntityInstance.getDisplayName(),null, columnInfo.getComment());
                     }
 
                     if (StringUtils.isNotEmpty(columnInfo.getType())) {
-                        addColumnTypeChangeRecord(columnEntityInstance.getUuid(), database, table, columnEntityInstance.getDisplayName(), null, columnInfo.getType());
+                        addColumnTypeChangeRecord(tableUUID, columnEntityInstance.getUuid(), database, table, columnEntityInstance.getDisplayName(), null, columnInfo.getType());
                     }
                 }
 
@@ -606,6 +615,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 String columnUUID = instanceService.create(columnEntityInstance);
                 if (!isFirstFetch) {
                     CatalogSchemaChange columnAddChange = new CatalogSchemaChange();
+                    columnAddChange.setParentUuid(tableUUID);
                     columnAddChange.setEntityUuid(columnUUID);
                     columnAddChange.setChangeType(SchemaChangeType.COLUMN_ADDED);
                     columnAddChange.setDatabaseName(database);
@@ -619,7 +629,7 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
                 CatalogEntityRel entityRelDO = new CatalogEntityRel();
                 entityRelDO.setEntity1Uuid(oldTableInstance.getUuid());
                 entityRelDO.setEntity2Uuid(columnUUID);
-                entityRelDO.setDirection("down");
+                entityRelDO.setType(EntityRelType.CHILD.getDescription());
                 entityRelDO.setUpdateTime(LocalDateTime.now());
                 entityRelDO.setUpdateBy(0L);
                 relService.save(entityRelDO);
@@ -627,8 +637,9 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
         }
     }
 
-    private void addColumnCommentChangeRecord(String uuid, String database, String table, String column, String oldComment, String newComment) {
+    private void addColumnCommentChangeRecord(String parentUUID, String uuid, String database, String table, String column, String oldComment, String newComment) {
         CatalogSchemaChange columnCommentChange = new CatalogSchemaChange();
+        columnCommentChange.setParentUuid(parentUUID);
         columnCommentChange.setEntityUuid(uuid);
         columnCommentChange.setChangeType(SchemaChangeType.COLUMN_COMMENT_CHANGE);
         columnCommentChange.setDatabaseName(database);
@@ -641,8 +652,9 @@ public class CatalogMetaDataFetchTaskImpl implements CatalogMetaDataFetchTask {
         schemaChangeService.save(columnCommentChange);
     }
 
-    private void addColumnTypeChangeRecord(String uuid, String database, String table, String column, String oldType, String newType) {
+    private void addColumnTypeChangeRecord(String parentUUID, String uuid, String database, String table, String column, String oldType, String newType) {
         CatalogSchemaChange columnTypeChange = new CatalogSchemaChange();
+        columnTypeChange.setParentUuid(parentUUID);
         columnTypeChange.setEntityUuid(uuid);
         columnTypeChange.setChangeType(SchemaChangeType.COLUMN_TYPE_CHANGE);
         columnTypeChange.setDatabaseName(database);

@@ -62,11 +62,26 @@ public class CommonPropertyUtils {
     public static final String LOCAL_TMP_WORKDIR = "local.tmp.workdir";
     public static final String LOCAL_TMP_WORKDIR_DEFAULT = "/tmp/datavines";
 
-    public static final String ERROR_DATA_FILE_DIR = "error.data.file_dir";
-    public static final String ERROR_DATA_FILE_DIR_DEFAULT = "/tmp/datavines/errordata";
+    public static final String LOCAL_DATA_DIR = "local.data.dir";
+    public static final String LOCAL_DATA_DIR_DEFAULT = "/tmp/datavines/data";
+
+    public static final String ERROR_DATA_DIR = "error.data.dir";
+    public static final String ERROR_DATA_DIR_DEFAULT = "/tmp/datavines/error-data";
+
+    public static final String VALIDATE_RESULT_DATA_DIR = "validate.result.data.dir";
+    public static final String VALIDATE_RESULT_DATA_DIR_DEFAULT = "/tmp/datavines/validate-result-data";
+
+    public static final String LINE_SEPARATOR = "line.separator";
+    public static final String LINE_SEPARATOR_DEFAULT = "\r\n";
+
+    public static final String COLUMN_SEPARATOR = "column.separator";
+    public static final String COLUMN_SEPARATOR_DEFAULT = ",";
 
     public static final String AES_KEY = "aes.key";
     public static final String AES_KEY_DEFAULT = "1234567890123456";
+
+    public static final String FILE_MAX_LENGTH = "file.max.length";
+    public static final Long FILE_MAX_LENGTH_DEFAULT = 10 * 1024 * 1024L;
 
     private static final Logger logger = LoggerFactory.getLogger(CommonPropertyUtils.class);
 

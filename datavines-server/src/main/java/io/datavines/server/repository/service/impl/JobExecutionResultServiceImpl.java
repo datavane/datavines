@@ -17,6 +17,8 @@
 package io.datavines.server.repository.service.impl;
 
 import io.datavines.common.entity.JobExecutionParameter;
+import io.datavines.common.entity.job.BaseJobParameter;
+import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.core.utils.LanguageUtils;
@@ -25,17 +27,17 @@ import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.api.dto.vo.JobExecutionResultVO;
-import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
 import io.datavines.server.repository.service.JobService;
 import io.datavines.server.repository.service.JobExecutionService;
 import io.datavines.server.enums.DqJobExecutionState;
-import io.datavines.server.enums.OperatorType;
+import io.datavines.common.enums.OperatorType;
 import io.datavines.server.repository.mapper.JobExecutionResultMapper;
 import io.datavines.server.repository.service.JobExecutionResultService;
 import io.datavines.spi.PluginLoader;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -75,7 +77,11 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
 
     @Override
     public JobExecutionResult getByJobExecutionId(long taskId) {
-        return baseMapper.selectOne(new QueryWrapper<JobExecutionResult>().eq("job_execution_id", taskId));
+        List<JobExecutionResult> list = baseMapper.selectList(new QueryWrapper<JobExecutionResult>().eq("job_execution_id", taskId).orderByDesc("update_time"));
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        return list.get(0);
     }
 
     @Override
@@ -91,16 +97,16 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
         JobExecution jobExecution = jobExecutionService.getById(taskId);
         if (!Objects.isNull(jobExecution)) {
             Job job = jobService.getById(jobExecution.getJobId());
-            List<JobExecutionParameter> jobExecutionParameterList = JSONUtils.toList(job.getParameter(),JobExecutionParameter.class);
-            for (JobExecutionParameter jobExecutionParameter : jobExecutionParameterList) {
-                if (jobExecutionParameter != null) {
-                    SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobExecutionParameter.getMetricType());
+            List<BaseJobParameter> jobParameterList = JSONUtils.toList(job.getParameter(),BaseJobParameter.class);
+            for (BaseJobParameter jobParameter : jobParameterList) {
+                if (jobParameter != null) {
+                    SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobParameter.getMetricType());
                     Map<String,ConfigItem> configMap = sqlMetric.getConfigMap();
                     Map<String,Object> paramMap = new HashMap<>();
-                    String uniqueName = jobExecutionParameter.getMetricType() + "."
-                            + jobExecutionParameter.getMetricParameter().get("database")+ "."
-                            + jobExecutionParameter.getMetricParameter().get("table")+ "."
-                            + jobExecutionParameter.getMetricParameter().get("column");
+                    String uniqueName = jobParameter.getMetricType() + "."
+                            + jobParameter.getMetricParameter().get("database")+ "."
+                            + jobParameter.getMetricParameter().get("table")+ "."
+                            + jobParameter.getMetricParameter().get("column");
 
                     String taskResultUniqueName = jobExecutionResult.getMetricName()+ "."
                             + jobExecutionResult.getDatabaseName() + "."
@@ -111,7 +117,7 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
                         configMap.entrySet().stream().filter(x->{
                             return !("column".equalsIgnoreCase(x.getKey()) || "table".equalsIgnoreCase(x.getKey()) || "filter".equalsIgnoreCase(x.getKey()));
                         }).forEach(config -> {
-                            paramMap.put(config.getValue().getLabel(!LanguageUtils.isZhContext()), jobExecutionParameter.getMetricParameter().get(config.getKey()));
+                            paramMap.put(config.getValue().getLabel(!LanguageUtils.isZhContext()), jobParameter.getMetricParameter().get(config.getKey()));
                         });
                         jobExecutionResultVO.setMetricParameter(paramMap);
                     }

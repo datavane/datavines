@@ -16,10 +16,11 @@
  */
 package io.datavines.server.repository.service.impl;
 
-import io.datavines.common.config.DataVinesQualityConfig;
+import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.JobExecutionRequest;
+import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.engine.config.DataVinesConfigurationManager;
@@ -147,10 +148,10 @@ public class JobExternalService {
                 jobExecution.getId(), jobExecution.getName(),
                 jobExecution.getEngineType(), jobExecution.getEngineParameter(),
                 jobExecution.getErrorDataStorageType(), jobExecution.getErrorDataStorageParameter(), jobExecution.getErrorDataFileName(),
-                "jdbc", JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
+                "mysql", JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
                 jobExecutionParameter);
-        DataVinesQualityConfig qualityConfig =
-                DataVinesConfigurationManager.generateConfiguration(inputParameter, jobExecutionInfo);
+        DataVinesJobConfig qualityConfig =
+                DataVinesConfigurationManager.generateConfiguration(jobExecution.getJobType(), inputParameter, jobExecutionInfo);
         jobExecutionRequest.setApplicationParameter(JSONUtils.toJsonString(qualityConfig));
         jobExecutionRequest.setTenantCode(jobExecution.getTenantCode());
         jobExecutionRequest.setRetryTimes(jobExecution.getRetryTimes());

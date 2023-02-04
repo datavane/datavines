@@ -16,12 +16,15 @@
  */
 package io.datavines.common.entity;
 
+import lombok.Data;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * JdbcConnectionInfo
+ * ConnectionInfo
  */
+@Data
 public class ConnectionInfo {
 
     private String type;
@@ -34,6 +37,8 @@ public class ConnectionInfo {
 
     private String driverName;
 
+    private String catalog;
+
     private String database;
 
     private String params;
@@ -43,86 +48,6 @@ public class ConnectionInfo {
     private String username;
 
     private String password;
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public String getPort() {
-        return port;
-    }
-
-    public void setPort(String port) {
-        this.port = port;
-    }
-
-    public String getDriverName() {
-        return driverName;
-    }
-
-    public void setDriverName(String driverName) {
-        this.driverName = driverName;
-    }
-
-    public String getDatabase() {
-        return database;
-    }
-
-    public void setDatabase(String database) {
-        this.database = database;
-    }
-
-    public String getParams() {
-        return params;
-    }
-
-    public void setParams(String params) {
-        this.params = params;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 
     @Override
     public String toString() {
@@ -144,6 +69,7 @@ public class ConnectionInfo {
         configMap.put("port",port);
         configMap.put("user",username);
         configMap.put("properties",params);
+        configMap.put("catalog", catalog);
         return configMap;
     }
 
@@ -154,5 +80,6 @@ public class ConnectionInfo {
         this.port = (String)configMap.get("port");
         this.username = (String)configMap.get("user");
         this.params = (String)configMap.get("properties");
+        this.catalog = (String)configMap.get("catalog");
     }
 }

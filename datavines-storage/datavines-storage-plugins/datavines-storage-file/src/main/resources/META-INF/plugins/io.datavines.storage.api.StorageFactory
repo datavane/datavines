@@ -1,1 +1,1 @@
-local-file=io.datavines.storage.plugin.LocalFileStorageFactory
+file=io.datavines.storage.plugin.LocalFileStorageFactory

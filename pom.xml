@@ -79,6 +79,7 @@
         <quartz.version>2.2.3</quartz.version>
         <commons.lang.version>2.3</commons.lang.version>
         <commons.lang3.version>3.5</commons.lang3.version>
+        <commons.codec.version>1.15</commons.codec.version>
         <commons.io.version>2.4</commons.io.version>
         <jersey.version>1.19</jersey.version>
         <jetty.version>8.2.0.v20160908</jetty.version>
@@ -144,6 +145,12 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-email</artifactId>
                 <version>${commons.email.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons.codec.version}</version>
             </dependency>
 
             <dependency>

@@ -19,48 +19,40 @@ package io.datavines.common.entity.job.builder;
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.JobExecutionParameter;
-import io.datavines.common.entity.job.DataQualityJobParameter;
+import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.utils.JSONUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class DataQualityJobParameterBuilder implements ParameterBuilder {
 
     @Override
-    public List<String> buildJobExecutionParameter(String jobParameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo) {
-        List<DataQualityJobParameter> jobParameters = JSONUtils.toList(jobParameter, DataQualityJobParameter.class);
+    public String buildJobExecutionParameter(String jobParameter, ConnectionInfo srcConnectionInfo, ConnectionInfo targetConnectionInfo) {
+        List<BaseJobParameter> jobParameters = JSONUtils.toList(jobParameter, BaseJobParameter.class);
 
         if (CollectionUtils.isNotEmpty(jobParameters)) {
-            List<String> jobExecutionParameters = new ArrayList<>();
-            jobParameters.forEach(jobParam -> {
-                JobExecutionParameter jobExecutionParameter = new JobExecutionParameter();
-                jobExecutionParameter.setMetricType(jobParam.getMetricType());
-                Map<String,Object> metricParameters = jobParam.getMetricParameter();
-                String database = (String)metricParameters.get("database");
+            JobExecutionParameter jobExecutionParameter = new JobExecutionParameter();
+            String database = "";
+            for (BaseJobParameter metricJobParameter : jobParameters) {
+                Map<String,Object> metricParameters = metricJobParameter.getMetricParameter();
+                database = (String)metricParameters.get("database");
                 metricParameters.remove("database");
                 metricParameters.put("metric_database",database);
-                jobExecutionParameter.setMetricParameter(metricParameters);
-                jobExecutionParameter.setExpectedType(jobParam.getExpectedType());
-                jobExecutionParameter.setExpectedParameter(jobParam.getExpectedParameter());
-                jobExecutionParameter.setResultFormula(jobParam.getResultFormula());
-                jobExecutionParameter.setOperator(jobParam.getOperator());
-                jobExecutionParameter.setThreshold(jobParam.getThreshold());
+                metricJobParameter.setMetricParameter(metricParameters);
+            }
 
-                ConnectorParameter srcConnectorParameter = new ConnectorParameter();
-                srcConnectorParameter.setType(srcConnectionInfo.getType());
-                Map<String,Object> srcConnectorParameterMap = srcConnectionInfo.configMap();
-                srcConnectorParameterMap.put("database", database);
-                srcConnectorParameter.setParameters(srcConnectorParameterMap);
-                jobExecutionParameter.setConnectorParameter(srcConnectorParameter);
+            jobExecutionParameter.setMetricParameterList(jobParameters);
 
-                String jobExecutionParameterStr = JSONUtils.toJsonString(jobExecutionParameter);
-                jobExecutionParameters.add(jobExecutionParameterStr);
-            });
+            ConnectorParameter srcConnectorParameter = new ConnectorParameter();
+            srcConnectorParameter.setType(srcConnectionInfo.getType());
+            Map<String,Object> srcConnectorParameterMap = srcConnectionInfo.configMap();
+            srcConnectorParameterMap.put("database", database);
+            srcConnectorParameter.setParameters(srcConnectorParameterMap);
+            jobExecutionParameter.setConnectorParameter(srcConnectorParameter);
 
-            return jobExecutionParameters;
+            return JSONUtils.toJsonString(jobExecutionParameter);
         }
 
         return null;

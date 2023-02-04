@@ -72,7 +72,6 @@ public enum Status {
     JOB_NOT_EXIST_ERROR(14010003, "Job {0} Not Exist Error", "作业 {0} 不存在错误"),
     JOB_EXIST_ERROR(14010004, "Job {0} is Exist error", "作业 {0} 已存在错误"),
     UPDATE_JOB_ERROR(14010005, "Update Job {0} Error", "更新作业 {0} 错误"),
-
     JOB_SCHEDULE_EXIST_ERROR(14020001, "Job Schedule is Exist error, id must be not null", "作业定时任务已存在,ID 不能为空"),
     CREATE_JOB_SCHEDULE_ERROR(14020002, "Create Job Schedule {0} Error", "创建作业定时任务 {0} 错误"),
     JOB_SCHEDULE_NOT_EXIST_ERROR(14020003, "Job Schedule {0} is not Exist error", "作业定时任务 {0} 不存在错误"),
@@ -82,6 +81,7 @@ public enum Status {
     SCHEDULE_TYPE_NOT_VALIDATE_ERROR(14020007, "Schedule type {0} is not Validate Error", "定时器类型参数 {0} 错误"),
     SCHEDULE_CYCLE_NOT_VALIDATE_ERROR(14020008, "Schedule Param Cycle {0} is not Validate Error", "定时器周期参数 {0} 错误"),
     SCHEDULE_CRON_IS_INVALID_ERROR(14020008, "Schedule cron {0} is not Validate Error", "定时器 Crontab 表达式 {0} 错误"),
+
     CREATE_TENANT_ERROR(15010001, "Create Tenant {0} Error", "创建 Linux 用户 {0} 错误"),
     TENANT_NOT_EXIST_ERROR(15010002, "Tenant {0} Not Exist Error", "Linux 用户 {0} 不存在错误"),
     TENANT_EXIST_ERROR(15010003, "Tenant {0} is Exist error", "Linux 用户 {0} 已存在错误"),
@@ -109,10 +109,16 @@ public enum Status {
     CATALOG_TAG_CREATE_ERROR(20020001, "Create Tag {0} Error", "创建标签 {0} 错误"),
     CATALOG_TAG_NOT_EXIST_ERROR(20020002, "Tag {0} Not Exist Error", "标签 {0} 不存在"),
     CATALOG_TAG_EXIST_ERROR(20020003, "Tag {0} is Exist error", "标签 {0} 已存在"),
+    CATALOG_ENTITY_TAG_EXIST_ERROR(20020004, "The tag is already associated with the entity", "该标签已与实体关联"),
     CATALOG_TASK_SCHEDULE_EXIST_ERROR(20030001, "Catalog Task Schedule is Exist error, id must be not null", "元数据抓取定时任务已存在,ID 不能为空"),
     CREATE_CATALOG_TASK_SCHEDULE_ERROR(20030002, "Create Catalog Task Schedule {0} Error", "创建元数据抓取定时任务 {0} 错误"),
     CATALOG_TASK_SCHEDULE_NOT_EXIST_ERROR(20030003, "Catalog Task Schedule {0} is not Exist error", "元数据抓取定时任务 {0} 不存在"),
     UPDATE_CATALOG_TASK_SCHEDULE_ERROR(20030004, "Update Catalog Task Schedule {0} Error", "更新元数据抓取定时任务 {0} 错误"),
+
+    CREATE_ISSUE_ERROR(21010001, "Create Issue {0} Error", "创建Issue {0} 错误"),
+    ISSUE_NOT_EXIST_ERROR(21010002, "Issue {0} Not Exist Error", "Issue {0} 不存在错误"),
+    ISSUE_EXIST_ERROR(21010003, "Issue {0} is Exist error", "Issue {0} 已存在错误"),
+    UPDATE_ISSUE_ERROR(21010004, "Update Issue {0} Error", "更新Issue {0} 错误"),
     ;
 
     private final int code;

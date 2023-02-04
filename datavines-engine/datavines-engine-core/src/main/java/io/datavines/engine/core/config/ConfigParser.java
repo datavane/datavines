@@ -18,7 +18,7 @@ package io.datavines.engine.core.config;
 
 import io.datavines.common.config.Config;
 import io.datavines.common.config.ConfigRuntimeException;
-import io.datavines.common.config.DataVinesQualityConfig;
+import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.config.EnvConfig;
 import io.datavines.engine.api.component.Component;
 import io.datavines.engine.api.env.RuntimeEnvironment;
@@ -39,7 +39,7 @@ public class ConfigParser {
 
     private final String configFile;
 
-    private final DataVinesQualityConfig config;
+    private final DataVinesJobConfig config;
 
     private final EnvConfig envConfig;
 
@@ -52,7 +52,7 @@ public class ConfigParser {
         this.env = createRuntimeEnvironment();
     }
 
-    private DataVinesQualityConfig load() {
+    private DataVinesJobConfig load() {
 
         if (configFile.isEmpty()) {
             throw new ConfigRuntimeException("Please specify config file");
@@ -60,7 +60,7 @@ public class ConfigParser {
 
         logger.info("Loading config file: " + configFile);
 
-        DataVinesQualityConfig config = JsonUtils.parseObject(configFile, DataVinesQualityConfig.class);
+        DataVinesJobConfig config = JsonUtils.parseObject(configFile, DataVinesJobConfig.class);
 
         logger.info("config after parse: " + JsonUtils.toJsonString(config));
 

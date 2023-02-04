@@ -22,7 +22,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.api.dto.bo.catalog.schedule.CatalogTaskScheduleCreateOrUpdate;
+import io.datavines.server.api.dto.bo.catalog.task.CatalogTaskScheduleCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.schedule.MapParam;
 import io.datavines.server.dqc.coordinator.quartz.CatalogTaskScheduleJob;
 import io.datavines.server.dqc.coordinator.quartz.QuartzExecutors;

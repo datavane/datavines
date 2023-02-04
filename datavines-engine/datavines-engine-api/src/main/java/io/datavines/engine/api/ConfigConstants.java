@@ -51,6 +51,7 @@ public class ConfigConstants {
     public static final String WRITER_DATASOURCE_ID = "writer_datasource_id";
     public static final String UNIQUE_CODE = "unique_code";
     public static final String DATA_TIME = "data_time";
+    public static final String DATA_DATE = "data_date";
     public static final String REGEXP_PATTERN = "regexp_pattern";
     public static final String ERROR_OUTPUT_PATH = "error_output_path";
     public static final String INDEX = "index";
@@ -63,8 +64,10 @@ public class ConfigConstants {
     public static final String CREATE_TIME = "create_time";
     public static final String UPDATE_TIME = "update_time";
     public static final String JOB_EXECUTION_ID = "job_execution_id";
-    public static final String ERROR_DATA_FILE_DIR = "error_data_file_dir";
+    public static final String ERROR_DATA_DIR = "error_data_dir";
     public static final String ERROR_DATA_FILE_NAME = "error_data_file_name";
+    public static final String VALIDATE_RESULT_DATA_DIR = "validate_result_data_dir";
+    public static final String INVALIDATE_ITEM_CAN_OUTPUT = "validate_item_can_output";
 
     public static final String DATABASE = "database";
     public static final String USER = "user";
@@ -76,11 +79,20 @@ public class ConfigConstants {
     public static final String INPUT_TABLE = "input_table";
     public static final String OUTPUT_TABLE = "output_table";
     public static final String TMP_TABLE = "tmp_table";
+    public static final String COLUMN_SEPARATOR = "column_separator";
+    public static final String LINE_SEPERATOR = "line_separator";
+    public static final String DATA_DIR = "data_dir";
+    public static final String METRIC_DATABASE = "metric_database";
+
+    public static final String TRUE = "true";
+    public static final String FALSE = "false";
 
     //sql dialect on regex key
     public static final String REGEX_KEY = "regex_key";
     public static final String NOT_REGEX_KEY = "not_regex_key";
     public static final String UNIX_TIMESTAMP = "unix_timestamp";
+    public static final String STRING_TYPE = "string_type";
+    public static final String LIMIT_KEY = "limit_key";
 
     public static final String INVALIDATE_ITEMS_TABLE = "invalidate_items_table";
 
@@ -88,6 +100,11 @@ public class ConfigConstants {
      * date format of yyyy-MM-dd HH:mm:ss
      */
     public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+
+    /**
+     * date format of yyyy-MM-dd HH:mm:ss
+     */
+    public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
     public static final String S001 = "\001";
 

@@ -41,8 +41,8 @@ public class CatalogEntityRel implements Serializable {
     @TableField(value = "entity2_uuid")
     private String entity2Uuid;
 
-    @TableField(value = "direction")
-    private String direction;
+    @TableField(value = "type")
+    private String type;
 
     @TableField(value = "update_by")
     private Long updateBy;

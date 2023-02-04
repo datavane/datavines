@@ -29,8 +29,6 @@ public abstract class BaseSingleTable implements SqlMetric {
 
     protected StringBuilder invalidateItemsSql = new StringBuilder("select * from ${table}");
 
-    private final StringBuilder actualValueSql = new StringBuilder("select count(1) as actual_value from ${invalidate_items_table}");
-
     protected List<String> filters = new ArrayList<>();
 
     protected HashMap<String,ConfigItem> configMap = new HashMap<>();
@@ -54,10 +52,11 @@ public abstract class BaseSingleTable implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getActualValue() {
+    public ExecuteSql getActualValue(String uniqueKey) {
         ExecuteSql executeSql = new ExecuteSql();
-        executeSql.setResultTable("invalidate_count");
-        executeSql.setSql(actualValueSql.toString());
+        executeSql.setResultTable("invalidate_count_" + uniqueKey);
+        String actualValueSql = "select count(1) as actual_value_"+ uniqueKey +" from ${invalidate_items_table}";
+        executeSql.setSql(actualValueSql);
         executeSql.setErrorOutput(false);
         return executeSql;
     }

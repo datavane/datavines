@@ -25,6 +25,7 @@ import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.CryptionUtils;
 import io.datavines.common.utils.PasswordFilterUtils;
 import io.datavines.core.utils.LanguageUtils;
+import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
 import io.datavines.server.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.*;
@@ -35,6 +36,7 @@ import io.datavines.server.api.dto.bo.datasource.DataSourceUpdate;
 import io.datavines.server.api.dto.vo.DataSourceVO;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.mapper.DataSourceMapper;
+import io.datavines.server.repository.service.CatalogTaskService;
 import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.repository.service.JobService;
@@ -60,6 +62,9 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
     @Autowired
     private JobService jobService;
+
+    @Autowired
+    private CatalogTaskService catalogTaskService;
 
     @Override
     public boolean testConnect(TestConnectionRequestParam param) {
@@ -88,6 +93,10 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         dataSource.setCreateBy(ContextHolder.getUserId());
         dataSource.setUpdateBy(ContextHolder.getUserId());
         baseMapper.insert(dataSource);
+
+        CatalogRefresh catalogRefresh = new CatalogRefresh();
+        catalogRefresh.setDatasourceId(dataSource.getId());
+        catalogTaskService.refreshCatalog(catalogRefresh);
         return dataSource.getId();
     }
 

@@ -19,12 +19,15 @@ package io.datavines.engine.spark.config;
 import io.datavines.common.config.SinkConfig;
 import io.datavines.common.config.TransformConfig;
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.common.entity.job.BaseJobParameter;
+import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
 
 import io.datavines.spi.PluginLoader;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,45 +40,69 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
     @Override
     public void buildTransformConfigs() {
         List<TransformConfig> transformConfigs = new ArrayList<>();
-        List<ExecuteSql> transformExecuteSqlList = new ArrayList<>();
-        //get custom execute sql
-        transformExecuteSqlList.add(getCustomExecuteSql(inputParameter));
-        //get expected value sql
-        String expectedType = jobExecutionInfo.getEngineType() + "_" + jobExecutionParameter.getExpectedType();
-        expectedValue = PluginLoader
-                .getPluginLoader(ExpectedValue.class)
-                .getNewPlugin(expectedType);
-        ExecuteSql expectedValueExecuteSql =
-                new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
-        transformExecuteSqlList.add(expectedValueExecuteSql);
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
+        if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
+            for (BaseJobParameter parameter : metricJobParameterList) {
+                String metricUniqueKey = getMetricUniqueKey(parameter);
+                Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
-        inputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
-        inputParameter.put(EXPECTED_NAME, expectedValue.getName());
+                List<ExecuteSql> transformExecuteSqlList = new ArrayList<>();
+                //get custom execute sql
+                transformExecuteSqlList.add(getCustomExecuteSql(metricInputParameter));
+                //get expected value sql
+                String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
+                ExpectedValue expectedValue = PluginLoader
+                        .getPluginLoader(ExpectedValue.class)
+                        .getNewPlugin(expectedType);
+                ExecuteSql expectedValueExecuteSql =
+                        new ExecuteSql(expectedValue.getExecuteSql(),expectedValue.getOutputTable());
+                transformExecuteSqlList.add(expectedValueExecuteSql);
 
-        MetricParserUtils.setTransformerConfig(inputParameter, transformConfigs, transformExecuteSqlList);
+                metricInputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
+                metricInputParameter.put(EXPECTED_NAME, expectedValue.getName());
+
+                MetricParserUtils.setTransformerConfig(metricInputParameter, transformConfigs, transformExecuteSqlList);
+            }
+        }
+
         configuration.setTransformParameters(transformConfigs);
     }
 
     @Override
     public void buildSinkConfigs() throws DataVinesException {
         List<SinkConfig> sinkConfigs = new ArrayList<>();
-        //get the actual value storage parameter
-        SinkConfig actualValueSinkConfig = getValidateResultDataSinkConfig(SparkSinkSqlBuilder.getActualValueSql(),  "dv_actual_values");
-        sinkConfigs.add(actualValueSinkConfig);
 
-        String taskSinkSql = SparkSinkSqlBuilder.getSingleTableCustomSqlSinkSql();
-        if (StringUtils.isEmpty(expectedValue.getOutputTable())) {
-            taskSinkSql = taskSinkSql.replaceAll("join \\$\\{expected_table}","");
-        }
-        //get the task data storage parameter
-        SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(taskSinkSql, "dv_job_execution_result");
-        sinkConfigs.add(taskResultSinkConfig);
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
+        if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
+            for (BaseJobParameter parameter : metricJobParameterList) {
+                String metricUniqueKey = getMetricUniqueKey(parameter);
+                Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
-        //get the error data storage parameter
-        //support file(hdfs/minio/s3)/es
-        SinkConfig errorDataSinkConfig = getErrorSinkConfig();
-        if (errorDataSinkConfig != null) {
-            sinkConfigs.add(errorDataSinkConfig);
+                String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
+                ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class)
+                                                          .getNewPlugin(expectedType);
+
+                //get the actual value storage parameter
+                SinkConfig actualValueSinkConfig = getValidateResultDataSinkConfig(
+                        expectedValue, SparkSinkSqlBuilder.getActualValueSql(),  "dv_actual_values", metricInputParameter);
+                sinkConfigs.add(actualValueSinkConfig);
+
+                String taskSinkSql = SparkSinkSqlBuilder.getSingleTableCustomSqlSinkSql();
+                if (StringUtils.isEmpty(expectedValue.getOutputTable())) {
+                    taskSinkSql = taskSinkSql.replaceAll("join \\$\\{expected_table}","");
+                }
+                //get the task data storage parameter
+                SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(
+                        expectedValue, taskSinkSql, "dv_job_execution_result", metricInputParameter);
+                sinkConfigs.add(taskResultSinkConfig);
+
+                //get the error data storage parameter
+                //support file(hdfs/minio/s3)/es
+                SinkConfig errorDataSinkConfig = getErrorSinkConfig();
+                if (errorDataSinkConfig != null) {
+                    sinkConfigs.add(errorDataSinkConfig);
+                }
+            }
         }
 
         configuration.setSinkParameters(sinkConfigs);

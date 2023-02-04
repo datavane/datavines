@@ -1,2 +1,0 @@
-jdbc-jdbc-sink=io.datavines.engine.jdbc.connector.BaseJdbcSink
-jdbc-jdbc-source=io.datavines.engine.jdbc.connector.BaseJdbcSource

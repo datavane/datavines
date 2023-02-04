@@ -17,11 +17,11 @@
 package io.datavines.server.repository.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.bo.catalog.OptionItem;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
-import io.datavines.server.api.dto.vo.*;
+import io.datavines.server.api.dto.vo.DataTime2ValueItem;
+import io.datavines.server.api.dto.vo.catalog.*;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 
 import java.util.List;
@@ -56,9 +56,21 @@ public interface CatalogEntityInstanceService extends IService<CatalogEntityInst
 
     CatalogColumnDetailVO getColumnEntityDetail(String uuid);
 
+    CatalogTableProfileVO getTableEntityProfile(String uuid);
+
+    Object getColumnEntityProfile(String uuid);
+
     long entityAddMetric(JobCreateWithEntityUuid jobCreateWithEntityUuid);
 
     CatalogEntityMetricParameter getEntityMetricParameter(String uuid);
 
     IPage<CatalogEntityMetricVO> getEntityMetricList(String uuid, Integer pageNumber, Integer pageSize);
+
+    long executeDataProfileJob(String uuid);
+
+    long executeDataProfileJob(String uuid, int runningNow);
+
+    List<DataTime2ValueItem> listTableRecords(String uuid, String starTime, String endTime);
+
+    IPage<CatalogEntityIssueVO> getEntityIssueList(String uuid, Integer pageNumber, Integer pageSize);
 }

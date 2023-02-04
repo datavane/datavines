@@ -22,4 +22,14 @@ public class HiveDialect extends JdbcDialect {
     public String getDriver() {
         return "org.apache.hive.jdbc.HiveDriver";
     }
+
+    @Override
+    public String invalidateItemCanOutput() {
+        return "false";
+    }
+
+    @Override
+    public String getStringType() {
+        return "string";
+    }
 }

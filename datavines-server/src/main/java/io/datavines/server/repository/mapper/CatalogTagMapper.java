@@ -18,7 +18,7 @@ package io.datavines.server.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
-import io.datavines.server.api.dto.vo.CatalogTagVO;
+import io.datavines.server.api.dto.vo.catalog.CatalogTagVO;
 import io.datavines.server.repository.entity.catalog.CatalogTag;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;

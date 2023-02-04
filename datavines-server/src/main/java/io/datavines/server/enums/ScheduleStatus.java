@@ -22,7 +22,7 @@ package io.datavines.server.enums;
 public enum ScheduleStatus {
 
     /**
-     * 0 file, 1 udf
+     * 0 offline, 1 online
      */
     OFFLINE(0, "offline"),
     ONLINE(1, "online");

@@ -28,9 +28,9 @@ public enum MetricLevel {
      * 2-column
      */
     NONE(0, "none"),
-    DATABASE(0,"database"),
-    TABLE(1,"table"),
-    COLUMN(2,"column");
+    DATABASE(1,"database"),
+    TABLE(2,"table"),
+    COLUMN(3,"column");
 
     MetricLevel(int code, String description) {
         this.code = code;

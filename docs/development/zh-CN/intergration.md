@@ -43,11 +43,11 @@
         "operator":"gt",
         "threshold":5
     },
-    "error_data_storage_type": "local-file",
+    "error_data_storage_type": "file",
     "error_data_storage_parameter": {
-      "error_data_file_dir":"/tmp/datavines/error-data"
+      "error_data_dir":"/tmp/datavines/error-data"
     },
-    "validate_result_storage_type": "local-file",
+    "validate_result_storage_type": "file",
     "validate_result_storage_parameter":{
       "result_data_file_dir":"/tmp/datavines/validate-result-data"
     }
@@ -85,11 +85,11 @@
         "operator":"gt",
         "threshold":5
     },
-    "error_data_storage_type": "local-file",
+    "error_data_storage_type": "file",
     "error_data_storage_parameter": {
-      "error_data_file_dir":"/tmp/datavines/error-data"
+      "error_data_dir":"/tmp/datavines/error-data"
     },
-    "validate_result_storage_type": "local-file",
+    "validate_result_storage_type": "file",
     "validate_result_storage_parameter":{
       "result_data_file_dir":"/tmp/datavines/validate-result-data"
     }

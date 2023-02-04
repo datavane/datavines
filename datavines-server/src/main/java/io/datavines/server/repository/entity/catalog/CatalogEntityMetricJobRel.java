@@ -41,6 +41,9 @@ public class CatalogEntityMetricJobRel implements Serializable {
     @TableField(value = "metric_job_id")
     private Long metricJobId;
 
+    @TableField(value = "metric_job_type")
+    private String metricJobType;
+
     @TableField(value = "create_by")
     private Long createBy;
 

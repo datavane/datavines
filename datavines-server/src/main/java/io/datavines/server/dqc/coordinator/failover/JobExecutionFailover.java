@@ -83,30 +83,30 @@ public class JobExecutionFailover {
     private void innerHandleJobExecutionFailover(List<JobExecution> jobExecutionList) {
         List<JobExecution> needRerunJobExecutionList = new ArrayList<>();
 
-        jobExecutionList.forEach(task -> {
-            if(StringUtils.isNotEmpty(task.getApplicationId())){
+        jobExecutionList.forEach(jobExecution -> {
+            if(StringUtils.isNotEmpty(jobExecution.getApplicationId())){
                 try {
-                    jobExecuteManager.addFailoverJobExecutionRequest(task);
+                    jobExecuteManager.addFailoverJobExecutionRequest(jobExecution);
                 } catch (DataVinesException e) {
                     e.printStackTrace();
                 }
-                task.setExecuteHost(NetUtils.getAddr(SERVER_PORT));
-                jobExternalService.updateJobExecution(task);
-                needCheckStatusJobExecutionMap.put(task.getId(), task);
+                jobExecution.setExecuteHost(NetUtils.getAddr(SERVER_PORT));
+                jobExternalService.updateJobExecution(jobExecution);
+                needCheckStatusJobExecutionMap.put(jobExecution.getId(), jobExecution);
             } else {
-                String appId = YarnUtils.getYarnAppId(task.getTenantCode(), task.getApplicationIdTag());
+                String appId = YarnUtils.getYarnAppId(jobExecution.getTenantCode(), jobExecution.getApplicationIdTag());
                 if (StringUtils.isNotEmpty(appId)) {
                     try {
-                        jobExecuteManager.addFailoverJobExecutionRequest(task);
+                        jobExecuteManager.addFailoverJobExecutionRequest(jobExecution);
                     } catch (DataVinesException e) {
                         e.printStackTrace();
                     }
-                    task.setApplicationId(appId);
-                    task.setExecuteHost(NetUtils.getAddr(SERVER_PORT));
-                    jobExternalService.updateJobExecution(task);
-                    needCheckStatusJobExecutionMap.put(task.getId(), task);
+                    jobExecution.setApplicationId(appId);
+                    jobExecution.setExecuteHost(NetUtils.getAddr(SERVER_PORT));
+                    jobExternalService.updateJobExecution(jobExecution);
+                    needCheckStatusJobExecutionMap.put(jobExecution.getId(), jobExecution);
                 } else {
-                    needRerunJobExecutionList.add(task);
+                    needRerunJobExecutionList.add(jobExecution);
                 }
             }
         });
@@ -115,11 +115,11 @@ public class JobExecutionFailover {
     }
 
     private void handleRerunJobExecution(List<JobExecution> needRerunJobExecutionList) {
-        needRerunJobExecutionList.forEach(task->{
+        needRerunJobExecutionList.forEach(jobExecution->{
             try {
-                jobExecuteManager.addFailoverJobExecutionRequest(task);
+                jobExecuteManager.addFailoverJobExecutionRequest(jobExecution);
                 JobExecuteResponseCommand responseCommand =
-                        new JobExecuteResponseCommand(task.getId());
+                        new JobExecuteResponseCommand(jobExecution.getId());
                 responseCommand.setEndTime(LocalDateTime.now());
                 responseCommand.setStatus(ExecutionStatus.FAILURE.getCode());
                 jobExecuteManager.processJobExecutionExecuteResponse(responseCommand);

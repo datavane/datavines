@@ -19,10 +19,8 @@ package io.datavines.server.repository.service;
 
 
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.api.dto.bo.catalog.schedule.CatalogTaskScheduleCreateOrUpdate;
-import io.datavines.server.api.dto.bo.job.schedule.JobScheduleCreateOrUpdate;
+import io.datavines.server.api.dto.bo.catalog.task.CatalogTaskScheduleCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.schedule.MapParam;
-import io.datavines.server.repository.entity.JobSchedule;
 import io.datavines.server.repository.entity.catalog.CatalogTaskSchedule;
 
 import java.util.List;

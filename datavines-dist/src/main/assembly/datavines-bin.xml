@@ -61,9 +61,8 @@
         <fileSet>
             <directory>${basedir}/../bin</directory>
             <includes>
-                <include>start-all.sh</include>
-                <include>stop-all.sh</include>
                 <include>datavines-daemon.sh</include>
+                <include>datavines-submit.sh</include>
             </includes>
             <outputDirectory>./bin</outputDirectory>
         </fileSet>

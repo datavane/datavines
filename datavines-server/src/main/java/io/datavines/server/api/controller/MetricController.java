@@ -24,6 +24,7 @@ import io.datavines.metric.api.*;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.server.api.dto.vo.Item;
+import io.datavines.server.api.dto.vo.MetricItem;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -59,7 +60,7 @@ public class MetricController {
     @GetMapping(value = "/list/{type}")
     public Object getMetricListByType(@PathVariable("type") String type) {
         Set<String> metricList = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
-        List<Item> items = new ArrayList<>();
+        List<MetricItem> items = new ArrayList<>();
         JobType jobType = JobType.of(type);
         if (jobType == null) {
             throw new DataVinesServerException(type + "type is not validate");
@@ -70,7 +71,7 @@ public class MetricController {
                 metricList.forEach(it -> {
                     SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
                     if (sqlMetric != null && sqlMetric.getType().isSingleTable()) {
-                        Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
+                        MetricItem item = new MetricItem(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()), it, sqlMetric.getLevel().getDescription());
                         items.add(item);
                     }
                 });
@@ -79,7 +80,7 @@ public class MetricController {
                 metricList.forEach(it -> {
                     SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
                     if (sqlMetric != null && !sqlMetric.getType().isSingleTable()) {
-                        Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
+                        MetricItem item = new MetricItem(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()), it, sqlMetric.getLevel().getDescription());
                         items.add(item);
                     }
                 });
@@ -147,12 +148,12 @@ public class MetricController {
         Set<String> expectedValueList = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
         Set<String> afterFilterSet = new HashSet<>();
         expectedValueList.forEach(it -> {
-            afterFilterSet.add(it.replace("jdbc_", "").replace("spark_",""));
+            afterFilterSet.add(it.replace("local_", "").replace("spark_",""));
         });
 
         List<Item> items = new ArrayList<>();
         afterFilterSet.forEach(it -> {
-            ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin("jdbc_" + it);
+            ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin("local_" + it);
             if (expectedValue != null) {
                 Item item = new Item(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()),it);
                 items.add(item);
