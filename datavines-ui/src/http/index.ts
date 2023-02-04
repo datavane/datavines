@@ -4,6 +4,7 @@ import shareData from 'src/utils/shareData';
 import { DV_STORAGE_LOGIN } from 'src/utils/constants';
 import store, { RootReducer } from '@/store';
 
+// const url = './';
 export const history = createHashHistory();
 
 const refreshToken = (newToken: string) => {

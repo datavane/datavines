@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import {
     Table, Button, Form, message,
 } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
+import { PlusOutlined } from '@ant-design/icons';
 import { TWarnTableData, TWarnTableItem } from '@/type/warning';
 import { useCreateWidget } from './hooks/CreateWidget';
 import { $http } from '@/http';
@@ -121,11 +122,11 @@ const Index = () => {
     ];
     return (
         <div>
-            <div style={{ paddingTop: '20px' }}>
+            <div style={{ paddingTop: '0px' }}>
                 <div className="dv-flex-between">
                     <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
                     <div style={{ textAlign: 'right', marginBottom: 10 }}>
-                        <Button type="primary" onClick={() => { show(null); }}>
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => { show(null); }}>
                             {intl.formatMessage({ id: 'warn_create_widget' })}
                         </Button>
                     </div>
@@ -138,6 +139,7 @@ const Index = () => {
                 columns={columns}
                 dataSource={tableData.list || []}
                 onChange={onChange}
+                bordered
                 pagination={{
                     size: 'small',
                     total: tableData.total,

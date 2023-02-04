@@ -45,7 +45,9 @@ export const ProviderInner = () => {
     return (
         <IntlWrap>
             <ConfigProviderWrap>
+                {/* <KeepAliveProvider> */}
                 <App />
+                {/* </KeepAliveProvider> */}
             </ConfigProviderWrap>
         </IntlWrap>
     );

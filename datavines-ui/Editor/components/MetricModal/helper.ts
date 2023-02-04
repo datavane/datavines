@@ -60,3 +60,15 @@ export const layoutOneLineItem = {
         span: 21,
     },
 };
+
+export const layoutNoneItem = {
+    style: {
+        marginBottom: 12,
+    },
+    labelCol: {
+        span: 0,
+    },
+    wrapperCol: {
+        span: 24,
+    },
+};

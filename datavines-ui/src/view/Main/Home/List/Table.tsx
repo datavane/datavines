@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table, Popconfirm } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
 import { IDataSourceListItem, IDataSourceList } from '@/type/dataSource';
 
@@ -61,7 +61,7 @@ const Index: React.FC<IndexProps> = ({
                         okText={intl.formatMessage({ id: 'common_Ok' })}
                         cancelText={intl.formatMessage({ id: 'common_Cancel' })}
                     >
-                        <a style={{ color: '#f81d22', marginLeft: 10 }}>{intl.formatMessage({ id: 'common_delete' })}</a>
+                        <a style={{ marginLeft: 10 }}>{intl.formatMessage({ id: 'common_delete' })}</a>
                     </Popconfirm>
                 </>
             ),
@@ -80,6 +80,7 @@ const Index: React.FC<IndexProps> = ({
             columns={columns}
             dataSource={tableData.list || []}
             onChange={onChange}
+            bordered
             pagination={{
                 size: 'small',
                 total: tableData.total,

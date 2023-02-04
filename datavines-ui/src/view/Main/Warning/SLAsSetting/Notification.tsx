@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
     Table, Popconfirm, Button, Form, message,
 } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
 import { TNoticeTableData, TNoticeTableItem } from '@/type/warning';
 import { SearchForm } from '@/component';

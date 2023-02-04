@@ -1,4 +1,6 @@
-import { message } from 'antd';
+// import React from 'react';
+import { message, notification } from 'antd';
+// import { FormattedMessage } from 'react-intl';
 import { create } from './create';
 import { IRequestConfig } from './type';
 
@@ -35,9 +37,12 @@ const getHttp = (_config: IRequestConfig): THttp => {
                     (res: any) => {
                         resolve(showWholeData ? res : res?.data);
                     },
-                    (e: { msg: string; code: string }) => {
+                    (e: { msg: string; code: string | number }) => {
                         if (!hideError && e && e.msg) {
-                            message.error(e.msg);
+                            notification.error({
+                                message: '',
+                                description: e.msg,
+                            });
                         }
                         reject(e);
                     },

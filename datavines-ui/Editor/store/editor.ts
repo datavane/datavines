@@ -9,6 +9,7 @@ type TEditor = {
     databases: IDvDataBaseItem[],
     baseURL: string,
     locale: any,
+    selectDatabases:{name:string, uuid:string}[],
 }
 
 const initState: TEditor = {
@@ -19,6 +20,8 @@ const initState: TEditor = {
     locale: '',
     baseURL: '',
     id: null,
+    selectDatabases: [],
+
 };
 
 const reducer = (state: TEditor, action: any) => ({

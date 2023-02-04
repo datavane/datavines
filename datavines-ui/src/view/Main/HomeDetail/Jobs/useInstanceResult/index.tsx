@@ -23,7 +23,7 @@ const Inner = (props: any) => {
     const getIntl = (id: any) => intl.formatMessage({ id });
     const getData = async () => {
         try {
-            const res = (await $http.get<ResultProps>(`task/result/${props.record.id}`)) || {};
+            const res = (await $http.get<ResultProps>(`job/execution/result/${props.record.id}`)) || {};
             setResult(res);
         } catch (error) {
             console.log(error);
@@ -47,12 +47,17 @@ const Inner = (props: any) => {
         }
         return (
             <>
-                <Row style={{ marginBottom: 10 }}>
+                <Row style={{
+                    marginBottom: 10,
+                }}
+                >
                     <Col span={locale === 'zh_CN' ? 4 : 7} style={{ textAlign: 'right' }}>
                         {getIntl('jobs_task_check_params')}
                         ：
                     </Col>
-                    <Col span={locale === 'zh_CN' ? 20 : 17}>
+                    <Col
+                        span={locale === 'zh_CN' ? 20 : 17}
+                    >
                         <div style={{ height: 22 }}>{' '}</div>
                         {
                             Object.keys(metricParameter).map((item) => (
@@ -73,20 +78,27 @@ const Inner = (props: any) => {
         getData();
     });
     return (
-        <div style={{ fontSize: 14, minHeight: 260 }}>
+        <div style={{
+            fontSize: 14,
+            minHeight: 260,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+        }}
+        >
             {getItem('jobs_task_check_subject', result.checkSubject)}
             {getItem('jobs_task_check_rule', result.metricName)}
             {getParams()}
             {getItem('jobs_task_check_result', result.checkResult)}
             {getItem('jobs_task_check_expectVal_type', result.expectedType)}
             {getItem('jobs_task_check_formula', result.resultFormulaFormat)}
-            <Row style={{ marginBottom: 10, fontWeight: 500 }}>
+            {/* <Row style={{ marginBottom: 10, fontWeight: 500 }}>
                 <Col span={locale === 'zh_CN' ? 4 : 7} style={{ textAlign: 'right' }}>
                     {getIntl('jobs_task_check_explain')}
                     ：
                 </Col>
                 <Col span={locale === 'zh_CN' ? 20 : 17}>{getIntl('jobs_task_check_explain_text')}</Col>
-            </Row>
+            </Row> */}
         </div>
     );
 };

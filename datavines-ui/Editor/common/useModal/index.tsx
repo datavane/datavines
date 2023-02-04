@@ -2,7 +2,7 @@ import React, {
     useState, useRef, useCallback, createContext, useContext,
 } from 'react';
 import { Modal } from 'antd';
-import { ModalProps } from 'antd/es/modal';
+import { ModalProps } from 'antd/lib/modal';
 import useImmutable from '../useImmutable';
 import usePersistFn from '../usePersistFn';
 

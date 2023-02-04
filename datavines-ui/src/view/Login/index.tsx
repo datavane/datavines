@@ -3,7 +3,7 @@ import './index.less';
 import {
     Form, Input, Button,
 } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { UserOutlined, LockOutlined, ArrowRightOutlined } from '@ant-design/icons';
 import { useIntl } from 'react-intl';
 import shareData from 'src/utils/shareData';
 import { DV_STORAGE_LOGIN } from 'src/utils/constants';
@@ -23,20 +23,24 @@ const Login = () => {
     const [form] = Form.useForm();
     const intl = useIntl();
     const history = useHistory();
-    const onFinish = async (values: TLoginValues) => {
-        try {
-            setLoading(true);
-            const res = await $http.post('/login', values, { showWholeData: true });
-            shareData.sessionSet(DV_STORAGE_LOGIN, {
-                ...(res.data),
-                token: res.token,
-            });
-            setIsDetailPage(false);
-            history.push('/main/home');
-        } catch (error: any) {
-        } finally {
-            setLoading(false);
-        }
+    const onFinish = async () => {
+        form.validateFields().then(async (values:TLoginValues) => {
+            try {
+                setLoading(true);
+                const res = await $http.post('/login', values, { showWholeData: true });
+                shareData.sessionSet(DV_STORAGE_LOGIN, {
+                    ...(res.data),
+                    token: res.token,
+                });
+                setIsDetailPage(false);
+                history.push('/main/home');
+            } catch (error: any) {
+            } finally {
+                setLoading(false);
+            }
+        }).catch(() => {
+
+        });
     };
     return (
         <div className="dv-login">
@@ -48,10 +52,10 @@ const Login = () => {
                         form={form}
                         layout="vertical"
                         name="dv-login"
-                        onFinish={onFinish}
+                        // onFinish={onFinish}
                     >
                         <Form.Item
-                            label={<span style={{ fontSize: 14 }}>{intl.formatMessage({ id: 'userName_text' })}</span>}
+                            // label={<span style={{ fontSize: 14 }}>{intl.formatMessage({ id: 'userName_text' })}</span>}
                             name="username"
                             style={{ marginBottom: 15 }}
                             rules={[{ required: true, message: intl.formatMessage({ id: 'login_username_msg' }) }]}
@@ -60,26 +64,36 @@ const Login = () => {
                         </Form.Item>
 
                         <Form.Item
-                            label={<span style={{ fontSize: 14 }}>{intl.formatMessage({ id: 'password_text' })}</span>}
+                            // label={<span style={{ fontSize: 14 }}>{intl.formatMessage({ id: 'password_text' })}</span>}
                             name="password"
                             style={{ marginBottom: 15 }}
                             rules={[{ required: true, message: intl.formatMessage({ id: 'login_password_msg' }) }]}
                         >
                             <Input.Password style={{ height: 50 }} size="large" prefix={<LockOutlined />} />
                         </Form.Item>
-                        <Form.Item>
+                        <p className="dv-login-btn">
+                            <span onClick={() => onFinish()}>
+                                {intl.formatMessage({ id: 'login_btn_text' })}
+                                <ArrowRightOutlined />
+                            </span>
+                        </p>
+                        {/* <Form.Item>
                             <Button loading={loading} style={{ width: '100%' }} size="large" type="primary" htmlType="submit">
                                 {intl.formatMessage({ id: 'login_btn_text' })}
                             </Button>
-                        </Form.Item>
-                        <div className="dv-flex-between">
-                            <span />
-                            {/* <a href="#/forgetPwd">{intl.formatMessage({ id: 'forget_password' })}</a> */}
-                            <a href="#/register">{intl.formatMessage({ id: 'register' })}</a>
-                        </div>
+                        </Form.Item> */}
+                        {/* <div className="dv-flex-between">
+                            <span /> */}
+                        {/* <a href="#/forgetPwd">{intl.formatMessage({ id: 'forget_password' })}</a> */}
+                        {/* <a href="#/register">{intl.formatMessage({ id: 'register' })}</a>
+                        </div> */}
                     </Form>
                 </div>
             </div>
+            <a href="#/register" className="dv-register-btn">
+                {intl.formatMessage({ id: 'register' })}
+                <ArrowRightOutlined />
+            </a>
         </div>
     );
 };

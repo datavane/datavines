@@ -8,10 +8,10 @@ body, html {
 
 // theme variable
 :root {
-    --main-color: #4D8BFF;
-    --primary-color: #4D8BFF;
-    --primary-bg-color: #4D8BFF;
-    --primary-sub-color: #4D8BFF;
+    --main-color: #FFD56A;
+    --primary-color: #FFD56A;
+    --primary-bg-color: #FFF4D8;
+    --primary-sub-color: #FFF4D8;
 }
 
 .main-color {
@@ -24,7 +24,7 @@ body, html {
 .dv-gray-bg {
     min-height: 100vh;
     width: 100%;
-    background-color: #f5f5f5;
+    background-color: #fff !important;
 }
 .dv-margin-auto {
     margin: 0 auto;
@@ -36,8 +36,8 @@ body, html {
 }
 .dv-page-paddinng {
     width: 100%;
-    height: calc(100vh - 70px);
-    padding: 0 10px;
+    height: 100vh;
+    padding: 0px  20px 0 0;
     background-color: #fff;
     overflow: auto;
 }
@@ -45,14 +45,35 @@ body, html {
 // global modal
 
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 0px;
+    height: 0px;
 }
 ::-webkit-scrollbar-thumb {
     border-radius: 10px;
-    background: #bdbdbd;
+    background: transparent;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background-color: #999;
+    background-color: transparent;
+}
+:where(.css-dev-only-do-not-override-1xrk608) a{
+    color: var(--primary-color);
+}
+:where(.css-dev-only-do-not-override-1xrk608) a:hover{
+    color: #d9ae50;
+}
+:where(.css-dev-only-do-not-override-1xrk608).ant-modal .ant-modal-header{
+    margin-bottom: 20px;
+}
+.ant-menu-vertical .ant-menu-item{
+    margin-block: 10px;
+}
+:where(.css-dev-only-do-not-override-bvm3dk) a,:where(.css-dev-only-do-not-override-bvm3dk).ant-btn-link{
+    color: var(--main-color) ;
+}
+:where(.css-dev-only-do-not-override-bvm3dk).ant-btn-link:not(:disabled):hover{
+    color: var(--main-color) ;
+}
+:where(.css-dev-only-do-not-override-bvm3dk) a:not(:disabled):hover{
+    color: var(--main-color) ;
 }

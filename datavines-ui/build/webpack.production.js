@@ -1,5 +1,6 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
+const path = require('path');
 const { resolve } = require('./utils');
 
 module.exports = {
@@ -39,6 +40,7 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             template: resolve('./public/index-prod.html'),
+            favicon: resolve('./public/logo-light.png'),
         }),
     ],
 };

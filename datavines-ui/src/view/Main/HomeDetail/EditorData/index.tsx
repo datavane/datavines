@@ -9,9 +9,18 @@ import { useAddEditJobsModal } from '../Jobs/useAddEditJobsModal';
 const EditorData = () => {
     const intl = useIntl();
     const [visible, setVisible] = useState(true);
+    let action:any = null;
+    const afterClose = (cb?: () => void) => {
+        // console.log('关闭');
+        action = cb;
+        // eslint-disable-next-line no-unused-expressions
+        // cb && cb();
+    };
     const { Render: RenderJobsModal, show: showJobsModal } = useAddEditJobsModal({
         title: intl.formatMessage({ id: 'jobs_tabs_title' }),
-        afterClose() {
+        afterClose: () => {
+            // eslint-disable-next-line no-unused-expressions
+            action && action();
         },
     });
 
@@ -28,6 +37,7 @@ const EditorData = () => {
         },
     }), [workspaceId]);
     const onShowModal = usePersistFn((data: any) => {
+        // console.log('显示弹窗', params, data);
         showJobsModal({
             id: params.id,
             record: data,
@@ -43,8 +53,8 @@ const EditorData = () => {
         return <div>loading...</div>;
     }
     return (
-        <div style={{ height: 'calc(100vh - 70px)', background: '#fff' }}>
-            <DvEditor {...editorParams} onShowModal={onShowModal} locale={locale} id={params.id} />
+        <div style={{ height: 'calc(100vh - 74px)', background: '#fff' }}>
+            <DvEditor {...editorParams} onShowModal={onShowModal} afterClose={afterClose} locale={locale} id={params.id} />
             <RenderJobsModal />
         </div>
     );

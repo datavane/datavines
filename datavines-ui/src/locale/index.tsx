@@ -29,7 +29,7 @@ declare global {
     }
 }
 
-export const IntlWrap: React.FC<{}> = (props) => {
+export const IntlWrap: React.FC<{children:React.ReactNode}> = (props) => {
     const { locale } = useSelector((r) => r.commonReducer);
     const $locale = locale.split('_')[0] as TLocaleType;
     const chooseLocale = useCallback((val: TLocaleType) => {
@@ -48,7 +48,7 @@ export const IntlWrap: React.FC<{}> = (props) => {
             messages={chooseLocale($locale)}
         >
             <>
-                {props.children || ''}
+                { props.children || ''}
             </>
         </IntlProvider>
     );

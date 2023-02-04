@@ -9,12 +9,12 @@ module.exports = {
         isDevelopment && 'react-refresh/babel',
         isDevelopment && 'react-dev-inspector/plugins/babel',
         '@babel/plugin-syntax-dynamic-import',
-        // isDevelopment && [
-        //     'babel-plugin-import',
-        //     {
-        //         libraryName: 'antd',
-        //         style: true,
-        //     },
-        // ],
+        [
+            'babel-plugin-import',
+            {
+                libraryName: 'antd',
+                style: true,
+            },
+        ],
     ].filter(Boolean),
 };

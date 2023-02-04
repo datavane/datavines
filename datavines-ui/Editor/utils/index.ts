@@ -29,7 +29,6 @@ export const loadEditorMainModule = async (config: IMonacoConfig) => new Promise
                 resolve(monaco);
             },
             (error: Error) => {
-                console.log('33333', error);
                 reject(error);
             },
             () => {
@@ -37,7 +36,6 @@ export const loadEditorMainModule = async (config: IMonacoConfig) => new Promise
             },
         );
     } catch (error) {
-        console.log('3333333333', error);
         reject(error);
     }
 });

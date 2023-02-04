@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
     Table, Button, Popconfirm, Divider, message,
 } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
 import querystring from 'querystring';
@@ -115,7 +115,14 @@ const Index = () => {
         },
     ];
     return (
-        <div className="dv-page-paddinng">
+        <div
+            className="dv-page-paddinng"
+            style={
+                {
+                    padding: '20px 0px 20px 0px',
+                }
+            }
+        >
             <div className="dv-flex-between" style={{ textAlign: 'right', marginBottom: 10, paddingTop: 10 }}>
                 <span>
                     <GoBack />
@@ -135,6 +142,7 @@ const Index = () => {
                 columns={columns}
                 dataSource={tableData.list || []}
                 onChange={onChange}
+                bordered
                 pagination={{
                     size: 'small',
                     total: tableData.total,

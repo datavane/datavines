@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import {
     Table, Button, message, Form,
 } from 'antd';
-import { ColumnsType } from 'antd/es/table';
+import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
 import { useHistory, useRouteMatch } from 'react-router-dom';
+import { PlusOutlined } from '@ant-design/icons';
 import { TWarnSLATableItem } from '@/type/warning';
 import { useCreateSLAs } from './hooks/CreateSLAs';
 import { useMount, Popconfirm } from '@/common';
@@ -135,13 +136,14 @@ const Index = () => {
     ];
     return (
         <div>
-            <div style={{ paddingTop: '20px' }}>
+            <div style={{ paddingTop: '0px' }}>
                 <div className="dv-flex-between">
                     <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
                     <div style={{ textAlign: 'right', marginBottom: 10 }}>
                         <Button
                             type="primary"
                             onClick={() => { show(null); }}
+                            icon={<PlusOutlined />}
                         >
                             {intl.formatMessage({ id: 'warn_create_SLAs' })}
                         </Button>
@@ -156,6 +158,7 @@ const Index = () => {
                 columns={columns}
                 dataSource={tableData.list || []}
                 onChange={onChange}
+                bordered
                 pagination={{
                     size: 'small',
                     total: tableData.total,
