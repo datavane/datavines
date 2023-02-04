@@ -111,7 +111,7 @@ const Index = () => {
             <div>
                 <p className="dv-label-title">
                     {intl.formatMessage({ id: 'label_title' })}
-                    <Tooltip title={intl.formatMessage({ id: 'label_add_Classification' })}>
+                    <Tooltip title={intl.formatMessage({ id: 'label_add_category' })}>
                         <Button onClick={() => showModal('category')} className="fr" size="small" style={{ marginTop: '6px' }} shape="circle" icon={<PlusOutlined />} />
                     </Tooltip>
                 </p>
@@ -176,7 +176,7 @@ const Index = () => {
             </div>
             {/* 弹窗 */}
             <Modal
-                title={type === 'category' ? intl.formatMessage({ id: 'label_add_Classification' }) : intl.formatMessage({ id: 'label_add' })}
+                title={type === 'category' ? intl.formatMessage({ id: 'label_add_category' }) : intl.formatMessage({ id: 'label_add' })}
                 open={isModalOpen}
                 onOk={handleOk}
                 onCancel={handleCancel}

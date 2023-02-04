@@ -247,7 +247,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
             >
                 <Radio.Group>
                     <Radio value="cycle">{intl.formatMessage({ id: 'jobs_schedule_custom' })}</Radio>
-                    <Radio value="cron">{intl.formatMessage({ id: 'jobs_schedule_cronbtab' })}</Radio>
+                    <Radio value="cron">{intl.formatMessage({ id: 'jobs_schedule_crontab' })}</Radio>
                     <Radio value="offline">{intl.formatMessage({ id: 'jobs_schedule_offline' })}</Radio>
                 </Radio.Group>
             </Form.Item>

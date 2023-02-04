@@ -108,7 +108,7 @@ const Index = ({ uuid, type }:{uuid:string;type:string}) => {
                 </p>
                 <p className="profile-text">
                     <span>
-                        {intl.formatMessage({ id: 'job_Minmum' })}
+                        {intl.formatMessage({ id: 'job_Minimum' })}
                         :
                     </span>
                     <Tooltip title={data.minValue}><span>{data.minValue}</span></Tooltip>
@@ -176,7 +176,7 @@ const Index = ({ uuid, type }:{uuid:string;type:string}) => {
                                 </p>
                                 <p className="profile-text">
                                     <span>
-                                        {intl.formatMessage({ id: 'job_Varaiance' })}
+                                        {intl.formatMessage({ id: 'job_Variance' })}
                                         :
                                     </span>
                                     <Tooltip title={data.variance}><span>{data.variance}</span></Tooltip>

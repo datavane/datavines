@@ -41,7 +41,7 @@ export const dataBaseCol:Col[][] = [[{
     // }),
 },
 {
-    title: <FormattedMessage id="job_Last_Refrsh_time" />,
+    title: <FormattedMessage id="job_last_refresh_time" />,
     dataIndex: 'updateTime',
     key: 'updateTime',
 },

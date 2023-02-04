@@ -602,7 +602,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                 <Button
                                     onClick={() => onFieldClick()}
                                 >
-                                    {intl.formatMessage({ id: 'jobs_add_metirc' })}
+                                    {intl.formatMessage({ id: 'jobs_add_metric' })}
                                 </Button>
                             </IF>
                             <IF visible={currentIndex === 2}>
