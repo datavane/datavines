@@ -19,6 +19,7 @@ package io.datavines.engine.local.api;
 import io.datavines.common.config.enums.SinkType;
 import io.datavines.common.config.enums.SourceType;
 import io.datavines.common.config.enums.TransformType;
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.api.env.Execution;
 import io.datavines.engine.local.api.entity.ResultList;
 import org.apache.commons.collections4.CollectionUtils;
@@ -43,7 +44,7 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
     }
 
     @Override
-    public void execute(List<LocalSource> sources, List<LocalTransform> transforms, List<LocalSink> sinks) throws SQLException {
+    public void execute(List<LocalSource> sources, List<LocalTransform> transforms, List<LocalSink> sinks) throws Exception {
         if (CollectionUtils.isEmpty(sources)) {
             return;
         }
@@ -52,6 +53,9 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
             switch (SourceType.of(localSource.getConfig().getString(PLUGIN_TYPE))){
                 case NORMAL:
                     localRuntimeEnvironment.setSourceConnection(localSource.getConnectionItem(localRuntimeEnvironment));
+                    if (!localSource.checkTableExist()) {
+                        throw new DataVinesException("target table is not exist");
+                    }
                     break;
                 case METADATA:
                     localRuntimeEnvironment.setMetadataConnection(localSource.getConnectionItem(localRuntimeEnvironment));
@@ -84,7 +88,7 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
             }
         });
 
-        sinks.forEach(localSink -> {
+        for(LocalSink localSink : sinks) {
             switch (SinkType.of(localSink.getConfig().getString(PLUGIN_TYPE))){
                 case ERROR_DATA:
                     localSink.output(null, localRuntimeEnvironment);
@@ -101,7 +105,7 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
                 default:
                     break;
             }
-        });
+        }
 
         localRuntimeEnvironment.close();
     }

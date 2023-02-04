@@ -23,6 +23,9 @@ import java.util.Map;
 
 public enum SchemaChangeType {
 
+    /**
+     *
+     */
     DATABASE_ADDED(0, "DATABASE_ADDED"),
     DATABASE_DELETED(1, "DATABASE_DELETED"),
     TABLE_ADDED(2, "TABLE_ADDED"),

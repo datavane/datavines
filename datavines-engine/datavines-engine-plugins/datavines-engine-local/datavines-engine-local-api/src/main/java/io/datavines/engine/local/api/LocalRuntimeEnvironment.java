@@ -81,7 +81,7 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
         this.targetConnection = targetConnection;
     }
 
-    public void close() throws SQLException {
+    public void close() throws Exception {
         if(sourceConnection != null) {
             sourceConnection.close();
         }

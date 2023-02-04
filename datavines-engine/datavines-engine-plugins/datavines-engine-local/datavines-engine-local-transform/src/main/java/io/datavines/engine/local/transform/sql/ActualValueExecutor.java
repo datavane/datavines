@@ -17,8 +17,8 @@
 package io.datavines.engine.local.transform.sql;
 
 import io.datavines.common.config.Config;
-import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.engine.local.api.utils.SqlUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.sql.Connection;
@@ -34,7 +34,6 @@ public class ActualValueExecutor implements ITransformExecutor {
     @Override
     public ResultList execute(Connection connection, Config config) throws Exception {
 
-        String outputTable = config.getString(INVALIDATE_ITEMS_TABLE);
         String sql = config.getString(SQL);
 
         Statement statement = connection.createStatement();
@@ -55,11 +54,7 @@ public class ActualValueExecutor implements ITransformExecutor {
             newDataList.add(dataMap);
             resultList.setResultList(newDataList);
         }
-
-        if (StringUtils.isNotEmpty(outputTable) && !"null".equals(outputTable)) {
-            statement.execute("DROP VIEW " + outputTable);
-        }
-
+        
         statement.close();
         resultSet.close();
         return resultList;

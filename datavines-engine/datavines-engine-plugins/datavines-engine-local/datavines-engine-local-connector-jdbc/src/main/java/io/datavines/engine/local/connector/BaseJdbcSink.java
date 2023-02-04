@@ -23,21 +23,19 @@ import io.datavines.common.enums.DataType;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.TypeConverter;
+import io.datavines.connector.plugin.entity.StructField;
+import io.datavines.connector.plugin.utils.JdbcUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSink;
 import io.datavines.engine.local.api.entity.ConnectionItem;
 import io.datavines.engine.local.api.entity.ResultList;
-import io.datavines.engine.local.api.utils.FileUtils;
-import io.datavines.engine.local.api.utils.LoggerFactory;
+import io.datavines.engine.local.api.utils.SqlUtils;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
 
-
-import java.io.File;
 import java.math.BigDecimal;
 import java.sql.*;
 import java.util.*;
@@ -92,7 +90,7 @@ public abstract class BaseJdbcSink implements LocalSink {
     @Override
     public void output(List<ResultList> resultList, LocalRuntimeEnvironment env) {
 
-        if(env.getMetadataConnection() == null) {
+        if (env.getMetadataConnection() == null) {
             env.setMetadataConnection(getConnectionItem());
         }
 
@@ -101,7 +99,8 @@ public abstract class BaseJdbcSink implements LocalSink {
         try {
             switch (SinkType.of(config.getString(PLUGIN_TYPE))){
                 case ERROR_DATA:
-                    sinkErrorData();
+                    sinkErrorData(env);
+                    after(env, config);
                     break;
                 case VALIDATE_RESULT:
                     executeDataSink(env, "dv_job_execution_result", getExecutionResultTableSql(), inputParameter);
@@ -118,6 +117,8 @@ public abstract class BaseJdbcSink implements LocalSink {
         } catch (SQLException e){
             log.error("sink error : {}", e.getMessage());
         }
+
+        after(env, config);
     }
 
     private void executeDataSink(LocalRuntimeEnvironment env, String tableName, String createTableSql, Map<String,String> inputParameter) throws SQLException {
@@ -128,7 +129,11 @@ public abstract class BaseJdbcSink implements LocalSink {
         String sql = config.getString(SQL);
         sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
         log.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
-        executeInsert(sql, env);
+        if (StringUtils.isNotEmpty(sql) && !sql.contains("${")) {
+            executeInsert(sql, env);
+        } else {
+            log.error("output sql {} contains placeholder ${}", sql);
+        }
     }
 
     private void executeInsert(String sql, LocalRuntimeEnvironment env) throws SQLException {
@@ -137,14 +142,34 @@ public abstract class BaseJdbcSink implements LocalSink {
         statement.close();
     }
 
-    private boolean checkTableExist(LocalRuntimeEnvironment env, String tableName) throws SQLException{
+    private boolean checkTableExist(LocalRuntimeEnvironment env, String tableName) throws SQLException {
         //定义一个变量标示
         boolean flag = false ;
         //一个查询该表所有的语句。
         String sql = "SELECT COUNT(*) FROM "+ tableName ;
         Statement statement = null;
-        try{
+        try {
             statement =  env.getMetadataConnection().getConnection().createStatement();
+            statement.executeQuery(sql);
+            flag =  true;
+        } catch(Exception e) {
+            log.warn("table {} is not exist", tableName);
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+        }
+        return flag;
+    }
+
+    private boolean checkTableExist(Connection connection, String tableName, Dialect dialect) throws SQLException{
+        //定义一个变量标示
+        boolean flag = false ;
+        //一个查询该表所有的语句。
+        String sql = dialect.getTableExistsQuery(tableName);
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
             statement.executeQuery(sql);
             flag =  true;
         } catch(Exception e) {
@@ -173,124 +198,115 @@ public abstract class BaseJdbcSink implements LocalSink {
         return new ConnectionItem(config);
     }
 
-    protected abstract String buildCreateTableSql(String tableName, String header);
+    private void sinkErrorData(LocalRuntimeEnvironment env) throws SQLException {
+        String sourceTable = config.getString(INVALIDATE_ITEMS_TABLE);
+        Statement statement = env.getSourceConnection().getConnection().createStatement();
+        if (TRUE.equals(config.getString(INVALIDATE_ITEM_CAN_OUTPUT))) {
+            int count = 0;
+            //执行统计行数语句
+            ResultSet countResultSet = statement.executeQuery("SELECT COUNT(1) FROM " + sourceTable);
+            if (countResultSet.next()) {
+                count = countResultSet.getInt(1);
+            }
 
-    private String buildInsertSql(String tableName, String header) {
-        StringBuilder insertSql = new StringBuilder();
-        insertSql.append("INSERT INTO ").append(tableName).append(" (");
-        String[] headerList = header.split(S001);
-        List<String> columnList = new ArrayList<>();
-        List<String> placeholderList = new ArrayList<>();
-        for (String column: headerList) {
-            String[] columnSplit = column.split(DOUBLE_AT);
-            columnList.add(columnSplit[0]);
-            placeholderList.add("?");
-        }
-        insertSql.append(String.join(",", columnList));
-        insertSql.append(" )");
-        insertSql.append(" values(");
-        insertSql.append(String.join(",", placeholderList));
-        insertSql.append(" )");
-        return insertSql.toString();
-    }
-
-    private void sinkErrorData() throws SQLException {
-        String tableName = config.getString(ERROR_DATA_FILE_NAME);
-        String filePath = config.getString(ERROR_DATA_DIR) + "/" + tableName + ".csv";
-        log.info("log file path : {}", filePath);
-        File file = new File(filePath);
-        if (file.exists()) {
-            List<String> headerList = FileUtils.readPartFileContent(filePath,0,1);
-            if (CollectionUtils.isNotEmpty(headerList)) {
-                String header = headerList.get(0);
-                String[] headerTypeList = header.split(S001);
-                Map<Integer,String> typeMap = new HashMap<>();
-                for (int i=0; i<headerTypeList.length; i++) {
-                    String[] columnSplit = headerTypeList[i].split(DOUBLE_AT);
-                    typeMap.put(i,columnSplit[1]);
+            if (count > 0) {
+                String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
+                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
+                TypeConverter typeConverter = connectorFactory.getTypeConverter();
+                Dialect dialect = connectorFactory.getDialect();
+                String targetTableName = config.getString(ERROR_DATA_FILE_NAME);
+                List<StructField> columns = getTableSchema(statement, config, typeConverter);
+                if (!checkTableExist(getConnectionItem().getConnection(), targetTableName, dialect)) {
+                    createTable(typeConverter, dialect, targetTableName, columns);
                 }
-                String createTableSql = buildCreateTableSql(tableName, header);
+                //根据行数进行分页查询。分批写到文件里面
+                int pageSize = 1000;
+                int totalPage = count/pageSize + count%pageSize>0 ? 1:0;
+
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM " + sourceTable);
                 Connection connection = getConnectionItem().getConnection();
-                connection.createStatement().execute(createTableSql);
-                PreparedStatement statement = connection.prepareStatement(buildInsertSql(tableName, header));
-                int skipLine = 1;
-                int limit = 1000;
-                List<String> rowList = null;
-                while(CollectionUtils.isNotEmpty(rowList = FileUtils.readPartFileContent(filePath,skipLine,limit))) {
-                    for (String row: rowList) {
-                        String[] rowDataList = row.split(S001);
-                        for (int i=0; i<rowDataList.length; i++) {
-                            String rowContent = "null".equalsIgnoreCase(rowDataList[i]) ? null : rowDataList[i];
-                            try{
-                                switch (DataType.valueOf(typeMap.get(i))) {
+                PreparedStatement preparedStatement = connection.prepareStatement(JdbcUtils.getInsertStatement(targetTableName, columns, dialect));
+                for (int i=0; i<totalPage; i++) {
+                    int start = i * pageSize;
+                    int end = (i+1) * pageSize;
+
+                    ResultList resultList = SqlUtils.getPageFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins("select * from " + sourceTable), start, end);
+                    for (Map<String, Object> row: resultList.getResultList()) {
+                        for (int j=0 ;j<columns.size();j++) {
+                            StructField field = columns.get(j);
+                            String value = String.valueOf(row.get(field.getName()));
+                            String rowContent = "null".equalsIgnoreCase(value) ? null : value;
+                            DataType dataType = field.getDataType();
+                            try {
+                                switch (dataType) {
                                     case NULL_TYPE:
-                                        statement.setNull(i+1, 0);
+                                        preparedStatement.setNull(i+1, 0);
                                         break;
                                     case BOOLEAN_TYPE:
-                                        statement.setBoolean(i+1, Boolean.parseBoolean(rowContent));
+                                        preparedStatement.setBoolean(i+1, Boolean.parseBoolean(rowContent));
                                         break;
                                     case BYTE_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setByte(i+1, Byte.parseByte(rowContent));
+                                            preparedStatement.setByte(i+1, Byte.parseByte(rowContent));
                                         } else {
-                                            statement.setByte(i+1,Byte.parseByte(""));
+                                            preparedStatement.setByte(i+1,Byte.parseByte(""));
                                         }
                                         break;
                                     case SHORT_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setShort(i+1, Short.parseShort(rowContent));
+                                            preparedStatement.setShort(i+1, Short.parseShort(rowContent));
                                         } else {
-                                            statement.setShort(i+1, Short.parseShort("0"));
+                                            preparedStatement.setShort(i+1, Short.parseShort("0"));
                                         }
                                         break;
                                     case INT_TYPE :
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setInt(i+1, Integer.parseInt(rowContent));
+                                            preparedStatement.setInt(i+1, Integer.parseInt(rowContent));
                                         } else {
-                                            statement.setInt(i+1, 0);
+                                            preparedStatement.setInt(i+1, 0);
                                         }
                                         break;
                                     case LONG_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setLong(i+1, Long.parseLong(rowContent));
+                                            preparedStatement.setLong(i+1, Long.parseLong(rowContent));
                                         } else {
-                                            statement.setLong(i+1, 0);
+                                            preparedStatement.setLong(i+1, 0);
                                         }
                                         break;
                                     case FLOAT_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setLong(i+1, Long.parseLong(rowContent));
+                                            preparedStatement.setLong(i+1, Long.parseLong(rowContent));
                                         } else {
-                                            statement.setLong(i+1, 0);
+                                            preparedStatement.setLong(i+1, 0);
                                         }
                                         break;
                                     case DOUBLE_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setDouble(i+1, Double.parseDouble(rowContent));
+                                            preparedStatement.setDouble(i+1, Double.parseDouble(rowContent));
                                         } else {
-                                            statement.setDouble(i+1, 0);
+                                            preparedStatement.setDouble(i+1, 0);
                                         }
                                         break;
                                     case TIME_TYPE:
                                     case DATE_TYPE:
                                     case TIMESTAMP_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setString(i+1,rowContent);
+                                            preparedStatement.setString(i+1,rowContent);
                                         } else {
-                                            statement.setString(i+1,null);
+                                            preparedStatement.setString(i+1,null);
                                         }
                                         break;
                                     case STRING_TYPE :
-                                        statement.setString(i+1, rowContent);
+                                        preparedStatement.setString(i+1, rowContent);
                                         break;
                                     case BYTES_TYPE:
-                                        statement.setBytes(i+1, String.valueOf(rowContent).getBytes());
+                                        preparedStatement.setBytes(i+1, String.valueOf(rowContent).getBytes());
                                         break;
                                     case BIG_DECIMAL_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            statement.setBigDecimal(i+1, new BigDecimal(rowContent));
+                                            preparedStatement.setBigDecimal(i+1, new BigDecimal(rowContent));
                                         } else {
-                                            statement.setBigDecimal(i+1, null);
+                                            preparedStatement.setBigDecimal(i+1, null);
                                         }
                                         break;
                                     case OBJECT:
@@ -301,24 +317,29 @@ public abstract class BaseJdbcSink implements LocalSink {
                             } catch (SQLException exception) {
                                 log.error("transform data type error", exception);
                             }
-                        }
 
-                        try {
-                            statement.addBatch();
-                        } catch (SQLException e) {
-                            log.error("insert data error", e);
+                            try {
+                                preparedStatement.addBatch();
+                            } catch (SQLException e) {
+                                log.error("insert data error", e);
+                            }
                         }
                     }
-
-                    skipLine += limit;
+                    preparedStatement.executeBatch();
+                    preparedStatement.close();
                 }
 
-                statement.executeBatch();
-                statement.close();
                 connection.close();
+                resultSet.close();
             }
-
-            file.delete();
         }
+    }
+
+    private void createTable(TypeConverter typeConverter, Dialect dialect, String targetTableName, List<StructField> columns) throws SQLException {
+        String createTableSql =
+                JdbcUtils.getCreateTableStatement(targetTableName, columns, dialect, typeConverter);
+        Statement statement = getConnectionItem().getConnection().createStatement();
+        statement.execute(createTableSql);
+        statement.close();
     }
 }

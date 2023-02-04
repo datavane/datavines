@@ -78,10 +78,12 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
 
                     if (storageFactory != null) {
                         connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
-                        errorDataSinkConfig.setPlugin(storageFactory.getCategory());
+                        errorDataSinkConfig.setPlugin(jobExecutionInfo.getErrorDataStorageType());
                         connectorParameterMap.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
                         connectorParameterMap.put(ERROR_DATA_DIR, metricInputParameter.get(ERROR_DATA_DIR));
                         connectorParameterMap.put(METRIC_NAME, metricInputParameter.get(METRIC_NAME));
+                        connectorParameterMap.put(INVALIDATE_ITEMS_TABLE, metricInputParameter.get(INVALIDATE_ITEMS_TABLE));
+                        connectorParameterMap.put(INVALIDATE_ITEM_CAN_OUTPUT, metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
                         // use to get source type converter in sink
                         connectorParameterMap.put(SRC_CONNECTOR_TYPE, metricInputParameter.get(SRC_CONNECTOR_TYPE));
                         connectorParameterMap.put(JOB_EXECUTION_ID, metricInputParameter.get(JOB_EXECUTION_ID));

@@ -72,7 +72,6 @@ public enum Status {
     JOB_NOT_EXIST_ERROR(14010003, "Job {0} Not Exist Error", "作业 {0} 不存在错误"),
     JOB_EXIST_ERROR(14010004, "Job {0} is Exist error", "作业 {0} 已存在错误"),
     UPDATE_JOB_ERROR(14010005, "Update Job {0} Error", "更新作业 {0} 错误"),
-
     JOB_SCHEDULE_EXIST_ERROR(14020001, "Job Schedule is Exist error, id must be not null", "作业定时任务已存在,ID 不能为空"),
     CREATE_JOB_SCHEDULE_ERROR(14020002, "Create Job Schedule {0} Error", "创建作业定时任务 {0} 错误"),
     JOB_SCHEDULE_NOT_EXIST_ERROR(14020003, "Job Schedule {0} is not Exist error", "作业定时任务 {0} 不存在错误"),
@@ -82,6 +81,7 @@ public enum Status {
     SCHEDULE_TYPE_NOT_VALIDATE_ERROR(14020007, "Schedule type {0} is not Validate Error", "定时器类型参数 {0} 错误"),
     SCHEDULE_CYCLE_NOT_VALIDATE_ERROR(14020008, "Schedule Param Cycle {0} is not Validate Error", "定时器周期参数 {0} 错误"),
     SCHEDULE_CRON_IS_INVALID_ERROR(14020008, "Schedule cron {0} is not Validate Error", "定时器 Crontab 表达式 {0} 错误"),
+
     CREATE_TENANT_ERROR(15010001, "Create Tenant {0} Error", "创建 Linux 用户 {0} 错误"),
     TENANT_NOT_EXIST_ERROR(15010002, "Tenant {0} Not Exist Error", "Linux 用户 {0} 不存在错误"),
     TENANT_EXIST_ERROR(15010003, "Tenant {0} is Exist error", "Linux 用户 {0} 已存在错误"),

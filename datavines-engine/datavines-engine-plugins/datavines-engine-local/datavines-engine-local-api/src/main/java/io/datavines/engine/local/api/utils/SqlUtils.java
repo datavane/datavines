@@ -14,12 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.local.transform.sql;
+package io.datavines.engine.local.api.utils;
 
 import io.datavines.engine.local.api.entity.QueryColumn;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.entity.ResultListWithColumns;
-import io.datavines.engine.local.api.utils.LoggerFactory;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -64,8 +63,6 @@ public class SqlUtils {
         }
 
         resultListWithColumns.setResultList(resultList);
-
-        rs.close();
         return resultListWithColumns;
     }
 
@@ -81,6 +78,19 @@ public class SqlUtils {
             queryColumns.add(new QueryColumn(key, metaData.getColumnTypeName(i),""));
         }
         resultListWithColumns.setColumns(queryColumns);
+        resultListWithColumns.setResultList(getPage(rs, queryFromsAndJoins, start, end, metaData));
+        return resultListWithColumns;
+    }
+
+    public static ResultList getPageFromResultSet(ResultSet rs, Set<String> queryFromsAndJoins, int start, int end) throws SQLException {
+
+        ResultList result = new ResultList();
+        ResultSetMetaData metaData = rs.getMetaData();
+        result.setResultList(getPage(rs, queryFromsAndJoins, start, end, metaData));
+        return result;
+    }
+
+    private static List<Map<String, Object>> getPage(ResultSet rs, Set<String> queryFromsAndJoins, int start, int end, ResultSetMetaData metaData) {
 
         List<Map<String, Object>> resultList = new ArrayList<>();
 
@@ -96,18 +106,15 @@ public class SqlUtils {
                         break;
                     }
                     current++;
+                } else {
+                    break;
                 }
-
-                current++ ;
             }
         } catch (Throwable e) {
             logger.error("get result set error: {0}", e);
         }
 
-        resultListWithColumns.setResultList(resultList);
-
-        rs.close();
-        return resultListWithColumns;
+        return resultList;
     }
 
     public static ResultList getListFromResultSet(ResultSet rs, Set<String> queryFromsAndJoins) throws SQLException {
@@ -126,8 +133,6 @@ public class SqlUtils {
         }
 
         result.setResultList(resultList);
-
-        rs.close();
         return result;
     }
 

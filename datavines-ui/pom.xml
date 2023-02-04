@@ -32,66 +32,66 @@
     <name>${project.artifactId}</name>
 
     <properties>
-        <node.version>v17.9.0</node.version>
-        <npm.version>8.6.0</npm.version>
+        <node.version>v18.0.0</node.version>
+        <npm.version>9.4.1</npm.version>
         <sonar.sources>src</sonar.sources>
         <frontend-maven-plugin.version>1.12.1</frontend-maven-plugin.version>
     </properties>
 
-    <!--<profiles>-->
-        <!--<profile>-->
-            <!--<id>release</id>-->
-            <!--<build>-->
-                <!--<plugins>-->
-                    <!--<plugin>-->
-                        <!--<groupId>com.github.eirslett</groupId>-->
-                        <!--<artifactId>frontend-maven-plugin</artifactId>-->
-                        <!--<version>${frontend-maven-plugin.version}</version>-->
-                        <!--<executions>-->
-                            <!--<execution>-->
-                                <!--<id>install node and npm</id>-->
-                                <!--<goals>-->
-                                    <!--<goal>install-node-and-npm</goal>-->
-                                <!--</goals>-->
-                                <!--<configuration>-->
-                                    <!--<nodeVersion>${node.version}</nodeVersion>-->
-                                    <!--<npmVersion>${npm.version}</npmVersion>-->
-                                <!--</configuration>-->
-                            <!--</execution>-->
-                            <!--<execution>-->
-                                <!--<id>npm install</id>-->
-                                <!--<goals>-->
-                                    <!--<goal>npm</goal>-->
-                                <!--</goals>-->
-                                <!--<phase>generate-resources</phase>-->
-                                <!--<configuration>-->
-                                    <!--<arguments>install</arguments>-->
-                                <!--</configuration>-->
-                            <!--</execution>-->
-                            <!--<execution>-->
-                                <!--<id>npm fund</id>-->
-                                <!--<goals>-->
-                                    <!--<goal>npm</goal>-->
-                                <!--</goals>-->
-                                <!--<phase>generate-resources</phase>-->
-                                <!--<configuration>-->
-                                    <!--<arguments>fund</arguments>-->
-                                <!--</configuration>-->
-                            <!--</execution>-->
-                            <!--<execution>-->
-                                <!--<id>npm run build:prod</id>-->
-                                <!--<goals>-->
-                                    <!--<goal>npm</goal>-->
-                                <!--</goals>-->
-                                <!--<configuration>-->
-                                    <!--<arguments>run build:prod</arguments>-->
-                                <!--</configuration>-->
-                            <!--</execution>-->
-                        <!--</executions>-->
-                    <!--</plugin>-->
-                <!--</plugins>-->
-            <!--</build>-->
-        <!--</profile>-->
-    <!--</profiles>-->
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>${frontend-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <configuration>
+                                    <nodeVersion>${node.version}</nodeVersion>
+                                    <npmVersion>${npm.version}</npmVersion>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <arguments>install</arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm fund</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <phase>generate-resources</phase>
+                                <configuration>
+                                    <arguments>fund</arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>npm run build:prod</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <arguments>run build:prod</arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

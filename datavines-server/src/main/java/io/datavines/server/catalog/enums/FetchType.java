@@ -22,7 +22,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum FetchType {
-    
+
+    /**
+     * 0 - datasource
+     * 1 - database
+     * 2 - table
+     */
     DATASOURCE(0, "datasource"),
     DATABASE(1, "database"),
     TABLE(2, "table")

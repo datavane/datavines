@@ -128,4 +128,9 @@ public class LocalFileSource implements LocalSource {
         log.info("create table sql : " + sb.toString());
         return sb.toString();
     }
+
+    @Override
+    public boolean checkTableExist() {
+        return true;
+    }
 }

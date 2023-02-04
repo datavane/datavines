@@ -16,40 +16,10 @@
  */
 package io.datavines.engine.local.connector;
 
-import io.datavines.common.enums.DataType;
-import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.connector.api.TypeConverter;
-import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static io.datavines.engine.api.ConfigConstants.DOUBLE_AT;
-import static io.datavines.engine.api.ConfigConstants.S001;
-import static io.datavines.engine.api.ConfigConstants.SRC_CONNECTOR_TYPE;
 
 @Slf4j
 public class MySQLSink extends BaseJdbcSink {
-
-    @Override
-    protected String buildCreateTableSql(String tableName, String header) {
-        TypeConverter typeConverter = PluginLoader.getPluginLoader(ConnectorFactory.class)
-                .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE))
-                .getTypeConverter();
-        StringBuilder createTableSql = new StringBuilder();
-        createTableSql.append("CREATE TABLE ").append(tableName).append(" (");
-        String[] headerList = header.split(S001);
-        List<String> columnList = new ArrayList<>();
-        for (String column: headerList) {
-            String[] columnSplit = column.split(DOUBLE_AT);
-            columnList.add(columnSplit[0]+" "+typeConverter.convertToOriginType(DataType.valueOf(columnSplit[1]))+" NULL");
-        }
-        createTableSql.append(String.join(",", columnList));
-        createTableSql.append(" )");
-        log.info("create error data table sql : {}", createTableSql.toString());
-        return createTableSql.toString();
-    }
 
     @Override
     protected String getExecutionResultTableSql() {
