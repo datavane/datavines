@@ -2,7 +2,7 @@
 
 const targetMap = {
     test: '',
-    prod: 'http://116.205.229.143:5600/',
+    prod: 'http://127.0.0.1:5600/',
 }
 
 const getProxy = (target, host) => {
