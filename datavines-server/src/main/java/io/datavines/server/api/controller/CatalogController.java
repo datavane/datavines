@@ -22,22 +22,22 @@ import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
 import io.datavines.server.api.dto.bo.catalog.OptionItem;
-
+import io.datavines.server.api.dto.bo.catalog.profile.RunProfileRequest;
 import io.datavines.server.api.dto.bo.issue.IssueUpdate;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
-import io.datavines.server.api.dto.vo.*;
-
+import io.datavines.server.api.dto.vo.DataTime2ValueItem;
+import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
 import io.datavines.server.api.dto.vo.catalog.CatalogColumnDetailVO;
 import io.datavines.server.api.dto.vo.catalog.CatalogDatabaseDetailVO;
 import io.datavines.server.api.dto.vo.catalog.CatalogEntityMetricParameter;
 import io.datavines.server.api.dto.vo.catalog.CatalogTableDetailVO;
 import io.datavines.server.repository.entity.catalog.CatalogSchemaChange;
 import io.datavines.server.repository.service.*;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -75,7 +75,16 @@ public class CatalogController {
     @ApiOperation(value = "execute data profile job", response = Long.class)
     @PostMapping(value = "/profile/execute")
     public Object executeDataProfileJob(@RequestParam String uuid) {
-        return catalogEntityInstanceService.executeDataProfileJob(uuid);
+        RunProfileRequest runProfileRequest = new RunProfileRequest();
+        runProfileRequest.setUuid(uuid);
+        runProfileRequest.setSelectAll(true);
+        return catalogEntityInstanceService.executeDataProfileJob(runProfileRequest);
+    }
+
+    @ApiOperation(value = "execute data profile job", response = Long.class)
+    @PostMapping(value = "/profile/execute-select-columns")
+    public Object executeDataProfileJobWithColumns(@Validated @RequestBody RunProfileRequest runProfileRequest) {
+        return catalogEntityInstanceService.executeDataProfileJob(runProfileRequest);
     }
 
     @ApiOperation(value = "get database list", response = OptionItem.class, responseContainer = "list")

@@ -25,14 +25,17 @@ import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.EntityRelType;
 import io.datavines.common.enums.JobType;
-import io.datavines.common.utils.*;
+import io.datavines.common.utils.DateUtils;
+import io.datavines.common.utils.JSONUtils;
+import io.datavines.common.utils.StringUtils;
+import io.datavines.core.enums.Status;
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.catalog.OptionItem;
-import io.datavines.server.api.dto.bo.job.JobCreate;
+import io.datavines.server.api.dto.bo.catalog.profile.RunProfileRequest;
+import io.datavines.server.api.dto.bo.job.DataProfileJobCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
-import io.datavines.server.api.dto.bo.job.JobUpdate;
 import io.datavines.server.api.dto.vo.DataTime2ValueItem;
 import io.datavines.server.api.dto.vo.catalog.*;
-import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.catalog.*;
 import io.datavines.server.repository.mapper.CatalogEntityInstanceMapper;
 import io.datavines.server.repository.mapper.CatalogEntityMetricJobRelMapper;
@@ -44,7 +47,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.xml.crypto.Data;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -715,12 +717,13 @@ public class CatalogEntityInstanceServiceImpl
     }
 
     @Override
-    public long executeDataProfileJob(String uuid) {
-        return executeDataProfileJob(uuid, 1);
+    public long executeDataProfileJob(RunProfileRequest runProfileRequest) {
+        return executeDataProfileJob(runProfileRequest, 1);
     }
 
     @Override
-    public long executeDataProfileJob(String uuid, int runningNow) {
+    public long executeDataProfileJob(RunProfileRequest runProfileRequest, int runningNow) {
+        String uuid = runProfileRequest.getUuid();
         CatalogEntityInstance entityInstance = getCatalogEntityInstance(uuid);
         if (entityInstance == null) {
             return -1L;
@@ -741,20 +744,38 @@ public class CatalogEntityInstanceServiceImpl
         baseJobParameter.setMetricType("table_row_count");
         Map<String,Object> metricParameter = new HashMap<>();
         String fqn = entityInstance.getFullyQualifiedName();
+        String schemaName;
+        String tableName;
         if (StringUtils.isNotEmpty(fqn)) {
             String[] values = fqn.split("\\.");
             if (values.length == 2) {
-                metricParameter.put("database", values[0]);
-                metricParameter.put("table", values[1]);
+                schemaName = values[0];
+                tableName = values[1];
+                metricParameter.put("database", schemaName);
+                metricParameter.put("table", tableName);
                 metricParameter.put("entity_uuid", entityInstance.getUuid());
                 metricParameter.put("actual_value_type", "count");
                 baseJobParameter.setMetricParameter(metricParameter);
                 baseJobParameter.setExpectedType("fix_value");
                 jobParameters.add(baseJobParameter);
+            } else {
+                throw new DataVinesServerException(Status.CATALOG_PROFILE_INSTANCE_FQN_ERROR, fqn);
             }
+        } else {
+            throw new DataVinesServerException(Status.CATALOG_PROFILE_INSTANCE_FQN_ERROR, fqn);
         }
 
+        List<String> columns = new ArrayList<>();
         for (CatalogEntityInstance catalogEntityInstance : columnInstanceList) {
+
+            String columnName = catalogEntityInstance.getDisplayName();
+            if (!runProfileRequest.isSelectAll()) {
+                if (!runProfileRequest.getSelectedColumnList().contains(columnName)) {
+                    continue;
+                }
+            }
+            columns.add(columnName);
+
             String properties = catalogEntityInstance.getProperties();
             if (StringUtils.isEmpty(properties)) {
                 continue;
@@ -793,26 +814,15 @@ public class CatalogEntityInstanceServiceImpl
             }
         }
 
-        String jobName = jobService.getJobName(JobType.DATA_PROFILE.getDescription(), JSONUtils.toJsonString(jobParameters));
-        Job job = jobService.getOne(new QueryWrapper<Job>().eq("name", jobName));
-
-        long jobId = -1L;
-        if (job == null) {
-            JobCreate jobCreate = new JobCreate();
-            jobCreate.setType(JobType.DATA_PROFILE.getDescription());
-            jobCreate.setDataSourceId(entityInstance.getDatasourceId());
-            jobCreate.setParameter(JSONUtils.toJsonString(jobParameters));
-            jobCreate.setRunningNow(runningNow);
-            jobId = jobService.create(jobCreate);
-        } else {
-            JobUpdate jobUpdate = new JobUpdate();
-            jobUpdate.setId(job.getId());
-            jobUpdate.setType(JobType.DATA_PROFILE.getDescription());
-            jobUpdate.setDataSourceId(entityInstance.getDatasourceId());
-            jobUpdate.setParameter(JSONUtils.toJsonString(jobParameters));
-            jobUpdate.setRunningNow(runningNow);
-            jobId = jobService.update(jobUpdate);
-        }
+        DataProfileJobCreateOrUpdate createOrUpdate = new DataProfileJobCreateOrUpdate();
+        createOrUpdate.setType(JobType.DATA_PROFILE.getDescription());
+        createOrUpdate.setDataSourceId(entityInstance.getDatasourceId());
+        createOrUpdate.setParameter(JSONUtils.toJsonString(jobParameters));
+        createOrUpdate.setSchemaName(schemaName);
+        createOrUpdate.setTableName(tableName);
+        createOrUpdate.setSelectedColumn(String.join(",", columns));
+        createOrUpdate.setRunningNow(runningNow);
+        long jobId = jobService.createOrUpdateDataProfileJob(createOrUpdate);
 
         if (jobId != -1L) {
             List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelMapper.selectList(new QueryWrapper<CatalogEntityMetricJobRel>()

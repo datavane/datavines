@@ -16,11 +16,12 @@
  */
 package io.datavines.server.catalog;
 
-import io.datavines.server.catalog.task.*;
+import io.datavines.server.catalog.task.CatalogMetaDataFetchTaskImpl;
+import io.datavines.server.catalog.task.CatalogTaskContext;
+import io.datavines.server.catalog.task.CatalogTaskResponse;
+import io.datavines.server.catalog.task.CatalogTaskResponseQueue;
 import io.datavines.server.utils.SpringApplicationContext;
 import lombok.extern.slf4j.Slf4j;
-
-import java.sql.SQLException;
 
 @Slf4j
 public class CatalogTaskRunner implements Runnable {
@@ -41,7 +42,7 @@ public class CatalogTaskRunner implements Runnable {
             fetchTask.execute();
             log.info("fetch metadata finished");
             responseQueue.add(new CatalogTaskResponse(taskContext.getCatalogTaskId(), 1));
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error("fetch metadata error: ", e);
             responseQueue.add(new CatalogTaskResponse(taskContext.getCatalogTaskId(), 2));
         }

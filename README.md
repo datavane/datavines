@@ -14,7 +14,7 @@ Data quality is used to ensure the accuracy of data in the process of integratio
 
 Need: Maven 3.6.1 and later
 ```sh
-$ mvn clean package -Prelease
+$ mvn clean package -Prelease -DskipTests
 ```
 ## Features of DataVines
 
@@ -33,7 +33,7 @@ $ mvn clean package -Prelease
 
 ## Environmental dependency
 
-1. java runtime environment, java >= 8
+1. java runtime environment: jdk8
 2. If the data volume is small, or the goal is merely for functional verification, you can use JDBC engine
 3. If you want to run DataVines based on Spark, you need to ensure that your server has spark installed
 ## Quick start

@@ -13,7 +13,7 @@
 
 使用`Maven3.6.1`以及以上版本
 ```sh
-$ mvn clean package -Prelease
+$ mvn clean package -Prelease -DskipTests
 ```
 ## DataVines 的特性
 
@@ -31,7 +31,7 @@ $ mvn clean package -Prelease
 
 ## 环境依赖
 
-1. `Java` 运行环境，`Java >= 8`
+1. `Java` 运行环境:`Jdk8`
 2. `DataVines` 支持 `JDBC` 引擎，如果你的数据量较小或者只是想做功能验证，可以使用 `JDBC` 引擎
 3. 如果您要想要基于 `Spark` 来运行 `DataVines` ，那么需要保证你的服务器具有运行 `Spark` 应用程序的条件
 
