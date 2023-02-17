@@ -55,6 +55,9 @@ public class Job implements Serializable {
     @TableField(value = "column_name")
     private String columnName;
 
+    @TableField(value = "selected_column")
+    private String selectedColumn;
+
     @TableField(value = "metric_type")
     private String metricType;
 

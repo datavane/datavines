@@ -309,8 +309,8 @@ CREATE TABLE `dv_catalog_schema_change` (
   `database_name` varchar(64) DEFAULT NULL COMMENT '数据库',
   `table_name` varchar(64) DEFAULT NULL COMMENT '表',
   `column_name` varchar(64) DEFAULT NULL COMMENT '列',
-  `change_before` text NOT NULL COMMENT '变更前',
-  `change_after` text NOT NULL COMMENT '变更后',
+  `change_before` text DEFAULT NULL COMMENT '变更前',
+  `change_after` text DEFAULT NULL COMMENT '变更后',
   `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
@@ -485,6 +485,7 @@ CREATE TABLE `dv_job` (
   `schema_name` varchar(128) DEFAULT NULL COMMENT '数据库名',
   `table_name` varchar(128) DEFAULT NULL COMMENT '表名',
   `column_name` varchar(128) DEFAULT NULL COMMENT '列名',
+  `selected_column` text DEFAULT NULL COMMENT 'DataProfile 选中的列',
   `metric_type` varchar(255) DEFAULT NULL COMMENT '规则类型',
   `execute_platform_type` varchar(128) DEFAULT NULL COMMENT '运行平台类型',
   `execute_platform_parameter` text COMMENT '运行平台参数',

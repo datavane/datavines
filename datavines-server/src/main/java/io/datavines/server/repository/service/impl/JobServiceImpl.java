@@ -17,50 +17,37 @@
 
 package io.datavines.server.repository.service.impl;
 
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.entity.job.builder.JobExecutionParameterBuilderFactory;
+import io.datavines.common.enums.ExecutionStatus;
+import io.datavines.common.enums.JobType;
 import io.datavines.common.utils.CommonPropertyUtils;
+import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.metric.api.ResultFormula;
+import io.datavines.server.api.dto.bo.job.DataProfileJobCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.JobCreate;
-import io.datavines.common.enums.ExecutionStatus;
-import io.datavines.common.utils.JSONUtils;
 import io.datavines.server.api.dto.bo.job.JobUpdate;
 import io.datavines.server.api.dto.vo.JobVO;
 import io.datavines.server.api.dto.vo.SlaVO;
-import io.datavines.server.repository.entity.Command;
-import io.datavines.server.repository.entity.DataSource;
-import io.datavines.server.repository.entity.JobExecution;
-import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
-import io.datavines.server.repository.mapper.CommandMapper;
-import io.datavines.server.repository.mapper.JobExecutionMapper;
-import io.datavines.server.repository.service.DataSourceService;
-import io.datavines.server.repository.service.JobService;
-import io.datavines.server.repository.entity.Job;
-import io.datavines.server.repository.service.JobExecutionService;
 import io.datavines.server.enums.CommandType;
-import io.datavines.common.enums.JobType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.repository.entity.*;
+import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 import io.datavines.server.repository.mapper.*;
+import io.datavines.server.repository.service.DataSourceService;
+import io.datavines.server.repository.service.JobExecutionService;
+import io.datavines.server.repository.service.JobService;
 import io.datavines.server.utils.ContextHolder;
-
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
@@ -68,9 +55,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.datavines.engine.api.ConfigConstants.COLUMN_SEPARATOR;
-import static io.datavines.engine.api.ConfigConstants.DATA_DIR;
-import static io.datavines.engine.api.ConfigConstants.LINE_SEPERATOR;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import static io.datavines.engine.api.ConfigConstants.*;
 
 @Slf4j
 @Service("jobService")
@@ -105,7 +95,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public long create(JobCreate jobCreate) throws DataVinesServerException{
+    public long create(JobCreate jobCreate) throws DataVinesServerException {
 
         // 需要对参数进行校验，判断插件类型是否存在
         String parameter = jobCreate.getParameter();
@@ -153,7 +143,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     @Override
     public long update(JobUpdate jobUpdate) {
         Job job = getById(jobUpdate.getId());
-        if ( job == null) {
+        if (job == null) {
             throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobUpdate.getId());
         }
 
@@ -169,7 +159,53 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             throw new DataVinesServerException(Status.UPDATE_JOB_ERROR, job.getName());
         }
 
-        if(jobUpdate.getRunningNow() == 1) {
+        if (jobUpdate.getRunningNow() == 1) {
+            executeJob(job, null);
+        }
+
+        return job.getId();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public long createOrUpdateDataProfileJob(DataProfileJobCreateOrUpdate dataProfileJobCreateOrUpdate) throws DataVinesServerException {
+        // 需要对参数进行校验，判断插件类型是否存在
+        String parameter = dataProfileJobCreateOrUpdate.getParameter();
+        if (StringUtils.isEmpty(parameter)) {
+            throw new DataVinesServerException(Status.JOB_PARAMETER_IS_NULL_ERROR);
+        }
+
+        Job job = new Job();
+        BeanUtils.copyProperties(dataProfileJobCreateOrUpdate, job);
+        job.setName(String.format("%s(%s.%s)", "DATA_PROFILE", job.getSchemaName(), job.getTableName()));
+
+        List<Job> list = baseMapper.selectList(new QueryWrapper<Job>()
+                .eq("name",job.getName())
+                .eq("datasource_id",job.getDataSourceId())
+        );
+
+        if (CollectionUtils.isNotEmpty(list)) {
+            job.setId(list.get(0).getId());
+            job.setUpdateBy(ContextHolder.getUserId());
+            job.setUpdateTime(LocalDateTime.now());
+
+            if (baseMapper.updateById(job) <= 0) {
+                log.info("update data profile job fail : {}", dataProfileJobCreateOrUpdate);
+                throw new DataVinesServerException(Status.UPDATE_JOB_ERROR, job.getName());
+            }
+        } else {
+            job.setType(JobType.of(dataProfileJobCreateOrUpdate.getType()));
+            job.setCreateBy(ContextHolder.getUserId());
+            job.setCreateTime(LocalDateTime.now());
+            job.setUpdateBy(ContextHolder.getUserId());
+            job.setUpdateTime(LocalDateTime.now());
+            if (baseMapper.insert(job) <= 0) {
+                log.info("create data profile job fail : {}", dataProfileJobCreateOrUpdate);
+                throw new DataVinesServerException(Status.CREATE_JOB_ERROR, job.getName());
+            }
+        }
+        // whether running now
+        if (dataProfileJobCreateOrUpdate.getRunningNow() == 1) {
             executeJob(job, null);
         }
 

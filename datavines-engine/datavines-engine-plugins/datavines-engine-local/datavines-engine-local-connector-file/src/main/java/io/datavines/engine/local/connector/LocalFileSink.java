@@ -70,8 +70,6 @@ public class LocalFileSink implements LocalSink {
             default:
                 break;
         }
-
-
     }
 
     @Override
