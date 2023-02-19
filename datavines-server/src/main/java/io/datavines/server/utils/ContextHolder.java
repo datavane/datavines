@@ -26,7 +26,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ContextHolder {
 
-    private static final ThreadLocal<Map<String, Object>> threadLocal = new ThreadLocal<>();
+    private static final ThreadLocal<Map<String, Object>> THREAD_LOCAL = new ThreadLocal<>();
 
     public static Long getUserId(){
         Object obj = getContext().get(DataVinesConstants.LOGIN_USER);
@@ -59,10 +59,10 @@ public class ContextHolder {
      * @return
      */
     public static Map<String, Object> getContext(){
-        Map<String, Object> currentContext = threadLocal.get();
+        Map<String, Object> currentContext = THREAD_LOCAL.get();
         if(null == currentContext){
             Map<String, Object> concurrentHashMap = new ConcurrentHashMap<>();
-            threadLocal.set(concurrentHashMap);
+            THREAD_LOCAL.set(concurrentHashMap);
             return concurrentHashMap;
         }
         return currentContext;

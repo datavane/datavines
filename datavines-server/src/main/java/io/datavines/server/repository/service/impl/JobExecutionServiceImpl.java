@@ -22,17 +22,12 @@ import java.util.*;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.datavines.common.config.CheckResult;
-import io.datavines.common.entity.ConnectorParameter;
+
 import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.ExecuteRequestParam;
-import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
-import io.datavines.engine.config.JobConfigurationBuilder;
-import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
-import io.datavines.metric.api.SqlMetric;
 import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.core.exception.DataVinesServerException;
@@ -40,9 +35,9 @@ import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
 import io.datavines.server.repository.service.ActualValuesService;
+import io.datavines.server.repository.service.CommandService;
 import io.datavines.server.repository.service.JobExecutionResultService;
 import io.datavines.server.repository.entity.Command;
-import io.datavines.server.repository.mapper.CommandMapper;
 import io.datavines.server.repository.mapper.JobExecutionMapper;
 import io.datavines.server.repository.service.JobExecutionService;
 import io.datavines.spi.PluginLoader;
@@ -61,15 +56,13 @@ import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.datavines.core.constant.DataVinesConstants.JDBC;
-import static io.datavines.core.constant.DataVinesConstants.LOCAL;
 import static io.datavines.core.constant.DataVinesConstants.SPARK;
 
 @Service("jobExecutionService")
 public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, JobExecution>  implements JobExecutionService {
 
     @Autowired
-    private CommandMapper commandMapper;
+    private CommandService commandService;
 
     @Autowired
     private JobExecutionResultService jobExecutionResultService;
@@ -166,7 +159,7 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
         command.setType(CommandType.START);
         command.setPriority(Priority.MEDIUM);
         command.setJobExecutionId(jobExecutionId);
-        commandMapper.insert(command);
+        commandService.insert(command);
 
         return jobExecutionId;
     }
@@ -177,7 +170,7 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
         command.setType(CommandType.STOP);
         command.setPriority(Priority.MEDIUM);
         command.setJobExecutionId(jobExecutionId);
-        commandMapper.insert(command);
+        commandService.insert(command);
 
         return jobExecutionId;
     }

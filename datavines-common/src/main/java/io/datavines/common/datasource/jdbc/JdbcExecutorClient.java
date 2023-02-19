@@ -16,11 +16,8 @@
  */
 package io.datavines.common.datasource.jdbc;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import io.datavines.common.utils.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 

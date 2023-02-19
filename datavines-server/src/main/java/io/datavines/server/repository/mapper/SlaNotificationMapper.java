@@ -27,6 +27,7 @@ import java.util.Set;
 
 @Mapper
 public interface SlaNotificationMapper extends BaseMapper<SlaNotification> {
+
     Set<SlaConfigMessage> listReceiverMessageBySlaId(Long id);
 
     IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, @Param("workspaceId") Long workspaceId, @Param("searchVal") String searchVal);

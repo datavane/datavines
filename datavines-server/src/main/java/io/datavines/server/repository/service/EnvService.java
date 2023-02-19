@@ -17,6 +17,7 @@
 
 package io.datavines.server.repository.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.env.EnvCreate;
 import io.datavines.server.api.dto.bo.env.EnvUpdate;
@@ -24,7 +25,7 @@ import io.datavines.server.repository.entity.Env;
 
 import java.util.List;
 
-public interface EnvService {
+public interface EnvService extends IService<Env> {
 
     long create(EnvCreate envCreate) throws DataVinesServerException;
 

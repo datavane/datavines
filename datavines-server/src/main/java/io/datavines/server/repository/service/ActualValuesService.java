@@ -16,7 +16,10 @@
  */
 package io.datavines.server.repository.service;
 
-public interface ActualValuesService {
+import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.repository.entity.ActualValues;
+
+public interface ActualValuesService extends IService<ActualValues> {
 
     int deleteByJobExecutionId(long taskId);
 }

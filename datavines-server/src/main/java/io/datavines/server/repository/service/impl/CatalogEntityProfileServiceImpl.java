@@ -27,13 +27,12 @@ import io.datavines.server.api.dto.vo.DataTime2ValueItem;
 import io.datavines.server.repository.entity.JobSchedule;
 import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 import io.datavines.server.repository.entity.catalog.CatalogEntityProfile;
-import io.datavines.server.repository.mapper.CatalogEntityMetricJobRelMapper;
 import io.datavines.server.repository.mapper.CatalogEntityProfileMapper;
+import io.datavines.server.repository.service.CatalogEntityMetricJobRelService;
 import io.datavines.server.repository.service.CatalogEntityProfileService;
 import io.datavines.server.repository.service.JobScheduleService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -45,7 +44,7 @@ import java.util.stream.Collectors;
 public class CatalogEntityProfileServiceImpl extends ServiceImpl<CatalogEntityProfileMapper, CatalogEntityProfile> implements CatalogEntityProfileService {
 
     @Resource
-    private CatalogEntityMetricJobRelMapper catalogEntityMetricJobRelMapper;
+    private CatalogEntityMetricJobRelService catalogEntityMetricJobRelService;
 
     @Resource
     private JobScheduleService jobScheduleService;
@@ -121,7 +120,7 @@ public class CatalogEntityProfileServiceImpl extends ServiceImpl<CatalogEntityPr
 
         String entityUUID = createOrUpdate.getEntityUUID();
 
-        List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelMapper.selectList(new QueryWrapper<CatalogEntityMetricJobRel>()
+        List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
                 .eq("entity_uuid", entityUUID)
                 .eq("metric_job_type", "DATA_PROFILE"));
 
@@ -139,7 +138,7 @@ public class CatalogEntityProfileServiceImpl extends ServiceImpl<CatalogEntityPr
 
     @Override
     public JobSchedule getByEntityUUID(String entityUUID) {
-        List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelMapper.selectList(new QueryWrapper<CatalogEntityMetricJobRel>()
+        List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
                 .eq("entity_uuid", entityUUID)
                 .eq("metric_job_type", "DATA_PROFILE"));
 

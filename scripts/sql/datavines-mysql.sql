@@ -177,10 +177,10 @@ CREATE TABLE `dv_actual_values` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='规则运行结果实际值';
 
 -- ----------------------------
--- Table structure for dv_catalog_command
+-- Table structure for dv_catalog_metadata_fetch_command
 -- ----------------------------
-DROP TABLE IF EXISTS `dv_catalog_command`;
-CREATE TABLE `dv_catalog_command` (
+DROP TABLE IF EXISTS `dv_catalog_metadata_fetch_command`;
+CREATE TABLE `dv_catalog_metadata_fetch_command` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `task_id` bigint(20) NOT NULL COMMENT '元数据抓取任务ID',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
@@ -227,7 +227,8 @@ CREATE TABLE `dv_catalog_entity_instance` (
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `dv_entity_instance_un` (`uuid`),
+  UNIQUE KEY `uuid_un` (`uuid`) USING BTREE,
+  UNIQUE KEY `datasource_fqn_status_un` (`datasource_id`,`fully_qualified_name`,`status`) USING BTREE,
   FULLTEXT KEY `full_idx_display_name_description` (`display_name`,`description`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='实体实例';
 
@@ -351,10 +352,10 @@ CREATE TABLE `dv_catalog_tag_category` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='标签分类';
 
 -- ----------------------------
--- Table structure for dv_catalog_task
+-- Table structure for dv_catalog_metadata_fetch_task
 -- ----------------------------
-DROP TABLE IF EXISTS `dv_catalog_task`;
-CREATE TABLE `dv_catalog_task` (
+DROP TABLE IF EXISTS `dv_catalog_metadata_fetch_task`;
+CREATE TABLE `dv_catalog_metadata_fetch_task` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `datasource_id` bigint(20) NOT NULL DEFAULT '-1' COMMENT '数据源ID',
   `status` int(11) DEFAULT NULL COMMENT '任务状态',
@@ -370,10 +371,10 @@ CREATE TABLE `dv_catalog_task` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='元数据抓取任务';
 
 -- ----------------------------
--- Table structure for dv_catalog_task_schedule
+-- Table structure for dv_catalog_metadata_fetch_task_schedule
 -- ----------------------------
-DROP TABLE IF EXISTS `dv_catalog_task_schedule`;
-CREATE TABLE `dv_catalog_task_schedule` (
+DROP TABLE IF EXISTS `dv_catalog_metadata_fetch_task_schedule`;
+CREATE TABLE `dv_catalog_metadata_fetch_task_schedule` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `type` varchar(255) NOT NULL COMMENT '调度类型',
   `param` text COMMENT '调度参数',

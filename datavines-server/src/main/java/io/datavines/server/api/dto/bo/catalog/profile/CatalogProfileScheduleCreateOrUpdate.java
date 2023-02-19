@@ -16,14 +16,30 @@
  */
 package io.datavines.server.api.dto.bo.catalog.profile;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.datavines.server.api.dto.bo.job.schedule.MapParam;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @NotNull(message = "Catalog Profile Schedule Create Or Update cannot be null")
-public class CatalogProfileScheduleCreateOrUpdate extends CatalogProfileScheduleCreate {
+public class CatalogProfileScheduleCreateOrUpdate {
     private Long id;
+
+    @NotNull(message = "entity uuid cannot be empty")
+    private String entityUUID;
+
+    @NotBlank(message = "Catalog Profile schedule type cannot be empty")
+    private String type;
+
+    private MapParam param;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime startTime;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime endTime;
 }

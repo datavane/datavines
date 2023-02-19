@@ -24,10 +24,6 @@ import io.datavines.core.aop.RefreshToken;
 import io.datavines.server.api.dto.bo.datasource.DataSourceCreate;
 import io.datavines.server.api.dto.bo.datasource.DataSourceUpdate;
 import io.datavines.server.api.dto.bo.datasource.ExecuteRequest;
-import io.datavines.server.catalog.enums.FetchType;
-import io.datavines.server.catalog.task.CatalogMetaDataFetchTaskImpl;
-import io.datavines.server.catalog.task.MetaDataFetchRequest;
-import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
@@ -37,7 +33,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;

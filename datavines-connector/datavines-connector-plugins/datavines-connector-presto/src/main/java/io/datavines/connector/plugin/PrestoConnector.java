@@ -102,7 +102,7 @@ public class PrestoConnector extends JdbcConnector {
         InputParam database = getInputParam("database",
                 isEn ? "database" : "数据库",
                 isEn ? "please enter database" : "请填入数据库", 1, Validate.newBuilder()
-                        .setRequired(true).setMessage(isEn ? "please enter database" : "请填入数据库")
+                        .setRequired(false).setMessage(isEn ? "please enter database" : "请填入数据库")
                         .build());
         InputParam user = getInputParam("user",
                 isEn ? "user" : "用户名",

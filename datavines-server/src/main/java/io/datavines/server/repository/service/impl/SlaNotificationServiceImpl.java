@@ -51,9 +51,6 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
     private SlaSenderService slaSenderService;
 
     @Autowired
-    private SlaNotificationMapper slaNotificationMapper;
-
-    @Autowired
     private SlaJobService slaJobService;
 
     /**
@@ -103,8 +100,9 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
         return getSlasNotificationConfigurationBySlasId(slaId);
     }
 
+    @Override
     public Set<SlaConfigMessage> listReceiverMessageBySlaId(Long id){
-        return slaNotificationMapper.listReceiverMessageBySlaId(id);
+        return baseMapper.listReceiverMessageBySlaId(id);
     }
 
     @Override
@@ -115,8 +113,9 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
                 .getConfigJson();
     }
 
+    @Override
     public IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, String searchVal) {
-        return slaNotificationMapper.pageListNotification(page, workspaceId, searchVal);
+        return baseMapper.pageListNotification(page, workspaceId, searchVal);
     }
 
     @Override

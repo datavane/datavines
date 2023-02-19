@@ -17,18 +17,19 @@
 package io.datavines.server.repository.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.bo.workspace.InviteUserIntoWorkspace;
 import io.datavines.server.api.dto.bo.workspace.RemoveUserOutWorkspace;
 import io.datavines.server.api.dto.bo.workspace.WorkSpaceCreate;
 import io.datavines.server.api.dto.bo.workspace.WorkSpaceUpdate;
 import io.datavines.server.api.dto.vo.UserVO;
-import io.datavines.server.api.dto.vo.WorkspaceVO;
+import io.datavines.server.api.dto.vo.WorkSpaceVO;
 import io.datavines.server.repository.entity.WorkSpace;
 import io.datavines.core.exception.DataVinesServerException;
 
 import java.util.List;
 
-public interface  WorkSpaceService {
+public interface WorkSpaceService extends IService<WorkSpace> {
 
     long insert(WorkSpaceCreate workSpaceCreate) throws DataVinesServerException;
 
@@ -36,13 +37,13 @@ public interface  WorkSpaceService {
 
     WorkSpace getById(long id);
 
-    List<WorkspaceVO> listByUserId();
+    List<WorkSpaceVO> listByUserId();
 
     int deleteById(long id);
 
-    int inviteUserIntoWorkspace(InviteUserIntoWorkspace inviteUserIntoWorkspace);
+    long inviteUserIntoWorkspace(InviteUserIntoWorkspace inviteUserIntoWorkspace);
 
-    int removeUser(RemoveUserOutWorkspace removeUserOutWorkspace);
+    boolean removeUser(RemoveUserOutWorkspace removeUserOutWorkspace);
 
     IPage<UserVO> listUserByWorkspaceId(Long workspaceId, Integer pageNumber, Integer pageSize);
 }

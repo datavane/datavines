@@ -16,13 +16,13 @@
  */
 package io.datavines.server.repository.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.vo.JobExecutionResultVO;
-import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
 import io.datavines.server.repository.entity.JobExecutionResult;
 
 import java.util.List;
 
-public interface JobExecutionResultService {
+public interface JobExecutionResultService extends IService<JobExecutionResult> {
 
     long insert(JobExecutionResult jobExecutionResult);
 

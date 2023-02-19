@@ -17,17 +17,13 @@
 
 package io.datavines.server.repository.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.api.dto.bo.env.EnvCreate;
-import io.datavines.server.api.dto.bo.env.EnvUpdate;
 import io.datavines.server.api.dto.bo.issue.IssueCreate;
 import io.datavines.server.api.dto.bo.issue.IssueUpdate;
-import io.datavines.server.repository.entity.Env;
 import io.datavines.server.repository.entity.Issue;
 
-import java.util.List;
-
-public interface IssueService {
+public interface IssueService extends IService<Issue> {
 
     long create(IssueCreate issueCreate) throws DataVinesServerException;
 

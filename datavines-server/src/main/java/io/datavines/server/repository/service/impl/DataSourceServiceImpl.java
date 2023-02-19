@@ -36,7 +36,7 @@ import io.datavines.server.api.dto.bo.datasource.DataSourceUpdate;
 import io.datavines.server.api.dto.vo.DataSourceVO;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.mapper.DataSourceMapper;
-import io.datavines.server.repository.service.CatalogTaskService;
+import io.datavines.server.repository.service.CatalogMetaDataFetchTaskService;
 import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.repository.service.JobService;
@@ -64,7 +64,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     private JobService jobService;
 
     @Autowired
-    private CatalogTaskService catalogTaskService;
+    private CatalogMetaDataFetchTaskService catalogMetaDataFetchTaskService;
 
     @Override
     public boolean testConnect(TestConnectionRequestParam param) {
@@ -96,7 +96,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
         CatalogRefresh catalogRefresh = new CatalogRefresh();
         catalogRefresh.setDatasourceId(dataSource.getId());
-        catalogTaskService.refreshCatalog(catalogRefresh);
+        catalogMetaDataFetchTaskService.refreshCatalog(catalogRefresh);
         return dataSource.getId();
     }
 

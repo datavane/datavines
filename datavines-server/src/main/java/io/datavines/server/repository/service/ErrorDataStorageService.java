@@ -17,6 +17,7 @@
 
 package io.datavines.server.repository.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageCreate;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageUpdate;
@@ -24,7 +25,7 @@ import io.datavines.server.repository.entity.ErrorDataStorage;
 
 import java.util.List;
 
-public interface ErrorDataStorageService {
+public interface ErrorDataStorageService extends IService<ErrorDataStorage> {
 
     long create(ErrorDataStorageCreate tenantCreate) throws DataVinesServerException;
 
@@ -37,5 +38,4 @@ public interface ErrorDataStorageService {
     List<ErrorDataStorage> listByWorkspaceId(long workspaceId);
 
     String getConfigJson(String type);
-
 }

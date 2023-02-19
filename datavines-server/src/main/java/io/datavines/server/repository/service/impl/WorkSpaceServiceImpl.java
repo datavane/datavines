@@ -26,13 +26,13 @@ import io.datavines.server.api.dto.bo.workspace.RemoveUserOutWorkspace;
 import io.datavines.server.api.dto.bo.workspace.WorkSpaceCreate;
 import io.datavines.server.api.dto.bo.workspace.WorkSpaceUpdate;
 import io.datavines.server.api.dto.vo.UserVO;
-import io.datavines.server.api.dto.vo.WorkspaceVO;
+import io.datavines.server.api.dto.vo.WorkSpaceVO;
 import io.datavines.server.repository.entity.User;
-import io.datavines.server.repository.entity.UserWorkspace;
+import io.datavines.server.repository.entity.UserWorkSpace;
 import io.datavines.server.repository.entity.WorkSpace;
-import io.datavines.server.repository.mapper.UserMapper;
-import io.datavines.server.repository.mapper.UserWorkspaceMapper;
 import io.datavines.server.repository.mapper.WorkSpaceMapper;
+import io.datavines.server.repository.service.UserService;
+import io.datavines.server.repository.service.UserWorkSpaceService;
 import io.datavines.server.repository.service.WorkSpaceService;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.utils.ContextHolder;
@@ -50,10 +50,10 @@ import java.util.List;
 public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper, WorkSpace> implements WorkSpaceService {
 
     @Autowired
-    private UserMapper userMapper;
+    private UserService userService;
 
     @Autowired
-    private UserWorkspaceMapper userWorkspaceMapper;
+    private UserWorkSpaceService userWorkSpaceService;
 
     @Override
     public long insert(WorkSpaceCreate workSpaceCreate) throws DataVinesServerException {
@@ -72,15 +72,15 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper, WorkSpace
             throw new DataVinesServerException(Status.CREATE_WORKSPACE_ERROR, workSpaceCreate.getName());
         }
 
-        UserWorkspace userWorkspace = new UserWorkspace();
-        userWorkspace.setUserId(ContextHolder.getUserId());
-        userWorkspace.setWorkspaceId(workSpace.getId());
-        userWorkspace.setRoleId(1L);
-        userWorkspace.setCreateBy(ContextHolder.getUserId());
-        userWorkspace.setCreateTime(LocalDateTime.now());
-        userWorkspace.setUpdateBy(ContextHolder.getUserId());
-        userWorkspace.setUpdateTime(LocalDateTime.now());
-        userWorkspaceMapper.insert(userWorkspace);
+        UserWorkSpace userWorkSpace = new UserWorkSpace();
+        userWorkSpace.setUserId(ContextHolder.getUserId());
+        userWorkSpace.setWorkspaceId(workSpace.getId());
+        userWorkSpace.setRoleId(1L);
+        userWorkSpace.setCreateBy(ContextHolder.getUserId());
+        userWorkSpace.setCreateTime(LocalDateTime.now());
+        userWorkSpace.setUpdateBy(ContextHolder.getUserId());
+        userWorkSpace.setUpdateTime(LocalDateTime.now());
+        userWorkSpaceService.save(userWorkSpace);
 
         return workSpace.getId();
     }
@@ -111,14 +111,14 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper, WorkSpace
     }
 
     @Override
-    public List<WorkspaceVO> listByUserId() {
-        return userWorkspaceMapper.listWorkspaceByUserId(ContextHolder.getUserId());
+    public List<WorkSpaceVO> listByUserId() {
+        return userWorkSpaceService.listWorkSpaceByUserId(ContextHolder.getUserId());
     }
 
     @Override
     public IPage<UserVO> listUserByWorkspaceId(Long workspaceId, Integer pageNumber, Integer pageSize) {
         Page<UserVO> page = new Page<>(pageNumber, pageSize);
-        IPage<UserVO> users = userWorkspaceMapper.getWorkspaceUserPage(page, workspaceId);
+        IPage<UserVO> users = userWorkSpaceService.getWorkSpaceUserPage(page, workspaceId);
         return users;
     }
 
@@ -133,9 +133,9 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper, WorkSpace
     }
 
     @Override
-    public int inviteUserIntoWorkspace(InviteUserIntoWorkspace inviteUserIntoWorkspace) {
+    public long inviteUserIntoWorkspace(InviteUserIntoWorkspace inviteUserIntoWorkspace) {
 
-        User user = userMapper.selectOne(new QueryWrapper<User>()
+        User user = userService.getOne(new QueryWrapper<User>()
                 .eq("username",inviteUserIntoWorkspace.getUsername())
                 .eq("email",inviteUserIntoWorkspace.getEmail()));
 
@@ -143,40 +143,42 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper, WorkSpace
             throw new DataVinesServerException(Status.USER_IS_NOT_EXIST_ERROR);
         }
 
-        UserWorkspace userWorkspace = userWorkspaceMapper.selectOne(new QueryWrapper<UserWorkspace>()
+        UserWorkSpace userWorkSpace = userWorkSpaceService.getOne(new QueryWrapper<UserWorkSpace>()
                 .eq("user_id",user.getId())
                 .eq("workspace_id",inviteUserIntoWorkspace.getWorkspaceId()));
 
-        if (userWorkspace != null) {
+        if (userWorkSpace != null) {
             throw new DataVinesServerException(Status.USER_IS_IN_WORKSPACE_ERROR);
         }
 
-        userWorkspace = new UserWorkspace();
-        userWorkspace.setUserId(user.getId());
-        userWorkspace.setWorkspaceId(inviteUserIntoWorkspace.getWorkspaceId());
-        userWorkspace.setCreateBy(ContextHolder.getUserId());
-        userWorkspace.setCreateTime(LocalDateTime.now());
-        userWorkspace.setUpdateBy(ContextHolder.getUserId());
-        userWorkspace.setUpdateTime(LocalDateTime.now());
+        userWorkSpace = new UserWorkSpace();
+        userWorkSpace.setUserId(user.getId());
+        userWorkSpace.setWorkspaceId(inviteUserIntoWorkspace.getWorkspaceId());
+        userWorkSpace.setCreateBy(ContextHolder.getUserId());
+        userWorkSpace.setCreateTime(LocalDateTime.now());
+        userWorkSpace.setUpdateBy(ContextHolder.getUserId());
+        userWorkSpace.setUpdateTime(LocalDateTime.now());
 
-        return userWorkspaceMapper.insert(userWorkspace);
+        userWorkSpaceService.save(userWorkSpace);
+
+        return userWorkSpace.getId();
     }
 
     @Override
-    public int removeUser(RemoveUserOutWorkspace removeUserOutWorkspace) {
-        List<UserWorkspace> userWorkspaceList = userWorkspaceMapper.selectList(new QueryWrapper<UserWorkspace>().eq("user_id", removeUserOutWorkspace.getUserId()));
+    public boolean removeUser(RemoveUserOutWorkspace removeUserOutWorkspace) {
+        List<UserWorkSpace> userWorkSpaceList = userWorkSpaceService.list(new QueryWrapper<UserWorkSpace>().eq("user_id", removeUserOutWorkspace.getUserId()));
 
-        if (CollectionUtils.isNotEmpty(userWorkspaceList) && userWorkspaceList.size() == 1) {
+        if (CollectionUtils.isNotEmpty(userWorkSpaceList) && userWorkSpaceList.size() == 1) {
             throw new DataVinesServerException(Status.USER_HAS_ONLY_ONE_WORKSPACE);
         }
 
-        UserWorkspace userWorkspace = userWorkspaceMapper.selectOne(new QueryWrapper<UserWorkspace>()
+        UserWorkSpace userWorkSpace = userWorkSpaceService.getOne(new QueryWrapper<UserWorkSpace>()
                 .eq("user_id",ContextHolder.getUserId()).eq("workspace_id", removeUserOutWorkspace.getWorkspaceId()));
 
-        if (userWorkspace != null &&
-                ( (userWorkspace.getRoleId() != null && userWorkspace.getRoleId() == 1)
+        if (userWorkSpace != null &&
+                ( (userWorkSpace.getRoleId() != null && userWorkSpace.getRoleId() == 1)
                         || removeUserOutWorkspace.getUserId().equals(ContextHolder.getUserId()))) {
-            return userWorkspaceMapper.delete(new QueryWrapper<UserWorkspace>()
+            return userWorkSpaceService.remove(new QueryWrapper<UserWorkSpace>()
                     .eq("user_id",removeUserOutWorkspace.getUserId()).eq("workspace_id", removeUserOutWorkspace.getWorkspaceId()));
         }
 

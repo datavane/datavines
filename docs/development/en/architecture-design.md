@@ -20,11 +20,11 @@ DataVinesServer is the core service of the DataVines platform. It adopts a decen
 ### High Availability Design
 - DatavinesServer adopts a decentralized design and supports dynamic capacity expansion. All nodes in the cluster can provide services to the outside world, and nodes obtain jobs by competing for distributed locks for scheduling and execution
 
-## MetaDataServer (Planed)
+## MetaDataManager
 MetaDataServer is a metadata management center, mainly responsible for metadata-related functions such as data catalog, metadata model, metadata storage, and query.
 
-## MetaDataCrawler (Planed)
-MetaDataCrawler is mainly responsible for regularly grabbing the metadata information of the specified data source, and then updating it to the metadata storage engine
+## MetaDataFetcher 
+MetaDataFetcher is mainly responsible for regularly grabbing the metadata information of the specified data source, and then updating it to the metadata storage engine
 
 ## NotificationServer
 NotificationServer is mainly responsible for alarms. Users configure alarm rules on the platform. Once the data monitoring jobExecution triggers an alarm, NotificationServer will send the error message to the specified platform, such as email, enterprise WeChat, etc.

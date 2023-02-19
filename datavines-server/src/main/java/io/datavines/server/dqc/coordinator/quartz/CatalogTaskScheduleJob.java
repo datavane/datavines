@@ -20,13 +20,11 @@ import io.datavines.common.utils.DateUtils;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
 import io.datavines.server.repository.entity.DataSource;
-import io.datavines.server.repository.entity.Job;
-import io.datavines.server.repository.service.CatalogTaskService;
+import io.datavines.server.repository.service.CatalogMetaDataFetchTaskService;
 import io.datavines.server.repository.service.impl.JobExternalService;
 import io.datavines.server.utils.SpringApplicationContext;
 import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +59,7 @@ public class CatalogTaskScheduleJob implements org.quartz.Job {
         logger.info("scheduled fire time :{}, fire time :{}, dataSource id :{}", scheduleTime, fireTime, dataSourceId);
         logger.info("scheduled start work , dataSource id :{} ", dataSourceId);
 
-        CatalogTaskService catalogTaskService = getJobExternalService().getCatalogTaskService();
+        CatalogMetaDataFetchTaskService catalogMetaDataFetchTaskService = getJobExternalService().getCatalogTaskService();
         CatalogRefresh catalogRefresh = new CatalogRefresh();
         catalogRefresh.setDatasourceId(dataSourceId);
 
@@ -71,7 +69,7 @@ public class CatalogTaskScheduleJob implements org.quartz.Job {
             return;
         }
 
-        catalogTaskService.refreshCatalog(catalogRefresh);
+        catalogMetaDataFetchTaskService.refreshCatalog(catalogRefresh);
     }
 
 }

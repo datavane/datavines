@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Set;
 
 public interface SlaNotificationService extends IService<SlaNotification>{
+
     Map<SlaSenderMessage, Set<SlaConfigMessage>> getSlasNotificationConfigurationBySlasId(Long slaId);
 
     Map<SlaSenderMessage, Set<SlaConfigMessage>> getSlasNotificationConfigurationByJobId(Long job);
@@ -39,4 +40,8 @@ public interface SlaNotificationService extends IService<SlaNotification>{
     SlaNotification updateNotification(SlaNotificationUpdate update);
 
     IPage<SlaNotification> pageListNotification(Long workspaceId,  String searchVal, Integer pageNumber, Integer pageSize);
+
+    Set<SlaConfigMessage> listReceiverMessageBySlaId(Long id);
+
+    IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, String searchVal);
 }

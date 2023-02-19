@@ -16,8 +16,16 @@
  */
 package io.datavines.server.repository.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.api.dto.vo.catalog.CatalogEntityIssueVO;
+import io.datavines.server.api.dto.vo.catalog.CatalogEntityMetricVO;
 import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 
 public interface CatalogEntityMetricJobRelService extends IService<CatalogEntityMetricJobRel> {
+
+    IPage<CatalogEntityMetricVO> getEntityMetricPage(Page<CatalogEntityMetricVO> page, String uuid);
+
+    IPage<CatalogEntityIssueVO> getEntityIssuePage(Page<CatalogEntityIssueVO> page, String uuid);
 }

@@ -17,6 +17,7 @@
 
 package io.datavines.server.repository.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.tenant.TenantCreate;
 import io.datavines.server.api.dto.bo.tenant.TenantUpdate;
@@ -24,7 +25,7 @@ import io.datavines.server.repository.entity.Tenant;
 
 import java.util.List;
 
-public interface TenantService {
+public interface TenantService extends IService<Tenant> {
 
     long create(TenantCreate tenantCreate) throws DataVinesServerException;
 
@@ -35,5 +36,4 @@ public interface TenantService {
     Tenant getById(long id);
 
     List<Tenant> listByWorkspaceId(long workspaceId);
-
 }

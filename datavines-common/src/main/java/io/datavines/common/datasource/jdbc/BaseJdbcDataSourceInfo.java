@@ -107,10 +107,12 @@ public abstract class BaseJdbcDataSourceInfo {
      * @param jdbcUrl jdbc url
      */
     protected void appendDatabase(StringBuilder jdbcUrl) {
-        if (getAddress().lastIndexOf('/') != (jdbcUrl.length() - 1)) {
-            jdbcUrl.append("/");
+        if (StringUtils.isNotEmpty(getDatabase())) {
+            if (getAddress().lastIndexOf('/') != (jdbcUrl.length() - 1)) {
+                jdbcUrl.append("/");
+            }
+            jdbcUrl.append(getDatabase());
         }
-        jdbcUrl.append(getDatabase());
     }
 
     /**

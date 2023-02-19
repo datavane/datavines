@@ -29,6 +29,7 @@ import io.datavines.server.api.dto.bo.sla.SlaCreate;
 import io.datavines.server.api.dto.bo.sla.SlaUpdate;
 import io.datavines.server.api.dto.vo.SlaPageVO;
 import io.datavines.server.api.dto.vo.JobVO;
+import io.datavines.server.api.dto.vo.SlaVO;
 import io.datavines.server.repository.entity.Sla;
 import io.datavines.server.repository.entity.SlaJob;
 import io.datavines.server.repository.mapper.SlaMapper;
@@ -42,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -50,15 +52,12 @@ import java.util.Set;
 public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaService {
 
     @Autowired
-    private SlaMapper slaMapper;
-
-    @Autowired
     private SlaJobService slaJobService;
 
     @Override
     public IPage<SlaPageVO> listSlas(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize) {
         Page<JobVO> page = new Page<>(pageNumber, pageSize);
-        IPage<SlaPageVO> res = slaMapper.listSlas(page, workspaceId, searchVal);
+        IPage<SlaPageVO> res = baseMapper.listSlas(page, workspaceId, searchVal);
         return res;
     }
 
@@ -79,7 +78,6 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
                 .getOrCreatePlugin(type)
                 .getConfigSenderJson();
     }
-
 
     @Override
     public Set<String> getSupportPlugin(){
@@ -127,5 +125,10 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
         sla.setUpdateTime(LocalDateTime.now());
         boolean save = updateById(sla);
         return save;
+    }
+
+    @Override
+    public List<SlaVO> getSlaByJobId(Long jobId) {
+        return baseMapper.getSlaByJobId(jobId);
     }
 }
