@@ -42,9 +42,7 @@ import io.datavines.server.enums.Priority;
 import io.datavines.server.repository.entity.*;
 import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 import io.datavines.server.repository.mapper.*;
-import io.datavines.server.repository.service.DataSourceService;
-import io.datavines.server.repository.service.JobExecutionService;
-import io.datavines.server.repository.service.JobService;
+import io.datavines.server.repository.service.*;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
@@ -67,31 +65,28 @@ import static io.datavines.engine.api.ConfigConstants.*;
 public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobService {
 
     @Autowired
-    private JobExecutionMapper jobExecutionMapper;
-
-    @Autowired
     private JobExecutionService jobExecutionService;
 
     @Autowired
-    private CommandMapper commandMapper;
+    private CommandService commandService;
 
     @Autowired
     private DataSourceService dataSourceService;
 
     @Autowired
-    private EnvMapper envMapper;
+    private EnvService envService;
 
     @Autowired
-    private TenantMapper tenantMapper;
+    private TenantService tenantService;
 
     @Autowired
-    private ErrorDataStorageMapper errorDataStorageMapper;
+    private ErrorDataStorageService errorDataStorageService;
 
     @Autowired
-    private SlaMapper slaMapper;
+    private SlaService slaService;
 
     @Autowired
-    private CatalogEntityMetricJobRelMapper catalogEntityMetricJobRelMapper;
+    private CatalogEntityMetricJobRelService catalogEntityMetricJobRelService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -188,6 +183,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             job.setId(list.get(0).getId());
             job.setUpdateBy(ContextHolder.getUserId());
             job.setUpdateTime(LocalDateTime.now());
+            job.setType(JobType.DATA_PROFILE);
 
             if (baseMapper.updateById(job) <= 0) {
                 log.info("update data profile job fail : {}", dataProfileJobCreateOrUpdate);
@@ -236,7 +232,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     @Transactional(rollbackFor = Exception.class)
     public int deleteById(long id) {
         if (baseMapper.deleteById(id) > 0) {
-            catalogEntityMetricJobRelMapper.delete(new QueryWrapper<CatalogEntityMetricJobRel>().eq("metric_job_id", id));
+            catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>().eq("metric_job_id", id));
             return 1;
         } else {
             return 0;
@@ -266,7 +262,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         List<JobVO> jobList = jobs.getRecords();
         if (CollectionUtils.isNotEmpty(jobList)) {
             for(JobVO jobVO: jobList) {
-                List<SlaVO> slaList = slaMapper.getSlaByJobId(jobVO.getId());
+                List<SlaVO> slaList = slaService.getSlaByJobId(jobVO.getId());
                 jobVO.setSlaList(slaList);
             }
         }
@@ -290,19 +286,19 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         String executionParameter = buildJobExecutionParameter(job);
 
         long jobId = job.getId();
-        Env env = envMapper.selectById(job.getEnv());
+        Env env = envService.getById(job.getEnv());
         String envStr = "";
         if (env != null) {
             envStr = env.getEnv();
         }
 
-        Tenant tenant = tenantMapper.selectById(job.getTenantCode());
+        Tenant tenant = tenantService.getById(job.getTenantCode());
         String tenantStr = "";
         if (tenant != null) {
             tenantStr = tenant.getTenant();
         }
 
-        ErrorDataStorage errorDataStorage = errorDataStorageMapper.selectById(job.getErrorDataStorageId());
+        ErrorDataStorage errorDataStorage = errorDataStorageService.getById(job.getErrorDataStorageId());
         String errorDataStorageType = "";
         String errorDataStorageParameter = "";
         if (errorDataStorage != null) {
@@ -339,14 +335,14 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         jobExecution.setCreateTime(LocalDateTime.now());
         jobExecution.setUpdateTime(LocalDateTime.now());
 
-        jobExecutionMapper.insert(jobExecution);
+        jobExecutionService.save(jobExecution);
 
         // add a command
         Command command = new Command();
         command.setType(CommandType.START);
         command.setPriority(Priority.MEDIUM);
         command.setJobExecutionId(jobExecution.getId());
-        commandMapper.insert(command);
+        commandService.insert(command);
     }
 
     @Override

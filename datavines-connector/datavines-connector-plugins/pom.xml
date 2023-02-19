@@ -40,6 +40,9 @@
         <module>datavines-connector-presto</module>
         <module>datavines-connector-all</module>
         <module>datavines-connector-file</module>
+        <module>datavines-connector-trino</module>
+        <module>datavines-connector-starrocks</module>
+        <module>datavines-connector-doris</module>
     </modules>
 
 

@@ -19,13 +19,14 @@ package io.datavines.server.repository.service;
 import java.util.List;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.core.exception.DataVinesServerException;
 
-public interface JobExecutionService {
+public interface JobExecutionService extends IService<JobExecution> {
 
     long create(JobExecution jobExecution);
 

@@ -28,7 +28,6 @@ import io.datavines.server.dqc.coordinator.quartz.ScheduleJobInfo;
 import io.datavines.server.enums.ScheduleJobType;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobSchedule;
-import io.datavines.server.repository.mapper.JobMapper;
 import io.datavines.server.repository.mapper.JobScheduleMapper;
 import io.datavines.server.repository.service.JobScheduleService;
 import io.datavines.server.dqc.coordinator.quartz.QuartzExecutors;
@@ -37,6 +36,7 @@ import io.datavines.server.dqc.coordinator.quartz.cron.StrategyFactory;
 import io.datavines.server.dqc.coordinator.quartz.cron.FunCron;
 
 import io.datavines.server.enums.JobScheduleType;
+import io.datavines.server.repository.service.JobService;
 import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -58,7 +58,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
     private QuartzExecutors quartzExecutor;
 
     @Autowired
-    private JobMapper jobMapper;
+    private JobService jobService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -87,7 +87,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
         jobSchedule.setStatus(true);
 
         updateJobScheduleParam(jobSchedule, jobScheduleCreate.getType(), jobScheduleCreate.getParam());
-        Job job = jobMapper.selectById(jobId);
+        Job job = jobService.getById(jobId);
         if (job == null) {
             throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobId);
         } else {
@@ -140,7 +140,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
 
         updateJobScheduleParam(jobSchedule, jobScheduleUpdate.getType(), jobScheduleUpdate.getParam());
         Long jobId = jobScheduleUpdate.getJobId();
-        Job job = jobMapper.selectById(jobId);
+        Job job = jobService.getById(jobId);
         if (job == null) {
             throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobId);
         } else {
@@ -180,7 +180,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
     @Transactional(rollbackFor = Exception.class)
     public int deleteById(long id) {
         JobSchedule jobSchedule = getById(id);
-        Job job = jobMapper.selectById(jobSchedule.getJobId());
+        Job job = jobService.getById(jobSchedule.getJobId());
         ScheduleJobInfo scheduleJobInfo = getScheduleJobInfo(jobSchedule, job);
         Boolean deleteJob = quartzExecutor.deleteJob(scheduleJobInfo);
         if (!deleteJob ) {

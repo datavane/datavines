@@ -36,10 +36,9 @@ import io.datavines.server.api.dto.bo.job.DataProfileJobCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
 import io.datavines.server.api.dto.vo.DataTime2ValueItem;
 import io.datavines.server.api.dto.vo.catalog.*;
+import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.catalog.*;
 import io.datavines.server.repository.mapper.CatalogEntityInstanceMapper;
-import io.datavines.server.repository.mapper.CatalogEntityMetricJobRelMapper;
-import io.datavines.server.repository.mapper.CatalogEntityRelMapper;
 import io.datavines.server.repository.service.*;
 import io.datavines.server.utils.ContextHolder;
 import org.apache.commons.collections4.CollectionUtils;
@@ -52,13 +51,15 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.datavines.common.enums.JobType.DATA_PROFILE;
+
 @Service("catalogEntityInstanceService")
 public class CatalogEntityInstanceServiceImpl
         extends ServiceImpl<CatalogEntityInstanceMapper, CatalogEntityInstance>
         implements CatalogEntityInstanceService {
 
     @Resource
-    private CatalogEntityRelMapper entityRelMapper;
+    private CatalogEntityRelService entityRelService;
 
     @Autowired
     private JobService jobService;
@@ -68,9 +69,6 @@ public class CatalogEntityInstanceServiceImpl
 
     @Autowired
     private CatalogEntityMetricJobRelService catalogEntityMetricJobRelService;
-
-    @Autowired
-    private CatalogEntityMetricJobRelMapper catalogEntityMetricJobRelMapper;
 
     @Autowired
     private CatalogEntityTagRelService catalogEntityTagRelService;
@@ -129,7 +127,7 @@ public class CatalogEntityInstanceServiceImpl
     }
 
     private List<CatalogEntityInstance> getCatalogEntityInstances(String upstreamId) {
-        List<CatalogEntityRel> entityRelList = entityRelMapper.selectList(new QueryWrapper<CatalogEntityRel>()
+        List<CatalogEntityRel> entityRelList = entityRelService.list(new QueryWrapper<CatalogEntityRel>()
                 .eq("entity1_uuid", upstreamId).eq("type",EntityRelType.CHILD.getDescription()));
         List<String> uuidList = new ArrayList<>();
         entityRelList.forEach(x->{
@@ -179,14 +177,14 @@ public class CatalogEntityInstanceServiceImpl
         }
 
         for (String upstreamId: upstreamIds) {
-            List<String> entityRelList = entityRelMapper
-                    .selectList(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid",upstreamId))
+            List<String> entityRelList = entityRelService
+                    .list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid",upstreamId))
                     .stream()
                     .map(CatalogEntityRel::getEntity2Uuid)
                     .collect(Collectors.toList());
 
             baseMapper.delete(new QueryWrapper<CatalogEntityInstance>().in("uuid",upstreamIds));
-            entityRelMapper.delete(new QueryWrapper<CatalogEntityRel>().in("entity1_uuid",upstreamIds));
+            entityRelService.remove(new QueryWrapper<CatalogEntityRel>().in("entity1_uuid",upstreamIds));
 
             deleteEntityInstance(entityRelList);
         }
@@ -698,7 +696,7 @@ public class CatalogEntityInstanceServiceImpl
     @Override
     public IPage<CatalogEntityMetricVO> getEntityMetricList(String uuid, Integer pageNumber, Integer pageSize) {
         Page<CatalogEntityMetricVO> page = new Page<>(pageNumber, pageSize);
-        IPage<CatalogEntityMetricVO> entityMetricPage = catalogEntityMetricJobRelMapper.getEntityMetricPage(page, uuid);
+        IPage<CatalogEntityMetricVO> entityMetricPage = catalogEntityMetricJobRelService.getEntityMetricPage(page, uuid);
         String startTime = DateUtils.dateToString(DateUtils.getSomeDay(new Date(), -14));
         String endTime = DateUtils.dateToString(DateUtils.getSomeDay(new Date(), 1));
         entityMetricPage.getRecords().forEach(catalogEntityMetricVO -> {
@@ -711,9 +709,30 @@ public class CatalogEntityInstanceServiceImpl
     @Override
     public IPage<CatalogEntityIssueVO> getEntityIssueList(String uuid, Integer pageNumber, Integer pageSize) {
         Page<CatalogEntityIssueVO> page = new Page<>(pageNumber, pageSize);
-        IPage<CatalogEntityIssueVO> entityMetricPage = catalogEntityMetricJobRelMapper.getEntityIssuePage(page, uuid);
+        IPage<CatalogEntityIssueVO> entityMetricPage = catalogEntityMetricJobRelService.getEntityIssuePage(page, uuid);
 
         return entityMetricPage;
+    }
+
+    @Override
+    public List<String> getProfileJobSelectedColumns(String uuid) {
+        CatalogEntityMetricJobRel rel = catalogEntityMetricJobRelService.getOne(new QueryWrapper<CatalogEntityMetricJobRel>().eq("entity_uuid", uuid).eq("metric_job_type", DATA_PROFILE.getDescription()));
+        if (rel == null) {
+            return Collections.emptyList();
+        }
+
+        long jobId = rel.getMetricJobId();
+        Job job = jobService.getById(jobId);
+        if (job == null) {
+            return Collections.emptyList();
+        }
+
+        String selectedColumns = job.getSelectedColumn();
+        if (StringUtils.isEmpty(selectedColumns)) {
+            return Collections.emptyList();
+        }
+
+        return Arrays.asList(selectedColumns.split(","));
     }
 
     @Override
@@ -815,7 +834,7 @@ public class CatalogEntityInstanceServiceImpl
         }
 
         DataProfileJobCreateOrUpdate createOrUpdate = new DataProfileJobCreateOrUpdate();
-        createOrUpdate.setType(JobType.DATA_PROFILE.getDescription());
+        createOrUpdate.setType(DATA_PROFILE.getDescription());
         createOrUpdate.setDataSourceId(entityInstance.getDatasourceId());
         createOrUpdate.setParameter(JSONUtils.toJsonString(jobParameters));
         createOrUpdate.setSchemaName(schemaName);
@@ -825,12 +844,12 @@ public class CatalogEntityInstanceServiceImpl
         long jobId = jobService.createOrUpdateDataProfileJob(createOrUpdate);
 
         if (jobId != -1L) {
-            List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelMapper.selectList(new QueryWrapper<CatalogEntityMetricJobRel>()
+            List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
                     .eq("entity_uuid", uuid)
                     .eq("metric_job_id", jobId)
                     .eq("metric_job_type", "DATA_PROFILE"));
             if (CollectionUtils.isEmpty(listRel) || listRel.size() > 1) {
-                catalogEntityMetricJobRelMapper.delete(new QueryWrapper<CatalogEntityMetricJobRel>()
+                catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>()
                         .eq("entity_uuid", uuid)
                         .eq("metric_job_id", jobId)
                         .eq("metric_job_type", "DATA_PROFILE"));
@@ -842,7 +861,7 @@ public class CatalogEntityInstanceServiceImpl
                 entityMetricJobRel.setCreateTime(LocalDateTime.now());
                 entityMetricJobRel.setUpdateBy(ContextHolder.getUserId());
                 entityMetricJobRel.setUpdateTime(LocalDateTime.now());
-                catalogEntityMetricJobRelMapper.insert(entityMetricJobRel);
+                catalogEntityMetricJobRelService.save(entityMetricJobRel);
             }
         }
 
@@ -863,7 +882,7 @@ public class CatalogEntityInstanceServiceImpl
     }
 
     private CatalogEntityInstance getParentEntity(String uuid) {
-        List<CatalogEntityRel> entityRelList = entityRelMapper.selectList(new QueryWrapper<CatalogEntityRel>()
+        List<CatalogEntityRel> entityRelList = entityRelService.list(new QueryWrapper<CatalogEntityRel>()
                 .eq("entity2_uuid", uuid).eq("type", EntityRelType.CHILD.getDescription()));
 
         if (CollectionUtils.isEmpty(entityRelList)) {

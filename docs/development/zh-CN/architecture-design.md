@@ -23,8 +23,8 @@ DatavinesServer是DataVines平台核心服务，采用无中心化设计，支�
 ##MetaDataServer
 MetaDataServer是元数据管理中心，主要负责数据目录，元数据模型、元数据存储、查询等元数据相关的功能。
 
-## MetaDataCrawler
-MetaDataCrawler 主要负责定时去抓取指定数据源的元数据信息，然后更新到元数据存储引擎中
+## MetaDataFetcher
+MetaDataFetcher 主要负责定时去抓取指定数据源的元数据信息，然后更新到元数据存储引擎中
 
 ## NotificationServer
 NotificationServer主要负责告警，用户在平台上配置告警规则，一旦数据监控任务触发告警，那么NotificationServer就会将报错信息发送到指定的平台上，例如邮箱，企业微信等

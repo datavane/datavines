@@ -21,8 +21,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.bo.sla.SlaCreate;
 import io.datavines.server.api.dto.bo.sla.SlaUpdate;
 import io.datavines.server.api.dto.vo.SlaPageVO;
+import io.datavines.server.api.dto.vo.SlaVO;
 import io.datavines.server.repository.entity.Sla;
 
+import java.util.List;
 import java.util.Set;
 
 public interface SlaService extends IService<Sla> {
@@ -39,4 +41,5 @@ public interface SlaService extends IService<Sla> {
 
     boolean updateSla(SlaUpdate update);
 
+    List<SlaVO> getSlaByJobId(Long jobId);
 }

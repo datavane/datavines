@@ -49,7 +49,7 @@ import java.util.Date;
 public class CatalogController {
 
     @Autowired
-    private CatalogTaskService catalogTaskService;
+    private CatalogMetaDataFetchTaskService catalogMetaDataFetchTaskService;
 
     @Autowired
     private CatalogEntityInstanceService catalogEntityInstanceService;
@@ -69,7 +69,7 @@ public class CatalogController {
     @ApiOperation(value = "refresh", response = Long.class)
     @PostMapping(value = "/refresh", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object refreshCatalog(@RequestBody CatalogRefresh catalogRefresh) {
-        return catalogTaskService.refreshCatalog(catalogRefresh);
+        return catalogMetaDataFetchTaskService.refreshCatalog(catalogRefresh);
     }
 
     @ApiOperation(value = "execute data profile job", response = Long.class)
@@ -85,6 +85,12 @@ public class CatalogController {
     @PostMapping(value = "/profile/execute-select-columns")
     public Object executeDataProfileJobWithColumns(@Validated @RequestBody RunProfileRequest runProfileRequest) {
         return catalogEntityInstanceService.executeDataProfileJob(runProfileRequest);
+    }
+
+    @ApiOperation(value = "get database list", response = OptionItem.class, responseContainer = "list")
+    @GetMapping(value = "/profile/selected-columns/{uuid}")
+    public Object getProfileJobSelectedColumns(@RequestParam String uuid) {
+        return catalogEntityInstanceService.getProfileJobSelectedColumns(uuid);
     }
 
     @ApiOperation(value = "get database list", response = OptionItem.class, responseContainer = "list")

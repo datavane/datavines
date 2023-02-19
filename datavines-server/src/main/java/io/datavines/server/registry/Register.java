@@ -24,6 +24,7 @@ import io.datavines.registry.api.Event;
 import io.datavines.registry.api.Registry;
 import io.datavines.registry.api.ServerInfo;
 import io.datavines.registry.api.SubscribeListener;
+import io.datavines.server.catalog.metadata.MetaDataFetchTaskFailover;
 import io.datavines.server.dqc.coordinator.failover.JobExecutionFailover;
 
 import java.sql.SQLException;
@@ -36,12 +37,15 @@ public class Register {
 
     private final JobExecutionFailover jobExecutionFailover;
 
+    private final MetaDataFetchTaskFailover metaDataFetchTaskFailover;
+
     private final String FAILOVER_KEY =
             CommonPropertyUtils.getString(CommonPropertyUtils.FAILOVER_KEY, CommonPropertyUtils.FAILOVER_KEY_DEFAULT);
 
-    public Register(Registry registry, JobExecutionFailover jobExecutionFailover) {
+    public Register(Registry registry, JobExecutionFailover jobExecutionFailover, MetaDataFetchTaskFailover metaDataFetchTaskFailover) {
         this.registry = registry;
         this.jobExecutionFailover = jobExecutionFailover;
+        this.metaDataFetchTaskFailover = metaDataFetchTaskFailover;
     }
 
     public void start() {
@@ -50,6 +54,7 @@ public class Register {
                 try {
                     blockUtilAcquireLock(FAILOVER_KEY);
                     jobExecutionFailover.handleJobExecutionFailover(event.key());
+                    metaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(event.key());
                 } finally {
                     registry.release(FAILOVER_KEY);
                 }
@@ -62,21 +67,25 @@ public class Register {
             String host = NetUtils.getAddr(CommonPropertyUtils.getInt(
                     CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT));
             jobExecutionFailover.handleJobExecutionFailover(host);
+            metaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(host);
 
-            List<ServerInfo> activeServerList = registry.getActiveServerList();
+            List<ServerInfo> activeServerInfoList = registry.getActiveServerList();
             //Get the current active server, and then get all running tasks of the server other than the active server list
-            jobExecutionFailover.handleJobExecutionFailover(
-                    activeServerList
-                            .stream()
-                            .map(ServerInfo::toString)
-                            .collect(Collectors.toList()));
+            List<String> activeServerList = activeServerInfoList
+                    .stream()
+                    .map(ServerInfo::toString)
+                    .collect(Collectors.toList());
+
+            jobExecutionFailover.handleJobExecutionFailover(activeServerList);
+            metaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(activeServerList);
+
         } finally {
             registry.release(FAILOVER_KEY);
         }
     }
 
     public void blockUtilAcquireLock(String key) {
-        while (Stopper.isRunning() &&!registry.acquire(key, 10)) {
+        while (Stopper.isRunning() && !registry.acquire(key, 10)) {
                 ThreadUtils.sleep(1000);
         }
     }

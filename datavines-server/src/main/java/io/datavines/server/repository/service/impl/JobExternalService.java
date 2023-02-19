@@ -20,7 +20,6 @@ import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.JobExecutionRequest;
-import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.engine.config.DataVinesConfigurationManager;
@@ -29,8 +28,8 @@ import io.datavines.server.repository.entity.Command;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
-import io.datavines.server.repository.entity.catalog.CatalogCommand;
-import io.datavines.server.repository.entity.catalog.CatalogTask;
+import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchCommand;
+import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTask;
 import io.datavines.server.repository.service.*;
 import io.datavines.server.utils.DefaultDataSourceInfoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,10 +58,10 @@ public class JobExternalService {
     private ActualValuesService actualValuesService;
 
     @Autowired
-    private CatalogCommandService catalogCommandService;
+    private CatalogMetaDataFetchCommandService catalogMetaDataFetchCommandService;
 
     @Autowired
-    private CatalogTaskService catalogTaskService;
+    private CatalogMetaDataFetchTaskService catalogMetaDataFetchTaskService;
 
     @Autowired
     private DataSourceService dataSourceService;
@@ -79,8 +78,8 @@ public class JobExternalService {
         return commandService.getOne();
     }
 
-    public CatalogCommand getCatalogCommand(){
-        return catalogCommandService.getOne();
+    public CatalogMetaDataFetchCommand getCatalogCommand(){
+        return catalogMetaDataFetchCommandService.getOne();
     }
 
     public int deleteCommandById(long id){
@@ -88,15 +87,15 @@ public class JobExternalService {
     }
 
     public int deleteCatalogCommandById(long id){
-        return catalogCommandService.deleteById(id);
+        return catalogMetaDataFetchCommandService.deleteById(id);
     }
 
     public JobExecution executeCommand(Command command){
         return jobExecutionService.getById(command.getJobExecutionId());
     }
 
-    public CatalogTask executeCatalogCommand(CatalogCommand command){
-        return catalogTaskService.getById(command.getTaskId());
+    public CatalogMetaDataFetchTask executeCatalogCommand(CatalogMetaDataFetchCommand command){
+        return catalogMetaDataFetchTaskService.getById(command.getTaskId());
     }
 
     public int updateJobExecution(JobExecution jobExecution){
@@ -194,7 +193,7 @@ public class JobExternalService {
         return dataSourceService;
     }
 
-    public CatalogTaskService getCatalogTaskService() {
-        return  catalogTaskService;
+    public CatalogMetaDataFetchTaskService getCatalogTaskService() {
+        return catalogMetaDataFetchTaskService;
     }
 }

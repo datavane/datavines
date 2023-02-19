@@ -29,7 +29,6 @@ import io.datavines.server.repository.service.SlaJobService;
 import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -40,12 +39,9 @@ import java.util.Objects;
 @Slf4j
 public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> implements SlaJobService {
 
-    @Autowired
-    private SlaJobMapper slaJobMapper;
-
     @Override
     public List<SlaJobVO>  listSlaJob(Long slaId) {
-        return slaJobMapper.listSlaJob(slaId);
+        return baseMapper.listSlaJob(slaId);
     }
 
     @Override

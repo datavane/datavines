@@ -74,4 +74,6 @@ public interface CatalogEntityInstanceService extends IService<CatalogEntityInst
     List<DataTime2ValueItem> listTableRecords(String uuid, String starTime, String endTime);
 
     IPage<CatalogEntityIssueVO> getEntityIssueList(String uuid, Integer pageNumber, Integer pageSize);
+
+    List<String> getProfileJobSelectedColumns(String uuid);
 }

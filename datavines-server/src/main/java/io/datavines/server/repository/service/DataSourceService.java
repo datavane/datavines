@@ -17,6 +17,7 @@
 package io.datavines.server.repository.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.TestConnectionRequestParam;
@@ -28,7 +29,7 @@ import io.datavines.core.exception.DataVinesServerException;
 
 import java.util.List;
 
-public interface DataSourceService {
+public interface DataSourceService extends IService<DataSource> {
 
     boolean testConnect(TestConnectionRequestParam connectionParam);
 

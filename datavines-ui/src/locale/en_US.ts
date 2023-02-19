@@ -77,8 +77,8 @@ export default {
 
     home_search_placeholder: 'Search to DataSource',
     home_create_datasource: 'Create DataSource',
-    home_Metadata_scraping: 'Metadata Crawler',
-    home_Metadata_crawl_schedule: 'Metadata Crawler Schedule',
+    home_Metadata_scraping: 'Metadata Fetcher',
+    home_Metadata_crawl_schedule: 'Metadata Fetcher Schedule',
 
     // jobs
     jobs_list: 'Jobs',

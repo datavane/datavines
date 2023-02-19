@@ -31,8 +31,8 @@ public class PrestoConnectorParameterConverter implements ConnectorParameterConv
         config.put("table", parameter.get("table"));
         config.put("user", parameter.get("user"));
         config.put("password", parameter.get("password"));
-        String catalog = (String)parameter.get("catalog");
-        if (StringUtils.isNotEmpty(catalog)) {
+        String database = (String)parameter.get("database");
+        if (StringUtils.isNotEmpty(database)) {
             config.put("url", String.format("jdbc:presto://%s:%s/%s/%s",
                     parameter.get("host"),
                     parameter.get("port"),
@@ -42,7 +42,7 @@ public class PrestoConnectorParameterConverter implements ConnectorParameterConv
             config.put("url", String.format("jdbc:presto://%s:%s/%s",
                     parameter.get("host"),
                     parameter.get("port"),
-                    parameter.get("database")));
+                    parameter.get("catalog")));
         }
 
         return config;

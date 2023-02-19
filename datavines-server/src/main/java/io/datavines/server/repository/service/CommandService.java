@@ -16,9 +16,10 @@
  */
 package io.datavines.server.repository.service;
 
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.repository.entity.Command;
 
-public interface CommandService  {
+public interface CommandService extends IService<Command> {
 
     long insert(Command command);
 

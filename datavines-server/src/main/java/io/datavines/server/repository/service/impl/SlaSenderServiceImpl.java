@@ -42,13 +42,10 @@ import java.util.stream.Collectors;
 @Service
 public class SlaSenderServiceImpl extends ServiceImpl<SlaSenderMapper, SlaSender> implements SlaSenderService {
 
-    @Autowired
-    private SlaSenderMapper slaSenderMapper;
-
     @Override
     public IPage<SlaSenderVO> pageListSender(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize) {
         Page<Object> page = new Page<>(pageNumber, pageSize);
-        Page<SlaSenderVO> result = slaSenderMapper.pageListSender(page,  workspaceId, searchVal);
+        Page<SlaSenderVO> result = baseMapper.pageListSender(page,  workspaceId, searchVal);
         return result;
     }
 
@@ -84,7 +81,7 @@ public class SlaSenderServiceImpl extends ServiceImpl<SlaSenderMapper, SlaSender
 
     @Override
     public boolean updateSender(SlaSenderUpdate update) {
-        LambdaQueryWrapper<SlaSender> wrapper = new LambdaQueryWrapper();
+        LambdaQueryWrapper<SlaSender> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SlaSender::getWorkspaceId, update.getWorkspaceId());
         wrapper.eq(SlaSender::getName, update.getName());
         SlaSender existSlas = getOne(wrapper);
@@ -93,9 +90,6 @@ public class SlaSenderServiceImpl extends ServiceImpl<SlaSenderMapper, SlaSender
         }
         SlaSender sender = BeanConvertUtils.convertBean(update, SlaSender::new);
         sender.setUpdateTime(LocalDateTime.now());
-        boolean save = updateById(sender);
-        return save;
+        return updateById(sender);
     }
-
-
 }

@@ -17,16 +17,15 @@
 
 package io.datavines.server.repository.service;
 
-
+import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.job.schedule.JobScheduleCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.schedule.MapParam;
 import io.datavines.server.repository.entity.JobSchedule;
 
-
 import java.util.List;
 
-public interface JobScheduleService {
+public interface JobScheduleService extends IService<JobSchedule> {
 
     JobSchedule createOrUpdate(JobScheduleCreateOrUpdate jobScheduleCreate) throws DataVinesServerException;
 
@@ -37,5 +36,4 @@ public interface JobScheduleService {
     JobSchedule getByJobId(Long jobId);
 
     List<String> getCron(MapParam mapParam);
-
 }
