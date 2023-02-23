@@ -95,7 +95,7 @@ public interface LocalSink extends Component {
         try {
             String outputTable = config.getString(INVALIDATE_ITEMS_TABLE);
             if (StringUtils.isNotEmpty(outputTable) && !"null".equals(outputTable)) {
-                env.getSourceConnection().getConnection().createStatement().execute("DROP VIEW " + outputTable);
+                env.getSourceConnection().getConnection().createStatement().execute("DROP VIEW IF EXISTS " + outputTable);
             }
         } catch (SQLException e) {
             log.error("drop view error : {}", e);

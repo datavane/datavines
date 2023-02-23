@@ -225,6 +225,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                 PlaceholderUtils.replacePlaceholders(
                         sql, inputParameter,true),dbTable);
         configMap.put(JOB_EXECUTION_ID, jobExecutionInfo.getId());
+        configMap.put(INVALIDATE_ITEMS_TABLE, inputParameter.get(INVALIDATE_ITEMS_TABLE));
 
         if (expectedValue != null && StringUtils.isNotEmpty(expectedValue.getOutputTable())) {
             inputParameter.put(EXPECTED_VALUE, expectedValue.getName());

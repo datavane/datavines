@@ -74,6 +74,9 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     metricInputParameter.put(TABLE, outputTable);
+                    metricInputParameter.put(REGEX_KEY, "regexp(${column}, ${regex})");
+                    metricInputParameter.put(NOT_REGEX_KEY, connectorFactory.getDialect().getNotRegexKey());
+                    metricInputParameter.put(STRING_TYPE, "string");
 
                     sourceConfig.setPlugin(connectorFactory.getCategory());
                     sourceConfig.setConfig(connectorParameterMap);
@@ -104,7 +107,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     sourceConfigs.add(sourceConfig);
                 }
 
-                metricInputParameter.put("actual_value", "actual_value");
+                metricInputParameter.put("actual_value", "actual_value_" + metricUniqueKey);
 
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
 

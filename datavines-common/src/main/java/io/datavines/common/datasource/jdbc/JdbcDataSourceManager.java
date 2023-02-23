@@ -53,6 +53,7 @@ public class JdbcDataSourceManager {
             druidDataSource.setPassword(StringUtils.isEmpty(baseJdbcDataSourceInfo.getPassword()) ? null : baseJdbcDataSourceInfo.getPassword());
             druidDataSource.setDriverClassName(baseJdbcDataSourceInfo.getDriverClass());
             druidDataSource.setBreakAfterAcquireFailure(true);
+            druidDataSource.setValidationQuery(baseJdbcDataSourceInfo.getValidationQuery());
             dataSourceMap.put(baseJdbcDataSourceInfo.getUniqueKey(), druidDataSource);
             return druidDataSource;
         }

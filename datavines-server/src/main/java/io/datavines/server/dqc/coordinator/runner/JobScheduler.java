@@ -16,7 +16,6 @@
  */
 package io.datavines.server.dqc.coordinator.runner;
 
-import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.utils.*;
 import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
 import io.datavines.server.registry.Register;
@@ -66,7 +65,7 @@ public class JobScheduler extends Thread {
                         CommonPropertyUtils.getDouble(RESERVED_MEMORY, RESERVED_MEMORY_DEFAULT));
 
                 if (!runCheckFlag) {
-                    Thread.sleep(SLEEP_TIME_MILLIS);
+                    ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                     continue;
                 }
 
@@ -80,8 +79,7 @@ public class JobScheduler extends Thread {
                         JobExecution jobExecution = jobExternalService.executeCommand(command);
                         if (jobExecution != null) {
                             logger.info("start submit jobExecution : {} ", JSONUtils.toJsonString(jobExecution));
-                            JobExecutionRequest jobExecutionRequest = jobExecuteManager.buildJobExecutionRequest(jobExecution);
-                            jobExecuteManager.addExecuteCommand(jobExecutionRequest);
+                            jobExecuteManager.addExecuteCommand(jobExecution);
                             jobExternalService.deleteCommandById(command.getId());
                             logger.info(String.format("submit success, jobExecution : %s", jobExecution.getName()) );
                         }

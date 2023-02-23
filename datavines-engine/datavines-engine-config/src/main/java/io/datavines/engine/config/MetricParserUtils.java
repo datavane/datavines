@@ -103,12 +103,6 @@ public class MetricParserUtils {
         config.put(SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult,true));
         config.put(OUTPUT_TABLE, executeSql.getResultTable());
         config.put(INVALIDATE_ITEMS_TABLE, inputParameterValueResult.get(INVALIDATE_ITEMS_TABLE));
-        config.put(ERROR_DATA_DIR, inputParameterValueResult.get(ERROR_DATA_DIR));
-        config.put(ERROR_DATA_FILE_NAME, inputParameterValueResult.get(ERROR_DATA_FILE_NAME));
-        config.put(SRC_CONNECTOR_TYPE, inputParameterValueResult.get(SRC_CONNECTOR_TYPE));
-        config.put(INVALIDATE_ITEM_CAN_OUTPUT, inputParameterValueResult.get(INVALIDATE_ITEM_CAN_OUTPUT));
-        config.put(METRIC_DATABASE, inputParameterValueResult.get(METRIC_DATABASE));
-        config.put(COLUMN_SEPARATOR, inputParameterValueResult.get(COLUMN_SEPARATOR));
         TransformConfig transformerConfig = new TransformConfig(SQL, config);
         transformerConfig.setType(type);
         transformerConfigList.add(transformerConfig);
@@ -145,8 +139,8 @@ public class MetricParserUtils {
         newInputParameterValue.remove(ACTUAL_TABLE);
         newInputParameterValue.remove(REGEX_KEY);
         newInputParameterValue.remove(NOT_REGEX_KEY);
-        newInputParameterValue.remove("validate_result_data_dir");
-        newInputParameterValue.remove("metric_unique_key");
+        newInputParameterValue.remove(VALIDATE_RESULT_DATA_DIR);
+        newInputParameterValue.remove(METRIC_UNIQUE_KEY);
 
         StringBuilder sb = new StringBuilder();
         for (String value : newInputParameterValue.values()) {

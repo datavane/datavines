@@ -72,4 +72,9 @@ public class PostgreSqlDataSourceInfo extends BaseJdbcDataSourceInfo {
         logger.debug("properties : {}", other);
         return other;
     }
+
+    @Override
+    public String getValidationQuery() {
+        return "SELECT 'x'";
+    }
 }

@@ -16,11 +16,8 @@
  */
 package io.datavines.common.datasource.jdbc;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import io.datavines.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.sql.DataSource;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

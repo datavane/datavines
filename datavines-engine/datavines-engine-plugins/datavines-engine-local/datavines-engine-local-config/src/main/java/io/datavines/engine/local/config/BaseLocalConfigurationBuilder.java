@@ -69,9 +69,9 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                     metricInputParameter.put(REGEX_KEY, connectorFactory.getDialect().getRegexKey());
                     metricInputParameter.put(NOT_REGEX_KEY, connectorFactory.getDialect().getNotRegexKey());
+                    metricInputParameter.put(STRING_TYPE, connectorFactory.getDialect().getStringType());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, connectorFactory.getDialect().invalidateItemCanOutput());
-                    metricInputParameter.put(STRING_TYPE, connectorFactory.getDialect().getStringType());
 
                     if (connectorSet.contains(connectorUUID)) {
                         continue;
