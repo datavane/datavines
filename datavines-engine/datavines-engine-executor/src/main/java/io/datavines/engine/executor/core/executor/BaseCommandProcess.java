@@ -96,7 +96,7 @@ public abstract class BaseCommandProcess {
 
             int exitValue = process.waitFor();
 
-            String appId = YarnUtils.getYarnAppId(jobExecutionRequest.getTenantCode(), jobExecutionRequest.getJobExecutionName());
+            String appId = YarnUtils.getYarnAppId(jobExecutionRequest.getTenantCode(), jobExecutionRequest.getJobExecutionUniqueId());
             result.setApplicationId(appId);
 
             // if yarn job , yarn state is final state

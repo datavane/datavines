@@ -52,6 +52,10 @@ public abstract class BaseJdbcDataSourceInfo {
         return jdbcConnectionInfo.getPort();
     }
 
+    public String getValidationQuery() {
+        return "Select 1";
+    }
+
     public abstract String getAddress();
 
     public String getCatalog() {

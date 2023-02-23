@@ -185,7 +185,7 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
     @Override
     public List<JobExecution> listJobExecutionNotInServerList(List<String> hostList) {
         return baseMapper.selectList(new QueryWrapper<JobExecution>()
-                .in("execute_host", hostList)
+                .notIn("execute_host", hostList)
                 .in("status",ExecutionStatus.RUNNING_EXECUTION.getCode(), ExecutionStatus.SUBMITTED_SUCCESS.getCode()));
     }
 

@@ -24,7 +24,6 @@ import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.entity.JobExecutionRequest;
-import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.log.JobExecutionLogDiscriminator;
 import io.datavines.common.utils.*;
@@ -115,21 +114,11 @@ public class JobExecuteManager {
     public void start() {
         JobExecutionExecutor jobExecutionExecutor = new JobExecutionExecutor();
         executorService.submit(jobExecutionExecutor);
-        logger.info("jobExecution sender start");
+        logger.info("job executor start");
 
         JobExecutionResponseOperator responseOperator = new JobExecutionResponseOperator();
         executorService.submit(responseOperator);
-        logger.info("jobExecution response operator start");
-    }
-
-    public void addExecuteCommand(JobExecutionRequest jobExecutionRequest){
-        logger.info("put into wait queue to send {}", JSONUtils.toJsonString(jobExecutionRequest));
-        unFinishedJobExecutionMap.put(jobExecutionRequest.getJobExecutionId(), jobExecutionRequest);
-        CommandContext commandContext = new CommandContext();
-        commandContext.setCommandCode(CommandCode.JOB_EXECUTE_REQUEST);
-        commandContext.setJobExecutionId(jobExecutionRequest.getJobExecutionId());
-        commandContext.setJobExecutionRequest(jobExecutionRequest);
-        jobExecutionQueue.offer(commandContext);
+        logger.info("job execution response operator start");
     }
 
     public void addKillCommand(Long jobExecutionId){
@@ -139,7 +128,7 @@ public class JobExecuteManager {
         jobExecutionQueue.offer(commandContext);
     }
 
-    public JobExecutionRequest getExecutingJobExecution(Long jobExecutionId){
+    private JobExecutionRequest getExecutingJobExecution(Long jobExecutionId){
         return unFinishedJobExecutionMap.get(jobExecutionId);
     }
 
@@ -183,7 +172,7 @@ public class JobExecuteManager {
         try {
             FileUtils.createWorkDirAndUserIfAbsent(execLocalPath, jobExecutionRequest.getTenantCode());
         } catch (Exception ex){
-            logger.error(String.format("create execLocalPath : %s", execLocalPath), ex);
+            logger.error(String.format("create execLocal path : %s", execLocalPath), ex);
         }
         jobExecutionRequest.setExecuteFilePath(execLocalPath);
         Path path  = new File(execLocalPath).toPath();
@@ -215,7 +204,7 @@ public class JobExecuteManager {
         jobExecuteService.submit(jobRunner);
     }
 
-    public String buildJobExecutionUniqueId(String executePlatformType, String engineType, long jobExecutionId){
+    private String buildJobExecutionUniqueId(String executePlatformType, String engineType, long jobExecutionId){
         // LOCAL_SPARK_1521012323213]
         return String.format("%s_%s_%s",
                 executePlatformType.toLowerCase(),
@@ -309,7 +298,7 @@ public class JobExecuteManager {
                                 jobExternalService.updateJobExecution(jobExecution);
                                 dataQualityResultOperator.operateDqExecuteResult(jobExecutionRequest);
                             } else if (ExecutionStatus.of(jobExecutionRequest.getStatus()).typeIsFailure()) {
-                                int retryNums = jobExecution.getRetryTimes();
+                                int retryNum = jobExecution.getRetryTimes();
                                 if (jobExecution.getRetryTimes() > 0) {
                                     logger.info("retry job execution: " + JSONUtils.toJsonString(jobExecution));
                                     CommandContext commandContext = new CommandContext();
@@ -317,7 +306,7 @@ public class JobExecuteManager {
                                     commandContext.setJobExecutionId(jobExecutionRequest.getJobExecutionId());
                                     commandContext.setCommandCode(CommandCode.JOB_EXECUTE_REQUEST);
                                     jobExecutionQueue.offer(commandContext);
-                                    jobExternalService.updateJobExecutionRetryTimes(jobExecutionRequest.getJobExecutionId(), retryNums - 1);
+                                    jobExternalService.updateJobExecutionRetryTimes(jobExecutionRequest.getJobExecutionId(), retryNum - 1);
                                     jobExternalService.deleteJobExecutionResultByJobExecutionId(jobExecutionRequest.getJobExecutionId());
                                     jobExternalService.deleteActualValuesByJobExecutionId(jobExecutionRequest.getJobExecutionId());
                                 } else {
@@ -353,7 +342,7 @@ public class JobExecuteManager {
         DataSource dataSource = dataSourceService.getDataSourceById(dataSourceId);
         String dataSourceName = dataSource.getName();
         String dataSourceType = dataSource.getType();
-        messageList.add(String.format("job %s on %s Datasource %s failure, please check detail", jobName, dataSourceType, dataSourceName));
+        messageList.add(String.format("job %s on %s datasource %s failure, please check detail", jobName, dataSourceType, dataSourceName));
         message.setSubject(String.format("datavines job %s execute failure", jobName));
         String jsonMessage = JsonUtils.toJsonString(messageList);
         message.setMessage(jsonMessage);
@@ -381,7 +370,7 @@ public class JobExecuteManager {
      * put the response into queue
      * @param jobExecutionResponseContext jobExecutionResponseContext
      */
-    public void putResponse(JobExecutionResponseContext jobExecutionResponseContext){
+    private void putResponse(JobExecutionResponseContext jobExecutionResponseContext){
         responseQueue.offer(jobExecutionResponseContext);
     }
 
@@ -448,7 +437,7 @@ public class JobExecuteManager {
         putResponse(jobExecutionResponseContext);
     }
 
-    public void processJobExecutionAckResponse(JobExecuteAckCommand jobExecuteAckCommand) {
+    private void processJobExecutionAckResponse(JobExecuteAckCommand jobExecuteAckCommand) {
         JobExecutionRequest jobExecutionRequest = getExecutingJobExecution(jobExecuteAckCommand.getJobExecutionId());
         if (jobExecutionRequest == null) {
             jobExecutionRequest =  new JobExecutionRequest();
@@ -477,11 +466,37 @@ public class JobExecuteManager {
     }
 
     public void addFailoverJobExecutionRequest(JobExecution jobExecution) throws DataVinesException {
-        JobExecutionRequest jobExecutionRequest = buildJobExecutionRequest(jobExecution);
+        JobExecutionRequest jobExecutionRequest = getJobExecutionRequest(jobExecution);
         unFinishedJobExecutionMap.put(jobExecutionRequest.getJobExecutionId(), jobExecutionRequest);
     }
 
-    public JobExecutionRequest buildJobExecutionRequest(JobExecution jobExecution) throws DataVinesException {
+    private JobExecutionRequest getJobExecutionRequest(JobExecution jobExecution) {
+        JobExecutionRequest jobExecutionRequest;
+        try {
+            jobExecutionRequest = buildJobExecutionRequest(jobExecution);
+        } catch (Exception e) {
+            logger.error("build job execution request error : {}", e);
+            jobExecution.setEndTime(LocalDateTime.now());
+            jobExecution.setStatus(ExecutionStatus.FAILURE);
+            jobExternalService.updateJobExecution(jobExecution);
+            throw e;
+        }
+        return jobExecutionRequest;
+    }
+
+    public void addExecuteCommand(JobExecution jobExecution){
+        JobExecutionRequest jobExecutionRequest = getJobExecutionRequest(jobExecution);
+
+        logger.info("put into wait queue to send {}", JSONUtils.toJsonString(jobExecutionRequest));
+        unFinishedJobExecutionMap.put(jobExecutionRequest.getJobExecutionId(), jobExecutionRequest);
+        CommandContext commandContext = new CommandContext();
+        commandContext.setCommandCode(CommandCode.JOB_EXECUTE_REQUEST);
+        commandContext.setJobExecutionId(jobExecutionRequest.getJobExecutionId());
+        commandContext.setJobExecutionRequest(jobExecutionRequest);
+        jobExecutionQueue.offer(commandContext);
+    }
+
+    private JobExecutionRequest buildJobExecutionRequest(JobExecution jobExecution) throws DataVinesException {
         // need to convert job parameter to other parameter
         JobExecutionRequest jobExecutionRequest = new JobExecutionRequest();
         jobExecutionRequest.setJobExecutionId(jobExecution.getId());

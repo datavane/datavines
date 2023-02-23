@@ -113,7 +113,7 @@ public class CatalogMetaDataFetchTaskServiceImpl
     @Override
     public List<CatalogMetaDataFetchTask> listTaskNotInServerList(List<String> hostList) {
         return baseMapper.selectList(new QueryWrapper<CatalogMetaDataFetchTask>()
-                .in("execute_host", hostList)
+                .notIn("execute_host", hostList)
                 .in("status",ExecutionStatus.RUNNING_EXECUTION.getCode(), ExecutionStatus.SUBMITTED_SUCCESS.getCode()));
     }
 

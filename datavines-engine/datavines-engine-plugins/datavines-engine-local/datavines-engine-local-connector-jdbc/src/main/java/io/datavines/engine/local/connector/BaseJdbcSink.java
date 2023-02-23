@@ -110,6 +110,7 @@ public abstract class BaseJdbcSink implements LocalSink {
                     break;
                 case PROFILE_VALUE:
                     executeDataSink(env, "dv_catalog_entity_profile", getProfileValueTableSql(), inputParameter);
+                    after(env, config);
                     break;
                 default:
                     break;
@@ -167,17 +168,11 @@ public abstract class BaseJdbcSink implements LocalSink {
         boolean flag = false ;
         //一个查询该表所有的语句。
         String sql = dialect.getTableExistsQuery(tableName);
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
+        try (Statement statement = connection.createStatement()) {
             statement.executeQuery(sql);
-            flag =  true;
-        } catch(Exception e) {
+            flag = true;
+        } catch (Exception e) {
             log.warn("table {} is not exist", tableName);
-        } finally {
-            if (statement != null) {
-                statement.close();
-            }
         }
         return flag;
     }

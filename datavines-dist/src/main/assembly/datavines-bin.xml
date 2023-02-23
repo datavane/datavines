@@ -101,6 +101,9 @@
                 <include>org.apache.httpcomponents:httpclient</include>
                 <include>org.apache.httpcomponents:httpcore</include>
                 <include>ru.yandex.clickhouse:clickhouse-jdbc</include>
+                <include>org.postgresql:postgresql</include>
+                <include>com.facebook.presto:presto-jdbc</include>
+                <include>io.trino:trino-jdbc</include>
             </includes>
         </dependencySet>
     </dependencySets>

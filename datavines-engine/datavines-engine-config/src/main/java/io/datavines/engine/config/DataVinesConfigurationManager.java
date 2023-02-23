@@ -80,18 +80,16 @@ public class DataVinesConfigurationManager {
         if (sqlMetric == null) {
             throw new DataVinesException("can not find the metric");
         }
+
         JobConfigurationBuilder builder = PluginLoader
                 .getPluginLoader(JobConfigurationBuilder.class)
                 .getOrCreatePlugin(jobExecutionInfo.getEngineType() + "_" + sqlMetric.getType().getDescription());
-        switch (jobType) {
-            case DATA_PROFILE:
-                builder = PluginLoader
-                        .getPluginLoader(JobConfigurationBuilder.class)
-                        .getOrCreatePlugin(jobExecutionInfo.getEngineType() + "_data_profile");
-                default:
-                    break;
-        }
 
+        if (jobType == JobType.DATA_PROFILE) {
+            builder = PluginLoader
+                    .getPluginLoader(JobConfigurationBuilder.class)
+                    .getOrCreatePlugin(jobExecutionInfo.getEngineType() + "_data_profile");
+        }
 
         builder.init(inputParameter, jobExecutionInfo);
 

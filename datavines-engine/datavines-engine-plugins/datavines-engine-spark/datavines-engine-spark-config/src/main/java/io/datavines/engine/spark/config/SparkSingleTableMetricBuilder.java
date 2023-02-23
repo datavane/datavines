@@ -43,9 +43,11 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
+
+                String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
                 ExpectedValue expectedValue = PluginLoader
                         .getPluginLoader(ExpectedValue.class)
-                        .getNewPlugin(parameter.getExpectedType());
+                        .getNewPlugin(expectedType);
 
                 metricInputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
 

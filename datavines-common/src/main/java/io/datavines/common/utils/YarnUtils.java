@@ -76,20 +76,20 @@ public class YarnUtils {
             //resource manager HA enabled
             appUrl = getAppAddress(YARN_APPLICATION_STATUS_ADDRESS, YARN_RESOURCE_MANAGER_HA_IDS);
             yarnEnabled = true;
-            logger.info("ha application url : {}", appUrl);
         } else if (YARN_MODE_STANDALONE.equals(YARN_MODE)) {
             //single resource manager enabled
             appUrl = YARN_APPLICATION_STATUS_ADDRESS;
             yarnEnabled = true;
-            logger.info("application url : {}", appUrl);
         }
 
         if (StringUtils.isEmpty(appUrl)) {
             return appUrl;
         }
 
-        return String.format(appUrl, CommonPropertyUtils.getInt(
+        appUrl = String.format(appUrl, CommonPropertyUtils.getInt(
                 YARN_RESOURCE_MANAGER_HTTP_ADDRESS_PORT_KEY, 8088),applicationId);
+        logger.info("application url : {}", appUrl);
+        return appUrl;
     }
 
     /**
@@ -103,6 +103,9 @@ public class YarnUtils {
 
         //get active ResourceManager
         String activeResourceManager = getActiveResourceManagerName(rmHa);
+        if (StringUtils.isEmpty(activeResourceManager)) {
+            return null;
+        }
         //http://ds1:8088/ws/v1/cluster/apps/%s
         String[] split1 = appAddress.split(CommonConstants.DOUBLE_SLASH);
 
@@ -180,7 +183,7 @@ public class YarnUtils {
                     + "user="+user
                     + "&applicationTags="+tags
                     + "&limit=1";
-
+            logger.info("get yarn application id url : {}", applicationUrl);
             String responseContent = HttpUtils.get(applicationUrl);
             JsonNode node = JSONUtils.parseNode(responseContent);
             if (node != null) {
@@ -190,7 +193,7 @@ public class YarnUtils {
             }
 
         } catch (Exception e) {
-            logger.warn("yarn application get error: {}", e.getLocalizedMessage());
+            logger.warn("yarn application get applicationId error: {}", e.getMessage());
             return null;
         }
     }
