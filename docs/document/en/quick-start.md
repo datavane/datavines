@@ -22,14 +22,6 @@ The metadata of `DataVines` is stored in a relational database. Currently, `MySQ
 
 ### Build Project
 
-Using `MySQL` as the metadata storage engine requires the following operations
-
-````
-vi pom.xml
-/mysql-connector-java # Search for mysql-connector-java
-Modify when the packaging deployment: <!--<scope>test</scope>-->
-````
-
 Build and unpack
 
 ```shell

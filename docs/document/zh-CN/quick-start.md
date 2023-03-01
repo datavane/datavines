@@ -22,14 +22,6 @@ cd datavines
 
 ### 项目构建
 
-使用`MySQL`做为元数据存储引擎需要执行以下操作
-
-```
-vi pom.xml
-/mysql-connector-java # 搜索 mysql-connector-java
-打包部署时修改为: <!--<scope>test</scope>-->
-```
-
 打包并解压
 
 ```shell
