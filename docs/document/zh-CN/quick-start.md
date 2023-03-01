@@ -22,14 +22,6 @@ cd datavines
 
 ### 项目构建
 
-使用`MySQL`做为元数据存储引擎需要执行以下操作
-
-```
-vi pom.xml
-/mysql-connector-java # 搜索 mysql-connector-java
-将 <scope>test</scope> 注释掉，保存并退出
-```
-
 打包并解压
 
 ```shell
@@ -75,7 +67,7 @@ yarn.resource.manager.ha.ids=192.168.0.1,192.168.0.2
 
 ```
 cd bin
-sh datavines-daemon.sh start server mysql
+sh datavines-daemon.sh start mysql
 ```
 
 查看日志，如果日志里面没有报错信息，并且能看到`[INFO] 2022-04-10 12:29:05.447 io.datavines.server.DataVinesServer:[61] - Started DataVinesServer in 3.97 seconds (JVM running for 4.69)`的时候，证明服务已经成功启动

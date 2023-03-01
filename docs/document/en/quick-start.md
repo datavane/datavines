@@ -22,14 +22,6 @@ The metadata of `DataVines` is stored in a relational database. Currently, `MySQ
 
 ### Build Project
 
-Using `MySQL` as the metadata storage engine requires the following operations
-
-````
-vi pom.xml
-/mysql-connector-java # Search for mysql-connector-java
-Comment out <scope>test</scope>, save and exit
-````
-
 Build and unpack
 
 ```shell
@@ -75,7 +67,7 @@ yarn.resource.manager.ha.ids=192.168.0.1,192.168.0.2
 
 ````
 cd bin
-sh datavines-daemon.sh start server mysql
+sh datavines-daemon.sh start mysql
 ````
 
 Check the log, if there is no error message in the log, and you can see `[INFO] 2022-04-10 12:29:05.447 io.datavines.server.DataVinesServer:[61] - Started DataVinesServer in 3.97 seconds (JVM running for 4.69 )`, it proves that the service has been successfully started
