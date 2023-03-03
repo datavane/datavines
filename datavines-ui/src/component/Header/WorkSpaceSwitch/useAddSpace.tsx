@@ -33,7 +33,7 @@ const Inner = ({ form }: InnerProps) => {
                     },
                 ],
                 initialValue: workspaceId ? workspace?.name : undefined,
-                widget: <Input />,
+                widget: <Input autoComplete="off" />,
             },
         ],
     };

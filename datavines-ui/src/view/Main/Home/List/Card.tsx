@@ -72,7 +72,7 @@ const Index: React.FC<IndexProps> = ({
                                             label: <div style={{ width: '100%', height: '100%' }} onClick={() => (onEdit(item))}>
                                                 <EditOutlined style={{ marginRight: '4px' }} />
                                                 {intl.formatMessage({ id: 'common_edit' })}
-                                            </div>,
+                                                   </div>,
                                             key: 'edit',
                                             // icon: ,
                                         },
@@ -238,6 +238,7 @@ const Index: React.FC<IndexProps> = ({
                     setisScheduleOpen(false);
                 }}
                 open={isScheduleOpen}
+                maskClosable={false}
             >
                 <Schedule
                     onSavaEnd={() => {
@@ -247,6 +248,7 @@ const Index: React.FC<IndexProps> = ({
                     style={{ height: 'auto' }}
                     jobId={uuid}
                     isShowPush
+                    api="catalog/metadata"
                 />
             </Modal>
         </>

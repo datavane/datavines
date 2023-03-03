@@ -22,7 +22,7 @@ export const CreateSLAsComponent = ({ form, detail, innerRef }: InnerProps) => {
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
     const schema: IFormRender = {
         name: 'sla-form',
-        layout: 'horizontal',
+        layout: 'vertical',
         formItemProps: {
             style: { marginBottom: 10 },
         },
@@ -37,7 +37,7 @@ export const CreateSLAsComponent = ({ form, detail, innerRef }: InnerProps) => {
                         message: intl.formatMessage({ id: 'common_required_tip' }),
                     },
                 ],
-                widget: <Input />,
+                widget: <Input autoComplete="off" />,
             },
             {
                 label: intl.formatMessage({ id: 'common_desc' }),
@@ -49,7 +49,7 @@ export const CreateSLAsComponent = ({ form, detail, innerRef }: InnerProps) => {
                         message: intl.formatMessage({ id: 'common_required_tip' }),
                     },
                 ],
-                widget: <Input />,
+                widget: <Input autoComplete="off" />,
             },
         ],
     };

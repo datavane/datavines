@@ -193,7 +193,7 @@ const Index = () => {
                         name="name"
                         rules={[{ required: true, message: intl.formatMessage({ id: 'common_input_tip' }) }]}
                     >
-                        <Input />
+                        <Input autoComplete="off" />
                     </Form.Item>
                 </Form>
             </Modal>

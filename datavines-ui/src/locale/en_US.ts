@@ -204,6 +204,7 @@ export default {
     job_Avg: 'Avg',
     job_StdDev: 'StdDev',
     job_Varaiance: 'Varaiance',
+    job_chooes_col: 'Chooes Col',
 
     warn_SLAs_name: 'Name',
     warn_SLAs_type: 'Type',
@@ -219,6 +220,8 @@ export default {
     warn_setting_notice_edit: 'Edit notification',
     warn_setting_notice_sender: 'Sender',
     warn_monitor_tip: 'SLAs for monitoring {{data}} related data',
+    warn_notice: 'Notice',
+    warn_association_rule_jobs: 'Association Rule Jobs',
 
     workspace_name: 'Name',
     workspace_exit: 'Exit space',

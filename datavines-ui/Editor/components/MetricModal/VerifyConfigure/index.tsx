@@ -92,7 +92,7 @@ const Index = ({ form, detail }: InnerProps) => {
                         label={intl.formatMessage({ id: 'dv_metric_verify_threshold' })}
                         name="threshold"
                     >
-                        <Input />
+                        <Input autoComplete="off" />
                     </Form.Item>
                 </Col>
             </Row>

@@ -44,7 +44,7 @@ export const CreateUserComponent = ({ form, detail, innerRef }: InnerProps) => {
                         message: intl.formatMessage({ id: 'common_required_tip' }),
                     },
                 ],
-                widget: <Input />,
+                widget: <Input autoComplete="off" />,
             },
             {
                 label: intl.formatMessage({ id: 'email_text' }),
@@ -56,7 +56,7 @@ export const CreateUserComponent = ({ form, detail, innerRef }: InnerProps) => {
                         message: intl.formatMessage({ id: 'common_required_tip' }),
                     },
                 ],
-                widget: <Input />,
+                widget: <Input autoComplete="off" />,
             },
         ],
     };

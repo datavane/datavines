@@ -60,7 +60,7 @@ const Login = () => {
                             style={{ marginBottom: 15 }}
                             rules={[{ required: true, message: intl.formatMessage({ id: 'login_username_msg' }) }]}
                         >
-                            <Input style={{ height: 50 }} size="large" prefix={<UserOutlined />} />
+                            <Input autoComplete="off" style={{ height: 50 }} size="large" prefix={<UserOutlined />} />
                         </Form.Item>
 
                         <Form.Item

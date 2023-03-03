@@ -24,6 +24,7 @@ import ProfileContent from './profileContent';
 import Schedule from '@/view/Main/HomeDetail/Jobs/components/Schedule';
 
 import store from '@/store';
+import Jobs from '@/view/Main/HomeDetail/Jobs/JobsList';
 
 type DIndexProps = {
     onShowModal?: (...args: any[]) => any;
@@ -387,8 +388,31 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             ],
         }));
     };
+    const [chooesColList, setChooesColList] = useState([]);
+    const [chooesColModalOpen, setChooesColModalOpen] = useState(false);
+    const [colCheckList, setColCheckList] = useState<string[]>([]);
+    // const [defaultSelectedRowKeys, setDefaultSelectedRowKeys] = useState([]);
+    const chooseColumns = [{
+        title: intl.formatMessage({ id: 'job_Column_Name' }),
+        dataIndex: 'name',
+        key: 'value',
+    }];
+    const runProfileGetCol = async () => {
+        const res = await $http.get(`/catalog/list/column-with-detail/${selectDatabases[currentIndex]?.uuid}`);
+        // console.log('res', res);
+        setChooesColList(res);
+
+        const resCheck = await $http.get(`/catalog/profile/selected-columns/${selectDatabases[currentIndex]?.uuid}?uuid=${selectDatabases[currentIndex]?.uuid}`);
+        setColCheckList(resCheck);
+        setChooesColModalOpen(true);
+    };
     const runProfile = async () => {
-        await $http.post(`/catalog/profile/execute?uuid=${selectDatabases[currentIndex]?.uuid}`).then(() => {
+        await $http.post('/catalog/profile/execute-select-columns', {
+            selectAll: chooesColList.length === colCheckList.length,
+            selectedColumnList: colCheckList,
+            uuid: selectDatabases[currentIndex]?.uuid,
+        }).then(() => {
+            setChooesColModalOpen(false);
             message.success(intl.formatMessage({ id: 'common_success' }));
         });
     };
@@ -616,7 +640,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                             setisScheduleOpen(true);
                                         },
                                     }}
-                                    onClick={() => runProfile()}
+                                    onClick={() => runProfileGetCol()}
                                     style={{ marginLeft: '10px', display: 'inline' }}
                                 >
                                     {intl.formatMessage({ id: 'jobs_run_Profile' })}
@@ -768,7 +792,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     </div>
                 </IF>
             </IF>
-            <Modal title={intl.formatMessage({ id: 'label_add' })} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
+            <Modal maskClosable={false} title={intl.formatMessage({ id: 'label_add' })} open={isModalOpen} onOk={handleOk} onCancel={handleCancel}>
                 <Form
                     labelCol={{ span: 4 }}
                     wrapperCol={{ span: 20 }}
@@ -801,6 +825,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     setisScheduleOpen(false);
                 }}
                 open={isScheduleOpen}
+                maskClosable={false}
             >
                 <Schedule
                     onSavaEnd={() => {
@@ -825,6 +850,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 ]}
                 onCancel={() => setIsIssueModalOpen(false)}
                 title={intl.formatMessage({ id: 'job_issue_detail' })}
+                maskClosable={false}
             >
                 <Table
                     size="small"
@@ -834,6 +860,41 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     pagination={
                         false
                     }
+                />
+            </Modal>
+            <Modal
+                width="400px"
+                open={chooesColModalOpen}
+                title={intl.formatMessage({ id: 'job_chooes_col' })}
+                maskClosable={false}
+                footer={[
+                    <Button key="good" onClick={() => setChooesColModalOpen(false)}>
+                        {intl.formatMessage({ id: 'common_Cancel' })}
+                    </Button>,
+                    <Button key="bad" type="primary" onClick={() => runProfile()}>
+                        {intl.formatMessage({ id: 'jobs_run' })}
+                    </Button>,
+                ]}
+                onCancel={() => setChooesColModalOpen(false)}
+                destroyOnClose
+            >
+                <Table
+                    style={{ marginTop: 20 }}
+                    rowSelection={{
+                        type: 'checkbox',
+                        onChange: (val:any[]) => setColCheckList(val),
+                        defaultSelectedRowKeys: colCheckList,
+                    }}
+                    size="small"
+                    dataSource={chooesColList}
+                    columns={chooseColumns}
+                    pagination={
+                        false
+                    }
+                    rowKey="name"
+                    scroll={{
+                        y: 300,
+                    }}
                 />
             </Modal>
             <RenderModal />

@@ -204,6 +204,7 @@ export default {
     job_Avg: '平均',
     job_StdDev: '标准开发',
     job_Varaiance: '方差',
+    job_chooes_col: '选择列',
 
     warn_SLAs_name: '名称',
     warn_SLAs_type: '类型',
@@ -219,6 +220,8 @@ export default {
     warn_setting_notice_edit: '编辑通知',
     warn_setting_notice_sender: '发送者',
     warn_monitor_tip: '用于监控{{data}}相关数据的SLAs',
+    warn_notice: '通知管理',
+    warn_association_rule_jobs: '关联规则作业',
 
     workspace_name: '空间名称',
     workspace_exit: '退出空间',
