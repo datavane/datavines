@@ -71,6 +71,8 @@ management:
     tags:
       application: ${spring.application.name}
 
+logging:
+  config: classpath:server-logback.xml
 ---
 spring:
   config:
