@@ -38,9 +38,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.api.ConfigConstants.EXPECTED_VALUE;
-import static io.datavines.engine.api.ConfigConstants.INVALIDATE_ITEMS_TABLE;
-import static io.datavines.engine.api.ConfigConstants.SRC_CONNECTOR_TYPE;
+import static io.datavines.engine.api.ConfigConstants.*;
 
 public interface LocalSink extends Component {
 

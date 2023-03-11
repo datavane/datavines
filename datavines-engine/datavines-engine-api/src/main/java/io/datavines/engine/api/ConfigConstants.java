@@ -36,6 +36,7 @@ public class ConfigConstants {
     public static final String EXPECTED_TYPE = "expected_type";
     public static final String EXPECTED_TABLE = "expected_table";
     public static final String EXPECTED_VALUE = "expected_value";
+    public static final String EXPECTED_VALUE_DEFAULT = "expected_value_default";
     public static final String EXPECTED_EXECUTE_SQL = "expected_execute_sql";
     public static final String MAPPING_COLUMNS = "mapping_columns";
     public static final String ON_CLAUSE = "on_clause";
@@ -67,7 +68,7 @@ public class ConfigConstants {
     public static final String ERROR_DATA_DIR = "error_data_dir";
     public static final String ERROR_DATA_FILE_NAME = "error_data_file_name";
     public static final String VALIDATE_RESULT_DATA_DIR = "validate_result_data_dir";
-    public static final String INVALIDATE_ITEM_CAN_OUTPUT = "validate_item_can_output";
+    public static final String INVALIDATE_ITEM_CAN_OUTPUT = "invalidate_item_can_output";
 
     public static final String DATABASE = "database";
     public static final String USER = "user";
@@ -84,6 +85,8 @@ public class ConfigConstants {
     public static final String DATA_DIR = "data_dir";
     public static final String METRIC_DATABASE = "metric_database";
     public static final String METRIC_UNIQUE_KEY = "metric_unique_key";
+
+    public static final String FIX_VALUE = "fix_value";
 
     public static final String TRUE = "true";
     public static final String FALSE = "false";

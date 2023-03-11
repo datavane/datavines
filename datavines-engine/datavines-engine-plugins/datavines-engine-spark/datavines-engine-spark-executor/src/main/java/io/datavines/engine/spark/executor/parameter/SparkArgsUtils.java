@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 import io.datavines.common.utils.ArgsUtils;
 
-/**
- * spark args utils
- */
 public class SparkArgsUtils {
 
     private static final String SPARK_CLUSTER = "cluster";

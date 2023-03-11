@@ -66,7 +66,7 @@ public class MysqlRegistry implements Registry {
     @Override
     public boolean release(String key){
         try {
-            return mysqlMutex.release();
+            return mysqlMutex.release(key);
         } catch (Exception e) {
             logger.warn("acquire lock error: ", e);
             return false;

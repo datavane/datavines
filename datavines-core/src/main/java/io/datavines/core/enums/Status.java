@@ -37,7 +37,8 @@ public enum Status {
     FAIL(400, "Bad Request", "错误的请求"),
     REQUEST_ERROR(10010001, "Request Error", "请求错误"),
     INVALID_TOKEN(10010002, "Invalid Token ：{0}", "无效的Token ：{0}"),
-    TOKEN_IS_NULL_ERROR(10010002, "Token is Null Error", "Token为空错误"),
+    TOKEN_IS_NULL_ERROR(10010003, "Token is Null Error", "Token为空错误"),
+    PLEASE_LOGIN(10010004, "Please login", "请登录"),
     USERNAME_HAS_BEEN_REGISTERED_ERROR(10020001, "The username {0} has been registered", "用户名 {0} 已被注册过"),
     REGISTER_USER_ERROR(10020002, "Register User {0} Error", "注册用户{0}失败"),
     USERNAME_OR_PASSWORD_ERROR(10020003, "Username or Email Error", "用户名或者密码错误"),
@@ -72,6 +73,11 @@ public enum Status {
     JOB_NOT_EXIST_ERROR(14010003, "Job {0} Not Exist Error", "作业 {0} 不存在错误"),
     JOB_EXIST_ERROR(14010004, "Job {0} is Exist error", "作业 {0} 已存在错误"),
     UPDATE_JOB_ERROR(14010005, "Update Job {0} Error", "更新作业 {0} 错误"),
+    METRIC_JOB_RELATED_ENTITY_NOT_EXIST(14010006, "The entity that want to check is null", "找不到要进行检查的实体"),
+    METRIC_NOT_SUITABLE_ENTITY_TYPE(14010007, "The Metric {0} is not Suit Entity Type {1}", "规则 {0} 不能用于检查数据类型 {1} "),
+    ENTITY_TYPE_NOT_EXIST(14010008, "The Column Type is not Exist", "列类型不存在"),
+    METRIC_IS_NOT_EXIST(14010009, "The Metric {0} is not exist", "规则 {0} 不存在"),
+
     JOB_SCHEDULE_EXIST_ERROR(14020001, "Job Schedule is Exist error, id must be not null", "作业定时任务已存在,ID 不能为空"),
     CREATE_JOB_SCHEDULE_ERROR(14020002, "Create Job Schedule {0} Error", "创建作业定时任务 {0} 错误"),
     JOB_SCHEDULE_NOT_EXIST_ERROR(14020003, "Job Schedule {0} is not Exist error", "作业定时任务 {0} 不存在错误"),
@@ -97,8 +103,8 @@ public enum Status {
     ERROR_DATA_STORAGE_EXIST_ERROR(17010003, "Error Data Storage {0} is Exist error", "错误数据存储 {0} 已存在"),
     UPDATE_ERROR_DATA_STORAGE_ERROR(17010004, "Update Error Data Storage {0} Error", "更新 错误数据存储 {0} 错误"),
 
-    SLA_ALREADY_EXIST_ERROR(18010001, "SLAS {0} Already exist", "SLAS {0} 已经存在"),
-    SLA_SENDER_ALREADY_EXIST_ERROR(18020001, "SLAS Sender {0}  Already exist", "SLAS 发送器 {0} 已经存在"),
+    SLA_ALREADY_EXIST_ERROR(18010001, "SLA {0} Already exist", "SLA {0} 已经存在"),
+    SLA_SENDER_ALREADY_EXIST_ERROR(18020001, "SLA Sender {0}  Already exist", "SLA 发送器 {0} 已经存在"),
     SLA_JOB_IS_NOT_EXIST_ERROR(18010003, "SLA job {0} is not exist", "SLA job {0} 存在"),
 
     CATALOG_FETCH_DATASOURCE_NULL_ERROR(19010001, "获取元数据时数据源为空", "DataSource must not be null when fetch metadata"),
@@ -115,7 +121,6 @@ public enum Status {
     CATALOG_TASK_SCHEDULE_NOT_EXIST_ERROR(20030003, "Catalog Task Schedule {0} is not Exist error", "元数据抓取定时任务 {0} 不存在"),
     UPDATE_CATALOG_TASK_SCHEDULE_ERROR(20030004, "Update Catalog Task Schedule {0} Error", "更新元数据抓取定时任务 {0} 错误"),
     CATALOG_PROFILE_INSTANCE_FQN_ERROR(20030004, "Catalog instance fqn {0} Error", "数据实体全限定名 {0} 错误"),
-
 
     CREATE_ISSUE_ERROR(21010001, "Create Issue {0} Error", "创建Issue {0} 错误"),
     ISSUE_NOT_EXIST_ERROR(21010002, "Issue {0} Not Exist Error", "Issue {0} 不存在错误"),

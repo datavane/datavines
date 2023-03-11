@@ -16,6 +16,7 @@
  */
 package io.datavines.server.repository.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.core.enums.Status;
@@ -29,12 +30,15 @@ import io.datavines.server.repository.mapper.JobIssueRelMapper;
 import io.datavines.server.repository.service.IssueService;
 import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service("issueService")
@@ -107,4 +111,15 @@ public class IssueServiceImpl extends ServiceImpl<IssueMapper, Issue> implements
         return baseMapper.deleteById(id);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteByJobId(long jobId) {
+        List<JobIssueRel> relList = jobIssueRelMapper.selectList(new QueryWrapper<JobIssueRel>().eq("job_id", jobId));
+        if (CollectionUtils.isNotEmpty(relList)) {
+            remove(new QueryWrapper<Issue>().in("id", relList.stream().map(JobIssueRel::getIssueId).collect(Collectors.toList())));
+            jobIssueRelMapper.delete(new QueryWrapper<JobIssueRel>().eq("job_id", jobId));
+            return true;
+        }
+        return false;
+    }
 }

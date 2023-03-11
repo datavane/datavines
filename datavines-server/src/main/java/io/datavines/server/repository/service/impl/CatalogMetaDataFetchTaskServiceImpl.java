@@ -28,6 +28,7 @@ import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchCommand
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTask;
 import io.datavines.server.repository.mapper.CatalogMetaDataFetchTaskMapper;
 import io.datavines.server.repository.service.CatalogMetaDataFetchCommandService;
+import io.datavines.server.repository.service.CatalogMetaDataFetchTaskScheduleService;
 import io.datavines.server.repository.service.CatalogMetaDataFetchTaskService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,13 +38,16 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Service("catalogMetaDataFetcherTaskService")
+@Service("catalogMetaDataFetchTaskService")
 public class CatalogMetaDataFetchTaskServiceImpl
         extends ServiceImpl<CatalogMetaDataFetchTaskMapper, CatalogMetaDataFetchTask>
         implements CatalogMetaDataFetchTaskService {
 
     @Autowired
     private CatalogMetaDataFetchCommandService catalogMetaDataFetchCommandService;
+
+    @Autowired
+    private CatalogMetaDataFetchTaskScheduleService catalogMetaDataFetchTaskScheduleService;
 
     @Autowired
     private RegistryHolder registryHolder;
@@ -120,5 +124,12 @@ public class CatalogMetaDataFetchTaskServiceImpl
     @Override
     public String getTaskExecuteHost(Long catalogTaskId) {
         return null;
+    }
+
+    @Override
+    public boolean deleteByDataSourceId(long dataSourceId) {
+        remove(new QueryWrapper<CatalogMetaDataFetchTask>().eq("datasource_id", dataSourceId));
+        catalogMetaDataFetchTaskScheduleService.deleteByDataSourceId(dataSourceId);
+        return false;
     }
 }

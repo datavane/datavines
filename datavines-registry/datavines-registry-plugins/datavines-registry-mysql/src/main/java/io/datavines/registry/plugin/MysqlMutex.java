@@ -26,7 +26,6 @@ public class MysqlMutex {
 
     private Connection connection;
     private final Properties properties;
-    private String lockKey;
 
     public MysqlMutex(Connection connection, Properties properties) throws SQLException {
         this.connection = connection;
@@ -34,13 +33,7 @@ public class MysqlMutex {
     }
 
     public boolean acquire(String key, long time) throws SQLException {
-        lockKey = "'" + key + "'";
-        String sql = String.format("select get_lock(%s,%d)", lockKey ,time);
-        return executeSql(sql);
-    }
-
-    public boolean release() throws SQLException {
-        String sql = String.format("select release_lock(%s)", lockKey);
+        String sql = String.format("select get_lock(%s,%d)", key ,time);
         return executeSql(sql);
     }
 
@@ -74,13 +67,13 @@ public class MysqlMutex {
         }
     }
 
-    public boolean isUsedLock() throws SQLException {
-        String sql = String.format("select is_used_lock(%s)", lockKey);
+    public boolean isUsedLock(String key) throws SQLException {
+        String sql = String.format("select is_used_lock(%s)", key);
         return executeSql(sql);
     }
 
-    public boolean isFreeLock() throws SQLException {
-        String sql = String.format("select is_free_lock(%s)", lockKey);
+    public boolean isFreeLock(String key) throws SQLException {
+        String sql = String.format("select is_free_lock(%s)", key);
         return executeSql(sql);
     }
 

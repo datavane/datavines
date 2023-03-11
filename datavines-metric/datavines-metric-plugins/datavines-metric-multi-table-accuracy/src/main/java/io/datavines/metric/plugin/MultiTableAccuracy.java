@@ -20,6 +20,7 @@ import java.util.*;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
@@ -113,5 +114,10 @@ public class MultiTableAccuracy implements SqlMetric {
         executeSql.setSql(actualValueSql.toString());
         executeSql.setErrorOutput(false);
         return executeSql;
+    }
+
+    @Override
+    public List<DataVinesDataType> suitableType() {
+        return Collections.emptyList();
     }
 }

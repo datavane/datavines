@@ -23,9 +23,6 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Locale;
 
-/**
- * 
- */
 public class StringUtils {
 
     /**

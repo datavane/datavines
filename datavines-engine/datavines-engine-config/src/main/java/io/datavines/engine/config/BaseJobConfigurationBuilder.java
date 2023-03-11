@@ -53,6 +53,8 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
 
     protected Map<String, Map<String, String>> metric2InputParameter = new HashMap<>();
 
+    protected boolean invalidateItemCanOutput = true;
+
     @Override
     public void init(Map<String, String> inputParameter, JobExecutionInfo jobExecutionInfo) {
         this.inputParameter = inputParameter;
@@ -89,7 +91,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = new HashMap<>(this.inputParameter);
-                metricInputParameter.put("metric_unique_key", metricUniqueKey);
+                metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
                 if (parameter.getMetricParameter() != null) {
                     parameter.getMetricParameter().forEach((k, v) -> {
                         metricInputParameter.put(k, String.valueOf(v));
@@ -142,6 +144,8 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                         .getNewPlugin(metricType);
 
                 MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
+                invalidateItemCanOutput &= sqlMetric.isInvalidateItemsCanOutput();
+                metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 
                 // generate invalidate item execute sql
                 if (sqlMetric.getInvalidateItems() != null) {

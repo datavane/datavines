@@ -32,9 +32,11 @@ import io.datavines.server.dqc.coordinator.quartz.cron.FunCron;
 import io.datavines.server.enums.JobScheduleType;
 import io.datavines.server.enums.ScheduleJobType;
 import io.datavines.server.repository.entity.DataSource;
+import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTask;
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTaskSchedule;
 import io.datavines.server.repository.mapper.CatalogMetaDataFetchTaskScheduleMapper;
 import io.datavines.server.repository.service.CatalogMetaDataFetchTaskScheduleService;
+import io.datavines.server.repository.service.CatalogMetaDataFetchTaskService;
 import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
@@ -49,7 +51,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@Service("catalogMetaDataFetcherTaskScheduleService")
+@Service("catalogMetaDataFetchTaskScheduleService")
 public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<CatalogMetaDataFetchTaskScheduleMapper,CatalogMetaDataFetchTaskSchedule>  implements CatalogMetaDataFetchTaskScheduleService {
 
     @Autowired
@@ -57,6 +59,9 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
 
     @Autowired
     private DataSourceService dataSourceService;
+
+    @Autowired
+    private CatalogMetaDataFetchTaskService catalogMetaDataFetchTaskService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -157,14 +162,33 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public int deleteById(long id) {
+    public boolean deleteById(long id) {
         CatalogMetaDataFetchTaskSchedule catalogMetaDataFetchTaskSchedule = getById(id);
+        if (catalogMetaDataFetchTaskSchedule != null) {
+            Boolean deleteJob = quartzExecutor.deleteJob(getScheduleJobInfo(catalogMetaDataFetchTaskSchedule));
+            if (!deleteJob ) {
+                return false;
+            }
+            return removeById(id);
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteByDataSourceId(long dataSourceId) {
+        CatalogMetaDataFetchTaskSchedule catalogMetaDataFetchTaskSchedule = baseMapper.getByDataSourceId(dataSourceId);
+        if (catalogMetaDataFetchTaskSchedule == null) {
+            return false;
+        }
 
         Boolean deleteJob = quartzExecutor.deleteJob(getScheduleJobInfo(catalogMetaDataFetchTaskSchedule));
         if (!deleteJob ) {
-            return 0;
+            return false;
         }
-        return baseMapper.deleteById(id);
+        removeById(catalogMetaDataFetchTaskSchedule.getId());
+        return true;
     }
 
     @Override
@@ -232,7 +256,7 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
         return new ScheduleJobInfo(
                 ScheduleJobType.CATALOG,
                 catalogMetaDataFetchTaskSchedule.getDataSourceId(),
-                catalogMetaDataFetchTaskSchedule.getDataSourceId(),
+                catalogMetaDataFetchTaskSchedule.getId(),
                 catalogMetaDataFetchTaskSchedule.getCronExpression(),
                 catalogMetaDataFetchTaskSchedule.getStartTime(),
                 catalogMetaDataFetchTaskSchedule.getEndTime());

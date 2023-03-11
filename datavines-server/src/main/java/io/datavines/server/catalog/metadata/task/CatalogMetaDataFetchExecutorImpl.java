@@ -43,6 +43,7 @@ import io.datavines.server.utils.SpringApplicationContext;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -137,17 +138,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         Map<String, CatalogEntityInstance> databaseListFromDbMap = new HashMap<>();
         List<CatalogEntityRel> databaseEntityRelList =
                 relService.list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", dataSource.getUuid()));
-        if (CollectionUtils.isNotEmpty(databaseEntityRelList)) {
-            databaseEntityRelList.forEach(item -> {
-                CatalogEntityInstance entityInstance = instanceService.getOne(
-                        new QueryWrapper<CatalogEntityInstance>().eq("uuid", item.getEntity2Uuid()).eq("status","active"));
-
-                if (entityInstance != null) {
-                    databaseListFromDb.add(dataSource.getId()+"@@"+entityInstance.getFullyQualifiedName());
-                    databaseListFromDbMap.put(dataSource.getId()+"@@"+entityInstance.getFullyQualifiedName(), entityInstance);
-                }
-            });
-        }
+        getEntityListFromDb(databaseListFromDb, databaseListFromDbMap, databaseEntityRelList);
 
         List<CatalogEntityInstance> databaseList = new ArrayList<>();
         boolean isFirstFetch = false;
@@ -182,7 +173,6 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
                 databaseDeleteChange.setUpdateTime(LocalDateTime.now());
                 databaseDeleteChange.setUpdateBy(0L);
                 schemaChangeService.save(databaseDeleteChange);
-                // 记录 database delete change
             });
         }
 
@@ -193,16 +183,21 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
                     "performance_schema".equals(databaseInfo.getName()) || "mysql".equals(databaseInfo.getName())) {
                     continue;
                 }
+
+                String databaseUUID = null;
+                String fqn = databaseInfo.getName();
                 CatalogEntityInstance databaseEntityInstance = new CatalogEntityInstance();
                 databaseEntityInstance.setType("database");
                 databaseEntityInstance.setDisplayName(databaseInfo.getName());
                 databaseEntityInstance.setFullyQualifiedName(databaseInfo.getName());
-                databaseEntityInstance.setUuid(UUID.randomUUID().toString());
                 databaseEntityInstance.setUpdateTime(LocalDateTime.now());
                 databaseEntityInstance.setUpdateBy(0L);
                 databaseEntityInstance.setStatus("active");
                 databaseEntityInstance.setDatasourceId(datasourceId);
-                String tableUUID = instanceService.create(databaseEntityInstance);
+
+                CatalogEntityInstance databaseEntityInstanceOld = instanceService.getByDataSourceAndFQN(datasourceId, fqn);
+                databaseUUID = createOrUpdateCatalogEntityInstance(databaseEntityInstance, databaseEntityInstanceOld);
+
                 if (!isFirstFetch) {
                     // 记录 database added change
                     CatalogSchemaChange databaseAddChange = new CatalogSchemaChange();
@@ -219,7 +214,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
 
                 CatalogEntityRel dataSource2databaseRel = new CatalogEntityRel();
                 dataSource2databaseRel.setEntity1Uuid(dataSource.getUuid());
-                dataSource2databaseRel.setEntity2Uuid(tableUUID);
+                dataSource2databaseRel.setEntity2Uuid(databaseUUID);
                 dataSource2databaseRel.setType(EntityRelType.CHILD.getDescription());
                 dataSource2databaseRel.setUpdateTime(LocalDateTime.now());
                 dataSource2databaseRel.setUpdateBy(0L);
@@ -234,6 +229,36 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         databaseList.forEach(database -> {
             executeFetchDatabase(database.getDisplayName());
         });
+    }
+
+    private void getEntityListFromDb(List<String> entityListFromDb, Map<String, CatalogEntityInstance> entityListFromDbMap, List<CatalogEntityRel> databaseEntityRelList) {
+        if (CollectionUtils.isNotEmpty(databaseEntityRelList)) {
+            databaseEntityRelList.forEach(item -> {
+                CatalogEntityInstance entityInstance = instanceService.getOne(
+                        new QueryWrapper<CatalogEntityInstance>().eq("uuid", item.getEntity2Uuid()).eq("status","active"));
+
+                if (entityInstance != null) {
+                    entityListFromDb.add(dataSource.getId()+"@@"+entityInstance.getFullyQualifiedName());
+                    entityListFromDbMap.put(dataSource.getId()+"@@"+entityInstance.getFullyQualifiedName(), entityInstance);
+                }
+            });
+        }
+    }
+
+    private String createOrUpdateCatalogEntityInstance(CatalogEntityInstance entityInstance, CatalogEntityInstance entityInstanceOld) {
+        String entityUUID;
+        if (entityInstanceOld != null) {
+            entityInstanceOld.setProperties(entityInstance.getProperties());
+            entityInstanceOld.setDescription(entityInstance.getDescription());
+            entityInstanceOld.setUpdateTime(LocalDateTime.now());
+            instanceService.updateById(entityInstanceOld);
+            entityUUID = entityInstanceOld.getUuid();
+        } else {
+            entityInstance.setUuid(UUID.randomUUID().toString());
+            entityUUID = instanceService.create(entityInstance);
+        }
+
+        return entityUUID;
     }
 
     private void executeFetchDatabase(String database) {
@@ -286,17 +311,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         List<CatalogEntityRel> tableEntityRelList =
                 relService.list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", databaseUUID));
         Map<String, CatalogEntityInstance> tableMapFromDb = new HashMap<>();
-        if (CollectionUtils.isNotEmpty(tableEntityRelList)) {
-            tableEntityRelList.forEach(item -> {
-                CatalogEntityInstance entityInstanceDO = instanceService.getOne(
-                        new QueryWrapper<CatalogEntityInstance>().eq("uuid", item.getEntity2Uuid()).eq("status","active"));
-
-                if (entityInstanceDO != null) {
-                    tableListFromDb.add(dataSource.getId()+"@@"+entityInstanceDO.getFullyQualifiedName());
-                    tableMapFromDb.put(dataSource.getId()+"@@"+entityInstanceDO.getFullyQualifiedName(), entityInstanceDO);
-                }
-            });
-        }
+        getEntityListFromDb(tableListFromDb, tableMapFromDb, tableEntityRelList);
 
         List<String> createTableEntityList = new ArrayList<>();
         List<String> maybeUpdateTableEntityList = new ArrayList<>();
@@ -325,7 +340,6 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         if (CollectionUtils.isNotEmpty(deleteTableEntityList)) {
             deleteTableEntityList.forEach(t -> {
                 instanceService.softDeleteEntityByDataSourceAndFQN(Long.valueOf(t.split("@@")[0]), t.split("@@")[1]);
-
                 CatalogEntityInstance tableEntityInstance = tableMapFromDb.get(t);
                 String[] values = t.split("@@")[1].split("\\.");
                 CatalogSchemaChange tableDeleteChange = new CatalogSchemaChange();
@@ -337,7 +351,6 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
                 tableDeleteChange.setUpdateTime(LocalDateTime.now());
                 tableDeleteChange.setUpdateBy(0L);
                 schemaChangeService.save(tableDeleteChange);
-                // 记录 table delete change
             });
         }
 
@@ -377,12 +390,13 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         if (CollectionUtils.isNotEmpty(createTableEntityList)) {
             for (String t : createTableEntityList) {
                 TableInfo tableInfo = tableInfoMap.get(t);
+
+                String fqn = database + "." + tableInfo.getName();
                 CatalogEntityInstance tableEntityInstance = new CatalogEntityInstance();
                 tableEntityInstance.setType("table");
                 tableEntityInstance.setDisplayName(tableInfo.getName());
                 tableEntityInstance.setFullyQualifiedName(database + "." + tableInfo.getName());
                 tableEntityInstance.setDescription(tableInfo.getComment());
-                tableEntityInstance.setUuid(UUID.randomUUID().toString());
                 tableEntityInstance.setUpdateTime(LocalDateTime.now());
                 tableEntityInstance.setUpdateBy(0L);
                 tableEntityInstance.setStatus("active");
@@ -393,11 +407,14 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
                             LocalDateTime.parse(tableInfo.getCreateTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 }
                 tableEntityInstance.setDatasourceId(datasourceId);
-                String tableUUID = instanceService.create(tableEntityInstance);
+
+                CatalogEntityInstance tableEntityInstanceOld = instanceService.getByDataSourceAndFQN(datasourceId, fqn);
+                String tableUUID = createOrUpdateCatalogEntityInstance(tableEntityInstance, tableEntityInstanceOld);
+
                 if (!isFirstFetch) {
                     CatalogSchemaChange tableAddChange = new CatalogSchemaChange();
                     tableAddChange.setParentUuid(databaseUUID);
-                    tableAddChange.setEntityUuid(tableEntityInstance.getUuid());
+                    tableAddChange.setEntityUuid(tableUUID);
                     tableAddChange.setChangeType(SchemaChangeType.TABLE_ADDED);
                     tableAddChange.setDatabaseName(database);
                     tableAddChange.setTableName(tableInfo.getName());
@@ -426,7 +443,6 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
             String[] values = table.getFullyQualifiedName().split("\\.");
             executeFetchTable(values[0], values[1]);
         });
-
     }
 
     private void addTableCommentChangeRecord(String parentUUID, CatalogEntityInstance tableEntityInstance, String database, TableInfo tableInfo, String oldComment, String newComment) {
@@ -602,17 +618,19 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
             for (String t : createColumnEntityList) {
                 ColumnInfo columnInfo = tableColumnMap.get(t);
                 CatalogEntityInstance columnEntityInstance = new CatalogEntityInstance();
+                String fqn = database + "." + oldTableInstance.getDisplayName() + "." + columnInfo.getName();
                 columnEntityInstance.setType("column");
                 columnEntityInstance.setDisplayName(columnInfo.getName());
-                columnEntityInstance.setFullyQualifiedName(database + "." + oldTableInstance.getDisplayName() + "." + columnInfo.getName());
+                columnEntityInstance.setFullyQualifiedName(fqn);
                 columnEntityInstance.setDescription(columnInfo.getComment());
-                columnEntityInstance.setUuid(UUID.randomUUID().toString());
                 columnEntityInstance.setUpdateTime(LocalDateTime.now());
                 columnEntityInstance.setUpdateBy(0L);
                 columnEntityInstance.setDatasourceId(datasourceId);
                 columnEntityInstance.setProperties(JSONUtils.toJsonString(columnInfo));
                 columnEntityInstance.setStatus("active");
-                String columnUUID = instanceService.create(columnEntityInstance);
+                CatalogEntityInstance columnEntityInstanceOld = instanceService.getByDataSourceAndFQN(datasourceId, fqn);
+                String columnUUID = createOrUpdateCatalogEntityInstance(columnEntityInstance, columnEntityInstanceOld);
+
                 if (!isFirstFetch) {
                     CatalogSchemaChange columnAddChange = new CatalogSchemaChange();
                     columnAddChange.setParentUuid(tableUUID);

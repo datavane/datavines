@@ -27,7 +27,6 @@ public class PostgreSqlMutex {
     private Connection connection;
     private final Properties properties;
     private Statement statement;
-    private String lockKey;
 
     public PostgreSqlMutex(Connection connection, Properties properties) throws SQLException {
         this.connection = connection;
@@ -36,18 +35,12 @@ public class PostgreSqlMutex {
     }
 
     public boolean acquire(String key, long time) throws SQLException, InterruptedException {
-        lockKey = "'" + key + "'";
-        String sql = String.format("select pg_advisory_lock(%s)", lockKey);
-        return executeSql(sql);
-    }
-
-    public boolean release() throws SQLException {
-        String sql = String.format("select pg_advisory_unlock(%s)", lockKey);
+        String sql = String.format("select pg_advisory_lock(%s)", "'" + key + "'");
         return executeSql(sql);
     }
 
     public boolean release(String key) throws SQLException {
-        String sql = String.format("select pg_advisory_unlock(%s)", key);
+        String sql = String.format("select pg_advisory_unlock(%s)", "'" + key + "'");
         return executeSql(sql);
     }
 

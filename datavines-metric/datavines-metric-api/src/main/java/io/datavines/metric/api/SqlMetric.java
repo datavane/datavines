@@ -16,11 +16,13 @@
  */
 package io.datavines.metric.api;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.spi.SPI;;
 
 @SPI
@@ -80,4 +82,6 @@ public interface SqlMetric {
     default String getIssue() {
         return "";
     }
+
+    List<DataVinesDataType> suitableType();
 }

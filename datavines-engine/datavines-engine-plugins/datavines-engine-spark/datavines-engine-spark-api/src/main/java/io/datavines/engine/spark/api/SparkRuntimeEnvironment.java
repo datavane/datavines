@@ -16,8 +16,10 @@
  */
 package io.datavines.engine.spark.api;
 
+import io.datavines.engine.spark.api.dialect.HiveSqlDialect;
 import org.apache.spark.SparkConf;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.jdbc.JdbcDialects;
 import org.apache.spark.streaming.Seconds;
 import org.apache.spark.streaming.StreamingContext;
 
@@ -59,6 +61,7 @@ public class SparkRuntimeEnvironment implements RuntimeEnvironment {
     @Override
     public void prepare() {
         sparkSession = SparkSession.builder().config(createSparkConf()).getOrCreate();
+        JdbcDialects.registerDialect(new HiveSqlDialect());
         this.createStreamingContext();
     }
 
@@ -69,7 +72,6 @@ public class SparkRuntimeEnvironment implements RuntimeEnvironment {
                     conf.set(entry.getKey(), String.valueOf(entry.getValue()));
         });
         conf.set("spark.sql.crossJoin.enabled","true");
-
         return conf;
     }
 

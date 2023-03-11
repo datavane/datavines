@@ -46,6 +46,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -138,6 +139,7 @@ public class CatalogEntityInstanceServiceImpl
         if (CollectionUtils.isNotEmpty(uuidList)) {
             entityInstanceList = baseMapper.selectList(new QueryWrapper<CatalogEntityInstance>()
                     .in("uuid", uuidList)
+                    .eq("status", "active")
                     .orderBy(true, true, "id"));
         }
 
@@ -183,8 +185,9 @@ public class CatalogEntityInstanceServiceImpl
                     .map(CatalogEntityRel::getEntity2Uuid)
                     .collect(Collectors.toList());
 
-            baseMapper.delete(new QueryWrapper<CatalogEntityInstance>().in("uuid",upstreamIds));
+            remove(new QueryWrapper<CatalogEntityInstance>().in("uuid",upstreamIds));
             entityRelService.remove(new QueryWrapper<CatalogEntityRel>().in("entity1_uuid",upstreamIds));
+            catalogEntityMetricJobRelService.deleteByEntityUUID(upstreamIds);
 
             deleteEntityInstance(entityRelList);
         }
@@ -892,5 +895,10 @@ public class CatalogEntityInstanceServiceImpl
         CatalogEntityRel entityRel = entityRelList.get(0);
         String parentUUID = entityRel.getEntity1Uuid();
         return getCatalogEntityInstance(parentUUID);
+    }
+
+    @Override
+    public boolean deleteInstanceByDataSourceId(Long datasourceId) {
+        return false;
     }
 }

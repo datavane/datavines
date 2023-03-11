@@ -115,8 +115,10 @@ public class DataSourceController {
         Set<String> connectorList = PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
         connectorList.forEach(it -> {
-            Item item = new Item(it,it);
-            items.add(item);
+            if (!"file".equalsIgnoreCase(it)) {
+                Item item = new Item(it,it);
+                items.add(item);
+            }
         });
 
         return items;

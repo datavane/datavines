@@ -17,6 +17,7 @@
 package io.datavines.engine.local.api.utils;
 
 import io.datavines.common.config.Config;
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import org.slf4j.Logger;
 
@@ -36,6 +37,7 @@ public class ConnectionUtils {
             Class.forName(driver);
         } catch (ClassNotFoundException exception) {
             logger.error("load driver error: " + exception.getLocalizedMessage());
+            throw new DataVinesException(exception);
         }
 
         Connection connection = null;
@@ -44,6 +46,7 @@ public class ConnectionUtils {
             connection = DriverManager.getConnection(url, username, StringUtils.isEmpty(password) ? null : password);
         } catch (SQLException exception) {
             logger.error("get connection error: " + exception.getLocalizedMessage());
+            throw new DataVinesException(exception);
         }
 
         logger.info("create connection success : {}", url + "[username=" + username + "]");

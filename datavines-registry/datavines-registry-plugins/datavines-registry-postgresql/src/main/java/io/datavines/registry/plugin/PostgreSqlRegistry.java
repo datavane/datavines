@@ -66,7 +66,7 @@ public class PostgreSqlRegistry implements Registry {
     @Override
     public boolean release(String key){
         try {
-            return postgreSqlMutex.release();
+            return postgreSqlMutex.release(key);
         } catch (Exception e) {
             logger.warn("acquire lock error: ", e);
             return false;

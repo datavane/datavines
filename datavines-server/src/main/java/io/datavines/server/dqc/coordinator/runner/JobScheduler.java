@@ -35,8 +35,8 @@ public class JobScheduler extends Thread {
 
     private static final Logger logger = LoggerFactory.getLogger(JobScheduler.class);
 
-    private final String TASK_LOCK_KEY =
-            CommonPropertyUtils.getString(CommonPropertyUtils.TASK_LOCK_KEY, CommonPropertyUtils.TASK_LOCK_KEY_DEFAULT);
+    private final String JOB_EXECUTION_LOCK_KEY =
+            CommonPropertyUtils.getString(CommonPropertyUtils.JOB_EXECUTION_LOCK_KEY, CommonPropertyUtils.JOB_EXECUTION_LOCK_KEY_DEFAULT);
 
     private static final int[] RETRY_BACKOFF = {1, 2, 3, 5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
 
@@ -69,7 +69,7 @@ public class JobScheduler extends Thread {
                     continue;
                 }
 
-                register.blockUtilAcquireLock(TASK_LOCK_KEY);
+                register.blockUtilAcquireLock(JOB_EXECUTION_LOCK_KEY);
 
                 command = jobExternalService.getCommand();
 
@@ -88,10 +88,10 @@ public class JobScheduler extends Thread {
                         jobExternalService.deleteCommandById(command.getId());
                         logger.info(String.format("kill task : %s", command.getJobExecutionId()) );
                     }
-                    register.release(TASK_LOCK_KEY);
+                    register.release(JOB_EXECUTION_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                 } else {
-                    register.release(TASK_LOCK_KEY);
+                    register.release(JOB_EXECUTION_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS * 2);
                 }
 
@@ -106,7 +106,7 @@ public class JobScheduler extends Thread {
                 logger.error("schedule job error ", e);
                 ThreadUtils.sleep(SLEEP_TIME_MILLIS * RETRY_BACKOFF[retryNum % RETRY_BACKOFF.length]);
             } finally {
-                register.release(TASK_LOCK_KEY);
+                register.release(JOB_EXECUTION_LOCK_KEY);
             }
         }
     }

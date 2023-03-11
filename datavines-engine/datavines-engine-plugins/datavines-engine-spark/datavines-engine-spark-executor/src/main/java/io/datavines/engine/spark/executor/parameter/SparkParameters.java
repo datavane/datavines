@@ -16,12 +16,6 @@
  */
 package io.datavines.engine.spark.executor.parameter;
 
-import java.util.ArrayList;
-import java.util.List;
-
-/**
- * spark parameters
- */
 public class SparkParameters {
 
     /**
