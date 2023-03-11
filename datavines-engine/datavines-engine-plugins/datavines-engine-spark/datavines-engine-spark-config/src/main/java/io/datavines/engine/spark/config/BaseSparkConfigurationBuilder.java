@@ -75,7 +75,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     metricInputParameter.put(TABLE, outputTable);
                     metricInputParameter.put(REGEX_KEY, "regexp(${column}, ${regex})");
-                    metricInputParameter.put(NOT_REGEX_KEY, connectorFactory.getDialect().getNotRegexKey());
+                    metricInputParameter.put(NOT_REGEX_KEY, "!regexp(${column}, ${regex})");
                     metricInputParameter.put(STRING_TYPE, "string");
 
                     sourceConfig.setPlugin(connectorFactory.getCategory());

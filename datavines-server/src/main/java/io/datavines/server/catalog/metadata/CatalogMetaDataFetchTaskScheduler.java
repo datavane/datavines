@@ -30,8 +30,8 @@ import static io.datavines.common.utils.CommonPropertyUtils.*;
 @Slf4j
 public class CatalogMetaDataFetchTaskScheduler extends Thread {
 
-    private final String CATALOG_TASK_LOCK_KEY =
-            CommonPropertyUtils.getString(CommonPropertyUtils.CATALOG_TASK_LOCK_KEY, CommonPropertyUtils.CATALOG_TASK_LOCK_KEY_DEFAULT);
+    private final String CATALOG_METADATA_TASK_LOCK_KEY =
+            CommonPropertyUtils.getString(CommonPropertyUtils.CATALOG_METADATA_TASK_LOCK_KEY, CommonPropertyUtils.CATALOG_METADATA_TASK_LOCK_KEY_DEFAULT);
 
     private static final int[] RETRY_BACKOFF = {1, 2, 3, 5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
 
@@ -64,12 +64,11 @@ public class CatalogMetaDataFetchTaskScheduler extends Thread {
                     continue;
                 }
 
-                register.blockUtilAcquireLock(CATALOG_TASK_LOCK_KEY);
+                register.blockUtilAcquireLock(CATALOG_METADATA_TASK_LOCK_KEY);
 
                 command = jobExternalService.getCatalogCommand();
 
                 if (command != null) {
-
                     CatalogMetaDataFetchTask task = jobExternalService.executeCatalogCommand(command);
                     if (task != null) {
                         log.info("start submit catalog metadata fetch task : {} ", JSONUtils.toJsonString(task));
@@ -77,11 +76,10 @@ public class CatalogMetaDataFetchTaskScheduler extends Thread {
                         jobExternalService.deleteCatalogCommandById(command.getId());
                         log.info(String.format("submit success, catalog  metadata fetch task : %s", task.getParameter()) );
                     }
-
-                    register.release(CATALOG_TASK_LOCK_KEY);
+                    register.release(CATALOG_METADATA_TASK_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                 } else {
-                    register.release(CATALOG_TASK_LOCK_KEY);
+                    register.release(CATALOG_METADATA_TASK_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS * 2);
                 }
 
@@ -92,7 +90,7 @@ public class CatalogMetaDataFetchTaskScheduler extends Thread {
                 log.error("schedule catalog metadata fetch task error ", e);
                 ThreadUtils.sleep(SLEEP_TIME_MILLIS * RETRY_BACKOFF [retryNum % RETRY_BACKOFF.length]);
             } finally {
-                register.release(CATALOG_TASK_LOCK_KEY);
+                register.release(CATALOG_METADATA_TASK_LOCK_KEY);
             }
         }
     }

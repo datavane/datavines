@@ -35,9 +35,9 @@ public class MetricValidator {
         Double expectedValue = executionResult.getExpectedValue();
 
         OperatorType operatorType = OperatorType.of(executionResult.getOperator());
-
         ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class)
                 .getOrCreatePlugin(executionResult.getResultFormula());
+
         return getCompareResult(operatorType,
                 resultFormula.getResult(actualValue, expectedValue),
                 executionResult.getThreshold());

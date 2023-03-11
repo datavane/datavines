@@ -196,4 +196,8 @@ public class JobExternalService {
     public CatalogMetaDataFetchTaskService getCatalogTaskService() {
         return catalogMetaDataFetchTaskService;
     }
+
+    public JobExecutionResultService getJobExecutionResultService() {
+        return jobExecutionResultService;
+    }
 }

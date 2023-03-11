@@ -35,12 +35,12 @@ public abstract class JdbcDialect implements Dialect {
 
     @Override
     public String getRegexKey(){
-        return "regexp";
+        return "${column} regexp '${regexp}'";
     }
 
     @Override
     public String getNotRegexKey() {
-        return "not regexp";
+        return "${column} not regexp '${regexp}'";
     }
 
     @Override

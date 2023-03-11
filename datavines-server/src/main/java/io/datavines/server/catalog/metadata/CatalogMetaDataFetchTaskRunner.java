@@ -16,6 +16,7 @@
  */
 package io.datavines.server.catalog.metadata;
 
+import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.server.catalog.metadata.task.CatalogMetaDataFetchExecutorImpl;
 import io.datavines.server.catalog.metadata.task.CatalogTaskContext;
 import io.datavines.server.catalog.metadata.task.CatalogTaskResponse;
@@ -41,10 +42,10 @@ public class CatalogMetaDataFetchTaskRunner implements Runnable {
         try {
             fetchTask.execute();
             log.info("fetch metadata finished");
-            responseQueue.add(new CatalogTaskResponse(taskContext.getCatalogTaskId(), 1));
+            responseQueue.add(new CatalogTaskResponse(taskContext.getCatalogTaskId(), ExecutionStatus.SUCCESS.getCode()));
         } catch (Exception e) {
             log.error("fetch metadata error: ", e);
-            responseQueue.add(new CatalogTaskResponse(taskContext.getCatalogTaskId(), 2));
+            responseQueue.add(new CatalogTaskResponse(taskContext.getCatalogTaskId(), ExecutionStatus.FAILURE.getCode()));
         }
     }
 }

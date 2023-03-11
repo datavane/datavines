@@ -38,4 +38,9 @@ public abstract class BaseSingleTableColumn extends BaseSingleTable {
     public MetricLevel getLevel() {
         return MetricLevel.COLUMN;
     }
+
+    @Override
+    public boolean isInvalidateItemsCanOutput() {
+        return false;
+    }
 }

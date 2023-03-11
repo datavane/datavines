@@ -29,7 +29,9 @@ public interface CatalogMetaDataFetchTaskScheduleService extends IService<Catalo
 
     CatalogMetaDataFetchTaskSchedule createOrUpdate(CatalogMetaDataFetchTaskScheduleCreateOrUpdate scheduleCreate) throws DataVinesServerException;
 
-    int deleteById(long id);
+    boolean deleteById(long id);
+
+    boolean deleteByDataSourceId(long datasourceId);
 
     CatalogMetaDataFetchTaskSchedule getById(long id);
 

@@ -32,4 +32,6 @@ public interface IssueService extends IService<Issue> {
     Long updateStatus(IssueUpdate issueUpdate) throws DataVinesServerException;
 
     Issue getById(long id);
+
+    boolean deleteByJobId(long jobId);
 }

@@ -18,11 +18,14 @@ package io.datavines.metric.plugin;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.api.SqlMetric;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class MultiTableValueComparison implements SqlMetric {
@@ -75,5 +78,10 @@ public class MultiTableValueComparison implements SqlMetric {
     @Override
     public void prepare(Map<String, String> config) {
 
+    }
+
+    @Override
+    public List<DataVinesDataType> suitableType() {
+        return Collections.emptyList();
     }
 }

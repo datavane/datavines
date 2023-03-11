@@ -89,6 +89,9 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
         JobExecutionResultVO jobExecutionResultVO = new JobExecutionResultVO();
         Map<String,String> parameters = new HashMap<>();
         JobExecutionResult jobExecutionResult = baseMapper.getOne(taskId);
+        if (jobExecutionResult == null) {
+            return jobExecutionResultVO;
+        }
         parameters.put("actual_value", jobExecutionResult.getActualValue()+"");
         parameters.put("expected_value", jobExecutionResult.getExpectedValue()+"");
         parameters.put("threshold", jobExecutionResult.getThreshold()+"");

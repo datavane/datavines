@@ -16,11 +16,14 @@
  */
 package io.datavines.metric.plugin;
 
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -64,6 +67,11 @@ public class ColumnNotInEnums extends BaseSingleTableColumn {
             filters.add(" (${column} not in ( ${enum_list} ) or ${column} is null) ");
         }
         super.prepare(config);
+    }
+
+    @Override
+    public List<DataVinesDataType> suitableType() {
+        return Arrays.asList(DataVinesDataType.NUMERIC_TYPE, DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
     }
 
 }

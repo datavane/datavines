@@ -51,8 +51,13 @@ public class DataVinesExceptionHandler {
         ResultMap resultMap = new ResultMap(tokenManager);
         Status status = e.getStatus();
         if (Status.INVALID_TOKEN.equals(status)){
-            return ResponseEntity.ok(new ResultMap().fail(Status.INVALID_TOKEN.getCode()).message("invalid token！"));
+            return ResponseEntity.ok(new ResultMap().fail(Status.PLEASE_LOGIN.getCode()).message(Status.PLEASE_LOGIN.getMsg()));
         }
+
+        if (Status.TOKEN_IS_NULL_ERROR.equals(status)){
+            return ResponseEntity.ok(new ResultMap().fail(Status.PLEASE_LOGIN.getCode()).message(Status.PLEASE_LOGIN.getMsg()));
+        }
+
         if (!Objects.isNull(status) ) {
             resultMap.fail(status.getCode());
         }
@@ -89,7 +94,7 @@ public class DataVinesExceptionHandler {
         return ResponseEntity.ok(resultMap);
     }
 
-    public String buildValidFailMessage(ConstraintViolationException violationException) {
+    private String buildValidFailMessage(ConstraintViolationException violationException) {
         Set<ConstraintViolation<?>> constraintViolationSet = violationException.getConstraintViolations();
         StringBuilder messageBuilder = new StringBuilder();
         if(CollectionUtils.isEmpty(constraintViolationSet)){

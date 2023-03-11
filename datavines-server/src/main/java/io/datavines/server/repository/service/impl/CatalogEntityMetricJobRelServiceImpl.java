@@ -16,6 +16,7 @@
  */
 package io.datavines.server.repository.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,12 +25,21 @@ import io.datavines.server.api.dto.vo.catalog.CatalogEntityMetricVO;
 import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 import io.datavines.server.repository.mapper.CatalogEntityMetricJobRelMapper;
 import io.datavines.server.repository.service.CatalogEntityMetricJobRelService;
+import io.datavines.server.repository.service.JobService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service("catalogEntityMetricJobRelService")
 public class CatalogEntityMetricJobRelServiceImpl
         extends ServiceImpl<CatalogEntityMetricJobRelMapper, CatalogEntityMetricJobRel>
         implements CatalogEntityMetricJobRelService {
+
+    @Autowired
+    private JobService jobService;
 
     @Override
     public IPage<CatalogEntityMetricVO> getEntityMetricPage(Page<CatalogEntityMetricVO> page, String uuid) {
@@ -39,5 +49,24 @@ public class CatalogEntityMetricJobRelServiceImpl
     @Override
     public IPage<CatalogEntityIssueVO> getEntityIssuePage(Page<CatalogEntityIssueVO> page, String uuid) {
         return baseMapper.getEntityIssuePage(page, uuid);
+    }
+
+    @Override
+    public boolean deleteByJobId(long jobId) {
+        return remove(new QueryWrapper<CatalogEntityMetricJobRel>().eq("metric_job_id", jobId));
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean deleteByEntityUUID(List<String> uuidList) {
+        List<CatalogEntityMetricJobRel> relList = list(new QueryWrapper<CatalogEntityMetricJobRel>().in("entity_uuid",uuidList));
+        if (CollectionUtils.isEmpty(relList)) {
+            return true;
+        }
+        for (CatalogEntityMetricJobRel rel : relList) {
+            jobService.deleteById(rel.getMetricJobId());
+        }
+
+        return true;
     }
 }

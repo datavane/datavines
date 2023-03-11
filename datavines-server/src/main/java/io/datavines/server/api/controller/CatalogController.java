@@ -87,9 +87,9 @@ public class CatalogController {
         return catalogEntityInstanceService.executeDataProfileJob(runProfileRequest);
     }
 
-    @ApiOperation(value = "get database list", response = OptionItem.class, responseContainer = "list")
+    @ApiOperation(value = "get selected column list", response = OptionItem.class, responseContainer = "list")
     @GetMapping(value = "/profile/selected-columns/{uuid}")
-    public Object getProfileJobSelectedColumns(@RequestParam String uuid) {
+    public Object getProfileJobSelectedColumns(@PathVariable String uuid) {
         return catalogEntityInstanceService.getProfileJobSelectedColumns(uuid);
     }
 

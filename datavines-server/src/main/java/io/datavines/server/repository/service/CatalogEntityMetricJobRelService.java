@@ -23,9 +23,15 @@ import io.datavines.server.api.dto.vo.catalog.CatalogEntityIssueVO;
 import io.datavines.server.api.dto.vo.catalog.CatalogEntityMetricVO;
 import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 
+import java.util.List;
+
 public interface CatalogEntityMetricJobRelService extends IService<CatalogEntityMetricJobRel> {
 
     IPage<CatalogEntityMetricVO> getEntityMetricPage(Page<CatalogEntityMetricVO> page, String uuid);
 
     IPage<CatalogEntityIssueVO> getEntityIssuePage(Page<CatalogEntityIssueVO> page, String uuid);
+
+    boolean deleteByJobId(long jobId);
+
+    boolean deleteByEntityUUID(List<String> uuidList);
 }

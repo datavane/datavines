@@ -37,4 +37,6 @@ public interface CatalogMetaDataFetchTaskService extends IService<CatalogMetaDat
     List<CatalogMetaDataFetchTask> listTaskNotInServerList(List<String> hostList);
 
     String getTaskExecuteHost(Long catalogTaskId);
+
+    boolean deleteByDataSourceId(long dataSourceId);
 }

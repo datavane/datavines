@@ -16,11 +16,15 @@
  */
 package io.datavines.metric.plugin;
 
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 public class Freshness extends BaseSingleTableColumn {
@@ -69,4 +73,8 @@ public class Freshness extends BaseSingleTableColumn {
         super.prepare(config);
     }
 
+    @Override
+    public List<DataVinesDataType> suitableType() {
+        return Collections.singletonList(DataVinesDataType.DATE_TIME_TYPE);
+    }
 }

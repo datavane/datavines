@@ -26,9 +26,12 @@ import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import org.slf4j.Logger;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.datavines.engine.api.ConfigConstants.INVALIDATE_ITEMS_TABLE;
 import static io.datavines.engine.api.ConfigConstants.SQL;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
@@ -103,6 +106,24 @@ public class SqlTransform implements LocalTransform {
 
         } catch (Exception e) {
             logger.error("transform execute error: ", e);
+            String invalidateItemTable = config.getString(INVALIDATE_ITEMS_TABLE);
+            Connection connection = null;
+            Statement statement = null;
+            try {
+                connection = env.getSourceConnection().getConnection();
+                statement = connection.createStatement();
+                statement.execute("DROP VIEW IF EXISTS " + invalidateItemTable);
+            } catch (Exception ex) {
+                logger.error("drop view error : ", e);
+            } finally {
+                if (statement != null) {
+                    try {
+                        statement.close();
+                    } catch (Exception ex) {
+                        logger.error("close statement error : ", e);
+                    }
+                }
+            }
         }
 
         return resultList;

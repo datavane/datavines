@@ -84,8 +84,6 @@ public class JdbcSource implements SparkBatchSource {
     }
 
     private DataFrameReader jdbcReader(SparkSession sparkSession) {
-
-        JdbcDialects.registerDialect(new HiveSqlDialect());
         DataFrameReader reader = sparkSession.read()
                 .format("jdbc")
                 .option("url", config.getString("url"))
@@ -96,7 +94,7 @@ public class JdbcSource implements SparkBatchSource {
 
         Config jdbcConfig = TypesafeConfigUtils.extractSubConfigThrowable(config, "jdbc.", false);
 
-        if(!config.isEmpty()) {
+        if (!config.isEmpty()) {
             Map<String,String> optionMap = new HashMap<>(16);
             jdbcConfig.entrySet().forEach(x -> {
                 optionMap.put(x.getKey(),String.valueOf(x.getValue()));
