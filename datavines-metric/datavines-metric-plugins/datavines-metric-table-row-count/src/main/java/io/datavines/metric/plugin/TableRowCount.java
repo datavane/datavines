@@ -17,13 +17,13 @@
 package io.datavines.metric.plugin;
 
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTable;
 
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class TableRowCount extends BaseSingleTable {
 
@@ -53,7 +53,7 @@ public class TableRowCount extends BaseSingleTable {
 
     @Override
     public boolean isInvalidateItemsCanOutput() {
-        return true;
+        return false;
     }
 
     @Override
@@ -84,5 +84,10 @@ public class TableRowCount extends BaseSingleTable {
         executeSql.setSql(actualValueSql.toString());
         executeSql.setErrorOutput(false);
         return executeSql;
+    }
+
+    @Override
+    public List<DataVinesDataType> suitableType() {
+        return Collections.emptyList();
     }
 }

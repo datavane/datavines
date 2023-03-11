@@ -16,9 +16,6 @@
  */
 package io.datavines.engine.spark.executor.parameter;
 
-/**
- * support program types
- */
 public enum ProgramType {
 
     /**

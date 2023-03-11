@@ -14,10 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.spark.jdbc.source;
+package io.datavines.engine.spark.api.dialect;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.sql.jdbc.JdbcDialect;
 
+@Slf4j
 public class HiveSqlDialect extends JdbcDialect {
 
     @Override
@@ -27,10 +29,11 @@ public class HiveSqlDialect extends JdbcDialect {
 
     @Override
     public String quoteIdentifier(String colName) {
+        log.info(colName);
         if(colName.contains(".")){
-            String colName1 = colName.substring(colName.lastIndexOf(".")+1);
-            return "`" + colName1 + "`";
+            String colName1 = colName.substring(colName.indexOf(".") + 1);
+            return "`"+colName1+"`";
         }
-        return"`" + colName + "`";
+        return  "`"+colName+"`";
     }
 }

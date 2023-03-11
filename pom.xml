@@ -111,7 +111,6 @@
         <poi.version>4.1.2</poi.version>
         <javax.mail.version>1.6.2</javax.mail.version>
 
-
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
@@ -643,7 +642,6 @@
                 <artifactId>cron-utils</artifactId>
                 <version> ${cron-utils.version}</version>
             </dependency>
-
         </dependencies>
     </dependencyManagement>
 

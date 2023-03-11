@@ -17,11 +17,14 @@
 package io.datavines.metric.plugin;
 
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.MetricActualValueType;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class ColumnHistogram extends BaseSingleTableColumn {
@@ -48,11 +51,6 @@ public class ColumnHistogram extends BaseSingleTableColumn {
     @Override
     public MetricType getType() {
         return MetricType.SINGLE_TABLE;
-    }
-
-    @Override
-    public boolean isInvalidateItemsCanOutput() {
-        return true;
     }
 
     @Override
@@ -84,5 +82,10 @@ public class ColumnHistogram extends BaseSingleTableColumn {
     @Override
     public String getActualValueType() {
         return MetricActualValueType.LIST.getDescription();
+    }
+
+    @Override
+    public List<DataVinesDataType> suitableType() {
+        return Arrays.asList(DataVinesDataType.NUMERIC_TYPE, DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
     }
 }

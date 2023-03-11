@@ -43,6 +43,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
+import static io.datavines.engine.api.ConfigConstants.FIX_VALUE;
+
 @Component
 public class DataQualityResultOperator {
 
@@ -68,7 +70,15 @@ public class DataQualityResultOperator {
 
         JobExecutionResult jobExecutionResult =
                 jobExternalService.getJobExecutionResultByJobExecutionId(jobExecutionRequest.getJobExecutionId());
+
         if (jobExecutionResult != null) {
+
+            // 判断期望值是否为空，如果为空并且不是固定值类型，则将期望值设置为实际值
+            if (jobExecutionResult.getExpectedValue() == null && !FIX_VALUE.equalsIgnoreCase(jobExecutionResult.getExpectedType())) {
+                jobExecutionResult.setExpectedValue(jobExecutionResult.getActualValue());
+                jobExternalService.getJobExecutionResultService().updateById(jobExecutionResult);
+            }
+
             //check the result ,if result is failure do some operator by failure strategy
             checkDqExecuteResult(jobExecutionResult);
         }

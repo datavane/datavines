@@ -99,8 +99,13 @@ public abstract class BaseJdbcSink implements LocalSink {
         try {
             switch (SinkType.of(config.getString(PLUGIN_TYPE))){
                 case ERROR_DATA:
-                    sinkErrorData(env);
-                    after(env, config);
+                    try {
+                        sinkErrorData(env);
+                    } catch (Exception e) {
+                        log.error("sink error-data error : {}", e);
+                    } finally {
+                        after(env, config);
+                    }
                     break;
                 case VALIDATE_RESULT:
                     executeDataSink(env, "dv_job_execution_result", getExecutionResultTableSql(), inputParameter);
@@ -109,8 +114,13 @@ public abstract class BaseJdbcSink implements LocalSink {
                     executeDataSink(env, "dv_actual_values", getActualValueTableSql(), inputParameter);
                     break;
                 case PROFILE_VALUE:
-                    executeDataSink(env, "dv_catalog_entity_profile", getProfileValueTableSql(), inputParameter);
-                    after(env, config);
+                    try {
+                        executeDataSink(env, "dv_catalog_entity_profile", getProfileValueTableSql(), inputParameter);
+                    } catch (Exception e) {
+                        log.error("sink profile data error : {}", e);
+                    } finally {
+                        after(env, config);
+                    }
                     break;
                 default:
                     break;

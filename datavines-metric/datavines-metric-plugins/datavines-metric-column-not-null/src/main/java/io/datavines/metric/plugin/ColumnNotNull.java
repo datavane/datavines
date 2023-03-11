@@ -16,10 +16,13 @@
  */
 package io.datavines.metric.plugin;
 
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -36,7 +39,7 @@ public class ColumnNotNull extends BaseSingleTableColumn {
 
     @Override
     public String getZhName() {
-        return "不为空检查";
+        return "非空检查";
     }
 
     @Override
@@ -61,5 +64,10 @@ public class ColumnNotNull extends BaseSingleTableColumn {
             filters.add(" ${column} is not null ");
         }
         super.prepare(config);
+    }
+
+    @Override
+    public List<DataVinesDataType> suitableType() {
+        return Arrays.asList(DataVinesDataType.NUMERIC_TYPE, DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
     }
 }

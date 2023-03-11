@@ -44,11 +44,11 @@ public class CommonPropertyUtils {
     public static final String FAILOVER_KEY = "registry.failover.key";
     public static final String FAILOVER_KEY_DEFAULT = "/datavines/failover";
 
-    public static final String TASK_LOCK_KEY = "registry.task.lock.key";
-    public static final String TASK_LOCK_KEY_DEFAULT = "/datavines/taskLock";
+    public static final String JOB_EXECUTION_LOCK_KEY = "registry.job.execution.lock.key";
+    public static final String JOB_EXECUTION_LOCK_KEY_DEFAULT = "/datavines/job/execution/lock";
 
-    public static final String CATALOG_TASK_LOCK_KEY = "registry.catalog.task.lock.key";
-    public static final String CATALOG_TASK_LOCK_KEY_DEFAULT = "/datavines/catalog/taskLock";
+    public static final String CATALOG_METADATA_TASK_LOCK_KEY = "registry.catalog.metadata.task.lock.key";
+    public static final String CATALOG_METADATA_TASK_LOCK_KEY_DEFAULT = "/datavines/catalog/fetch/lock";
 
     public static final String SERVERS_KEY = "registry.servers.key";
     public static final String SERVERS_KEY_DEFAULT = "/datavines/servers";

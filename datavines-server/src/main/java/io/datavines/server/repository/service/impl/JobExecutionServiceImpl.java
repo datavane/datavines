@@ -99,10 +99,10 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
             return 0;
         }
 
-        jobExecutionList.forEach(task -> {
-            baseMapper.deleteById(task.getId());
-            jobExecutionResultService.deleteByJobExecutionId(task.getId());
-            actualValuesService.deleteByJobExecutionId(task.getId());
+        jobExecutionList.forEach(execution -> {
+            removeById(execution.getId());
+            jobExecutionResultService.deleteByJobExecutionId(execution.getId());
+            actualValuesService.deleteByJobExecutionId(execution.getId());
         });
 
         return 0;
@@ -241,11 +241,11 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
     }
 
     @Override
-    public Object readErrorDataPage(Long taskId, Integer pageNumber, Integer pageSize)  {
+    public Object readErrorDataPage(Long jobExecutionId, Integer pageNumber, Integer pageSize)  {
 
-        JobExecution jobExecution = getById(taskId);
+        JobExecution jobExecution = getById(jobExecutionId);
         if (jobExecution == null) {
-            throw new DataVinesServerException(Status.TASK_NOT_EXIST_ERROR, taskId);
+            throw new DataVinesServerException(Status.TASK_NOT_EXIST_ERROR, jobExecutionId);
         }
 
         String errorDataStorageType = jobExecution.getErrorDataStorageType();
@@ -276,20 +276,18 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
     }
 
     /**
-     * get task host from taskId
-     * @param taskId
-     * @return
-     * @throws DataVinesServerException
+     * get task host from jobExecutionId
+     * @param jobExecutionId
      */
     @Override
-    public String getJobExecutionHost(Long taskId) {
-        JobExecution jobExecution = baseMapper.selectById(taskId);
+    public String getJobExecutionHost(Long jobExecutionId) {
+        JobExecution jobExecution = baseMapper.selectById(jobExecutionId);
         if(null == jobExecution){
-            throw new DataVinesServerException(Status.TASK_NOT_EXIST_ERROR, taskId);
+            throw new DataVinesServerException(Status.TASK_NOT_EXIST_ERROR, jobExecutionId);
         }
         String executeHost = jobExecution.getExecuteHost();
         if(StringUtils.isEmpty(executeHost)){
-            throw new DataVinesServerException(Status.TASK_EXECUTE_HOST_NOT_EXIST_ERROR, taskId);
+            throw new DataVinesServerException(Status.TASK_EXECUTE_HOST_NOT_EXIST_ERROR, jobExecutionId);
         }
         return executeHost;
     }

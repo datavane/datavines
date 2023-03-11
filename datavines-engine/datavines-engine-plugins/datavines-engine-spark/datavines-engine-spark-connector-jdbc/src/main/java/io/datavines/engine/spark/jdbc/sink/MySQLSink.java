@@ -14,22 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.plugin;
+package io.datavines.engine.spark.jdbc.sink;
 
-public class PostgreSqlDialect extends JdbcDialect {
-
-    @Override
-    public String getDriver() {
-        return "org.postgresql.Driver";
-    }
-
-    @Override
-    public String getRegexKey(){
-        return "${column} ~ '${regexp}'";
-    }
-
-    @Override
-    public String getNotRegexKey() {
-        return "${column} !~ '${regexp}'";
-    }
+public class MySQLSink extends JdbcSink {
 }

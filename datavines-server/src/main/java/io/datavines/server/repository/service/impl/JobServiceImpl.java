@@ -21,9 +21,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.entity.job.builder.JobExecutionParameterBuilderFactory;
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.JobType;
 import io.datavines.common.utils.CommonPropertyUtils;
@@ -31,7 +33,9 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.core.utils.LanguageUtils;
 import io.datavines.metric.api.ResultFormula;
+import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.api.dto.bo.job.DataProfileJobCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.JobCreate;
 import io.datavines.server.api.dto.bo.job.JobUpdate;
@@ -40,6 +44,7 @@ import io.datavines.server.api.dto.vo.SlaVO;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.repository.entity.*;
+import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 import io.datavines.server.repository.mapper.*;
 import io.datavines.server.repository.service.*;
@@ -88,6 +93,12 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     @Autowired
     private CatalogEntityMetricJobRelService catalogEntityMetricJobRelService;
 
+    @Autowired
+    private IssueService issueService;
+
+    @Autowired
+    private CatalogEntityInstanceService catalogEntityInstanceService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long create(JobCreate jobCreate) throws DataVinesServerException {
@@ -102,6 +113,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         BeanUtils.copyProperties(jobCreate, job);
 
         List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
+        isMetricSuitable(jobCreate.getDataSourceId(), jobParameters);
         setJobAttribute(job, jobParameters);
         job.setName(getJobName(jobCreate.getType(), jobCreate.getParameter()));
         if (getByKeyAttribute(job)) {
@@ -118,7 +130,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         long jobId = job.getId();
 
         // whether running now
-        if(jobCreate.getRunningNow() == 1) {
+        if (jobCreate.getRunningNow() == 1) {
             executeJob(job, null);
         }
 
@@ -144,6 +156,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         BeanUtils.copyProperties(jobUpdate, job);
         List<BaseJobParameter> jobParameters = JSONUtils.toList(jobUpdate.getParameter(), BaseJobParameter.class);
+        isMetricSuitable(jobUpdate.getDataSourceId(), jobParameters);
         setJobAttribute(job, jobParameters);
         job.setName(getJobName(jobUpdate.getType(), jobUpdate.getParameter()));
         job.setUpdateBy(ContextHolder.getUserId());
@@ -208,6 +221,72 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         return job.getId();
     }
 
+    private void isMetricSuitable(Long dataSourceId, List<BaseJobParameter> jobParameters) {
+        if (CollectionUtils.isNotEmpty(jobParameters)) {
+            for (BaseJobParameter jobParameter : jobParameters) {
+                if (StringUtils.isEmpty(getFQN(jobParameter))) {
+                    throw new DataVinesServerException(Status.METRIC_JOB_RELATED_ENTITY_NOT_EXIST);
+                }
+
+                if (!isColumn(jobParameter)) {
+                    return;
+                }
+
+                CatalogEntityInstance columnEntity =
+                        catalogEntityInstanceService.getByDataSourceAndFQN(dataSourceId, getFQN(jobParameter));
+                if (StringUtils.isEmpty(columnEntity.getProperties())) {
+                    throw new DataVinesServerException(Status.ENTITY_TYPE_NOT_EXIST);
+                }
+
+                ColumnInfo columnInfo = JSONUtils.parseObject(columnEntity.getProperties(), ColumnInfo.class);
+                if (columnInfo != null) {
+                    String columnType = columnInfo.getType();
+                    DataVinesDataType dataVinesDataType = DataVinesDataType.getType(columnType);
+                    if (dataVinesDataType == null) {
+                        throw new DataVinesServerException(Status.ENTITY_TYPE_NOT_EXIST);
+                    }
+
+                    SqlMetric metric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobParameter.getMetricType());
+                    if (metric == null) {
+                        throw new DataVinesServerException(Status.METRIC_JOB_RELATED_ENTITY_NOT_EXIST, jobParameter.getMetricType());
+                    }
+
+                    List<DataVinesDataType> suitableTypeList = metric.suitableType();
+                    if (!suitableTypeList.contains(dataVinesDataType)) {
+                        throw new DataVinesServerException(Status.METRIC_NOT_SUITABLE_ENTITY_TYPE, metric.getNameByLanguage(!LanguageUtils.isZhContext()), dataVinesDataType.getName());
+                    }
+                }
+            }
+        }
+    }
+
+    private boolean isColumn(BaseJobParameter jobParameter) {
+        String column = (String)jobParameter.getMetricParameter().get("column");
+        return StringUtils.isNotEmpty(column);
+    }
+
+    private String getFQN(BaseJobParameter jobParameter) {
+        String fqn = "";
+        String schema = (String)jobParameter.getMetricParameter().get("database");
+        String table = (String)jobParameter.getMetricParameter().get("table");
+        String column = (String)jobParameter.getMetricParameter().get("column");
+        if (StringUtils.isEmpty(schema)) {
+            return null;
+        }
+
+        if (StringUtils.isEmpty(table)) {
+            return null;
+        } else {
+            fqn = schema + "." + table;
+        }
+
+        if (StringUtils.isEmpty(column)) {
+            return fqn;
+        } else {
+            return fqn + "." + column;
+        }
+    }
+
     private void setJobAttribute(Job job, List<BaseJobParameter> jobParameters) {
         if (CollectionUtils.isNotEmpty(jobParameters)) {
             BaseJobParameter jobParameter = jobParameters.get(0);
@@ -232,7 +311,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     @Transactional(rollbackFor = Exception.class)
     public int deleteById(long id) {
         if (baseMapper.deleteById(id) > 0) {
-            catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>().eq("metric_job_id", id));
+            catalogEntityMetricJobRelService.deleteByJobId(id);
+            jobExecutionService.deleteByJobId(id);
+            issueService.deleteByJobId(id);
             return 1;
         } else {
             return 0;
@@ -248,7 +329,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         }
 
         jobList.forEach(job -> {
-            baseMapper.deleteById(job.getId());
+            deleteById(job.getId());
             jobExecutionService.deleteByJobId(job.getId());
         });
 

@@ -36,10 +36,8 @@ import io.datavines.server.api.dto.bo.datasource.DataSourceUpdate;
 import io.datavines.server.api.dto.vo.DataSourceVO;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.mapper.DataSourceMapper;
-import io.datavines.server.repository.service.CatalogMetaDataFetchTaskService;
-import io.datavines.server.repository.service.DataSourceService;
+import io.datavines.server.repository.service.*;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.repository.service.JobService;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +64,9 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     @Autowired
     private CatalogMetaDataFetchTaskService catalogMetaDataFetchTaskService;
 
+    @Autowired
+    private CatalogEntityInstanceService catalogEntityInstanceService;
+
     @Override
     public boolean testConnect(TestConnectionRequestParam param) {
         ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
@@ -80,8 +81,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         String param = dataSourceCreate.getParam();
 
         try {
-            param = CryptionUtils.encryptByAES(param
-                    ,CommonPropertyUtils.getString(CommonPropertyUtils.AES_KEY, CommonPropertyUtils.AES_KEY_DEFAULT));
+            param = CryptionUtils.encryptByAES(param, CommonPropertyUtils.getString(CommonPropertyUtils.AES_KEY, CommonPropertyUtils.AES_KEY_DEFAULT));
         } catch (Exception e) {
             throw new DataVinesException("encrypt datasource param error : {}", e);
         }
@@ -153,9 +153,16 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int delete(long id) {
-        baseMapper.deleteById(id);
-        jobService.deleteByDataSourceId(id);
-        return 1;
+        DataSource dataSource = getById(id);
+        if (dataSource != null) {
+            catalogEntityInstanceService.deleteEntityByUUID(dataSource.getUuid());
+            jobService.deleteByDataSourceId(id);
+            catalogMetaDataFetchTaskService.deleteByDataSourceId(id);
+            removeById(id);
+            return 1;
+        }
+
+        return 0;
     }
 
     @Override

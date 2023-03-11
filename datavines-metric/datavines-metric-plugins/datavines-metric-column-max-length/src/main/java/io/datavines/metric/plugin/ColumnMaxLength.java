@@ -17,10 +17,13 @@
 package io.datavines.metric.plugin;
 
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class ColumnMaxLength extends BaseSingleTableColumn {
@@ -50,11 +53,6 @@ public class ColumnMaxLength extends BaseSingleTableColumn {
     }
 
     @Override
-    public boolean isInvalidateItemsCanOutput() {
-        return true;
-    }
-
-    @Override
     public void prepare(Map<String, String> config) {
         super.prepare(config);
     }
@@ -77,5 +75,10 @@ public class ColumnMaxLength extends BaseSingleTableColumn {
         executeSql.setSql(actualValueSql.toString());
         executeSql.setErrorOutput(false);
         return executeSql;
+    }
+
+    @Override
+    public List<DataVinesDataType> suitableType() {
+        return Arrays.asList(DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
     }
 }

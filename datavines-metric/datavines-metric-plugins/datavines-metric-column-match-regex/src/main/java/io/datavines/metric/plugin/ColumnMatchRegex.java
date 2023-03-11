@@ -16,11 +16,14 @@
  */
 package io.datavines.metric.plugin;
 
+import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
 import io.datavines.metric.api.ConfigItem;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 public class ColumnMatchRegex extends BaseSingleTableColumn {
@@ -61,8 +64,12 @@ public class ColumnMatchRegex extends BaseSingleTableColumn {
     public void prepare(Map<String, String> config) {
 
         if (config.containsKey("table") && config.containsKey("column") && config.containsKey("regexp") ) {
-            filters.add(" ${column} ${regex_key} '${regexp}'");
+            filters.add(" ${regex_key} ");
         }
         super.prepare(config);
+    }
+    @Override
+    public List<DataVinesDataType> suitableType() {
+        return Arrays.asList(DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
     }
 }
