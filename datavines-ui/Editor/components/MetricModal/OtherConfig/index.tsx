@@ -37,7 +37,7 @@ const Index = ({ form, detail }: InnerProps) => {
                         name="retryTimes"
                         initialValue={0}
                     >
-                        <InputNumber min={0} />
+                        <InputNumber autoComplete="off" min={0} />
                     </Form.Item>
                 </Col>
 
@@ -48,7 +48,7 @@ const Index = ({ form, detail }: InnerProps) => {
                         label={intl.formatMessage({ id: 'dv_metric_other_retry_interval' })}
                         name="retryInterval"
                     >
-                        <InputNumber min={0} />
+                        <InputNumber autoComplete="off" min={0} />
                     </Form.Item>
                 </Col>
 
@@ -59,7 +59,7 @@ const Index = ({ form, detail }: InnerProps) => {
                         name="timeout"
                         initialValue={36000}
                     >
-                        <InputNumber min={0} />
+                        <InputNumber autoComplete="off" min={0} />
                     </Form.Item>
                 </Col>
                 <Col span={12}>

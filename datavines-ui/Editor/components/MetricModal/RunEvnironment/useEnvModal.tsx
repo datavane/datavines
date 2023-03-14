@@ -60,7 +60,7 @@ const Index: React.FC<IndexProps> = () => {
                         { required: true },
                     ],
                     initialValue: record?.name,
-                    widget: <Input />,
+                    widget: <Input autoComplete="off" />,
                 },
                 {
                     label: 'env',
@@ -69,7 +69,7 @@ const Index: React.FC<IndexProps> = () => {
                         { required: true },
                     ],
                     initialValue: record?.env,
-                    widget: <Input.TextArea rows={3} />,
+                    widget: <Input.TextArea autoComplete="off" rows={3} />,
                 },
             ],
         };

@@ -2,7 +2,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
 const { launchEditorMiddleware } = require('react-dev-inspector/plugins/webpack');
-const path = require('path');
+// const path = require('path');
 const { resolve, host } = require('./utils');
 
 const TARGET_MAP = {

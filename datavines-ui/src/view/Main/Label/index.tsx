@@ -3,7 +3,7 @@ import {
     List, Tooltip, Button, Modal, Form, Input, message, Popconfirm,
 } from 'antd';
 import './index.less';
-import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useIntl } from 'react-intl';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
@@ -147,15 +147,7 @@ const Index = () => {
                 <p className="dv-label-title">
                     {intl.formatMessage({ id: 'label_list' })}
                     <Tooltip title={intl.formatMessage({ id: 'label_add' })}>
-                        <Button
-                            disabled={tagCategoryList.length === 0}
-                            onClick={() => showModal('tag')}
-                            className="fr"
-                            size="small"
-                            style={{ marginTop: '6px' }}
-                            shape="circle"
-                            icon={<PlusOutlined />}
-                        />
+                        <Button onClick={() => showModal('tag')} className="fr" size="small" style={{ marginTop: '6px' }} shape="circle" icon={<PlusOutlined />} />
                     </Tooltip>
                 </p>
                 <List
@@ -197,14 +189,13 @@ const Index = () => {
                     initialValues={{ name: '' }}
                     autoComplete="off"
                     form={form}
-                    layout="vertical"
                 >
                     <Form.Item
                         label={intl.formatMessage({ id: 'warn_SLAs_name' })}
                         name="name"
                         rules={[{ required: true, message: intl.formatMessage({ id: 'common_input_tip' }) }]}
                     >
-                        <Input />
+                        <Input autoComplete="off" />
                     </Form.Item>
                 </Form>
             </Modal>

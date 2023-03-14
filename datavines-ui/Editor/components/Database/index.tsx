@@ -560,7 +560,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         runsRef:any
     }>();
     const refreshHistoryList = () => {
-        detailRef.current?.runsRef?.current?.getData();
+        detailRef.current?.runsRef?.current.getData();
     };
 
     return (

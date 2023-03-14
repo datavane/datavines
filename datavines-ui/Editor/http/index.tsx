@@ -35,7 +35,11 @@ const getHttp = (_config: IRequestConfig): THttp => {
                 // @ts-ignore
                 $http[method](url, params, rest).then(
                     (res: any) => {
-                        resolve(showWholeData ? res : res?.data);
+                        try {
+                            resolve(showWholeData ? res : res?.data);
+                        } catch (e) {
+                            console.log('e', e);
+                        }
                     },
                     (e: { msg: string; code: string | number }) => {
                         if (!hideError && e && e.msg) {

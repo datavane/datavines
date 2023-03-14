@@ -41,7 +41,7 @@ const Index = () => {
                     { required: true, message: `${userNameText}${requiredTop}` },
                     { pattern: /^[\u4E00-\u9FA5_a-zA-Z0-9]{2,32}$/, message: `${patternTip}${userNameText}` },
                 ],
-                widget: <Input placeholder={`${inputTip}${userNameText}`} />,
+                widget: <Input autoComplete="off" placeholder={`${inputTip}${userNameText}`} />,
             },
             {
                 label: (
@@ -58,7 +58,7 @@ const Index = () => {
                     { required: true, message: `${passwordText}${requiredTop}` },
                     { pattern: PWD_REG, message: `${patternTip}${passwordText}` },
                 ],
-                widget: <Input placeholder={`${inputTip}${passwordText}`} />,
+                widget: <Input autoComplete="off" placeholder={`${inputTip}${passwordText}`} />,
             },
             {
                 label: emailText,
@@ -67,7 +67,7 @@ const Index = () => {
                     { required: true, message: `${emailText}${requiredTop}` },
                     { pattern: EMAIL_REG, message: `${patternTip}${emailText}` },
                 ],
-                widget: <Input placeholder={`${inputTip}${emailText}`} />,
+                widget: <Input autoComplete="off" placeholder={`${inputTip}${emailText}`} />,
             },
             {
                 label: phoneText,
@@ -75,7 +75,7 @@ const Index = () => {
                 rules: [
                     { required: true, message: `${phoneText}${requiredTop}` },
                 ],
-                widget: <Input placeholder={`${inputTip}${emailText}`} />,
+                widget: <Input autoComplete="off" placeholder={`${inputTip}${emailText}`} />,
             },
             {
                 label: `${verificationCodeText}`,
@@ -85,6 +85,7 @@ const Index = () => {
                     { pattern: CODE_REG, message: `${patternTip}${verificationCodeText}` },
                 ],
                 widget: <Input
+                    autoComplete="off"
                     addonAfter={(
                         <RenderImage
                             style={{

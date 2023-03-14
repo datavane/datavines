@@ -76,7 +76,7 @@ const Inner = ({ form }: InnerProps) => {
                     }
                     return {
                         ...object,
-                        widget: <Input />,
+                        widget: <Input autoComplete="off" />,
                     };
                 }));
             }
@@ -102,7 +102,7 @@ const Inner = ({ form }: InnerProps) => {
                 widget: <CustomSelect
                     onChange={typeChange}
                     source={typeSource}
-                    style={{ width: 200 }}
+                    style={{ width: '100%' }}
                 />,
             },
             {
@@ -126,7 +126,7 @@ const Inner = ({ form }: InnerProps) => {
                     sourceLabelMap="name"
                     sourceValueMap="id"
                     source={senderList}
-                    style={{ width: 200 }}
+                    style={{ width: '100%' }}
                 />,
             },
             ...dynamicMeta,

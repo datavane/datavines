@@ -1,4 +1,4 @@
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import {
     Button, Tabs, Tag, Table, Modal, Form, Input,
 } from 'antd';
@@ -17,7 +17,7 @@ const Index = () => {
     const [activeKey, setActiveKey] = useState(initialItems[0].key);
     const [activeTableKey] = useState(initialTableItems[0].key);
     const [items, setItems] = useState(initialItems);
-    const newTabIndex = useRef(0);
+    // const newTabIndex = useRef(0);
 
     const onChange = (newActiveKey: string) => {
         setActiveKey(newActiveKey);
@@ -107,10 +107,6 @@ const Index = () => {
     };
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-    const showModal = () => {
-        setIsModalOpen(true);
-    };
-
     const handleOk = () => {
         setIsModalOpen(false);
     };
@@ -192,7 +188,7 @@ const Index = () => {
                         name="name"
                         rules={[{ required: true, message: '请输入标签名!' }]}
                     >
-                        <Input />
+                        <Input autoComplete="off" />
                     </Form.Item>
                 </Form>
             </Modal>

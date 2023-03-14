@@ -219,6 +219,8 @@ export default {
     warn_setting_notice_edit: '编辑通知',
     warn_setting_notice_sender: '发送者',
     warn_monitor_tip: '用于监控{{data}}相关数据的SLAs',
+    warn_association_rule_jobs: '关联规则作业',
+    warn_notice: '通知管理',
 
     workspace_name: '空间名称',
     workspace_exit: '退出空间',

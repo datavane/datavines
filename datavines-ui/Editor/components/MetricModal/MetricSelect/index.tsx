@@ -169,7 +169,7 @@ const Index = ({
             name={item.key}
             rules={[...requiredRules]}
         >
-            <Input style={{ width: '100%' }} />
+            <Input style={{ width: '100%' }} autoComplete="off" />
         </Form.Item>
     );
     return (
@@ -239,7 +239,7 @@ const Index = ({
                             )}
                             name="filter"
                         >
-                            <Input.TextArea style={{ marginLeft: context.locale === 'en_US' ? -100 : -62 }} rows={5} />
+                            <Input.TextArea autoComplete="off" style={{ marginLeft: context.locale === 'en_US' ? -100 : -62 }} rows={5} />
                         </Form.Item>
                     </IF>
 

@@ -219,6 +219,8 @@ export default {
     warn_setting_notice_edit: 'Edit notification',
     warn_setting_notice_sender: 'Sender',
     warn_monitor_tip: 'SLAs for monitoring {{data}} related data',
+    warn_association_rule_jobs: 'Association Rule Jobs',
+    warn_notice: 'Notice',
 
     workspace_name: 'Name',
     workspace_exit: 'Exit Workspace',
@@ -258,4 +260,5 @@ export default {
     label_add_category: 'Add Tag Category',
     label_add: 'Add Tag',
     label_name: 'Tag Name',
+
 };
