@@ -5,7 +5,7 @@ import {
     Route, Switch, useHistory, useLocation, useParams, useRouteMatch,
 } from 'react-router-dom';
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Button } from 'antd';
+import { Button, Tabs, TabsProps } from 'antd';
 import { CustomSelect } from '@Editor/common';
 import { useSelector } from 'react-redux';
 import { MenuItem } from '@/component/Menu/MenuAside';
@@ -114,6 +114,7 @@ const DetailMain = () => {
 
         </div>
     );
+
     return (
 
         <MenuLayout menus={detailMenus}>
@@ -138,4 +139,5 @@ const DetailMain = () => {
     );
 };
 
+//   export default App;
 export default DetailMain;

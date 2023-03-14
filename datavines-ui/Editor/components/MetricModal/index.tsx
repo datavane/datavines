@@ -113,7 +113,7 @@ export const MetricConfig = (props: InnerProps) => {
             </IF>
             <VerifyConfigure detail={detail} form={form} />
             <ActuatorConfigure detail={detail} form={form} />
-            <RunEvnironment id={id} form={form} />
+            <RunEvnironment id={id} form={form} detail={detail} />
             <OtherConfig detail={detail} form={form} />
             <ErrorDataStoreConfig detail={detail} form={form} />
         </Form>

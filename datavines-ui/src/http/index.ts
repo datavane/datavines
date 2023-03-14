@@ -37,7 +37,8 @@ export const $http = getHttp({
         return config;
     },
     responseInterceptor(response) {
-        if (response.data?.code === 10010002) {
+        // console.log('esponse.data?.code', response.data?.code);
+        if (response.data?.code === 10010002 || response.data?.code === 10010003 || response.data?.code === 10010004) {
             setTimeout(() => {
                 window.location.href = '#/login';
             }, 1000);

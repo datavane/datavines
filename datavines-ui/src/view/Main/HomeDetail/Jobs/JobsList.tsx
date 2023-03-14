@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-    Table, Form, Button, Popconfirm, message, Dropdown, Menu,
+    Table, Form, Button, Popconfirm, message, Dropdown, Menu, Tabs, TabsProps,
 } from 'antd';
 import type { MenuProps } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
@@ -78,13 +78,15 @@ const Jobs = ({ datasourceId }: TJobs) => {
             ]}
         />
     );
-    const getData = async (values: any = null) => {
+    // eslint-disable-next-line default-param-last
+    const getData = async (values: any = null, typeData?:number) => {
         try {
             setLoading(true);
             const res = (await $http.get('/job/page', {
                 datasourceId: datasourceId || (match.params as any).id,
                 ...pageParams,
                 ...(values || form.getFieldsValue()),
+                type: typeData || type,
             })) || [];
             setTableData({
                 list: res?.records || [],
@@ -177,13 +179,13 @@ const Jobs = ({ datasourceId }: TJobs) => {
             width: 200,
             render: (text: string) => defaultRender(text, 200),
         },
-        {
-            title: intl.formatMessage({ id: 'jobs_type' }),
-            dataIndex: 'type',
-            key: 'type',
-            width: 160,
-            render: (text: string) => <div>{text}</div>,
-        },
+        // {
+        //     title: intl.formatMessage({ id: 'jobs_type' }),
+        //     dataIndex: 'type',
+        //     key: 'type',
+        //     width: 160,
+        //     render: (text: string) => <div>{text}</div>,
+        // },
         {
             title: intl.formatMessage({ id: 'jobs_updater' }),
             dataIndex: 'updater',
@@ -228,8 +230,29 @@ const Jobs = ({ datasourceId }: TJobs) => {
             },
         },
     ];
+
+    const [type, setType] = useState(0);
+
+    const onChangeTab = (key: string) => {
+        setType(+key);
+        getData(undefined, +key);
+    };
+
+    const items: TabsProps['items'] = [
+        {
+            key: '0',
+            label: '数据质量检查作业',
+            children: '',
+        },
+        {
+            key: '1',
+            label: '数据比对作业',
+            children: '',
+        },
+    ];
     return (
         <div className="dv-page-paddinng" style={{ height: 'calc(100vh - 73px)' }}>
+            <Tabs defaultActiveKey="0" items={items} onChange={onChangeTab} />
             {/* <Title>{intl.formatMessage({ id: 'jobs_list' })}</Title> */}
             <div style={{ paddingTop: '0px' }}>
                 <div className="dv-flex-between">

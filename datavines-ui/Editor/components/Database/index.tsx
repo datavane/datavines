@@ -325,7 +325,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         }).finally(() => {
             // setLoading(false);
         });
-        // catalog/profile/execute
     };
     const getIssue = async (uuid:string) => {
         setLoading(true);
@@ -553,6 +552,16 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         });
         message.success(intl.formatMessage({ id: 'common_success' }));
     };
+    const [detailKey, setDetailTabKey] = useState('1');
+    const changeDetailTabKey = (value:string) => {
+        setDetailTabKey(value);
+    };
+    const detailRef = useRef<{
+        runsRef:any
+    }>();
+    const refreshHistoryList = () => {
+        detailRef.current?.runsRef?.current?.getData();
+    };
 
     return (
         <div className="dv-database">
@@ -761,10 +770,11 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
 
                         </span>
                         <div style={{ float: 'right' }}>
+                            {detailKey === '3' ? <Button onClick={refreshHistoryList} type="primary" style={{ marginRight: '10px' }}>刷新</Button> : ''}
                             <Button onClick={() => onRun(metricsId)} type="primary">运行</Button>
                             <Button onClick={() => onDelete(metricsId)} style={{ marginLeft: '10px' }}>删除</Button>
                         </div>
-                        <Detail id={metricsId} selectDatabases={selectDatabases} />
+                        <Detail ref={detailRef} id={metricsId} selectDatabases={selectDatabases} changeTabKey={changeDetailTabKey} />
                     </div>
                 </IF>
             </IF>

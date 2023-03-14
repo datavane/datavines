@@ -39,8 +39,8 @@ const Index = ({ form, detail }: InnerProps) => {
                 executorMemory: paramter.executorMemory ?? '2G',
                 executorCores: paramter.executorCores ?? 2,
                 others: paramter.others ?? '--conf spark.yarn.maxAppAttempts=1',
-                tenantCode: detail?.tenantCode,
-                env: detail?.env,
+                tenantCode: detail?.tenantCode ? detail.tenantCode.toString() : '',
+                env: detail?.env ? detail.env.toString() : '',
                 engineType: detail?.engineType || (datasourceReducer.modeType === 'comparison' ? 'spark' : 'local'),
             });
         } catch (error) {

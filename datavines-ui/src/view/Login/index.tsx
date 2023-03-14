@@ -72,6 +72,11 @@ const Login = () => {
                             <Input.Password style={{ height: 50 }} size="large" prefix={<LockOutlined />} />
                         </Form.Item>
                         <p className="dv-login-btn">
+
+                            <a href="#/register" className="dv-register-btn">
+                                {intl.formatMessage({ id: 'register' })}
+                                {/* <ArrowRightOutlined /> */}
+                            </a>
                             <span onClick={() => onFinish()}>
                                 {intl.formatMessage({ id: 'login_btn_text' })}
                                 <ArrowRightOutlined />
@@ -90,10 +95,7 @@ const Login = () => {
                     </Form>
                 </div>
             </div>
-            <a href="#/register" className="dv-register-btn">
-                {intl.formatMessage({ id: 'register' })}
-                <ArrowRightOutlined />
-            </a>
+
         </div>
     );
 };

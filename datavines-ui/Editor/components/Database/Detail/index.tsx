@@ -1,4 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+    useState, useRef, useEffect, forwardRef, useImperativeHandle,
+} from 'react';
 import { Tabs } from 'antd';
 import './index.less';
 import useRequest from '@Editor/hooks/useRequest';
@@ -6,7 +8,9 @@ import DashBoard from './dashBoard';
 import Runs from './runs';
 import { Inner } from '../../../../src/view/Main/HomeDetail/Jobs/useAddEditJobsModal';
 
-const Index = ({ id, selectDatabases }:{id:string;selectDatabases:any;}) => {
+const Index = (props: any, ref:any) => {
+    const { id, selectDatabases, changeTabKey } = props;
+    useImperativeHandle(ref, () => ({ runsRef }));
     const innerRef = useRef();
     const { $http } = useRequest();
     const metricParameter = {
@@ -58,6 +62,8 @@ const Index = ({ id, selectDatabases }:{id:string;selectDatabases:any;}) => {
         initData();
     }, []);
     const [option, setOption] = useState<any>(null);
+
+    const runsRef = useRef(null);
     const initialTableItems = [
         { label: 'DashBoard', children: <DashBoard option={option} id={id} />, key: '1' },
         {
@@ -74,7 +80,7 @@ const Index = ({ id, selectDatabases }:{id:string;selectDatabases:any;}) => {
             />,
             key: '2',
         },
-        { label: 'Runs', children: <Runs id={id} />, key: '3' },
+        { label: 'Runs', children: <Runs id={id} ref={runsRef} />, key: '3' },
     ];
     const [activeTableKey, setActiveKey] = useState(initialTableItems[0].key);
     return (
@@ -84,7 +90,10 @@ const Index = ({ id, selectDatabases }:{id:string;selectDatabases:any;}) => {
                     size="small"
                     activeKey={activeTableKey}
                     items={initialTableItems}
-                    onChange={setActiveKey}
+                    onChange={(value:string) => {
+                        changeTabKey(value);
+                        setActiveKey(value);
+                    }}
                     style={{ marginBottom: '0px' }}
                     className="dv-tab-list"
                 />
@@ -93,4 +102,4 @@ const Index = ({ id, selectDatabases }:{id:string;selectDatabases:any;}) => {
     );
 };
 
-export default Index;
+export default forwardRef(Index);
