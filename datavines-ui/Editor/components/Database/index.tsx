@@ -386,8 +386,32 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             ],
         }));
     };
+
+    const [chooesColList, setChooesColList] = useState([]);
+    const [chooesColModalOpen, setChooesColModalOpen] = useState(false);
+    const [colCheckList, setColCheckList] = useState<string[]>([]);
+    // const [defaultSelectedRowKeys, setDefaultSelectedRowKeys] = useState([]);
+    const chooseColumns = [{
+        title: intl.formatMessage({ id: 'job_Column_Name' }),
+        dataIndex: 'name',
+        key: 'value',
+    }];
+    const runProfileGetCol = async () => {
+        const res = await $http.get(`/catalog/list/column-with-detail/${selectDatabases[currentIndex]?.uuid}`);
+        // console.log('res', res);
+        setChooesColList(res);
+
+        const resCheck = await $http.get(`/catalog/profile/selected-columns/${selectDatabases[currentIndex]?.uuid}?uuid=${selectDatabases[currentIndex]?.uuid}`);
+        setColCheckList(resCheck);
+        setChooesColModalOpen(true);
+    };
     const runProfile = async () => {
-        await $http.post(`/catalog/profile/execute?uuid=${selectDatabases[currentIndex]?.uuid}`).then(() => {
+        await $http.post('/catalog/profile/execute-select-columns', {
+            selectAll: chooesColList.length === colCheckList.length,
+            selectedColumnList: colCheckList,
+            uuid: selectDatabases[currentIndex]?.uuid,
+        }).then(() => {
+            setChooesColModalOpen(false);
             message.success(intl.formatMessage({ id: 'common_success' }));
         });
     };
