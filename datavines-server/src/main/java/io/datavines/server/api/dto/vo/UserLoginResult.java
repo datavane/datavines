@@ -14,23 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.api.dto.bo.sla;
+package io.datavines.server.api.dto.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 @Data
-@EqualsAndHashCode
-@ToString
-public class SlasReceiverCreate {
+@EqualsAndHashCode(callSuper = true)
+public class UserLoginResult extends UserBaseInfo {
 
-    private String type;
-
-    private String name;
-
-    private Long workspaceId;
-
-    private String config;
+    private Boolean admin;
 }

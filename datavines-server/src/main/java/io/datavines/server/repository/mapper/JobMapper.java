@@ -35,6 +35,7 @@ public interface JobMapper extends BaseMapper<Job> {
     List<Job> listByDataSourceId(long dataSourceId);
 
     IPage<JobVO> getJobPage(Page<JobVO> page,
-                                   @Param("searchVal") String searchVal,
-                                   @Param("datasourceId") Long datasourceId);
+                            @Param("searchVal") String searchVal,
+                            @Param("datasourceId") Long datasourceId,
+                            @Param("type") Integer type);
 }

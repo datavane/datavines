@@ -114,14 +114,14 @@ public class JobExternalService {
         return commandService.update(command);
     }
 
-    public void updateJobExecutionStatus(Long taskId, ExecutionStatus status){
-        JobExecution jobExecution = getJobExecutionById(taskId);
+    public void updateJobExecutionStatus(Long jobExecutionId, ExecutionStatus status){
+        JobExecution jobExecution = getJobExecutionById(jobExecutionId);
         jobExecution.setStatus(status);
         updateJobExecution(jobExecution);
     }
 
-    public void updateJobExecutionRetryTimes(Long taskId, int times) {
-        JobExecution jobExecution = getJobExecutionById(taskId);
+    public void updateJobExecutionRetryTimes(Long jobExecutionId, int times) {
+        JobExecution jobExecution = getJobExecutionById(jobExecutionId);
         jobExecution.setRetryTimes(times);
         updateJobExecution(jobExecution);
     }
@@ -161,16 +161,16 @@ public class JobExternalService {
         return jobExecutionRequest;
     }
 
-    public JobExecutionResult getJobExecutionResultByJobExecutionId(long taskId) {
-        return jobExecutionResultService.getByJobExecutionId(taskId);
+    public JobExecutionResult getJobExecutionResultByJobExecutionId(long jobExecutionId) {
+        return jobExecutionResultService.getByJobExecutionId(jobExecutionId);
     }
 
-    public int deleteJobExecutionResultByJobExecutionId(long taskId) {
-        return jobExecutionResultService.deleteByJobExecutionId(taskId);
+    public int deleteJobExecutionResultByJobExecutionId(long jobExecutionId) {
+        return jobExecutionResultService.deleteByJobExecutionId(jobExecutionId);
     }
 
-    public int deleteActualValuesByJobExecutionId(long taskId) {
-        return actualValuesService.deleteByJobExecutionId(taskId);
+    public int deleteActualValuesByJobExecutionId(long jobExecutionId) {
+        return actualValuesService.deleteByJobExecutionId(jobExecutionId);
     }
 
     public int updateJobExecutionResult(JobExecutionResult jobExecutionResult) {

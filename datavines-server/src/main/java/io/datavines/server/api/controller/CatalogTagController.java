@@ -30,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Api(value = "catalog", tags = "catalog", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/catalog/tag", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,7 +46,7 @@ public class CatalogTagController {
 
     @ApiOperation(value = "create tag category", response = Long.class)
     @PostMapping(value = "/category", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createTagCategory(@RequestBody TagCategoryCreate categoryCreate) {
+    public Object createTagCategory(@Valid @RequestBody TagCategoryCreate categoryCreate) {
         return tagCategoryService.create(categoryCreate);
     }
 
@@ -62,7 +64,7 @@ public class CatalogTagController {
 
     @ApiOperation(value = "create tag", response = Long.class)
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createTag(@RequestBody TagCreate tagCreate) {
+    public Object createTag(@Valid @RequestBody TagCreate tagCreate) {
         return tagService.create(tagCreate);
     }
 

@@ -18,6 +18,7 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.common.param.form.type.InputParam;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -43,5 +44,13 @@ public class HiveConnector extends JdbcConnector {
     @Override
     protected ResultSet getPrimaryKeys(DatabaseMetaData metaData, String catalog, String schema, String tableName) throws SQLException {
         return null;
+    }
+
+    @Override
+    protected InputParam getPropertiesInput(boolean isEn) {
+        return getInputParam("properties",
+                isEn ? "properties" : "参数",
+                isEn ? "please enter properties,like key=value&key1=value1" : "请填入参数，格式为key=value&key1=value1", 2, null,
+                "hive.resultset.use.unique.column.names=false");
     }
 }

@@ -29,9 +29,11 @@ import io.datavines.engine.local.api.LocalSink;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.entity.ResultListWithColumns;
 import io.datavines.engine.local.api.utils.FileUtils;
+import io.datavines.engine.local.api.utils.LoggerFactory;
 import io.datavines.engine.local.api.utils.SqlUtils;
 import io.datavines.spi.PluginLoader;
-import lombok.extern.slf4j.Slf4j;
+
+import org.slf4j.Logger;
 
 import java.io.File;
 import java.sql.ResultSet;
@@ -42,8 +44,9 @@ import java.util.*;
 import static io.datavines.engine.api.ConfigConstants.*;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
-@Slf4j
 public class LocalFileSink implements LocalSink {
+
+    private Logger log = LoggerFactory.getLogger(LocalFileSink.class);
 
     private Config config = new Config();
 

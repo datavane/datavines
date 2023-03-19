@@ -41,32 +41,49 @@ public class MysqlStorageConnector implements StorageConnector {
     public String getConfigJson(boolean isEn) {
         InputParam host = getInputParam("host",
                 isEn ? "host" : "地址",
-                isEn ? "please enter host ip" : "请填入连接地址", 1, Validate.newBuilder()
-                        .setRequired(true).setMessage(isEn ? "please enter host ip" : "请填入连接地址")
-                        .build());
+                isEn ? "please enter host ip" : "请填入连接地址", 1,
+                Validate.newBuilder()
+                        .setRequired(true)
+                        .setMessage(isEn ? "please enter host ip" : "请填入连接地址")
+                        .build(),
+                null);
         InputParam port = getInputParam("port",
                 isEn ? "port" : "端口",
-                isEn ? "please enter port" : "请填入端口号", 1, Validate.newBuilder()
-                        .setRequired(true).setMessage(isEn ? "please enter port" : "请填入端口号")
-                        .build());
+                isEn ? "please enter port" : "请填入端口号", 1,
+                Validate.newBuilder()
+                        .setRequired(true)
+                        .setMessage(isEn ? "please enter port" : "请填入端口号")
+                        .build(),
+                null);
         InputParam database = getInputParam("database",
                 isEn ? "database" : "数据库",
-                isEn ? "please enter database" : "请填入数据库", 1, Validate.newBuilder()
-                        .setRequired(true).setMessage(isEn ? "please enter database" : "请填入数据库")
-                        .build());
+                isEn ? "please enter database" : "请填入数据库", 1,
+                Validate.newBuilder()
+                        .setRequired(true)
+                        .setMessage(isEn ? "please enter database" : "请填入数据库")
+                        .build(),
+                null);
         InputParam user = getInputParam("user",
                 isEn ? "user" : "用户名",
-                isEn ? "please enter user" : "请填入用户名", 1, Validate.newBuilder()
-                        .setRequired(true).setMessage(isEn ? "please enter user" : "请填入用户名")
-                        .build());
+                isEn ? "please enter user" : "请填入用户名", 1,
+                Validate.newBuilder()
+                        .setRequired(true)
+                        .setMessage(isEn ? "please enter user" : "请填入用户名")
+                        .build(),
+                null);
         InputParam password = getInputParam("password",
                 isEn ? "password" : "密码",
-                isEn ? "please enter password" : "请填入密码", 1, Validate.newBuilder()
-                        .setRequired(true).setMessage(isEn ? "please enter password" : "请填入密码")
-                        .build());
-        InputParam properties = getInputParamNoValidate("properties",
+                isEn ? "please enter password" : "请填入密码", 1,
+                Validate.newBuilder()
+                        .setRequired(true)
+                        .setMessage(isEn ? "please enter password" : "请填入密码")
+                        .build(),
+                null);
+        InputParam properties = getInputParam("properties",
                 isEn ? "properties" : "参数",
-                isEn ? "please enter properties,like key=value&key1=value1" : "请填入参数，格式为key=value&key1=value1", 2);
+                isEn ? "please enter properties,like key=value&key1=value1" : "请填入参数，格式为key=value&key1=value1", 2,
+                null,
+                "useUnicode=true&characterEncoding=UTF-8&useSSL=false");
 
         List<PluginParams> params = new ArrayList<>();
         params.add(host);
@@ -89,7 +106,7 @@ public class MysqlStorageConnector implements StorageConnector {
         return result;
     }
 
-    private InputParam getInputParam(String field, String title, String placeholder, int rows, Validate validate) {
+    private InputParam getInputParam(String field, String title, String placeholder, int rows, Validate validate , Object defaultValue) {
         return InputParam
                 .newBuilder(field, title)
                 .addValidate(validate)
@@ -98,20 +115,8 @@ public class MysqlStorageConnector implements StorageConnector {
                 .setType(PropsType.TEXT)
                 .setRows(rows)
                 .setPlaceholder(placeholder)
+                .setValue(defaultValue)
                 .setEmit(null)
-                .build();
-    }
-
-    private InputParam getInputParamNoValidate(String field, String title, String placeholder, int rows) {
-        return InputParam
-                .newBuilder(field, title)
-                .setProps(new InputParamsProps().setDisabled(false))
-                .setSize(CommonConstants.SMALL)
-                .setType(PropsType.TEXTAREA)
-                .setRows(rows)
-                .setPlaceholder(placeholder)
-                .setEmit(null)
-                .setValue("useUnicode=true&characterEncoding=UTF-8&useSSL=false")
                 .build();
     }
 

@@ -31,7 +31,7 @@ public enum Status {
      * 11 工作空间
      * 12 数据源
      * 13 任务
-     * 14 SLAS 告警
+     * 14 SLA 告警
      */
     SUCCESS(200, "success", "成功"),
     FAIL(400, "Bad Request", "错误的请求"),
@@ -74,7 +74,7 @@ public enum Status {
     JOB_EXIST_ERROR(14010004, "Job {0} is Exist error", "作业 {0} 已存在错误"),
     UPDATE_JOB_ERROR(14010005, "Update Job {0} Error", "更新作业 {0} 错误"),
     METRIC_JOB_RELATED_ENTITY_NOT_EXIST(14010006, "The entity that want to check is null", "找不到要进行检查的实体"),
-    METRIC_NOT_SUITABLE_ENTITY_TYPE(14010007, "The Metric {0} is not Suit Entity Type {1}", "规则 {0} 不能用于检查数据类型 {1} "),
+    METRIC_NOT_SUITABLE_ENTITY_TYPE(14010007, "The Metric [{0}] is not Suit Entity Type [{1}]", "规则[{0}]不能用于检查数据类型[{1}] "),
     ENTITY_TYPE_NOT_EXIST(14010008, "The Column Type is not Exist", "列类型不存在"),
     METRIC_IS_NOT_EXIST(14010009, "The Metric {0} is not exist", "规则 {0} 不存在"),
 

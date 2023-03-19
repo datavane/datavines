@@ -34,6 +34,6 @@ public class IssueCreate {
     @NotBlank(message = "Issue status cannot be empty")
     private String status;
 
-    @NotBlank(message = "job id cannot be empty")
+    @NotNull(message = "job id cannot be empty")
     private Long jobId;
 }

@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -46,13 +47,13 @@ public class ErrorDataStorageController {
     
     @ApiOperation(value = "create error data storage")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createErrorDataStorage(@RequestBody ErrorDataStorageCreate errorDataStorageCreate)  {
+    public Object createErrorDataStorage(@Valid @RequestBody ErrorDataStorageCreate errorDataStorageCreate)  {
         return errorDataStorageService.create(errorDataStorageCreate);
     }
 
     @ApiOperation(value = "update error data storage")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateErrorDataStorage(@RequestBody ErrorDataStorageUpdate errorDataStorageUpdate) {
+    public Object updateErrorDataStorage(@Valid @RequestBody ErrorDataStorageUpdate errorDataStorageUpdate) {
         return errorDataStorageService.update(errorDataStorageUpdate)>0;
     }
 

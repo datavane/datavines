@@ -19,13 +19,14 @@ package io.datavines.server.api.dto.bo.job;
 import io.datavines.common.enums.TimeoutStrategy;
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
 @NotNull(message = "DataProfileJobCreateOrUpdate Cannot be Null")
 public class DataProfileJobCreateOrUpdate {
 
-    @NotNull(message = "Job type cannot be empty")
+    @NotBlank(message = "Job type cannot be empty")
     private String type;
 
     @NotNull(message = "Datasource cannot be empty")

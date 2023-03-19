@@ -59,6 +59,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +104,6 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     @Transactional(rollbackFor = Exception.class)
     public long create(JobCreate jobCreate) throws DataVinesServerException {
 
-        // 需要对参数进行校验，判断插件类型是否存在
         String parameter = jobCreate.getParameter();
         if (StringUtils.isEmpty(parameter)) {
             throw new DataVinesServerException(Status.JOB_PARAMETER_IS_NULL_ERROR);
@@ -114,7 +114,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
         isMetricSuitable(jobCreate.getDataSourceId(), jobParameters);
-        setJobAttribute(job, jobParameters);
+        List<String> fqnList = setJobAttribute(job, jobParameters);
         job.setName(getJobName(jobCreate.getType(), jobCreate.getParameter()));
         if (getByKeyAttribute(job)) {
             throw new DataVinesServerException(Status.JOB_EXIST_ERROR, job.getName());
@@ -125,8 +125,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         job.setUpdateBy(ContextHolder.getUserId());
         job.setUpdateTime(LocalDateTime.now());
 
-        // add a job
-        baseMapper.insert(job);
+        if (!save(job)) {
+            log.info("create metric jov error : {}", jobCreate);
+            throw new DataVinesServerException(Status.CREATE_JOB_ERROR, job.getName());
+        } else {
+            saveOrUpdateMetricJobEntityRel(job, fqnList);
+        }
+
         long jobId = job.getId();
 
         // whether running now
@@ -148,6 +153,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public long update(JobUpdate jobUpdate) {
         Job job = getById(jobUpdate.getId());
         if (job == null) {
@@ -157,14 +163,16 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         BeanUtils.copyProperties(jobUpdate, job);
         List<BaseJobParameter> jobParameters = JSONUtils.toList(jobUpdate.getParameter(), BaseJobParameter.class);
         isMetricSuitable(jobUpdate.getDataSourceId(), jobParameters);
-        setJobAttribute(job, jobParameters);
+        List<String> fqnList = setJobAttribute(job, jobParameters);
         job.setName(getJobName(jobUpdate.getType(), jobUpdate.getParameter()));
         job.setUpdateBy(ContextHolder.getUserId());
         job.setUpdateTime(LocalDateTime.now());
 
-        if (baseMapper.updateById(job) <= 0) {
-            log.info("update workspace fail : {}", jobUpdate);
+        if (!updateById(job)) {
+            log.info("update metric job  error : {}", jobUpdate);
             throw new DataVinesServerException(Status.UPDATE_JOB_ERROR, job.getName());
+        } else {
+            saveOrUpdateMetricJobEntityRel(job, fqnList);
         }
 
         if (jobUpdate.getRunningNow() == 1) {
@@ -172,6 +180,37 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         }
 
         return job.getId();
+    }
+
+    private void saveOrUpdateMetricJobEntityRel(Job job, List<String> fqnList) {
+        List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
+                .eq("metric_job_id", job.getId())
+                .eq("metric_job_type", "DATA_QUALITY"));
+        if (listRel.size() >= 1) {
+            catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>()
+                    .eq("metric_job_id", job.getId())
+                    .eq("metric_job_type", "DATA_QUALITY"));
+        }
+
+        if (CollectionUtils.isNotEmpty(fqnList)) {
+            for (String fqn : fqnList) {
+                CatalogEntityInstance instance =
+                        catalogEntityInstanceService.getByDataSourceAndFQN(job.getDataSourceId(), fqn);
+                if (instance == null) {
+                    continue;
+                }
+
+                CatalogEntityMetricJobRel entityMetricJobRel = new CatalogEntityMetricJobRel();
+                entityMetricJobRel.setEntityUuid(instance.getUuid());
+                entityMetricJobRel.setMetricJobId(job.getId());
+                entityMetricJobRel.setMetricJobType("DATA_QUALITY");
+                entityMetricJobRel.setCreateBy(ContextHolder.getUserId());
+                entityMetricJobRel.setCreateTime(LocalDateTime.now());
+                entityMetricJobRel.setUpdateBy(ContextHolder.getUserId());
+                entityMetricJobRel.setUpdateTime(LocalDateTime.now());
+                catalogEntityMetricJobRelService.save(entityMetricJobRel);
+            }
+        }
     }
 
     @Override
@@ -234,6 +273,10 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
                 CatalogEntityInstance columnEntity =
                         catalogEntityInstanceService.getByDataSourceAndFQN(dataSourceId, getFQN(jobParameter));
+                if (columnEntity == null) {
+                    return;
+                }
+
                 if (StringUtils.isEmpty(columnEntity.getProperties())) {
                     throw new DataVinesServerException(Status.ENTITY_TYPE_NOT_EXIST);
                 }
@@ -248,12 +291,12 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
                     SqlMetric metric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobParameter.getMetricType());
                     if (metric == null) {
-                        throw new DataVinesServerException(Status.METRIC_JOB_RELATED_ENTITY_NOT_EXIST, jobParameter.getMetricType());
+                        throw new DataVinesServerException(Status.METRIC_JOB_RELATED_ENTITY_NOT_EXIST, jobParameter.getMetricType().toUpperCase());
                     }
 
                     List<DataVinesDataType> suitableTypeList = metric.suitableType();
                     if (!suitableTypeList.contains(dataVinesDataType)) {
-                        throw new DataVinesServerException(Status.METRIC_NOT_SUITABLE_ENTITY_TYPE, metric.getNameByLanguage(!LanguageUtils.isZhContext()), dataVinesDataType.getName());
+                        throw new DataVinesServerException(Status.METRIC_NOT_SUITABLE_ENTITY_TYPE, metric.getNameByLanguage(!LanguageUtils.isZhContext()), dataVinesDataType.getName().toUpperCase());
                     }
                 }
             }
@@ -287,14 +330,18 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         }
     }
 
-    private void setJobAttribute(Job job, List<BaseJobParameter> jobParameters) {
+    private List<String> setJobAttribute(Job job, List<BaseJobParameter> jobParameters) {
+        List<String> fqnList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(jobParameters)) {
             BaseJobParameter jobParameter = jobParameters.get(0);
             job.setSchemaName((String)jobParameter.getMetricParameter().get("database"));
             job.setTableName((String)jobParameter.getMetricParameter().get("table"));
             job.setColumnName((String)jobParameter.getMetricParameter().get("column"));
             job.setMetricType(jobParameter.getMetricType());
+            fqnList.add(getFQN(jobParameter));
         }
+
+        return fqnList;
     }
 
     @Override
@@ -337,9 +384,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     @Override
-    public IPage<JobVO> getJobPage(String searchVal, Long dataSourceId, Integer pageNumber, Integer pageSize) {
+    public IPage<JobVO> getJobPage(String searchVal, Long dataSourceId, Integer type, Integer pageNumber, Integer pageSize) {
         Page<JobVO> page = new Page<>(pageNumber, pageSize);
-        IPage<JobVO> jobs = baseMapper.getJobPage(page, searchVal, dataSourceId);
+        IPage<JobVO> jobs = baseMapper.getJobPage(page, searchVal, dataSourceId, type);
         List<JobVO> jobList = jobs.getRecords();
         if (CollectionUtils.isNotEmpty(jobList)) {
             for(JobVO jobVO: jobList) {

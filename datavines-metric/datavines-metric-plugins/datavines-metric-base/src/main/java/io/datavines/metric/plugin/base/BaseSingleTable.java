@@ -43,9 +43,9 @@ public abstract class BaseSingleTable implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems() {
+    public ExecuteSql getInvalidateItems(String uniqueKey) {
         ExecuteSql executeSql = new ExecuteSql();
-        executeSql.setResultTable("invalidate_items");
+        executeSql.setResultTable("invalidate_items_" + uniqueKey);
         executeSql.setSql(invalidateItemsSql.toString());
         executeSql.setErrorOutput(isInvalidateItemsCanOutput());
         return executeSql;

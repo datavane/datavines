@@ -34,8 +34,6 @@ public class MultiTableAccuracy implements SqlMetric {
 
     private final StringBuilder invalidateItemsSql = new StringBuilder("SELECT ${table}.* FROM ");
 
-    private final StringBuilder actualValueSql = new StringBuilder("select count(1) as actual_value from ${invalidate_items_table}");
-
     @Override
     public String getName() {
         return "multi_table_accuracy";
@@ -99,9 +97,9 @@ public class MultiTableAccuracy implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems() {
+    public ExecuteSql getInvalidateItems(String uniqueKey) {
         ExecuteSql executeSql = new ExecuteSql();
-        executeSql.setResultTable("invalidate_items");
+        executeSql.setResultTable("invalidate_items_" + uniqueKey);
         executeSql.setSql(invalidateItemsSql.toString());
         executeSql.setErrorOutput(isInvalidateItemsCanOutput());
         return executeSql;
@@ -110,8 +108,8 @@ public class MultiTableAccuracy implements SqlMetric {
     @Override
     public ExecuteSql getActualValue(String uniqueKey) {
         ExecuteSql executeSql = new ExecuteSql();
-        executeSql.setResultTable("invalidate_count");
-        executeSql.setSql(actualValueSql.toString());
+        executeSql.setResultTable("invalidate_count_" + uniqueKey);
+        executeSql.setSql("select count(1) as actual_value_" + uniqueKey + " from ${invalidate_items_table}");
         executeSql.setErrorOutput(false);
         return executeSql;
     }

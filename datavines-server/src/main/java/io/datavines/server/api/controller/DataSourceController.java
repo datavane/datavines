@@ -24,6 +24,9 @@ import io.datavines.core.aop.RefreshToken;
 import io.datavines.server.api.dto.bo.datasource.DataSourceCreate;
 import io.datavines.server.api.dto.bo.datasource.DataSourceUpdate;
 import io.datavines.server.api.dto.bo.datasource.ExecuteRequest;
+import io.datavines.server.repository.entity.DataSource;
+import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
+import io.datavines.server.repository.service.CatalogEntityInstanceService;
 import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
@@ -33,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -46,22 +50,25 @@ public class DataSourceController {
     @Autowired
     private DataSourceService dataSourceService;
 
+    @Autowired
+    private CatalogEntityInstanceService catalogEntityInstanceService;
+
     @ApiOperation(value = "test connection")
     @PostMapping(value = "/test", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object testConnection(@RequestBody TestConnectionRequestParam param)  {
+    public Object testConnection(@Valid @RequestBody TestConnectionRequestParam param)  {
         return dataSourceService.testConnect(param);
     }
 
     @ApiOperation(value = "create datasource")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createDataSource(@RequestBody DataSourceCreate dataSourceCreate)  {
+    public Object createDataSource(@Valid @RequestBody DataSourceCreate dataSourceCreate)  {
         return dataSourceService.insert(dataSourceCreate);
     }
 
     @ApiOperation(value = "update datasource")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateDataSource(@RequestBody DataSourceUpdate dataSourceUpdate) {
-        return dataSourceService.update(dataSourceUpdate)>0;
+    public Object updateDataSource(@Valid @RequestBody DataSourceUpdate dataSourceUpdate) {
+        return dataSourceService.update(dataSourceUpdate);
     }
 
     @ApiOperation(value = "delete databases")
@@ -82,24 +89,50 @@ public class DataSourceController {
     @ApiOperation(value = "get databases")
     @GetMapping(value = "/{id}/databases")
     public Object getDatabaseList(@PathVariable Long id) {
-        return dataSourceService.getDatabaseList(id);
+        DataSource dataSource = dataSourceService.getDataSourceById(id);
+        if (dataSource == null) {
+            return null;
+        }
+
+        String uuid = dataSource.getUuid();
+        return catalogEntityInstanceService.getEntityList(uuid);
     }
 
     @ApiOperation(value = "get tables")
     @GetMapping(value = "/{id}/{database}/tables")
     public Object getTableList(@PathVariable Long id, @PathVariable String database) {
-        return dataSourceService.getTableList(id, database);
+        DataSource dataSource = dataSourceService.getDataSourceById(id);
+        if (dataSource == null) {
+            return null;
+        }
+        CatalogEntityInstance catalogEntityInstance = catalogEntityInstanceService.getByDataSourceAndFQN(id, database);
+
+        if (catalogEntityInstance == null) {
+            return null;
+        }
+
+        return catalogEntityInstanceService.getEntityList(catalogEntityInstance.getUuid());
     }
 
     @ApiOperation(value = "get columns")
     @GetMapping(value = "/{id}/{database}/{table}/columns")
     public Object getColumnList(@PathVariable Long id, @PathVariable String database, @PathVariable String table) {
-        return dataSourceService.getColumnList(id, database, table);
+        DataSource dataSource = dataSourceService.getDataSourceById(id);
+        if (dataSource == null) {
+            return null;
+        }
+        CatalogEntityInstance catalogEntityInstance = catalogEntityInstanceService.getByDataSourceAndFQN(id, database+"."+table);
+
+        if (catalogEntityInstance == null) {
+            return null;
+        }
+
+        return catalogEntityInstanceService.getEntityList(catalogEntityInstance.getUuid());
     }
 
     @ApiOperation(value = "execute script")
     @PostMapping(value = "/execute", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object execute(@RequestBody ExecuteRequest param)  {
+    public Object execute(@Valid @RequestBody ExecuteRequest param)  {
         return dataSourceService.executeScript(param);
     }
 

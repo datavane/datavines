@@ -32,7 +32,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -98,6 +97,5 @@ public interface LocalSink extends Component {
         } catch (SQLException e) {
             log.error("drop view error : {}", e);
         }
-    };
-
+    }
 }

@@ -76,9 +76,13 @@ public class JobController {
     @GetMapping(value = "/page")
     public Object page(@RequestParam(value = "searchVal", required = false) String searchVal,
                        @RequestParam("datasourceId") Long datasourceId,
+                       @RequestParam(value = "type", required = false) Integer type,
                        @RequestParam("pageNumber") Integer pageNumber,
                        @RequestParam("pageSize") Integer pageSize)  {
-        return jobService.getJobPage(searchVal, datasourceId, pageNumber, pageSize);
+        if (type == null) {
+            type = 0;
+        }
+        return jobService.getJobPage(searchVal, datasourceId, type, pageNumber, pageSize);
     }
 
     @ApiOperation(value = "execute job")

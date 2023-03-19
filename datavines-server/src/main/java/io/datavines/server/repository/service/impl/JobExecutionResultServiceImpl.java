@@ -16,9 +16,7 @@
  */
 package io.datavines.server.repository.service.impl;
 
-import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.job.BaseJobParameter;
-import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.core.utils.LanguageUtils;
@@ -90,7 +88,7 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
         Map<String,String> parameters = new HashMap<>();
         JobExecutionResult jobExecutionResult = baseMapper.getOne(taskId);
         if (jobExecutionResult == null) {
-            return jobExecutionResultVO;
+            return null;
         }
         parameters.put("actual_value", jobExecutionResult.getActualValue()+"");
         parameters.put("expected_value", jobExecutionResult.getExpectedValue()+"");

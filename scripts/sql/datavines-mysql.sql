@@ -415,6 +415,7 @@ CREATE TABLE `dv_datasource` (
   `name` varchar(255) NOT NULL COMMENT '数据源名称',
   `type` varchar(255) NOT NULL COMMENT '数据源类型',
   `param` text NOT NULL COMMENT '数据源参数',
+  `param_code` text NULL COMMENT '数据源参数MD5值',
   `workspace_id` bigint(20) NOT NULL COMMENT '工作空间ID',
   `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
