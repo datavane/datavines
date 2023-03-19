@@ -22,6 +22,7 @@ import io.datavines.server.api.dto.bo.catalog.OptionItem;
 import io.datavines.server.api.dto.bo.catalog.profile.RunProfileRequest;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
 import io.datavines.server.api.dto.vo.DataTime2ValueItem;
+import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.server.api.dto.vo.catalog.*;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 
@@ -51,6 +52,10 @@ public interface CatalogEntityInstanceService extends IService<CatalogEntityInst
 
     List<CatalogTableDetailVO> getCatalogTableWithDetailList(String upstreamId);
 
+    IPage<CatalogColumnDetailVO> getCatalogColumnWithDetailPage(String upstreamId, Integer pageNumber, Integer pageSize);
+
+    IPage<CatalogTableDetailVO> getCatalogTableWithDetailPage(String upstreamId, Integer pageNumber, Integer pageSize);
+
     CatalogDatabaseDetailVO getDatabaseEntityDetail(String uuid);
 
     CatalogTableDetailVO getTableEntityDetail(String uuid);
@@ -78,4 +83,6 @@ public interface CatalogEntityInstanceService extends IService<CatalogEntityInst
     List<String> getProfileJobSelectedColumns(String uuid);
 
     boolean deleteInstanceByDataSourceId(Long datasourceId);
+
+    IPage<JobExecutionVO> profileJobExecutionPage(String uuid, Integer pageNumber, Integer pageSize);
 }

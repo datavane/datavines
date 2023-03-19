@@ -17,18 +17,17 @@
 package io.datavines.server.dqc.coordinator.operator;
 
 import io.datavines.common.entity.JobExecutionRequest;
+import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.OperatorType;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.core.utils.LanguageUtils;
-import io.datavines.engine.core.utils.JsonUtils;
 import io.datavines.metric.api.*;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.client.NotificationClient;
 import io.datavines.server.api.dto.bo.issue.IssueCreate;
-import io.datavines.server.api.dto.vo.JobExecutionResultVO;
 import io.datavines.server.enums.DqJobExecutionState;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.Job;
@@ -97,6 +96,7 @@ public class DataQualityResultOperator {
         } else {
             jobExecutionResult.setState(DqJobExecutionState.FAILURE.getCode());
             Long jobExecutionId = jobExecutionResult.getJobExecutionId();
+            jobExternalService.updateJobExecutionStatus(jobExecutionId, ExecutionStatus.FAILURE);
             sendErrorEmail(jobExecutionId);
         }
 
@@ -125,8 +125,8 @@ public class DataQualityResultOperator {
             messages.add(String.format((isEn ? "Datasource : %s [%s] : ": "数据源 : %s [%s]: ") ,dataSourceType.toUpperCase(), dataSourceName));
             String title = buildAlertSubject(metricExecutionResult, isEn);
             String content = buildAlertMessage(messages, metricExecutionResult, jobExecution.getEngineType(), isEn);
-            message.setSubject(buildAlertSubject(metricExecutionResult, isEn));
-            message.setMessage(buildAlertMessage(messages, metricExecutionResult, jobExecution.getEngineType(), isEn));
+            message.setSubject(title);
+            message.setMessage(content);
 
             saveIssue(jobId, title, content);
 

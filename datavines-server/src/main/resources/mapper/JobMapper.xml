@@ -21,7 +21,7 @@
 <mapper namespace="io.datavines.server.repository.mapper.JobMapper">
 
     <sql id="basic_sql">
-        select * from dv_job where datasource_id = #{datasourceId} and type !=1
+        select * from dv_job where datasource_id = #{datasourceId} and type = #{type}
     </sql>
 
     <select id="getJobPage" resultType="io.datavines.server.api.dto.vo.JobVO">

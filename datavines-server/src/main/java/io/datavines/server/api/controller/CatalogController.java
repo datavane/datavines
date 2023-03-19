@@ -37,9 +37,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Date;
 
 @Api(value = "catalog", tags = "catalog", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -68,7 +68,7 @@ public class CatalogController {
 
     @ApiOperation(value = "refresh", response = Long.class)
     @PostMapping(value = "/refresh", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object refreshCatalog(@RequestBody CatalogRefresh catalogRefresh) {
+    public Object refreshCatalog(@Valid @RequestBody CatalogRefresh catalogRefresh) {
         return catalogMetaDataFetchTaskService.refreshCatalog(catalogRefresh);
     }
 
@@ -81,9 +81,17 @@ public class CatalogController {
         return catalogEntityInstanceService.executeDataProfileJob(runProfileRequest);
     }
 
+    @ApiOperation(value = "profile job execute history", response = Long.class)
+    @GetMapping(value = "/profile/execute/history")
+    public Object profileExecuteHistory(@RequestParam String uuid,
+                                        @RequestParam("pageNumber") Integer pageNumber,
+                                        @RequestParam("pageSize") Integer pageSize) {
+        return catalogEntityInstanceService.profileJobExecutionPage(uuid, pageNumber, pageSize);
+    }
+
     @ApiOperation(value = "execute data profile job", response = Long.class)
     @PostMapping(value = "/profile/execute-select-columns")
-    public Object executeDataProfileJobWithColumns(@Validated @RequestBody RunProfileRequest runProfileRequest) {
+    public Object executeDataProfileJobWithColumns(@Valid @RequestBody RunProfileRequest runProfileRequest) {
         return catalogEntityInstanceService.executeDataProfileJob(runProfileRequest);
     }
 
@@ -117,10 +125,26 @@ public class CatalogController {
         return catalogEntityInstanceService.getCatalogTableWithDetailList(upstreamUuid);
     }
 
+    @ApiOperation(value = "get table with detail page", response = CatalogTableDetailVO.class, responseContainer = "page")
+    @GetMapping(value = "/page/table-with-detail")
+    public Object getTableWithDetailPage(@RequestParam("upstreamUuid") String upstreamUuid,
+                                         @RequestParam("pageNumber") Integer pageNumber,
+                                         @RequestParam("pageSize") Integer pageSize) {
+        return catalogEntityInstanceService.getCatalogTableWithDetailPage(upstreamUuid, pageNumber, pageSize);
+    }
+
     @ApiOperation(value = "get column with detail list", response = CatalogColumnDetailVO.class, responseContainer = "list")
     @GetMapping(value = "/list/column-with-detail/{upstreamUuid}")
     public Object getColumnWithDetailList(@PathVariable String upstreamUuid) {
         return catalogEntityInstanceService.getCatalogColumnWithDetailList(upstreamUuid);
+    }
+
+    @ApiOperation(value = "get column with detail page", response = CatalogColumnDetailVO.class, responseContainer = "page")
+    @GetMapping(value = "/page/column-with-detail")
+    public Object getColumnWithDetailPage(@RequestParam("upstreamUuid") String upstreamUuid,
+                                          @RequestParam("pageNumber") Integer pageNumber,
+                                          @RequestParam("pageSize") Integer pageSize) {
+        return catalogEntityInstanceService.getCatalogColumnWithDetailPage(upstreamUuid, pageNumber, pageSize);
     }
 
     @ApiOperation(value = "get database entity detail", response = CatalogDatabaseDetailVO.class)
@@ -166,15 +190,23 @@ public class CatalogController {
         return catalogEntityProfileService.listTableRecords(uuid, startTime ,endTime);
     }
 
-    @ApiOperation(value = "get column entity detail", response = CatalogSchemaChange.class, responseContainer = "list")
+    @ApiOperation(value = "get schema change list", response = CatalogSchemaChange.class, responseContainer = "list")
     @GetMapping(value = "/list/schema-change/{uuid}")
     public Object getSchemaChangeList(@PathVariable String uuid) {
         return catalogSchemaChangeService.getSchemaChangeList(uuid);
     }
 
+    @ApiOperation(value = "get schema change page", response = CatalogSchemaChange.class, responseContainer = "page")
+    @GetMapping(value = "/page/schema-change")
+    public Object getSchemaChangePage(@RequestParam("uuid") String uuid,
+                                      @RequestParam("pageNumber") Integer pageNumber,
+                                      @RequestParam("pageSize") Integer pageSize) {
+        return catalogSchemaChangeService.getSchemaChangePage(uuid, pageNumber, pageSize);
+    }
+
     @ApiOperation(value = "entity add metric", response = Long.class)
     @PostMapping(value = "/add-metric", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object entityAddMetric(@RequestBody JobCreateWithEntityUuid jobCreateWithEntityUuid) {
+    public Object entityAddMetric(@Valid @RequestBody JobCreateWithEntityUuid jobCreateWithEntityUuid) {
         return catalogEntityInstanceService.entityAddMetric(jobCreateWithEntityUuid);
     }
 
@@ -202,7 +234,7 @@ public class CatalogController {
 
     @ApiOperation(value = "update entity issue status", response = Long.class)
     @PostMapping(value = "/issue/update-status", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object issueUpdateStatus(@RequestBody IssueUpdate issueUpdate) {
+    public Object issueUpdateStatus(@Valid @RequestBody IssueUpdate issueUpdate) {
         return issueService.updateStatus(issueUpdate);
     }
 

@@ -35,6 +35,7 @@ import io.datavines.server.api.dto.bo.catalog.profile.RunProfileRequest;
 import io.datavines.server.api.dto.bo.job.DataProfileJobCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
 import io.datavines.server.api.dto.vo.DataTime2ValueItem;
+import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.server.api.dto.vo.catalog.*;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.catalog.*;
@@ -46,10 +47,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static io.datavines.common.enums.JobType.DATA_PROFILE;
@@ -146,6 +147,28 @@ public class CatalogEntityInstanceServiceImpl
         return entityInstanceList;
     }
 
+    private IPage<CatalogEntityInstance> getCatalogEntityInstancePage(String upstreamId,Integer pageNumber, Integer pageSize) {
+        List<CatalogEntityRel> entityRelList = entityRelService.list(new QueryWrapper<CatalogEntityRel>()
+                .eq("entity1_uuid", upstreamId).eq("type",EntityRelType.CHILD.getDescription()));
+        List<String> uuidList = new ArrayList<>();
+        entityRelList.forEach(x->{
+            uuidList.add(x.getEntity2Uuid());
+        });
+
+        Page<CatalogEntityInstance> page = new Page<>(pageNumber, pageSize);
+        QueryWrapper<CatalogEntityInstance> queryWrapper = new QueryWrapper<>();
+
+        if (CollectionUtils.isNotEmpty(uuidList)) {
+            queryWrapper.lambda()
+                    .in(CatalogEntityInstance::getUuid, uuidList)
+                    .eq(CatalogEntityInstance::getStatus, "active")
+                    .orderBy(true, true, CatalogEntityInstance::getId);
+            return page(page, queryWrapper);
+        }
+
+        return null;
+    }
+
     @Override
     public boolean deleteEntityByUUID(String entityUUID) {
         deleteEntityInstance(Collections.singletonList(entityUUID));
@@ -191,6 +214,49 @@ public class CatalogEntityInstanceServiceImpl
 
             deleteEntityInstance(entityRelList);
         }
+    }
+
+    @Override
+    public IPage<CatalogColumnDetailVO> getCatalogColumnWithDetailPage(String upstreamId, Integer pageNumber, Integer pageSize) {
+        IPage<CatalogEntityInstance> entityPage = getCatalogEntityInstancePage(upstreamId, pageNumber, pageSize);
+        if (entityPage == null || CollectionUtils.isEmpty(entityPage.getRecords())) {
+            return null;
+        }
+
+        return entityPage.convert(item -> {
+                CatalogColumnDetailVO column = new CatalogColumnDetailVO();
+                column.setName(item.getDisplayName());
+                column.setUuid(item.getUuid());
+                column.setUpdateTime(item.getUpdateTime());
+                if (StringUtils.isNotEmpty(item.getProperties())) {
+                    ColumnInfo columnInfo = JSONUtils.parseObject(item.getProperties(), ColumnInfo.class);
+                    if (columnInfo != null) {
+                        column.setComment(columnInfo.getComment());
+                        column.setType(columnInfo.getType());
+                    }
+                }
+                return column;
+            }
+        );
+    }
+
+    @Override
+    public IPage<CatalogTableDetailVO> getCatalogTableWithDetailPage(String upstreamId, Integer pageNumber, Integer pageSize) {
+        IPage<CatalogEntityInstance> entityPage = getCatalogEntityInstancePage(upstreamId, pageNumber, pageSize);
+        if (entityPage == null || CollectionUtils.isEmpty(entityPage.getRecords())) {
+            return null;
+        }
+
+        return entityPage.convert(item -> {
+                CatalogTableDetailVO table = new CatalogTableDetailVO();
+                table.setName(item.getDisplayName());
+                table.setUuid(item.getUuid());
+                table.setUpdateTime(item.getUpdateTime());
+                List<CatalogEntityInstance> columnList = getCatalogEntityInstances(item.getUuid());
+                table.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
+                return table;
+            }
+        );
     }
 
     @Override
@@ -643,22 +709,7 @@ public class CatalogEntityInstanceServiceImpl
 
     @Override
     public long entityAddMetric(JobCreateWithEntityUuid jobCreateWithEntityUuid) {
-
-        long jobId = jobService.create(jobCreateWithEntityUuid.getJobCreate());
-
-        if (jobId != 0L) {
-            CatalogEntityMetricJobRel entityMetricJobRel = new CatalogEntityMetricJobRel();
-            entityMetricJobRel.setMetricJobId(jobId);
-            entityMetricJobRel.setEntityUuid(jobCreateWithEntityUuid.getEntityUuid());
-            entityMetricJobRel.setCreateBy(ContextHolder.getUserId());
-            entityMetricJobRel.setUpdateBy(ContextHolder.getUserId());
-            entityMetricJobRel.setMetricJobType(JobType.DATA_QUALITY.getDescription());
-            catalogEntityMetricJobRelService.save(entityMetricJobRel);
-
-            return entityMetricJobRel.getId();
-        }
-
-        return 0;
+        return jobService.create(jobCreateWithEntityUuid.getJobCreate());
     }
 
     @Override
@@ -847,25 +898,26 @@ public class CatalogEntityInstanceServiceImpl
         long jobId = jobService.createOrUpdateDataProfileJob(createOrUpdate);
 
         if (jobId != -1L) {
-            List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
+            List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
                     .eq("entity_uuid", uuid)
                     .eq("metric_job_id", jobId)
                     .eq("metric_job_type", "DATA_PROFILE"));
-            if (CollectionUtils.isEmpty(listRel) || listRel.size() > 1) {
+            if (listRel.size() >= 1) {
                 catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>()
                         .eq("entity_uuid", uuid)
                         .eq("metric_job_id", jobId)
                         .eq("metric_job_type", "DATA_PROFILE"));
-                CatalogEntityMetricJobRel entityMetricJobRel = new CatalogEntityMetricJobRel();
-                entityMetricJobRel.setEntityUuid(uuid);
-                entityMetricJobRel.setMetricJobId(jobId);
-                entityMetricJobRel.setMetricJobType("DATA_PROFILE");
-                entityMetricJobRel.setCreateBy(ContextHolder.getUserId());
-                entityMetricJobRel.setCreateTime(LocalDateTime.now());
-                entityMetricJobRel.setUpdateBy(ContextHolder.getUserId());
-                entityMetricJobRel.setUpdateTime(LocalDateTime.now());
-                catalogEntityMetricJobRelService.save(entityMetricJobRel);
             }
+
+            CatalogEntityMetricJobRel entityMetricJobRel = new CatalogEntityMetricJobRel();
+            entityMetricJobRel.setEntityUuid(uuid);
+            entityMetricJobRel.setMetricJobId(jobId);
+            entityMetricJobRel.setMetricJobType("DATA_PROFILE");
+            entityMetricJobRel.setCreateBy(ContextHolder.getUserId());
+            entityMetricJobRel.setCreateTime(LocalDateTime.now());
+            entityMetricJobRel.setUpdateBy(ContextHolder.getUserId());
+            entityMetricJobRel.setUpdateTime(LocalDateTime.now());
+            catalogEntityMetricJobRelService.save(entityMetricJobRel);
         }
 
         return jobId;
@@ -900,5 +952,17 @@ public class CatalogEntityInstanceServiceImpl
     @Override
     public boolean deleteInstanceByDataSourceId(Long datasourceId) {
         return false;
+    }
+
+    @Override
+    public IPage<JobExecutionVO> profileJobExecutionPage(String uuid, Integer pageNumber, Integer pageSize) {
+        List<CatalogEntityMetricJobRel> list = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>().eq("entity_uuid", uuid));
+        if (CollectionUtils.isEmpty(list)) {
+            return null;
+        }
+        CatalogEntityMetricJobRel rel = list.get(0);
+        Long jobId = rel.getMetricJobId();
+
+        return jobExecutionService.getJobExecutionPage("", jobId, pageNumber, pageSize);
     }
 }

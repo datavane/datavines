@@ -58,7 +58,7 @@ public class ColumnVariance extends BaseSingleTableColumn {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems() {
+    public ExecuteSql getInvalidateItems(String uniqueKey) {
        return null;
     }
 

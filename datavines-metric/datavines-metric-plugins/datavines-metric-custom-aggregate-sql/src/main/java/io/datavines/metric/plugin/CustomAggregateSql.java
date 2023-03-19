@@ -83,7 +83,7 @@ public class CustomAggregateSql implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems() {
+    public ExecuteSql getInvalidateItems(String uniqueKey) {
         return null;
     }
 

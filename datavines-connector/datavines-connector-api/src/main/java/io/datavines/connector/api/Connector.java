@@ -19,6 +19,7 @@ package io.datavines.connector.api;
 import io.datavines.common.param.*;
 
 import java.sql.SQLException;
+import java.util.List;
 
 public interface Connector {
 
@@ -83,4 +84,6 @@ public interface Connector {
     default ConnectorResponse executeQuery(TestConnectionRequestParam param) {
         return null;
     }
+
+    List<String> keyProperties();
 }

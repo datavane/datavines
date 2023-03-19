@@ -24,7 +24,8 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSource;
 import io.datavines.engine.local.api.entity.ConnectionItem;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.sql.*;
@@ -34,8 +35,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-@Slf4j
 public class LocalFileSource implements LocalSource {
+
+    private Logger log = LoggerFactory.getLogger(LocalFileSource.class);
 
     private Config config = new Config();
 

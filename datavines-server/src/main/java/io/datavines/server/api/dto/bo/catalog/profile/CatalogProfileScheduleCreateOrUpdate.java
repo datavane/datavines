@@ -27,9 +27,10 @@ import java.time.LocalDateTime;
 @Data
 @NotNull(message = "Catalog Profile Schedule Create Or Update cannot be null")
 public class CatalogProfileScheduleCreateOrUpdate {
+
     private Long id;
 
-    @NotNull(message = "entity uuid cannot be empty")
+    @NotBlank(message = "entity uuid cannot be empty")
     private String entityUUID;
 
     @NotBlank(message = "Catalog Profile schedule type cannot be empty")

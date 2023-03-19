@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull;
 @NotNull(message = "DataSource Create cannot be null")
 public class DataSourceCreate {
 
-    @NotBlank(message = "DataSource workspaceId cannot be empty")
+    @NotNull(message = "DataSource workspaceId cannot be empty")
     private long workspaceId;
 
     @NotBlank(message = "DataSource name cannot be empty")

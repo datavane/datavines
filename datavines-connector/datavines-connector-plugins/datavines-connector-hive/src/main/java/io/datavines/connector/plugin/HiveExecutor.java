@@ -18,11 +18,19 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.common.datasource.jdbc.utils.HiveSqlUtils;
+import io.datavines.common.entity.ListWithQueryColumn;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 public class HiveExecutor extends BaseJdbcExecutor {
 
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         return new HiveDataSourceInfo(jdbcConnectionInfo);
+    }
+
+    @Override
+    protected ListWithQueryColumn query(JdbcTemplate jdbcTemplate, String sql, int limit) {
+        return HiveSqlUtils.query(jdbcTemplate, sql, limit);
     }
 }

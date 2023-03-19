@@ -23,6 +23,6 @@ import lombok.ToString;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class SlaJobCreateOrUpdate extends SlaJobCreate{
+public class SlaJobCreateOrUpdate extends SlaJobCreate {
     private Long id;
 }

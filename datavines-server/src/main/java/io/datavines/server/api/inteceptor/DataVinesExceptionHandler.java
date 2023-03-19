@@ -127,7 +127,6 @@ public class DataVinesExceptionHandler {
                 messageBuilder.append(System.lineSeparator());
             }
         }
-        String message = messageBuilder.toString();
-        return message;
+        return messageBuilder.toString();
     }
 }

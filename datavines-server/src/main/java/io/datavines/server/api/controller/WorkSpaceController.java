@@ -30,6 +30,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Api(value = "workspace", tags = "workspace", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/workspace", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -41,13 +43,13 @@ public class WorkSpaceController {
 
     @ApiOperation(value = "create workspace")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createWorkSpace(@RequestBody WorkSpaceCreate workSpaceCreate) throws DataVinesServerException {
+    public Object createWorkSpace(@Valid @RequestBody WorkSpaceCreate workSpaceCreate) throws DataVinesServerException {
         return workSpaceService.insert(workSpaceCreate);
     }
 
     @ApiOperation(value = "update workspace")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateWorkSpace(@RequestBody WorkSpaceUpdate workSpaceUpdate) throws DataVinesServerException {
+    public Object updateWorkSpace(@Valid @RequestBody WorkSpaceUpdate workSpaceUpdate) throws DataVinesServerException {
         return workSpaceService.update(workSpaceUpdate)>0;
     }
 
@@ -65,13 +67,13 @@ public class WorkSpaceController {
 
     @ApiOperation(value = "invite user into workspace")
     @PostMapping(value = "/inviteUser",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object inviteUserIntoWorkspace(@RequestBody InviteUserIntoWorkspace inviteUserIntoWorkspace) throws DataVinesServerException {
+    public Object inviteUserIntoWorkspace(@Valid @RequestBody InviteUserIntoWorkspace inviteUserIntoWorkspace) throws DataVinesServerException {
         return workSpaceService.inviteUserIntoWorkspace(inviteUserIntoWorkspace);
     }
 
     @ApiOperation(value = "user removed workspace")
     @DeleteMapping(value = "/removeUser",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object removeUser(@RequestBody RemoveUserOutWorkspace removeUserOutWorkspace)  {
+    public Object removeUser(@Valid @RequestBody RemoveUserOutWorkspace removeUserOutWorkspace)  {
         return workSpaceService.removeUser(removeUserOutWorkspace);
     }
 

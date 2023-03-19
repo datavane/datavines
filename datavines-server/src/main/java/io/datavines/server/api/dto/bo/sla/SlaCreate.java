@@ -18,9 +18,17 @@ package io.datavines.server.api.dto.bo.sla;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 @Data
 public class SlaCreate {
+
+    @NotBlank(message = "SLA name cannot be empty")
     private String name;
+
     private String description;
+
+    @NotNull(message = "WorkspaceId cannot be null")
     private Long workspaceId;
 }

@@ -18,9 +18,6 @@ package io.datavines.storage.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class MysqlDataSourceInfo extends BaseJdbcDataSourceInfo {
 

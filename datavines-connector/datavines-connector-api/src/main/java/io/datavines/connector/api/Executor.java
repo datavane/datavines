@@ -30,5 +30,5 @@ public interface Executor {
      */
     default ConnectorResponse executeSyncQuery(ExecuteRequestParam param) throws SQLException {
         return null;
-    };
+    }
 }

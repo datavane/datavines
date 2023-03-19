@@ -18,6 +18,7 @@ package io.datavines.server.api.dto.bo.issue;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -27,6 +28,6 @@ public class IssueUpdate {
     @NotNull(message = "Issue id cannot be null")
     private Long id;
 
-    @NotNull(message = "status cannot be null")
+    @NotBlank(message = "status cannot be null")
     private String status;
 }

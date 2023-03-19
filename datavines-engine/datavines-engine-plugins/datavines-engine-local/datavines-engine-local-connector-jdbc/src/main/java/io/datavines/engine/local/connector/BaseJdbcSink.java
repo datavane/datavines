@@ -34,7 +34,7 @@ import io.datavines.engine.local.api.entity.ConnectionItem;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.SqlUtils;
 import io.datavines.spi.PluginLoader;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -44,8 +44,9 @@ import java.util.stream.Collectors;
 import static io.datavines.engine.api.ConfigConstants.*;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
-@Slf4j
 public abstract class BaseJdbcSink implements LocalSink {
+
+    private Logger log = org.slf4j.LoggerFactory.getLogger(BaseJdbcSink.class);
 
     protected Config config = new Config();
 
