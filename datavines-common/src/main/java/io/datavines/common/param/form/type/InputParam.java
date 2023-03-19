@@ -42,6 +42,9 @@ public class InputParam extends PluginParams {
         }
 
         public Builder addValidate(Validate validate) {
+            if (validate == null) {
+                return this;
+            }
             if (this.validateList == null) {
                 this.validateList = new ArrayList<>();
             }
@@ -60,6 +63,10 @@ public class InputParam extends PluginParams {
         }
 
         public Builder setValue(Object value) {
+            if (value == null) {
+                return this;
+            }
+
             this.value = value;
             return this;
         }

@@ -18,6 +18,7 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.common.param.form.type.InputParam;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -45,5 +46,13 @@ public class MysqlConnector extends JdbcConnector {
     public ResultSet getMetadataDatabases(Connection connection) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         return metaData.getCatalogs();
+    }
+
+    @Override
+    protected InputParam getPropertiesInput(boolean isEn) {
+        return getInputParam("properties",
+                isEn ? "properties" : "参数",
+                isEn ? "please enter properties,like key=value&key1=value1" : "请填入参数，格式为key=value&key1=value1", 2, null,
+                "useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai");
     }
 }

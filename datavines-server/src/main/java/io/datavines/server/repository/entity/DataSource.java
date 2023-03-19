@@ -50,6 +50,9 @@ public class DataSource implements Serializable {
     @TableField(value = "param")
     private String param;
 
+    @TableField(value = "param_code")
+    private String paramCode;
+
     @TableField(value = "create_by")
     private Long createBy;
 

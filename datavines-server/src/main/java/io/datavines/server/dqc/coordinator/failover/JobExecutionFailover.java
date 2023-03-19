@@ -28,9 +28,8 @@ import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.service.impl.JobExternalService;
 import io.datavines.server.utils.SpringApplicationContext;
 import io.datavines.common.utils.StringUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,9 +39,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 public class JobExecutionFailover {
-
-    private static final Logger logger = LoggerFactory.getLogger(JobExecutionFailover.class);
 
     private final JobExternalService jobExternalService;
 
@@ -84,11 +82,11 @@ public class JobExecutionFailover {
         List<JobExecution> needRerunJobExecutionList = new ArrayList<>();
 
         jobExecutionList.forEach(jobExecution -> {
-            if(StringUtils.isNotEmpty(jobExecution.getApplicationId())){
+            if (StringUtils.isNotEmpty(jobExecution.getApplicationId())) {
                 try {
                     jobExecuteManager.addFailoverJobExecutionRequest(jobExecution);
                 } catch (DataVinesException e) {
-                    e.printStackTrace();
+                    log.error("add failover job execution error : ", e);
                 }
                 jobExecution.setExecuteHost(NetUtils.getAddr(SERVER_PORT));
                 jobExternalService.updateJobExecution(jobExecution);
@@ -99,7 +97,7 @@ public class JobExecutionFailover {
                     try {
                         jobExecuteManager.addFailoverJobExecutionRequest(jobExecution);
                     } catch (DataVinesException e) {
-                        e.printStackTrace();
+                        log.error("add failover job execution error : ", e);
                     }
                     jobExecution.setApplicationId(appId);
                     jobExecution.setExecuteHost(NetUtils.getAddr(SERVER_PORT));
@@ -115,18 +113,7 @@ public class JobExecutionFailover {
     }
 
     private void handleRerunJobExecution(List<JobExecution> needRerunJobExecutionList) {
-        needRerunJobExecutionList.forEach(jobExecution->{
-            try {
-                jobExecuteManager.addFailoverJobExecutionRequest(jobExecution);
-                JobExecuteResponseCommand responseCommand =
-                        new JobExecuteResponseCommand(jobExecution.getId());
-                responseCommand.setEndTime(LocalDateTime.now());
-                responseCommand.setStatus(ExecutionStatus.FAILURE.getCode());
-                jobExecuteManager.processJobExecutionExecuteResponse(responseCommand);
-            } catch (DataVinesException e) {
-                e.printStackTrace();
-            }
-        });
+        needRerunJobExecutionList.forEach(jobExecution -> jobExecuteManager.addExecuteCommand(jobExecution));
     }
 
     class YarnJobExecutionStatusChecker implements Runnable {
@@ -141,7 +128,7 @@ public class JobExecutionFailover {
                     responseCommand.setEndTime(LocalDateTime.now());
                     ExecutionStatus applicationStatus = YarnUtils.getApplicationStatus(v.getApplicationId());
                     if (applicationStatus != null) {
-                        logger.info("appId:{}, final state:{}", v.getApplicationId(), applicationStatus.name());
+                        log.info("appId:{}, final state:{}", v.getApplicationId(), applicationStatus.name());
                         if (applicationStatus.equals(ExecutionStatus.FAILURE) ||
                                 applicationStatus.equals(ExecutionStatus.KILL) ||
                                 applicationStatus.equals(ExecutionStatus.SUCCESS)) {

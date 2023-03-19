@@ -20,6 +20,7 @@ import io.datavines.common.entity.ListWithQueryColumn;
 import io.datavines.common.entity.QueryColumn;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.ExecuteRequestParam;
+import io.datavines.common.utils.FileUtils;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.storage.api.StorageExecutor;
 import lombok.extern.slf4j.Slf4j;
@@ -47,15 +48,17 @@ public class LocalFileStorageExecutor implements StorageExecutor {
         String dir = parameterMap.get("data_dir");
         String filePath = dir +"/" + param.getScript() ;
 
-        if (pageNumber < 1) {
-            pageNumber = 1;
-        }
+        if (FileUtils.isExist(filePath)) {
+            if (pageNumber < 1) {
+                pageNumber = 1;
+            }
 
-        if (pageSize < 1) {
-            pageSize = 10;
-        }
+            if (pageSize < 1) {
+                pageSize = 10;
+            }
 
-        builder.result(readForPage(filePath, pageNumber, pageSize, parameterMap.get("column_separator")));
+            builder.result(readForPage(filePath, pageNumber, pageSize, parameterMap.get("column_separator")));
+        }
 
         return builder.build();
     }

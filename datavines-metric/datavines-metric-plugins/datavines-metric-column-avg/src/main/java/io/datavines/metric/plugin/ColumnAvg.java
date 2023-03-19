@@ -59,7 +59,7 @@ public class ColumnAvg extends BaseSingleTableColumn {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems() {
+    public ExecuteSql getInvalidateItems(String uniqueKey) {
        return null;
     }
 

@@ -17,12 +17,11 @@
 package io.datavines.server.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import io.datavines.server.repository.entity.catalog.CatalogEntityRel;
 import io.datavines.server.repository.entity.catalog.CatalogSchemaChange;
-import io.datavines.server.repository.mapper.CatalogEntityRelMapper;
 import io.datavines.server.repository.mapper.CatalogSchemaChangeMapper;
-import io.datavines.server.repository.service.CatalogEntityRelService;
 import io.datavines.server.repository.service.CatalogSchemaChangeService;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +32,16 @@ public class CatalogSchemaChangeServiceImpl extends ServiceImpl<CatalogSchemaCha
 
     @Override
     public List<CatalogSchemaChange> getSchemaChangeList(String uuid) {
-        return baseMapper.selectList(new QueryWrapper<CatalogSchemaChange>().eq("entity_uuid", uuid).or().eq("parent_uuid", uuid));
+        return list(new QueryWrapper<CatalogSchemaChange>().eq("entity_uuid", uuid).or().eq("parent_uuid", uuid));
+    }
+
+    @Override
+    public IPage<CatalogSchemaChange> getSchemaChangePage(String uuid, Integer pageNumber, Integer pageSize) {
+        Page<CatalogSchemaChange> page = new Page<>(pageNumber, pageSize);
+        QueryWrapper<CatalogSchemaChange> queryWrapper = new QueryWrapper<>();
+
+        queryWrapper.lambda()
+                .eq(CatalogSchemaChange::getEntityUuid, uuid).or().eq(CatalogSchemaChange::getParentUuid, uuid);
+        return page(page, queryWrapper);
     }
 }

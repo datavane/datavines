@@ -148,11 +148,10 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                 metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 
                 // generate invalidate item execute sql
-                if (sqlMetric.getInvalidateItems() != null) {
-                    metricInputParameter.put(INVALIDATE_ITEMS_TABLE,
-                            sqlMetric.getInvalidateItems().getResultTable() + "_" + metricUniqueKey);
-                    ExecuteSql invalidateItemExecuteSql = sqlMetric.getInvalidateItems();
-                    invalidateItemExecuteSql.setResultTable(sqlMetric.getInvalidateItems().getResultTable() + "_" + metricUniqueKey);
+                if (sqlMetric.getInvalidateItems(metricUniqueKey) != null) {
+                    ExecuteSql invalidateItemExecuteSql = sqlMetric.getInvalidateItems(metricUniqueKey);
+                    metricInputParameter.put(INVALIDATE_ITEMS_TABLE, invalidateItemExecuteSql.getResultTable());
+                    invalidateItemExecuteSql.setResultTable(invalidateItemExecuteSql.getResultTable());
                     MetricParserUtils.setTransformerConfig(
                             metricInputParameter,
                             transformConfigs,
@@ -162,13 +161,15 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
 
                 // generate actual value execute sql
                 ExecuteSql actualValueExecuteSql = sqlMetric.getActualValue(metricUniqueKey);
-                actualValueExecuteSql.setResultTable(sqlMetric.getActualValue(metricUniqueKey).getResultTable());
-                MetricParserUtils.setTransformerConfig(
-                        metricInputParameter,
-                        transformConfigs,
-                        actualValueExecuteSql,
-                        TransformType.ACTUAL_VALUE.getDescription());
-                metricInputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue(metricUniqueKey).getResultTable());
+                if (actualValueExecuteSql != null) {
+                    actualValueExecuteSql.setResultTable(sqlMetric.getActualValue(metricUniqueKey).getResultTable());
+                    MetricParserUtils.setTransformerConfig(
+                            metricInputParameter,
+                            transformConfigs,
+                            actualValueExecuteSql,
+                            TransformType.ACTUAL_VALUE.getDescription());
+                    metricInputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue(metricUniqueKey).getResultTable());
+                }
 
                 // generate expected value transform sql
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();

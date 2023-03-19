@@ -25,7 +25,7 @@ import javax.validation.constraints.NotNull;
 @NotNull(message = "ErrorDataStorage Create cannot be null")
 public class ErrorDataStorageCreate {
 
-    @NotBlank(message = "ErrorDataStorage workspaceId cannot be empty")
+    @NotNull(message = "ErrorDataStorage workspaceId cannot be empty")
     private long workspaceId;
 
     @NotBlank(message = "ErrorDataStorage name cannot be empty")

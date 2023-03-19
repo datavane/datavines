@@ -25,10 +25,10 @@ import javax.validation.constraints.NotNull;
 @NotNull(message = "ExecuteRequest cannot be null")
 public class ExecuteRequest {
 
-    @NotBlank(message = "DataSource id cannot be empty")
+    @NotNull(message = "DataSource id cannot be empty")
     private long datasourceId;
 
-    @NotBlank(message = "DataSource type cannot be empty")
+    @NotBlank(message = "Script cannot be empty")
     private String script;
 
     private String variables;

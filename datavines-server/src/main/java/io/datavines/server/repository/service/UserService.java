@@ -19,6 +19,8 @@ package io.datavines.server.repository.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.server.api.dto.bo.user.*;
+import io.datavines.server.api.dto.vo.UserBaseInfo;
+import io.datavines.server.api.dto.vo.UserLoginResult;
 import io.datavines.server.repository.entity.User;
 
 public interface UserService extends IService<User> {

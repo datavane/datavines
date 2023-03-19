@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,13 +46,13 @@ public class TenantController {
 
     @ApiOperation(value = "create tenant")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createTenant(@RequestBody TenantCreate tenantCreate) throws DataVinesServerException {
+    public Object createTenant(@Valid @RequestBody TenantCreate tenantCreate) throws DataVinesServerException {
         return tenantService.create(tenantCreate);
     }
 
     @ApiOperation(value = "update tenant")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateTenant(@RequestBody TenantUpdate tenantUpdate) throws DataVinesServerException {
+    public Object updateTenant(@Valid @RequestBody TenantUpdate tenantUpdate) throws DataVinesServerException {
         return tenantService.update(tenantUpdate)>0;
     }
 

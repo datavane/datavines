@@ -179,13 +179,13 @@ public class SlaController {
 
     @ApiOperation(value = "create notification")
     @PostMapping(value = "/notification")
-    public Object createNotification(@RequestBody SlaNotificationCreate create){
+    public Object createNotification(@Valid @RequestBody SlaNotificationCreate create){
         return slaNotificationService.createNotification(create);
     }
 
     @ApiOperation(value = "update notification")
     @PutMapping(value = "/notification")
-    public Object updateNotification(@RequestBody SlaNotificationUpdate update){
+    public Object updateNotification(@Valid @RequestBody SlaNotificationUpdate update){
         return slaNotificationService.updateNotification(update);
     }
 

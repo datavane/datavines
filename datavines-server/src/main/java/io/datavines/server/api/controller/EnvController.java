@@ -31,6 +31,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,13 +46,13 @@ public class EnvController {
 
     @ApiOperation(value = "create env")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createEnv(@RequestBody EnvCreate envCreate) throws DataVinesServerException {
+    public Object createEnv(@Valid @RequestBody EnvCreate envCreate) throws DataVinesServerException {
         return envService.create(envCreate);
     }
 
     @ApiOperation(value = "update env")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateEnv(@RequestBody EnvUpdate envUpdate) throws DataVinesServerException {
+    public Object updateEnv(@Valid @RequestBody EnvUpdate envUpdate) throws DataVinesServerException {
         return envService.update(envUpdate)>0;
     }
 

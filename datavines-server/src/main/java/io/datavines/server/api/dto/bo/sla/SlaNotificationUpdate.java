@@ -20,9 +20,13 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import javax.validation.constraints.NotNull;
+
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class SlaNotificationUpdate extends SlaNotificationCreate{
+public class SlaNotificationUpdate extends SlaNotificationCreate {
+
+    @NotNull(message = "SlaNotificationUpdate id  must not null")
     private Long id;
 }

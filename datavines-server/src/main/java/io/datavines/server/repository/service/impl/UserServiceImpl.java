@@ -20,6 +20,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.core.enums.Status;
 import io.datavines.server.api.dto.bo.user.*;
+import io.datavines.server.api.dto.vo.UserBaseInfo;
+import io.datavines.server.api.dto.vo.UserLoginResult;
 import io.datavines.server.repository.entity.User;
 import io.datavines.server.repository.entity.UserWorkSpace;
 import io.datavines.server.repository.entity.WorkSpace;

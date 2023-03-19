@@ -252,6 +252,12 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
         String errorDataStorageParameter = jobExecution.getErrorDataStorageParameter();
         String errorDataFileName = jobExecution.getErrorDataFileName();
 
+        if (StringUtils.isEmpty(errorDataStorageType) ||
+                StringUtils.isEmpty(errorDataStorageParameter) ||
+                StringUtils.isEmpty(errorDataFileName)) {
+            return null;
+        }
+
         StorageFactory storageFactory =
                 PluginLoader.getPluginLoader(StorageFactory.class).getOrCreatePlugin(errorDataStorageType);
 
@@ -269,7 +275,7 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
         try {
             result = storageFactory.getStorageExecutor().executeSyncQuery(param).getResult();
         } catch (Exception exception) {
-            throw new DataVinesException(exception);
+            log.error("read error-data error: ", exception);
         }
 
         return result;

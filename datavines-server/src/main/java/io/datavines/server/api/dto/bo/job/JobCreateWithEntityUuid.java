@@ -18,6 +18,7 @@ package io.datavines.server.api.dto.bo.job;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -27,6 +28,6 @@ public class JobCreateWithEntityUuid {
     @NotNull(message = "JobCreate cannot be null")
     private JobCreate jobCreate;
 
-    @NotNull(message = "entity uuid cannot be null")
+    @NotBlank(message = "entity uuid cannot be null")
     private String entityUuid;
 }

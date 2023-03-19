@@ -18,5 +18,13 @@ package io.datavines.connector.plugin;
 
 import io.datavines.connector.api.Connector;
 
+import java.util.Collections;
+import java.util.List;
+
 public class FileConnector implements Connector {
+
+    @Override
+    public List<String> keyProperties() {
+        return Collections.emptyList();
+    }
 }

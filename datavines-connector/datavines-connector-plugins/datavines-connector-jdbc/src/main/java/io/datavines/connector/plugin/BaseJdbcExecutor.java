@@ -18,6 +18,7 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.*;
 import io.datavines.common.datasource.jdbc.utils.SqlUtils;
+import io.datavines.common.entity.ListWithQueryColumn;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.common.utils.JSONUtils;
@@ -49,9 +50,12 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
             builder.errorMsg("execute script must not null");
         }
 
-        builder.result(SqlUtils.query(jdbcTemplate, sql, 0));
+        builder.result(query(jdbcTemplate, sql, 0));
 
         return builder.build();
     }
 
+    protected ListWithQueryColumn query(JdbcTemplate jdbcTemplate, String sql, int limit) {
+        return SqlUtils.query(jdbcTemplate, sql, limit);
+    }
 }

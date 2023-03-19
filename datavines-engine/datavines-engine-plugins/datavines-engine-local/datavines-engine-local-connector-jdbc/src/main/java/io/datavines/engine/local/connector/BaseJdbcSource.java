@@ -27,7 +27,6 @@ import io.datavines.engine.local.api.LocalSource;
 import io.datavines.engine.local.api.entity.ConnectionItem;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import io.datavines.spi.PluginLoader;
-import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -38,8 +37,9 @@ import java.util.stream.Collectors;
 import static io.datavines.engine.api.ConfigConstants.SRC_CONNECTOR_TYPE;
 import static io.datavines.engine.api.ConfigConstants.TABLE;
 
-@Slf4j
 public class BaseJdbcSource implements LocalSource {
+
+    private Logger log = LoggerFactory.getLogger(BaseJdbcSource.class);
 
     private Config config = new Config();
 

@@ -28,6 +28,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+
 @Api(value = "user", tags = "user")
 @RestController
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/user")
@@ -39,13 +41,13 @@ public class UserController {
 
     @ApiOperation(value = "update user info")
     @PutMapping(value = "/update", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object update(@RequestBody UserLogin userLogin) throws DataVinesException {
+    public Object update(@Valid @RequestBody UserLogin userLogin) throws DataVinesException {
         return null;
     }
 
     @ApiOperation(value = "reset password")
     @PostMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object resetPassword(@RequestBody UserRegister userRegister) throws DataVinesException {
+    public Object resetPassword(@Valid @RequestBody UserRegister userRegister) throws DataVinesException {
         return null;
     }
 

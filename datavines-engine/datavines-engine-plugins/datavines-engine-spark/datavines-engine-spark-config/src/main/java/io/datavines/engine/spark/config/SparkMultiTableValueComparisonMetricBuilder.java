@@ -18,7 +18,6 @@ package io.datavines.engine.spark.config;
 
 import io.datavines.common.config.SinkConfig;
 import io.datavines.common.entity.job.BaseJobParameter;
-import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.SqlMetric;
@@ -47,6 +46,8 @@ public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfig
                 MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
             }
         }
+
+        super.buildTransformConfigs();
     }
 
     @Override
@@ -60,6 +61,7 @@ public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfig
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
                 metricInputParameter.put("expected_value", "expected_value");
+                metricInputParameter.put("actual_value", "actual_value");
 
                 //get the task data storage parameter
                 SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(

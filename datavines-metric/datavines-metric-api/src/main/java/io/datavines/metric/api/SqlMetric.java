@@ -18,7 +18,6 @@ package io.datavines.metric.api;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ExecuteSql;
@@ -50,7 +49,7 @@ public interface SqlMetric {
      * get invalidate items execute sql
      * @return ExecuteSql
      */
-    ExecuteSql getInvalidateItems();
+    ExecuteSql getInvalidateItems(String uniqueKey);
 
     /**
      * get actual value execute sql

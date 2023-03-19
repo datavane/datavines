@@ -67,7 +67,7 @@ public class TableRowCount extends BaseSingleTable {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems() {
+    public ExecuteSql getInvalidateItems(String uniqueKey) {
         return null;
     }
 

@@ -32,7 +32,6 @@ public class DataVinesClient extends DatavinesBaseClient {
 
     private Log log = LogFactory.getLog(DataVinesClient.class);
 
-
     public DataVinesClient(String baseUrl){
         super(baseUrl, new Properties(), "test", null);
     }
@@ -140,6 +139,7 @@ public class DataVinesClient extends DatavinesBaseClient {
         DataVinesResponse result = callAPI(DataVinesApiEnum.LOGIN.getDataVinesApi(), loginRequest);
         return result;
     }
+
     public DataVinesResponse<UserBaseInfo> login(String name, String password) throws DatavinesApiException{
         DataVinesResponse<UserBaseInfo> result = callAPI(DataVinesApiEnum.LOGIN.getDataVinesApi(), new UserLoginRequest(name, password));
         return result;

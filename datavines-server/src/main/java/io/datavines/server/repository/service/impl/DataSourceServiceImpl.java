@@ -21,9 +21,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
-import io.datavines.common.utils.CommonPropertyUtils;
-import io.datavines.common.utils.CryptionUtils;
-import io.datavines.common.utils.PasswordFilterUtils;
+import io.datavines.common.utils.*;
 import io.datavines.core.utils.LanguageUtils;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
 import io.datavines.server.api.dto.bo.datasource.ExecuteRequest;
@@ -41,6 +39,8 @@ import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
@@ -79,6 +81,30 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         DataSource dataSource = new DataSource();
         BeanUtils.copyProperties(dataSourceCreate, dataSource);
         String param = dataSourceCreate.getParam();
+        String paramCode = "";
+
+        Map<String,String> paramMap = JSONUtils.toMap(param);
+
+        if (MapUtils.isEmpty(paramMap)) {
+            return -1L;
+        }
+
+        String type = dataSourceCreate.getType();
+
+        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type);
+        List<String> keyProperties = connectorFactory.getConnector().keyProperties();
+        List<String> keyPropertyValueList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(keyProperties)) {
+            keyProperties.forEach(property -> {
+                if (StringUtils.isNotEmpty(paramMap.get(property))) {
+                    keyPropertyValueList.add(paramMap.get(property).toLowerCase());
+                }
+            });
+        }
+
+        if (CollectionUtils.isNotEmpty(keyPropertyValueList)) {
+            paramCode = Md5Utils.getMd5(String.join("@#@", keyPropertyValueList),true);
+        }
 
         try {
             param = CryptionUtils.encryptByAES(param, CommonPropertyUtils.getString(CommonPropertyUtils.AES_KEY, CommonPropertyUtils.AES_KEY_DEFAULT));
@@ -88,6 +114,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
         dataSource.setUuid(UUID.randomUUID().toString());
         dataSource.setParam(param);
+        dataSource.setParamCode(paramCode);
         dataSource.setCreateTime(LocalDateTime.now());
         dataSource.setUpdateTime(LocalDateTime.now());
         dataSource.setCreateBy(ContextHolder.getUserId());
@@ -110,6 +137,31 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         BeanUtils.copyProperties(dataSourceUpdate, dataSource);
         String param = dataSourceUpdate.getParam();
 
+        String paramCode = "";
+
+        Map<String,String> paramMap = JSONUtils.toMap(param);
+
+        if (MapUtils.isEmpty(paramMap)) {
+            return -1;
+        }
+
+        String type = dataSourceUpdate.getType();
+
+        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type);
+        List<String> keyProperties = connectorFactory.getConnector().keyProperties();
+        List<String> keyPropertyValueList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(keyProperties)) {
+            keyProperties.forEach(property -> {
+                if (StringUtils.isNotEmpty(paramMap.get(property))) {
+                    keyPropertyValueList.add(paramMap.get(property).toLowerCase());
+                }
+            });
+        }
+
+        if (CollectionUtils.isNotEmpty(keyPropertyValueList)) {
+            paramCode = Md5Utils.getMd5(String.join("@#@", keyPropertyValueList),true);
+        }
+
         try {
             param = CryptionUtils.encryptByAES(param
                     ,CommonPropertyUtils.getString(CommonPropertyUtils.AES_KEY, CommonPropertyUtils.AES_KEY_DEFAULT));
@@ -118,7 +170,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         }
 
         dataSource.setParam(param);
-
+        dataSource.setParamCode(paramCode);
         dataSource.setUpdateTime(LocalDateTime.now());
         dataSource.setUpdateBy(ContextHolder.getUserId());
 

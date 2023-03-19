@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
@@ -197,42 +198,16 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
     @Override
     public String getConfigJson(boolean isEn) {
-        InputParam host = getInputParam("host",
-                isEn ? "host":"地址",
-                isEn ? "please enter host ip" : "请填入连接地址", 1, Validate.newBuilder()
-                .setRequired(true).setMessage(isEn ? "please enter host ip" : "请填入连接地址")
-                .build());
-        InputParam port = getInputParam("port",
-                isEn ? "port" : "端口",
-                isEn ? "please enter port" : "请填入端口号", 1, Validate.newBuilder()
-                .setRequired(true).setMessage(isEn ? "please enter port" : "请填入端口号")
-                .build());
-        InputParam database = getInputParam("database",
-                isEn ? "database" : "数据库",
-                isEn ? "please enter database" : "请填入数据库", 1, Validate.newBuilder()
-                .setRequired(true).setMessage(isEn ? "please enter database" : "请填入数据库")
-                .build());
-        InputParam user = getInputParam("user",
-                isEn ? "user" : "用户名",
-                isEn ? "please enter user" : "请填入用户名", 1, Validate.newBuilder()
-                .setRequired(true).setMessage(isEn ? "please enter user" : "请填入用户名")
-                .build());
-        InputParam password = getInputParam("password",
-                isEn ? "password" : "密码",
-                isEn ? "please enter password" : "请填入密码", 1, Validate.newBuilder()
-                .setRequired(true).setMessage(isEn ? "please enter password" : "请填入密码")
-                .build());
-        InputParam properties = getInputParamNoValidate("properties",
-                isEn ? "properties" : "参数",
-                isEn ? "please enter properties,like key=value&key1=value1" : "请填入参数，格式为key=value&key1=value1", 2);
-
         List<PluginParams> params = new ArrayList<>();
-        params.add(host);
-        params.add(port);
-        params.add(database);
-        params.add(user);
-        params.add(password);
-        params.add(properties);
+        params.add(getHostInput(isEn));
+        params.add(getPortInput(isEn));
+        if (getCatalogInput(isEn) != null) {
+            params.add(getCatalogInput(isEn));
+        }
+        params.add(getDatabaseInput(isEn));
+        params.add(getUserInput(isEn));
+        params.add(getPasswordInput(isEn));
+        params.add(getPropertiesInput(isEn));
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
@@ -241,13 +216,64 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         try {
             result = mapper.writeValueAsString(params);
         } catch (JsonProcessingException e) {
-            logger.error("json parse error : {}", e.getMessage(), e);
+            logger.error("json parse error : {}", e);
         }
 
         return result;
     }
 
-    protected InputParam getInputParam(String field, String title, String placeholder, int rows, Validate validate) {
+    protected InputParam getHostInput(boolean isEn) {
+        return getInputParam("host",
+                isEn ? "host":"地址",
+                isEn ? "please enter host ip" : "请填入连接地址", 1,
+                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter host ip" : "请填入连接地址").build(),
+                null);
+    }
+
+    protected InputParam getPortInput(boolean isEn) {
+        return getInputParam("port",
+                isEn ? "port" : "端口",
+                isEn ? "please enter port" : "请填入端口号", 1,
+                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter port" : "请填入端口号").build(),
+                null);
+    }
+
+    protected InputParam getCatalogInput(boolean isEn) {
+        return null;
+    }
+
+    protected InputParam getDatabaseInput(boolean isEn) {
+        return getInputParam("database",
+                isEn ? "database" : "数据库",
+                isEn ? "please enter database" : "请填入数据库", 1,
+                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter database" : "请填入数据库").build(),
+                null);
+    }
+
+    protected InputParam getUserInput(boolean isEn) {
+        return getInputParam("user",
+                isEn ? "user" : "用户名",
+                isEn ? "please enter user" : "请填入用户名", 1,
+                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter user" : "请填入用户名").build(),
+                null);
+    }
+
+    protected InputParam getPasswordInput(boolean isEn) {
+        return getInputParam("password",
+                isEn ? "password" : "密码",
+                isEn ? "please enter password" : "请填入密码", 1,
+                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter password" : "请填入密码").build(),
+                null);
+    }
+
+    protected InputParam getPropertiesInput(boolean isEn) {
+        return getInputParam("properties",
+                isEn ? "properties" : "参数",
+                isEn ? "please enter properties,like key=value&key1=value1" : "请填入参数，格式为key=value&key1=value1", 2, null,
+                null);
+    }
+
+    protected InputParam getInputParam(String field, String title, String placeholder, int rows, Validate validate , Object defaultValue) {
         return InputParam
                 .newBuilder(field, title)
                 .addValidate(validate)
@@ -256,20 +282,8 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
                 .setType(PropsType.TEXT)
                 .setRows(rows)
                 .setPlaceholder(placeholder)
+                .setValue(defaultValue)
                 .setEmit(null)
-                .build();
-    }
-
-    protected InputParam getInputParamNoValidate(String field, String title, String placeholder, int rows) {
-        return InputParam
-                .newBuilder(field, title)
-                .setProps(new InputParamsProps().setDisabled(false))
-                .setSize(CommonConstants.SMALL)
-                .setType(PropsType.TEXTAREA)
-                .setRows(rows)
-                .setPlaceholder(placeholder)
-                .setEmit(null)
-                .setValue("useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai")
                 .build();
     }
 
@@ -316,9 +330,14 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         return columnList;
     }
 
+    @Override
+    public List<String> keyProperties() {
+        return Arrays.asList("host","port","database");
+    }
+
     protected abstract ResultSet getMetadataColumns(DatabaseMetaData metaData,
-                                                 String catalog, String schema,
-                                                 String tableName, String columnName) throws SQLException;
+                                                    String catalog, String schema,
+                                                    String tableName, String columnName) throws SQLException;
 
     protected abstract ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException;
 
