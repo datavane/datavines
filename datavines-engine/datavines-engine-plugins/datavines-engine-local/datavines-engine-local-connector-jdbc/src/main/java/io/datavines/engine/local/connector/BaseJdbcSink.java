@@ -128,9 +128,8 @@ public abstract class BaseJdbcSink implements LocalSink {
             }
         } catch (SQLException e){
             log.error("sink error : {}", e.getMessage());
+            after(env, config);
         }
-
-        after(env, config);
     }
 
     private void executeDataSink(LocalRuntimeEnvironment env, String tableName, String createTableSql, Map<String,String> inputParameter) throws SQLException {
@@ -242,77 +241,80 @@ public abstract class BaseJdbcSink implements LocalSink {
                             StructField field = columns.get(j);
                             String value = String.valueOf(row.get(field.getName()));
                             String rowContent = "null".equalsIgnoreCase(value) ? null : value;
+                            if (rowContent != null) {
+                                rowContent = rowContent.replaceAll("\"","");
+                            }
                             DataType dataType = field.getDataType();
                             try {
                                 switch (dataType) {
                                     case NULL_TYPE:
-                                        preparedStatement.setNull(i+1, 0);
+                                        preparedStatement.setNull(j+1, 0);
                                         break;
                                     case BOOLEAN_TYPE:
-                                        preparedStatement.setBoolean(i+1, Boolean.parseBoolean(rowContent));
+                                        preparedStatement.setBoolean(j+1, Boolean.parseBoolean(rowContent));
                                         break;
                                     case BYTE_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            preparedStatement.setByte(i+1, Byte.parseByte(rowContent));
+                                            preparedStatement.setByte(j+1, Byte.parseByte(rowContent));
                                         } else {
-                                            preparedStatement.setByte(i+1,Byte.parseByte(""));
+                                            preparedStatement.setByte(j+1,Byte.parseByte(""));
                                         }
                                         break;
                                     case SHORT_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            preparedStatement.setShort(i+1, Short.parseShort(rowContent));
+                                            preparedStatement.setShort(j+1, Short.parseShort(rowContent));
                                         } else {
-                                            preparedStatement.setShort(i+1, Short.parseShort("0"));
+                                            preparedStatement.setShort(j+1, Short.parseShort("0"));
                                         }
                                         break;
                                     case INT_TYPE :
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            preparedStatement.setInt(i+1, Integer.parseInt(rowContent));
+                                            preparedStatement.setInt(j+1, Integer.parseInt(rowContent));
                                         } else {
-                                            preparedStatement.setInt(i+1, 0);
+                                            preparedStatement.setInt(j+1, 0);
                                         }
                                         break;
                                     case LONG_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            preparedStatement.setLong(i+1, Long.parseLong(rowContent));
+                                            preparedStatement.setLong(j+1, Long.parseLong(rowContent));
                                         } else {
-                                            preparedStatement.setLong(i+1, 0);
+                                            preparedStatement.setLong(j+1, 0);
                                         }
                                         break;
                                     case FLOAT_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            preparedStatement.setLong(i+1, Long.parseLong(rowContent));
+                                            preparedStatement.setFloat(j+1, Float.parseFloat(rowContent));
                                         } else {
-                                            preparedStatement.setLong(i+1, 0);
+                                            preparedStatement.setFloat(j+1, 0);
                                         }
                                         break;
                                     case DOUBLE_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            preparedStatement.setDouble(i+1, Double.parseDouble(rowContent));
+                                            preparedStatement.setDouble(j+1, Double.parseDouble(rowContent));
                                         } else {
-                                            preparedStatement.setDouble(i+1, 0);
+                                            preparedStatement.setDouble(j+1, 0);
                                         }
                                         break;
                                     case TIME_TYPE:
                                     case DATE_TYPE:
                                     case TIMESTAMP_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            preparedStatement.setString(i+1,rowContent);
+                                            preparedStatement.setString(j+1,rowContent);
                                         } else {
-                                            preparedStatement.setString(i+1,null);
+                                            preparedStatement.setString(j+1,null);
                                         }
                                         break;
                                     case STRING_TYPE :
-                                        preparedStatement.setString(i+1, rowContent);
+                                        preparedStatement.setString(j+1, rowContent);
                                         break;
                                     case BYTES_TYPE:
-                                        preparedStatement.setBytes(i+1, String.valueOf(rowContent).getBytes());
+                                        preparedStatement.setBytes(j+1, String.valueOf(rowContent).getBytes());
                                         break;
                                     case BIG_DECIMAL_TYPE:
                                         if (StringUtils.isNotEmpty(rowContent)) {
-                                            preparedStatement.setBigDecimal(i+1, new BigDecimal(rowContent));
+                                            preparedStatement.setBigDecimal(j+1, new BigDecimal(rowContent));
                                         } else {
-                                            preparedStatement.setBigDecimal(i+1, null);
+                                            preparedStatement.setBigDecimal(j+1, null);
                                         }
                                         break;
                                     case OBJECT:
@@ -323,14 +325,14 @@ public abstract class BaseJdbcSink implements LocalSink {
                             } catch (SQLException exception) {
                                 log.error("transform data type error", exception);
                             }
-
-                            try {
-                                preparedStatement.addBatch();
-                            } catch (SQLException e) {
-                                log.error("insert data error", e);
-                            }
+                        }
+                        try {
+                            preparedStatement.addBatch();
+                        } catch (SQLException e) {
+                            log.error("insert data error", e);
                         }
                     }
+
                     preparedStatement.executeBatch();
                     preparedStatement.close();
                 }
