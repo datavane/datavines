@@ -83,10 +83,10 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
     }
 
     @Override
-    public JobExecutionResultVO getResultVOByJobExecutionId(long taskId) {
+    public JobExecutionResultVO getResultVOByJobExecutionId(long jobExecutionId) {
         JobExecutionResultVO jobExecutionResultVO = new JobExecutionResultVO();
         Map<String,String> parameters = new HashMap<>();
-        JobExecutionResult jobExecutionResult = baseMapper.getOne(taskId);
+        JobExecutionResult jobExecutionResult = baseMapper.getOne(jobExecutionId);
         if (jobExecutionResult == null) {
             return null;
         }
@@ -95,7 +95,7 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
         parameters.put("threshold", jobExecutionResult.getThreshold()+"");
         parameters.put("operator",OperatorType.of(jobExecutionResult.getOperator()).getSymbol());
 
-        JobExecution jobExecution = jobExecutionService.getById(taskId);
+        JobExecution jobExecution = jobExecutionService.getById(jobExecutionId);
         if (!Objects.isNull(jobExecution)) {
             Job job = jobService.getById(jobExecution.getJobId());
             List<BaseJobParameter> jobParameterList = JSONUtils.toList(job.getParameter(),BaseJobParameter.class);

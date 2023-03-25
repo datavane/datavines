@@ -167,4 +167,12 @@ public class StringUtils {
             return  mainParameter;
         }
     }
+
+    public static String removeSingeQuotes(String str) {
+        if (StringUtils.isEmpty(str)) {
+            return str;
+        }
+
+        return str.replaceAll("'","");
+    }
 }

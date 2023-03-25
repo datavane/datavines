@@ -50,7 +50,7 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
                 ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class)
                         .getNewPlugin(expectedType);
 
-                String validateResultSinkSql = SinkSqlBuilder.getTaskResultSql().replace("${actual_value}", "${actual_value_" + metricUniqueKey + "}");
+                String validateResultSinkSql = SinkSqlBuilder.getJobExecutionResultSql().replace("${actual_value}", "${actual_value_" + metricUniqueKey + "}");
                 //get the task data storage parameter
                 SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(
                         expectedValue, validateResultSinkSql,  "dv_job_execution_result", metricInputParameter);
