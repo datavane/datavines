@@ -61,7 +61,7 @@ public class LocalFileSink implements LocalSink {
         switch (SinkType.of(config.getString(PLUGIN_TYPE))){
             case ERROR_DATA:
                 sinkErrorData(env);
-                after(env, config);
+                SqlUtils.dropView(config.getString(INVALIDATE_ITEMS_TABLE), env.getSourceConnection().getConnection());
                 break;
             case ACTUAL_VALUE:
             case VALIDATE_RESULT:

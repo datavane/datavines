@@ -51,7 +51,7 @@ public class LocalEngineExecutor extends AbstractEngineExecutor {
 
     @Override
     public void cancel() throws Exception {
-        if(bootstrap != null){
+        if (bootstrap != null) {
             bootstrap.stop();
             this.cancel = true;
         }

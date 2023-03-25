@@ -30,7 +30,6 @@ public class ConnectionItem {
 
     public ConnectionItem(Config config){
         this.config = config;
-        connection = ConnectionUtils.getConnection(config);
     }
 
     public ConnectionItem(Connection connection, Config config) {

@@ -18,9 +18,9 @@ package io.datavines.engine.core;
 
 import io.datavines.common.entity.ProcessResult;
 import io.datavines.common.enums.ExecutionStatus;
+
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.sql.SQLException;
 import java.util.List;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.ConfigRuntimeException;
@@ -46,14 +46,20 @@ public abstract class BaseDataVinesBootstrap {
                 showConfigError(e);
             } catch (Exception e) {
                 showFatalError(e);
+            } finally {
+                stop();
             }
         }
         return new ProcessResult();
     }
 
-    public void stop() throws Exception {
-        if(execution != null) {
-            execution.stop();
+    public void stop() {
+        try {
+            if (execution != null) {
+                execution.stop();
+            }
+        } catch (Exception e) {
+            logger.error("close execution error : ", e);
         }
     }
 

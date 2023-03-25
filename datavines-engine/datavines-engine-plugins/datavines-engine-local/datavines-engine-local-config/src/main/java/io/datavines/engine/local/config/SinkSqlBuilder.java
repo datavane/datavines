@@ -25,7 +25,7 @@ import java.util.List;
 
 public class SinkSqlBuilder {
 
-    public static String getTaskResultSql() {
+    public static String getJobExecutionResultSql() {
 
         List<String> columnList = new ArrayList<>();
         List<String> columnValueList = new ArrayList<>();
@@ -43,7 +43,7 @@ public class SinkSqlBuilder {
 
         return "INSERT INTO dv_job_execution_result ("
                 + String.join(", ", columnList)+") VALUES ("
-                + String.join(", ", columnValueList)+ ")";
+                + String.join(", ", columnValueList)+ ") ON DUPLICATE KEY UPDATE actual_value = '${actual_value}',update_time=${update_time}";
     }
 
     public static String getActualValueSql() {

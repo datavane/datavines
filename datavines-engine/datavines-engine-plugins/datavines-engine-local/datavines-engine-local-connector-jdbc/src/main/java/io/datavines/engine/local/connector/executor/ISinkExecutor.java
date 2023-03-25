@@ -14,17 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.api.env;
+package io.datavines.engine.local.connector.executor;
 
-import java.util.List;
+import java.util.Map;
 
-import io.datavines.engine.api.component.Component;
+public interface ISinkExecutor {
 
-public interface Execution<SR extends Component, TF extends Component, SK extends Component> {
-
-    void execute(List<SR> sources, List<TF> transforms, List<SK> sinks) throws Exception;
-
-    void stop() throws Exception;
-
-    void prepare() throws Exception;
+    void execute(Map<String, String> inputParameter);
 }

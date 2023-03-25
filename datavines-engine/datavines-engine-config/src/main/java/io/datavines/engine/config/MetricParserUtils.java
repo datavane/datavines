@@ -20,6 +20,8 @@ import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.utils.Md5Utils;
 import io.datavines.common.utils.StringUtils;
 
+import io.datavines.metric.api.ConfigItem;
+import io.datavines.spi.PluginLoader;
 import org.apache.commons.collections4.MapUtils;
 
 import java.time.LocalDateTime;
@@ -117,30 +119,18 @@ public class MetricParserUtils {
             return "-1";
         }
 
-        Map<String,String> newInputParameterValue = new HashMap<>(inputParameterValue);
-
-        newInputParameterValue.remove(METRIC_TYPE);
-        newInputParameterValue.remove(METRIC_DIMENSION);
-        newInputParameterValue.remove(CREATE_TIME);
-        newInputParameterValue.remove(UPDATE_TIME);
-        newInputParameterValue.remove(JOB_EXECUTION_ID);
-        newInputParameterValue.remove(RESULT_FORMULA);
-        newInputParameterValue.remove(OPERATOR);
-        newInputParameterValue.remove(THRESHOLD);
-        newInputParameterValue.remove(DATA_TIME);
-        newInputParameterValue.remove(ERROR_DATA_FILE_NAME);
-        newInputParameterValue.remove(ERROR_DATA_DIR);
-        newInputParameterValue.remove(EXPECTED_TYPE);
-        newInputParameterValue.remove(EXPECTED_NAME);
-        newInputParameterValue.remove(EXPECTED_VALUE);
-        newInputParameterValue.remove(EXPECTED_TABLE);
-        newInputParameterValue.remove(INVALIDATE_ITEMS_TABLE);
-        newInputParameterValue.remove(SRC_CONNECTOR_TYPE);
-        newInputParameterValue.remove(ACTUAL_TABLE);
-        newInputParameterValue.remove(REGEX_KEY);
-        newInputParameterValue.remove(NOT_REGEX_KEY);
-        newInputParameterValue.remove(VALIDATE_RESULT_DATA_DIR);
-        newInputParameterValue.remove(METRIC_UNIQUE_KEY);
+        Map<String,String> newInputParameterValue = new HashMap<>();
+        newInputParameterValue.put(METRIC_NAME, inputParameterValue.get(METRIC_NAME));
+        newInputParameterValue.put(METRIC_DATABASE, inputParameterValue.get(METRIC_DATABASE));
+        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(StringUtils.removeSingeQuotes(inputParameterValue.get(METRIC_NAME)));
+        Map<String, ConfigItem> configMap = sqlMetric.getConfigMap();
+        if (MapUtils.isNotEmpty(configMap)) {
+            for(ConfigItem configItem : configMap.values()) {
+                if (StringUtils.isNotEmpty(inputParameterValue.get(configItem.getKey()))) {
+                    newInputParameterValue.put(configItem.getKey(), inputParameterValue.get(configItem.getKey()));
+                }
+            }
+        }
 
         StringBuilder sb = new StringBuilder();
         for (String value : newInputParameterValue.values()) {
