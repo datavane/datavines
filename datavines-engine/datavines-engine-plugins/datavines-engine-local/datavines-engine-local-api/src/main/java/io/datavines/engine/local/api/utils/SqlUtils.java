@@ -16,28 +16,26 @@
  */
 package io.datavines.engine.local.api.utils;
 
+import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.local.api.entity.QueryColumn;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.entity.ResultListWithColumns;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.*;
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
 
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 import static io.datavines.common.CommonConstants.DOT;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
+@Slf4j
 public class SqlUtils {
-
-    private static final Logger logger = LoggerFactory.getLogger(SqlUtils.class);
 
     public static ResultListWithColumns getListWithHeaderFromResultSet(ResultSet rs, Set<String> queryFromsAndJoins) throws SQLException {
 
@@ -59,7 +57,7 @@ public class SqlUtils {
                 resultList.add(getResultObjectMap(rs, metaData, queryFromsAndJoins));
             }
         } catch (Throwable e) {
-            logger.error("get result set error: {0}", e);
+            log.error("get result set error: {0}", e);
         }
 
         resultListWithColumns.setResultList(resultList);
@@ -111,7 +109,7 @@ public class SqlUtils {
                 }
             }
         } catch (Throwable e) {
-            logger.error("get result set error: {0}", e);
+            log.error("get result set error: {0}", e);
         }
 
         return resultList;
@@ -129,7 +127,7 @@ public class SqlUtils {
                 resultList.add(getResultObjectMap(rs, metaData, queryFromsAndJoins));
             }
         } catch (Throwable e) {
-            logger.error("get result set error: {0}", e);
+            log.error("get result set error: {0}", e);
         }
 
         result.setResultList(resultList);
@@ -189,7 +187,7 @@ public class SqlUtils {
             }
 
         } catch (JSQLParserException e) {
-            logger.error("get column error: ", e);
+            log.error("get column error: ", e);
         }
 
         return columnPrefixes;
@@ -250,5 +248,45 @@ public class SqlUtils {
             public void visit(ParenthesisFromItem aThis) {
             }
         };
+    }
+
+    public static void dropView(String viewName, Connection connection) {
+        try {
+            if (StringUtils.isNotEmpty(viewName) && !"null".equals(viewName)) {
+                connection.createStatement().execute("DROP VIEW IF EXISTS " + viewName);
+            }
+        } catch (SQLException e) {
+            log.error("drop view error : {}", e);
+        }
+    }
+
+    public static void closeResultSet(ResultSet resultSet) {
+        if (resultSet != null) {
+            try {
+                resultSet.close();
+            } catch (Exception e) {
+                log.error("close result set error : ", e);
+            }
+        }
+    }
+
+    public static void closeStatement(Statement statement) {
+        if (statement != null) {
+            try {
+                statement.close();
+            } catch (Exception e) {
+                log.error("close statement error : ", e);
+            }
+        }
+    }
+
+    public static void closeConnection(Connection connection) {
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (Exception e) {
+                log.error("close connection error : ", e);
+            }
+        }
     }
 }

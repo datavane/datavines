@@ -22,8 +22,6 @@ import io.datavines.engine.api.env.Execution;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.entity.ConnectionItem;
 
-import java.sql.SQLException;
-
 public class LocalRuntimeEnvironment implements RuntimeEnvironment {
 
     private ConnectionItem sourceConnection;
@@ -82,15 +80,15 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
     }
 
     public void close() throws Exception {
-        if(sourceConnection != null) {
+        if (sourceConnection != null) {
             sourceConnection.close();
         }
 
-        if(targetConnection != null) {
+        if (targetConnection != null) {
             targetConnection.close();
         }
 
-        if(metadataConnection != null) {
+        if (metadataConnection != null) {
             metadataConnection.close();
         }
     }
