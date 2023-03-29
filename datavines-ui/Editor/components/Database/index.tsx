@@ -902,16 +902,16 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                      || tableItems[+activeTableKey]?.name === 'Tables'
                                       || tableItems[+activeTableKey]?.name === 'Metrics'
                                        || tableItems[+activeTableKey]?.name === 'Issues' ? (
-                                            <Pagination
-                                               style={{
+                                           <Pagination
+                                                style={{
                                                     float: 'right',
                                                     marginTop: '20px',
                                                 }}
-                                               size="small"
-                                               current={pageInfo.pageNumber}
-                                               onChange={onChange}
-                                               total={total}
-                                           />
+                                                size="small"
+                                                current={pageInfo.pageNumber}
+                                                onChange={onChange}
+                                                total={total}
+                                            />
                                         ) : ''
                                 }
                             </div>

@@ -81,7 +81,7 @@ const Index = ({
                 <span className="dv-editor-tree-title">
                     {tableItem.name}
                 </span>
-                   </Tooltip>,
+            </Tooltip>,
             key: `${item.uuid}@@${item.name}##${tableItem.uuid}@@${tableItem.name}`,
             dataName: tableItem.name,
             parentName: item.name,
@@ -218,7 +218,7 @@ const Index = ({
                                     label: <span onClick={() => refresh(nodeData)}>
                                         {' '}
                                         {intl.formatMessage({ id: 'job_log_refresh' })}
-                                           </span>,
+                                    </span>,
                                 },
                             ]}
                         />
