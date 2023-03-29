@@ -67,7 +67,7 @@ const Index = ({ form, detail }: InnerProps) => {
                                     label={intl.formatMessage({ id: 'dv_metric_expected_value' })}
                                     name="expected_value"
                                 >
-                                    <Input allowClear />
+                                    <Input autoComplete="off" allowClear />
                                 </Form.Item>
                             );
                         }}

@@ -31,6 +31,7 @@ const Index = (props: IndexProps) => {
                         onPressEnter={() => {
                             $onSearch();
                         }}
+                        autoComplete="off"
                         onSearch={$onSearch}
                     />
                 </Form.Item>

@@ -88,6 +88,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 style={{ width: 60, display: 'inline-block' }}
             >
                 <InputNumber
+                    autoComplete="off"
                     min={0}
                     max={59}
                     style={{ width: 60 }}
@@ -103,6 +104,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 style={{ width: 60, display: 'inline-block' }}
             >
                 <InputNumber
+                    autoComplete="off"
                     min={0}
                     max={59}
                     style={{ width: 60 }}
@@ -118,6 +120,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 style={{ width: 60, display: 'inline-block' }}
             >
                 <InputNumber
+                    autoComplete="off"
                     min={0}
                     max={23}
                     style={{ width: 60 }}
@@ -133,6 +136,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 style={{ width: 60, display: 'inline-block' }}
             >
                 <InputNumber
+                    autoComplete="off"
                     min={0}
                     max={23}
                     style={{ width: 60 }}
@@ -159,6 +163,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                 style={{ width: 160, display: 'inline-block' }}
             >
                 <InputNumber
+                    autoComplete="off"
                     min={1}
                     max={31}
                     style={{ width: 160 }}
@@ -323,7 +328,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                                 rules={requiredRule}
                                 initialValue={detail?.param?.crontab}
                             >
-                                <Input style={{ width: 240 }} />
+                                <Input autoComplete="off" style={{ width: 240 }} />
                             </Form.Item>
                         );
                     }
@@ -470,6 +475,9 @@ const ScheduleContainer = ({
                     entityUUID: jobId,
                     ...params,
                 };
+                if (api === 'catalog/metadata') {
+                    $params.dataSourceId = jobId;
+                }
                 if (detail?.id) {
                     $params.id = detail?.id;
                 }

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import useRoute from 'src/router/useRoute';
 import { Route, Switch } from 'react-router-dom';
 import { useIntl } from 'react-intl';
+import { Spin } from 'antd';
 import MenuLayout from '@/component/Menu/Layout';
 import { MenuItem } from '@/component/Menu/MenuAside';
 import { useDetailPage, useMainInitData } from '@/hooks';
@@ -41,9 +42,18 @@ const Main = () => {
 
     return (
         <MenuLayout visible={!isDetailPage} menus={menus}>
-            <Switch>
-                {generateRoute(menus)}
-            </Switch>
+            <Suspense fallback={(
+                <Spin style={{
+                    width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+                />
+            )}
+            >
+                <Switch>
+                    {generateRoute(menus)}
+                </Switch>
+            </Suspense>
+
         </MenuLayout>
     );
 };

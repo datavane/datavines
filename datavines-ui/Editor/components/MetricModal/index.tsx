@@ -113,7 +113,7 @@ export const MetricConfig = (props: InnerProps) => {
             </IF>
             <VerifyConfigure detail={detail} form={form} />
             <ActuatorConfigure detail={detail} form={form} />
-            <RunEvnironment id={id} form={form} />
+            <RunEvnironment id={id} form={form} detail={detail} />
             <OtherConfig detail={detail} form={form} />
             <ErrorDataStoreConfig detail={detail} form={form} />
         </Form>
@@ -135,7 +135,7 @@ export const useMetricModal = () => {
         try {
             setLoading(true);
             const params = await innerRef.current.getValues();
-            // console.log('params', params);
+            console.log('params', params);
             const res = await $http.post('/job', { ...params, runningNow });
             console.log('res', res);
             message.success('Success!');

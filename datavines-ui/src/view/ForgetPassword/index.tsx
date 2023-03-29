@@ -42,7 +42,7 @@ const Index = () => {
                     { required: true, message: `${emailText}${requiredTop}` },
                     { pattern: EMAIL_REG, message: `${patternTip}${emailText}` },
                 ],
-                widget: <Input placeholder={`${inputTip}${emailText}`} />,
+                widget: <Input autoComplete="off" placeholder={`${inputTip}${emailText}`} />,
             },
             {
                 label: oldPasswordText,
@@ -51,7 +51,7 @@ const Index = () => {
                     { required: true, message: `${oldPasswordText}${requiredTop}` },
                     { pattern: PWD_REG, message: `${patternTip}${oldPasswordText}` },
                 ],
-                widget: <Input.Password placeholder={`${inputTip}${oldPasswordText}`} />,
+                widget: <Input.Password autoComplete="off" placeholder={`${inputTip}${oldPasswordText}`} />,
             },
             {
                 label: newPasswordText,
@@ -60,7 +60,7 @@ const Index = () => {
                     { required: true, message: `${newPasswordText}${requiredTop}` },
                     { pattern: PWD_REG, message: `${patternTip}${newPasswordText}` },
                 ],
-                widget: <Input.Password placeholder={`${inputTip}${newPasswordText}`} />,
+                widget: <Input.Password autoComplete="off" placeholder={`${inputTip}${newPasswordText}`} />,
             },
             {
                 label: userNameText,
@@ -69,7 +69,7 @@ const Index = () => {
                     { required: true, message: `${userNameText}${requiredTop}` },
                     { pattern: /^[\u4E00-\u9FA5_a-zA-Z0-9]{2,32}$/, message: `${patternTip}${userNameText}` },
                 ],
-                widget: <Input placeholder={`${inputTip}${userNameText}`} />,
+                widget: <Input autoComplete="off" placeholder={`${inputTip}${userNameText}`} />,
             },
             {
                 label: phoneText,
@@ -77,7 +77,7 @@ const Index = () => {
                 rules: [
                     { required: true, message: `${phoneText}${requiredTop}` },
                 ],
-                widget: <Input placeholder={`${inputTip}${emailText}`} />,
+                widget: <Input autoComplete="off" placeholder={`${inputTip}${emailText}`} />,
             },
             {
                 label: `${verificationCodeText}`,
@@ -87,6 +87,7 @@ const Index = () => {
                     { pattern: CODE_REG, message: `${patternTip}${verificationCodeText}` },
                 ],
                 widget: <Input
+                    autoComplete="off"
                     addonAfter={(
                         <RenderImage
                             style={{

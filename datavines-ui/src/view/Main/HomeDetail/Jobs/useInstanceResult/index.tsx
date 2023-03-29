@@ -86,12 +86,26 @@ const Inner = (props: any) => {
             justifyContent: 'center',
         }}
         >
-            {getItem('jobs_task_check_subject', result.checkSubject)}
-            {getItem('jobs_task_check_rule', result.metricName)}
-            {getParams()}
-            {getItem('jobs_task_check_result', result.checkResult)}
-            {getItem('jobs_task_check_expectVal_type', result.expectedType)}
-            {getItem('jobs_task_check_formula', result.resultFormulaFormat)}
+            {
+                Object.keys(result).length > 0 ? (
+                    <>
+                        {getItem('jobs_task_check_subject', result.checkSubject)}
+                        {getItem('jobs_task_check_rule', result.metricName)}
+                        {getParams()}
+                        {getItem('jobs_task_check_result', result.checkResult)}
+                        {getItem('jobs_task_check_expectVal_type', result.expectedType)}
+                        {getItem('jobs_task_check_formula', result.resultFormulaFormat)}
+                    </>
+                ) : (
+                    <span style={{
+                        textAlign: 'center',
+                    }}
+                    >
+                        暂无数据
+                    </span>
+                )
+            }
+
             {/* <Row style={{ marginBottom: 10, fontWeight: 500 }}>
                 <Col span={locale === 'zh_CN' ? 4 : 7} style={{ textAlign: 'right' }}>
                     {getIntl('jobs_task_check_explain')}

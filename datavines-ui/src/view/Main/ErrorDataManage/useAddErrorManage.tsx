@@ -80,7 +80,7 @@ const Inner = ({ form }: InnerProps) => {
                         message: intl.formatMessage({ id: 'common_required_tip' }),
                     },
                 ],
-                widget: <Input />,
+                widget: <Input autoComplete="off" />,
             },
             {
                 label: intl.formatMessage({ id: 'error_table_store_type' }),

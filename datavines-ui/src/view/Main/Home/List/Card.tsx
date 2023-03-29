@@ -238,6 +238,7 @@ const Index: React.FC<IndexProps> = ({
                     setisScheduleOpen(false);
                 }}
                 open={isScheduleOpen}
+                maskClosable={false}
             >
                 <Schedule
                     onSavaEnd={() => {
@@ -247,6 +248,7 @@ const Index: React.FC<IndexProps> = ({
                     style={{ height: 'auto' }}
                     jobId={uuid}
                     isShowPush
+                    api="catalog/metadata"
                 />
             </Modal>
         </>

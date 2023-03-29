@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import {
-    Table, Button, Popconfirm, Divider, message,
+    Table, Popconfirm, message,
+    Tabs,
+    TabsProps,
 } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
 import { useIntl } from 'react-intl';
-import { useHistory } from 'react-router-dom';
 import querystring from 'querystring';
 import { useAddEditJobsModal } from 'src/view/Main/HomeDetail/Jobs/useAddEditJobsModal';
 import { TWarnMetricTableData, TWarnMetricTableItem } from '@/type/warning';
 import { GoBack } from '@/component';
 import { $http } from '@/http';
 import { useMount } from '@/common';
+import Notification from '../SLAsSetting/Notification';
+import store from '@/store';
 
 const Index = () => {
     const intl = useIntl();
-    const history = useHistory();
     const [loading, setLoading] = useState(false);
     const { Render: RenderJobsModal, show: showJobsModal } = useAddEditJobsModal({
         title: intl.formatMessage({ id: 'jobs_tabs_title' }),
@@ -53,9 +55,13 @@ const Index = () => {
         });
     };
     const onEdit = (record: TWarnMetricTableItem) => {
+        store.dispatch({
+            type: 'save_datasource_modeType',
+            payload: 'quality',
+        });
         showJobsModal({
             slaId: qs.slaId,
-            record,
+            record: { ...record, id: record.jobId },
         });
     };
     const onDelete = async (record: TWarnMetricTableItem) => {
@@ -68,9 +74,6 @@ const Index = () => {
         } finally {
             setLoading(false);
         }
-    };
-    const onSettings = () => {
-        history.push(`/main/warning/SLAsSetting?slaName=${qs.slaName}&slaId=${qs.slaId}`);
     };
     const columns: ColumnsType<TWarnMetricTableItem> = [
         {
@@ -114,28 +117,11 @@ const Index = () => {
             ),
         },
     ];
-    return (
-        <div
-            className="dv-page-paddinng"
-            style={
-                {
-                    padding: '20px 0px 20px 0px',
-                }
-            }
-        >
-            <div className="dv-flex-between" style={{ textAlign: 'right', marginBottom: 10, paddingTop: 10 }}>
-                <span>
-                    <GoBack />
-                    <span style={{ fontWeight: 500, marginLeft: 20, fontSize: 16 }}>{qs.slaName}</span>
-                </span>
-                <Button type="primary" onClick={() => { onSettings(); }}>
-                    {intl.formatMessage({ id: 'common_settings' })}
-                </Button>
-            </div>
-            <div style={{ fontSize: 14, marginLeft: 15 }}>{(intl.formatMessage({ id: 'warn_monitor_tip' }) || '').replace(/\{\{data\}\}/g, (qs.slaName || '') as string)}</div>
-            <Divider />
-            {/* <JobList datasourceId="14" isWarning /> */}
-            <Table<TWarnMetricTableItem>
+    const items: TabsProps['items'] = [
+        {
+            key: '1',
+            label: intl.formatMessage({ id: 'warn_association_rule_jobs' }),
+            children: <Table<TWarnMetricTableItem>
                 loading={loading}
                 size="middle"
                 rowKey="id"
@@ -150,7 +136,41 @@ const Index = () => {
                     current: pageParams.pageNo,
                     pageSize: pageParams.pageSize,
                 }}
-            />
+            />,
+        },
+        {
+            key: '2',
+            label: intl.formatMessage({ id: 'warn_notice' }),
+            children: <Notification />,
+        },
+    ];
+    return (
+        <div
+            className="dv-page-paddinng"
+            style={
+                {
+                    padding: '20px 0px 20px 0px',
+                }
+            }
+        >
+            <div className="dv-flex-between" style={{ textAlign: 'right', marginBottom: 10, paddingTop: 10 }}>
+                <span>
+                    <GoBack />
+                    <span style={{ fontWeight: 500, marginLeft: 20, fontSize: 16 }}>{qs.slaName}</span>
+                    <div style={{ fontSize: 14, marginLeft: 15, display: 'inline-block' }}>
+                        {(intl.formatMessage({ id: 'warn_monitor_tip' }) || '').replace(/\{\{data\}\}/g, (qs.slaName || '') as string)}
+
+                    </div>
+                </span>
+                {/* <Button type="primary" onClick={() => { onSettings(); }}>
+                    {intl.formatMessage({ id: 'common_settings' })}
+                </Button> */}
+            </div>
+            {/* <div style={{ fontSize: 14, marginLeft: 15 }}>{(intl.formatMessage({ id: 'warn_monitor_tip' }) || '').replace(/\{\{data\}\}/g, (qs.slaName || '') as string)}</div> */}
+            {/* <Divider style={{ marginBottom: '0px' }} /> */}
+            <Tabs defaultActiveKey="1" items={items} style={{ marginTop: 10 }} />
+            {/* <JobList datasourceId="14" isWarning /> */}
+
             <RenderJobsModal />
         </div>
     );

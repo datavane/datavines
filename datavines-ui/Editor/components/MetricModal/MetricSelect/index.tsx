@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import { useIntl } from 'react-intl';
 import './index.less';
+import { useLocation } from 'react-router-dom';
 import { layoutItem } from '../helper';
 import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
@@ -30,6 +31,7 @@ type dynamicConfigItem = {
 const Index = ({
     form, metricSelectRef, id, detail,
 }: InnerProps) => {
+    const isJobsPage = useLocation().pathname.includes('jobs') || useLocation().pathname.includes('SLAs');
     const intl = useIntl();
     const { $http } = useRequest();
     const [context] = useEditorContextState();
@@ -60,7 +62,7 @@ const Index = ({
     const getCloumn = async (databaseName: string, tableName:string) => {
         try {
             const res = await $http.get(`/datasource/${id}/${databaseName}/${tableName}/columns`);
-            setColumns(res?.columns || []);
+            setColumns(res || []);
         } catch (error) {
         }
     };
@@ -157,7 +159,7 @@ const Index = ({
                 name="column"
                 rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_column' }) }]}
             >
-                <CustomSelect defaultValue={column} disabled={(!!entityUuid || !dsiabledEdit?.isTable) && !!detail?.parameterItem?.metricParameter?.column} allowClear source={columns} sourceValueMap="name" />
+                <CustomSelect defaultValue={column} disabled={!isJobsPage && (!!entityUuid || !dsiabledEdit?.isTable) && !!detail?.parameterItem?.metricParameter?.column} allowClear source={columns} sourceValueMap="name" />
             </Form.Item>
         );
     };
@@ -169,7 +171,7 @@ const Index = ({
             name={item.key}
             rules={[...requiredRules]}
         >
-            <Input style={{ width: '100%' }} />
+            <Input style={{ width: '100%' }} autoComplete="off" />
         </Form.Item>
     );
     return (
@@ -194,7 +196,7 @@ const Index = ({
                         name="database"
                         rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
                     >
-                        <CustomSelect disabled={!!entityUuid || !!dsiabledEdit} onChange={databasesChange} allowClear source={databases} sourceValueMap="name" />
+                        <CustomSelect disabled={!isJobsPage && (!!entityUuid || !!dsiabledEdit)} onChange={databasesChange} allowClear source={databases} sourceValueMap="name" />
                     </Form.Item>
                     <IF visible={!!configsMap.table}>
                         <Form.Item
@@ -204,7 +206,7 @@ const Index = ({
                             rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
                         >
                             <CustomSelect
-                                disabled={(!!entityUuid || !!dsiabledEdit) && !!detail?.parameterItem?.metricParameter?.table}
+                                disabled={!isJobsPage && (!!entityUuid || !!dsiabledEdit) && !!detail?.parameterItem?.metricParameter?.table}
                                 onChange={tableChange}
                                 allowClear
                                 source={tables}
@@ -239,7 +241,7 @@ const Index = ({
                             )}
                             name="filter"
                         >
-                            <Input.TextArea style={{ marginLeft: context.locale === 'en_US' ? -100 : -62 }} rows={5} />
+                            <Input.TextArea autoComplete="off" style={{ marginLeft: context.locale === 'en_US' ? -100 : -62 }} rows={5} />
                         </Form.Item>
                     </IF>
 

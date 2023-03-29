@@ -3,7 +3,8 @@ import {
     HashRouter as Router, Route, Switch, Redirect,
 } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import Main from 'view/Main';
+// import Main from 'view/Main';
+import { Spin } from 'antd';
 import store, { useCommonActions } from '@/store';
 import { ConfigProviderWrap } from './ConfigProvider';
 import { generateRoute } from '../router/useRoute';
@@ -13,10 +14,17 @@ import { useMount } from '@/common';
 import shareData from '@/utils/shareData';
 import { DV_LANGUAGE } from '@/utils/constants';
 
+const Main = React.lazy(() => import('view/Main'));
 function App() {
     return (
         <Router>
-            <Suspense fallback={<div />}>
+            <Suspense fallback={(
+                <Spin style={{
+                    width: '100vw', height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}
+                />
+            )}
+            >
                 <Switch>
                     {
                         routerNoLogin.map((item) => generateRoute(item))

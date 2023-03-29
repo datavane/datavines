@@ -3,7 +3,7 @@ import {
     List, Tooltip, Button, Modal, Form, Input, message, Popconfirm,
 } from 'antd';
 import './index.less';
-import { PlusOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 import { useIntl } from 'react-intl';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
@@ -39,6 +39,8 @@ const Index = () => {
         if (res.length > 0) {
             setCurrentIndex(0);
             getTagList(res[0].uuid);
+        } else {
+            setTagList([]);
         }
     };
     // 删除标签分类
@@ -145,7 +147,15 @@ const Index = () => {
                 <p className="dv-label-title">
                     {intl.formatMessage({ id: 'label_list' })}
                     <Tooltip title={intl.formatMessage({ id: 'label_add' })}>
-                        <Button onClick={() => showModal('tag')} className="fr" size="small" style={{ marginTop: '6px' }} shape="circle" icon={<PlusOutlined />} />
+                        <Button
+                            disabled={tagCategoryList.length === 0}
+                            onClick={() => showModal('tag')}
+                            className="fr"
+                            size="small"
+                            style={{ marginTop: '6px' }}
+                            shape="circle"
+                            icon={<PlusOutlined />}
+                        />
                     </Tooltip>
                 </p>
                 <List
@@ -193,7 +203,7 @@ const Index = () => {
                         name="name"
                         rules={[{ required: true, message: intl.formatMessage({ id: 'common_input_tip' }) }]}
                     >
-                        <Input />
+                        <Input autoComplete="off" />
                     </Form.Item>
                 </Form>
             </Modal>

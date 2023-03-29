@@ -69,6 +69,7 @@ function useModal<T = any>(options: ModalProps) {
             ...modalPropsRef.current,
             visible: visibleRef.current,
             afterClose: $afterClose,
+            maskClosable: false,
         };
         return (
             <Context.Provider value={contextRef.current!}>

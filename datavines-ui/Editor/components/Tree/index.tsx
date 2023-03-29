@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Tree, message, Button, Dropdown, Menu, Spin,
+    Tree, message, Button, Dropdown, Menu, Spin, Tooltip,
 } from 'antd';
 import {
     DatabaseOutlined, CopyOutlined, DownOutlined, PoweroffOutlined, ReloadOutlined,
@@ -30,7 +30,7 @@ const Index = ({
     const { $http } = useRequest();
     const { Render: RenderModal, show } = useMetricModal();
     const [spinning, setSpinning] = useState(false);
-    const [{ databases, id , selectDatabases}] = useEditorContextState();
+    const [{ databases, id, selectDatabases }] = useEditorContextState();
     const [expandedKeys, setExpandedKeys] = useState<React.Key[]>([]);
     const [defaultSelectId, setDefaultSelectId] = useState<string| number>('');
     const intl = useIntl();
@@ -77,9 +77,11 @@ const Index = ({
         icon: <DatabaseOutlined />,
         uuid: item.uuid,
         children: (item.children || []).map((tableItem) => ({
-            title: <span className="dv-editor-tree-title">
-                {tableItem.name}
-            </span>,
+            title: <Tooltip title={tableItem.name}>
+                <span className="dv-editor-tree-title">
+                    {tableItem.name}
+                </span>
+                   </Tooltip>,
             key: `${item.uuid}@@${item.name}##${tableItem.uuid}@@${tableItem.name}`,
             dataName: tableItem.name,
             parentName: item.name,
@@ -103,7 +105,7 @@ const Index = ({
             ),
             children: (tableItem.children || []).map((fieldItem) => ({
                 title: (
-                    <span className="dv-editor-tree-title">
+                    <span className="dv-editor-tree-title" title={fieldItem.name}>
                         {fieldItem.name}
                     </span>
                 ),
@@ -124,31 +126,31 @@ const Index = ({
         //         $setExpandedKeys(e.node.key, true);
         //     }
         // }
-        const allData = e.node.key.split("##");
-        const allSelectDatabases =  allData.map((item:any)=>{
-            const itemData = item.split("@@");
+        const allData = e.node.key.split('##');
+        const allSelectDatabases = allData.map((item:any) => {
+            const itemData = item.split('@@');
             return {
                 name: itemData[1],
-                uuid: itemData[0]
-            }
-        })
+                uuid: itemData[0],
+            };
+        });
         allSelectDatabases.unshift(selectDatabases[0]);
         // console.log("allSelectDatabases",allSelectDatabases,allData)
         // fns.setEditorFn({ selectDatabases: [...allSelectDatabases],databases });
         // 这里会出现跳数据然后获取下级
         if (e.node.type === 'database') {
-            setSpinning(true)
-            onRequestTable(e.node.dataName, e.node.uuid, allSelectDatabases,()=>{
-                setSpinning(false)
+            setSpinning(true);
+            onRequestTable(e.node.dataName, e.node.uuid, allSelectDatabases, () => {
+                setSpinning(false);
             });
         } else if (e.node.type === 'table') {
-            setSpinning(true)
-            onRequestCloumn(e.node.parentName, e.node.dataName, e.node.uuid, allSelectDatabases,()=>{
-                setSpinning(false)
+            setSpinning(true);
+            onRequestCloumn(e.node.parentName, e.node.dataName, e.node.uuid, allSelectDatabases, () => {
+                setSpinning(false);
             });
         } else if (e.node.type === 'column') {
             // console.log(' e.node', e.node);
-            onSeletCol(e.node.dataName, e.node.uuid,allSelectDatabases);
+            onSeletCol(e.node.dataName, e.node.uuid, allSelectDatabases);
         }
     };
 
@@ -165,7 +167,7 @@ const Index = ({
         });
         message.success(intl.formatMessage({ id: 'common_success' }));
     };
-    const [treeHeight,setTreeHeight] = useState(0)
+    const [treeHeight, setTreeHeight] = useState(0);
     useEffect(() => {
         if (databases.length > 0 && expandedKeys.length === 0) {
             onSelect([], {
@@ -179,30 +181,28 @@ const Index = ({
                     key: `${databases[0].uuid}@@${databases[0].name}`,
                     uuid: databases[0].uuid,
                 } as unknown as unknown as EventDataNode<DataNode>,
-                nativeEvent: new MouseEvent('move')
+                nativeEvent: new MouseEvent('move'),
             });
             setDefaultSelectId(`${databases[0].uuid}@@${databases[0].name}`);
-            setExpandedKeys([`${databases[0].uuid}@@${databases[0].name}`])
+            setExpandedKeys([`${databases[0].uuid}@@${databases[0].name}`]);
             // setDefaultSelectId(`${databases[0].uuid}@@${databases[0].name}`);
         }
         return () => {
             if (databases.length > 0 && expandedKeys.length === 0) {
-               
-                setTreeHeight(document.getElementsByClassName("dv-editor-tree_list")[0].scrollHeight)
-               
+                setTreeHeight(document.getElementsByClassName('dv-editor-tree_list')[0].scrollHeight);
             }
         };
     }, [databases]);
 
     const openData = (node:any) => {
-        const index = expandedKeys.indexOf(node.key)
-        if(index > -1){
-            expandedKeys.splice(index,1)
-            setExpandedKeys([...expandedKeys])
-        }else{
-            setExpandedKeys([...expandedKeys,node.key])
+        const index = expandedKeys.indexOf(node.key);
+        if (index > -1) {
+            expandedKeys.splice(index, 1);
+            setExpandedKeys([...expandedKeys]);
+        } else {
+            setExpandedKeys([...expandedKeys, node.key]);
         }
-    }
+    };
 
     const titleRender = (nodeData: any) => (
         nodeData.type !== 'column'
@@ -214,21 +214,24 @@ const Index = ({
                             items={[
                                 {
                                     key: 'refresh',
-                                    label: <span onClick={() => refresh(nodeData)}> {intl.formatMessage({ id: 'job_log_refresh' })}</span>,
+                                    label: <span onClick={() => refresh(nodeData)}>
+                                        {' '}
+                                        {intl.formatMessage({ id: 'job_log_refresh' })}
+                                           </span>,
                                 },
                             ]}
                         />
                     )}
                     trigger={['contextMenu']}
                 >
-                    <div onClick={()=>openData(nodeData)} >
+                    <div onClick={() => openData(nodeData)}>
                         {nodeData.title as string}
                     </div>
                 </Dropdown>
-            ) : <div >{nodeData.title as string}</div>
+            ) : <div>{nodeData.title as string}</div>
     );
     return (
-        <div className="dv-editor-tree" >
+        <div className="dv-editor-tree">
             <div
                 className="dv-editor-flex-between"
                 style={{
@@ -246,20 +249,23 @@ const Index = ({
             </div>
             {
                 defaultSelectId ? (
-                    <Spin spinning={spinning} size="small"><div className="dv-editor-tree_list">
-                        <Tree
-                            showIcon
-                            switcherIcon={<DownOutlined style={{fontSize:'14px',position:'relative',top:'2px'}} />}
-                            onSelect={onSelect}
-                            onExpand={onExpand}
-                            expandedKeys={expandedKeys}
-                            treeData={databases.map((item) => renderSingle(item))}
-                            titleRender={titleRender}
-                            defaultSelectedKeys={[defaultSelectId]}
-                            height={treeHeight}
-                        />
-                    </div></Spin>
-                    
+                    <Spin spinning={spinning} size="small">
+                        <div className="dv-editor-tree_list">
+                            <Tree
+                                showIcon
+                                switcherIcon={<DownOutlined style={{ fontSize: '14px', position: 'relative', top: '2px' }} />}
+                                onSelect={onSelect}
+                                onExpand={onExpand}
+                                expandedKeys={expandedKeys}
+                                treeData={databases.map((item) => renderSingle(item))}
+                                titleRender={titleRender}
+                                defaultSelectedKeys={[defaultSelectId]}
+                                height={treeHeight}
+                            />
+                        </div>
+
+                    </Spin>
+
                 ) : ''
             }
 

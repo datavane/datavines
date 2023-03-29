@@ -24,10 +24,14 @@ const Inner = ({ form }: InnerProps) => {
         try {
             const res = (await $http.get(`/datasource/config/${type}`) || '[]');
             const array = (JSON.parse(res) || []) as ICreateDataSourceItem[];
+            // console.log('array', array);
             setDynamicMeta(array.map((item) => {
                 const isTextarea = item.type === 'input' && item.props?.type === 'textarea';
                 const $props = pickProps(item.props || {}, ['placeholder', isTextarea && 'rows', 'disabled'].filter(Boolean) as string[]);
-                $props.autocomplete = 'off';
+                $props.autoComplete = 'off';
+                form?.setFieldsValue({
+                    [item.field]: item.value || undefined,
+                });
                 return {
                     label: item.title,
                     name: item.field,
@@ -76,7 +80,7 @@ const Inner = ({ form }: InnerProps) => {
                 ],
                 initialValue: initData?.name,
                 // @ts-ignore
-                widget: <Input placeholder={`${tipText}${nameText}`} />,
+                widget: <Input autoComplete="off" placeholder={`${tipText}${nameText}`} />,
             },
             {
                 label: sourceTypeText,

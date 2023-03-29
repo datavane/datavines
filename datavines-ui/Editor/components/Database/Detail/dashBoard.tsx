@@ -48,7 +48,7 @@ const Index = ({ id, option, style = {} }:{id:string, option:any, style?:any}) =
         if (!myChart) {
             const charts = echarts.init(document.getElementById(id) as HTMLElement);
             setMyChart(charts);
-            charts.setOption(option, true);
+            charts?.setOption(option, true);
         } else {
             myChart.setOption(option, true);
         }

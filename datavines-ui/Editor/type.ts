@@ -57,6 +57,7 @@ export interface IDvEditorProps {
     onShowModal?: (...args: any[]) => any;
     uuid?:number | string | null,
     afterClose?: (...args: any[]) => any;
+    jobId?:number | string | null;
 }
 
 export interface IDvDataBaseItem{

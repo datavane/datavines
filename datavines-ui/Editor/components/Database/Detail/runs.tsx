@@ -1,4 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, {
+    forwardRef, useEffect, useImperativeHandle, useState,
+} from 'react';
 import { Table } from 'antd';
 import { useIntl } from 'react-intl';
 import { ColumnsType } from 'antd/es/table';
@@ -9,7 +11,10 @@ import { useInstanceErrorDataModal } from '@/view/Main/HomeDetail/Jobs/useInstan
 import { useInstanceResult } from '@/view/Main/HomeDetail/Jobs/useInstanceResult';
 import { useLogger } from '@/view/Main/HomeDetail/Jobs/useLogger';
 
-const Index = ({ id }:{id:string}) => {
+// eslint-disable-next-line react/no-unused-prop-types
+const Index = (props: any, ref:any) => {
+    const { id } = props;
+    useImperativeHandle(ref, () => ({ getData }));
     const intl = useIntl();
     const [loading, setLoading] = useState(false);
     const { Render: RenderErrorDataModal, show: showErrorDataModal } = useInstanceErrorDataModal({});
@@ -67,11 +72,13 @@ const Index = ({ id }:{id:string}) => {
         ),
     }];
     const getData = async () => {
+        setLoading(true);
         const res = await $http.get('/job/execution/page', {
             jobId: id,
             pageNumber: 1,
             pageSize: 999,
         });
+        setLoading(false);
         setTableData(res.records);
     };
     useEffect(() => {
@@ -79,11 +86,15 @@ const Index = ({ id }:{id:string}) => {
     }, []);
 
     return (
-        <div>
+        <div style={{
+            marginTop: '20px',
+        }}
+        >
             <Table
                 rowKey="id"
                 dataSource={tableData}
                 columns={columns}
+                loading={loading}
             />
             <RenderLoggerModal />
             <RenderErrorDataModal />
@@ -93,4 +104,4 @@ const Index = ({ id }:{id:string}) => {
     );
 };
 
-export default Index;
+export default forwardRef(Index);

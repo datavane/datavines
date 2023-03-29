@@ -66,7 +66,7 @@ const Inner = ({ form }: InnerProps) => {
                     }
                     return {
                         ...object,
-                        widget: <Input />,
+                        widget: <Input autoComplete="off" />,
                     };
                 }));
             }
@@ -75,7 +75,7 @@ const Inner = ({ form }: InnerProps) => {
     };
     const schema: IFormRender = {
         name: 'notice-form',
-        layout: 'horizontal',
+        layout: 'vertical',
         formItemProps: {
             style: { marginBottom: 10 },
         },
@@ -89,7 +89,7 @@ const Inner = ({ form }: InnerProps) => {
                         message: intl.formatMessage({ id: 'common_required_tip' }),
                     },
                 ],
-                widget: <Input />,
+                widget: <Input autoComplete="off" />,
             },
             {
                 label: intl.formatMessage({ id: 'warn_SLAs_type' }),

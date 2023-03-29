@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
 import {
-    Row, Col, Form, FormInstance,
+    Row, Col, Form, FormInstance, Select,
 } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import { CustomSelect, useMount } from '../../../common';
@@ -12,21 +12,25 @@ import useRequiredRule from '../../../hooks/useRequiredRule';
 import { useTenantModal } from './useTenantModal';
 import { useEnvModal } from './useEnvModal';
 import { useEditorContextState } from '../../../store/editor';
+import { TDetail } from '../type';
 
 type InnerProps = {
     form: FormInstance,
     id: any,
+    detail: TDetail
 }
-
+const { Option } = Select;
 const Setting = ({ ...rest }) => <div style={{ paddingTop: 5, cursor: 'pointer' }} {...rest}><SettingOutlined /></div>;
 
-const Index = ({ form, id }: InnerProps) => {
+const Index = ({ form, id, detail }: InnerProps) => {
     const intl = useIntl();
     const [context] = useEditorContextState();
     const { $http } = useRequest();
     const [tenantCodeList, setTenantCodeList] = useState([]);
     const [envList, setEnvList] = useState([]);
     const requiredRule = useRequiredRule();
+    console.log('form', detail);
+    // form.setFieldValue("tenantCode",)
     const { Render: RenderTenantModal, show: showTenant } = useTenantModal({
         title: intl.formatMessage({ id: 'dv_metric_linux_user' }),
         afterClose() {
@@ -42,6 +46,7 @@ const Index = ({ form, id }: InnerProps) => {
     const getTenantList = async () => {
         try {
             const tenantListOptions = await $http.get(`tenant/listOptions/${context.workspaceId}`);
+            console.log('tenantListOptions', tenantListOptions);
             setTenantCodeList(tenantListOptions || []);
         } catch (error) {
         }
@@ -71,6 +76,7 @@ const Index = ({ form, id }: InnerProps) => {
                             allowClear
                             source={tenantCodeList}
                             sourceValueMap="key"
+
                         />
                     </Form.Item>
                 </Col>

@@ -59,7 +59,7 @@ const Index: React.FC<IndexProps> = () => {
                         { required: true },
                     ],
                     initialValue: record?.tenant,
-                    widget: <Input />,
+                    widget: <Input autoComplete="off" />,
                 },
             ],
         };

@@ -204,6 +204,10 @@ export default {
     job_Avg: 'Avg',
     job_StdDev: 'StdDev',
     job_Variance: 'Variance',
+    job_chooes_col: 'Choose Col',
+    job_view_execution_history: 'View execution history',
+    jobs_status: 'Execution status',
+    jobs_execution_time: 'Execution time',
 
     warn_SLAs_name: 'Name',
     warn_SLAs_type: 'Type',
@@ -219,6 +223,8 @@ export default {
     warn_setting_notice_edit: 'Edit notification',
     warn_setting_notice_sender: 'Sender',
     warn_monitor_tip: 'SLAs for monitoring {{data}} related data',
+    warn_association_rule_jobs: 'Association Rule Jobs',
+    warn_notice: 'Notice',
 
     workspace_name: 'Name',
     workspace_exit: 'Exit Workspace',
@@ -258,4 +264,5 @@ export default {
     label_add_category: 'Add Tag Category',
     label_add: 'Add Tag',
     label_name: 'Tag Name',
+
 };

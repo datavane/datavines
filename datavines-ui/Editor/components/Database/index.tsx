@@ -4,7 +4,7 @@ import React, {
     useRef, useState, useEffect,
 } from 'react';
 import {
-    Tabs, Tag, Table, Modal, Form, Button, Select, message, Spin, Pagination, DatePicker, Dropdown,
+    Tabs, Tag, Table, Modal, Form, Button, Select, message, Spin, Pagination, DatePicker, Dropdown, Drawer,
 } from 'antd';
 import { RightOutlined, PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons';
 import './index.less';
@@ -13,6 +13,7 @@ import { IF } from '@Editor/common';
 import { useIntl } from 'react-intl';
 import dayjs, { Dayjs } from 'dayjs';
 import useRequest from '../../hooks/useRequest';
+import { useWatch } from '@/common';
 import {
     dataBaseTabs, dataBaseCol, tableTabs, tableCol, colTabs, colCol,
     Tab, Col,
@@ -24,6 +25,7 @@ import ProfileContent from './profileContent';
 import Schedule from '@/view/Main/HomeDetail/Jobs/components/Schedule';
 
 import store from '@/store';
+import { useLogger } from '@/view/Main/HomeDetail/Jobs/useLogger';
 
 type DIndexProps = {
     onShowModal?: (...args: any[]) => any;
@@ -36,6 +38,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     const { Render: RenderModal } = useMetricModal();
     const { $http } = useRequest();
     const intl = useIntl();
+    const { Render: RenderLoggerModal, show: showLoggerModal } = useLogger({});
     const { RangePicker } = DatePicker;
     useEffect(() => {
         getTagList();
@@ -117,15 +120,33 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 setRowKey('uuid');
                 break;
             case 'Tables':
-                getTableList(uuid);
+                setPageInfo({
+                    pageNumber: 1,
+                    pageSize: 10,
+                    total: 0,
+                });
+                setTotal(0);
+                // getTableList(uuid);
                 setRowKey('uuid');
                 break;
             case 'Schema Changes':
-                getSchemaChanges(uuid);
+                setPageInfo({
+                    pageNumber: 1,
+                    pageSize: 10,
+                    total: 0,
+                });
+                setTotal(0);
+                // getSchemaChanges(uuid);
                 setRowKey('uuid');
                 break;
             case 'Column':
-                getColList(uuid);
+                setPageInfo({
+                    pageNumber: 1,
+                    pageSize: 10,
+                    total: 0,
+                });
+                setTotal(0);
+                // getColList(uuid);
                 setRowKey('uuid');
                 break;
             case 'Metrics':
@@ -134,7 +155,8 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     pageSize: 10,
                     total: 0,
                 });
-                getMetric(uuid);
+                setTotal(0);
+                // getMetric(uuid);
                 setRowKey('id');
                 break;
             case 'Issues':
@@ -143,7 +165,8 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     pageSize: 10,
                     total: 0,
                 });
-                getIssue(uuid);
+                setTotal(0);
+                // getIssue(uuid);
                 setRowKey('id');
                 break;
             default:
@@ -265,40 +288,94 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     useEffect(() => {
         initData(currentIndex);
     }, [currentIndex]);
+
+    const [total, setTotal] = useState(0);
     // 获取表格数
     const getTableList = async (uuid:string) => {
         setLoading(true);
-        const res = await $http.get(`/catalog/list/table-with-detail/${uuid}`);
-        setLoading(false);
-        setTableData(res);
+        // console.log('pageInfo', pageInfo);
+        // catalog/page/table-with-detail
+        $http.get('/catalog/page/table-with-detail', {
+            upstreamUuid: uuid,
+            ...pageInfo,
+        }).then((res) => {
+            setTableData(res.records || []);
+            setTotal(res.total);
+            // setPageInfo({
+            //     ...pageInfo,
+            //     total: res.total,
+            // });
+        }).finally(() => {
+            setLoading(false);
+        });
     };
     // 获取schemachange
     const getSchemaChanges = async (uuid:string) => {
         setLoading(true);
-        const res = await $http.get(`/catalog/list/schema-change/${uuid}`);
-        setLoading(false);
-        setTableData(res);
+        $http.get('/catalog/page/schema-change', {
+            uuid,
+            ...pageInfo,
+        }).then((res) => {
+            setTableData(res.records || []);
+            setTotal(res.total);
+        }).finally(() => {
+            setLoading(false);
+        });
     };
     const [pageInfo, setPageInfo] = useState({
         pageSize: 10,
         pageNumber: 1,
         total: 0,
     });
-    const onChange = (pageNumber:number, pageSize:number) => {
+    useWatch([pageInfo], () => {
+        const { uuid } = selectDatabases[selectDatabases.length - 1];
+        const name = tableItems[+activeTableKey]?.name;
+        switch (name) {
+            case 'Tables':
+                getTableList(uuid);
+                break;
+            case 'Column':
+                getColList(uuid);
+                break;
+            case 'Schema Changes':
+                getSchemaChanges(uuid);
+                break;
+            case 'Metrics':
+                getMetric(uuid);
+                break;
+            case 'Issues':
+                getIssue(uuid);
+                break;
+            default:
+        }
+    }, { immediate: true });
+    const onChange = async (pageNumber:number, pageSize:number) => {
         setPageInfo({
             pageNumber,
             pageSize,
             total: pageInfo.total,
         });
-        getMetric(selectDatabases[selectDatabases.length - 1].uuid);
+
+        // setPageInfo({
+        //     pageNumber:
+        // })
+        // getMetric(selectDatabases[selectDatabases.length - 1].uuid);
     };
     // 获取列
     const getColList = async (uuid:string) => {
-        setLoading(true);
-        const res = await $http.get(`/catalog/list/column-with-detail/${uuid}`);
-        setLoading(false);
-        // console.log('colres', res);
-        setTableData(res);
+        await $http.get('/catalog/page/column-with-detail', {
+            ...pageInfo,
+            upstreamUuid: uuid,
+        }).then((res) => {
+            setTableData(res.records || []);
+            setTotal(res.total);
+            // setPageInfo({
+            //     ...pageInfo,
+            //     total: res.total,
+            // });
+        }).finally(() => {
+            setLoading(false);
+        });
     };
     // 获取Mertric
     const getMetric = async (uuid:string) => {
@@ -308,10 +385,10 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             uuid,
         }).then((res) => {
             setTableData(res.records || []);
-            setPageInfo({
-                ...pageInfo,
-                total: res.total,
-            });
+            // setPageInfo({
+            //     ...pageInfo,
+            //     total: res.total,
+            // });
         }).finally(() => {
             setLoading(false);
         });
@@ -325,7 +402,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         }).finally(() => {
             // setLoading(false);
         });
-        // catalog/profile/execute
     };
     const getIssue = async (uuid:string) => {
         setLoading(true);
@@ -334,10 +410,10 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             ...pageInfo,
         }).then((res) => {
             setTableData(res.records || []);
-            setPageInfo({
-                ...pageInfo,
-                total: res.total,
-            });
+            // setPageInfo({
+            //     ...pageInfo,
+            //     total: res.total,
+            // });
         }).finally(() => {
             setLoading(false);
         });
@@ -387,8 +463,56 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             ],
         }));
     };
+
+    const [chooesColList, setChooesColList] = useState([]);
+    const [chooesColModalOpen, setChooesColModalOpen] = useState(false);
+    const [colCheckList, setColCheckList] = useState<string[]>([]);
+    // const [defaultSelectedRowKeys, setDefaultSelectedRowKeys] = useState([]);
+    const chooseColumns = [{
+        title: intl.formatMessage({ id: 'job_Column_Name' }),
+        dataIndex: 'name',
+        key: 'value',
+    }];
+    const historyColumns = [{
+        title: intl.formatMessage({ id: 'jobs_execution_time' }),
+        dataIndex: 'updateTime',
+        key: 'updateTime',
+    }, {
+        title: intl.formatMessage({ id: 'jobs_status' }),
+        dataIndex: 'status',
+        key: 'status',
+    }, {
+        title: intl.formatMessage({ id: 'common_action' }),
+        dataIndex: 'action',
+        key: 'action',
+        width: '100px',
+        render: (_: any, data: any) => (
+            <a
+                onClick={() => {
+                    // console.log('id', id);
+                    showLoggerModal(data);
+                }}
+                className="text-underline"
+            >
+                {intl.formatMessage({ id: 'jobs_task_log_btn' })}
+            </a>
+        ),
+    }];
+    const runProfileGetCol = async () => {
+        const res = await $http.get(`/catalog/list/column-with-detail/${selectDatabases[currentIndex]?.uuid}`);
+        // console.log('res', res);
+        setChooesColList(res);
+        const resCheck = await $http.get(`/catalog/profile/selected-columns/${selectDatabases[currentIndex]?.uuid}?uuid=${selectDatabases[currentIndex]?.uuid}`);
+        setColCheckList(resCheck);
+        setChooesColModalOpen(true);
+    };
     const runProfile = async () => {
-        await $http.post(`/catalog/profile/execute?uuid=${selectDatabases[currentIndex]?.uuid}`).then(() => {
+        await $http.post('/catalog/profile/execute-select-columns', {
+            selectAll: chooesColList.length === colCheckList.length,
+            selectedColumnList: colCheckList,
+            uuid: selectDatabases[currentIndex]?.uuid,
+        }).then(() => {
+            setChooesColModalOpen(false);
             message.success(intl.formatMessage({ id: 'common_success' }));
         });
     };
@@ -553,7 +677,42 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         });
         message.success(intl.formatMessage({ id: 'common_success' }));
     };
+    const [detailKey, setDetailTabKey] = useState('1');
+    const changeDetailTabKey = (value:string) => {
+        setDetailTabKey(value);
+    };
+    const detailRef = useRef<{
+        runsRef:any
+    }>();
+    const refreshHistoryList = () => {
+        detailRef.current?.runsRef?.current.getData();
+    };
 
+    const [openDrawer, setOpenDrawer] = useState(false);
+    const [historyList, setHistoryList] = useState([]);
+    const [historytotal, setHistorytotal] = useState(0);
+    const [historyLoading, setHistoryLoading] = useState(false);
+    const onPageChange = (page:number, pageSize:number) => {
+        // console.log('page', page, pageSize);
+        OpenDrawer(page, pageSize);
+    };
+    const OpenDrawer = async (page:number, pageSize:number) => {
+        setHistoryList([]);
+        setHistoryLoading(true);
+        setOpenDrawer(true);
+        const res = await $http.get('catalog/profile/execute/history', {
+            pageNumber: page,
+            pageSize,
+            uuid: selectDatabases[selectDatabases.length - 1].uuid,
+        });
+        setHistoryLoading(false);
+        setHistorytotal(res.total || 0);
+        setHistoryList(res.records || []);
+        // catalog/profile/execute/history
+    };
+    const onDrawerClose = () => {
+        setOpenDrawer(false);
+    };
     return (
         <div className="dv-database">
             <IF visible={currentIndex > 0}>
@@ -611,12 +770,20 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                         items: [{
                                             key: '1',
                                             label: intl.formatMessage({ id: 'jobs_schedule' }),
+                                        }, {
+                                            key: '2',
+                                            label: intl.formatMessage({ id: 'job_view_execution_history' }),
                                         }],
-                                        onClick: () => {
-                                            setisScheduleOpen(true);
+                                        onClick: (data) => {
+                                            if (data.key === '1') {
+                                                setisScheduleOpen(true);
+                                            } else {
+                                                OpenDrawer(1, 10);
+                                                // data.key === '1'
+                                            }
                                         },
                                     }}
-                                    onClick={() => runProfile()}
+                                    onClick={() => runProfileGetCol()}
                                     style={{ marginLeft: '10px', display: 'inline' }}
                                 >
                                     {intl.formatMessage({ id: 'jobs_run_Profile' })}
@@ -710,7 +877,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                 }
                                 <Table
                                     size="small"
-                                    scroll={{ y: 'calc(100vh - 448px)' }}
+                                    scroll={{ y: 'calc(100vh - 454px)' }}
                                     rowKey={rowKey}
                                     dataSource={tableData}
                                     columns={columns}
@@ -730,18 +897,22 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                     }
                                 />
                                 {
-                                    tableItems[+activeTableKey]?.name === 'Metrics' || tableItems[+activeTableKey]?.name === 'Issues' ? (
-                                        <Pagination
-                                            style={{
-                                                float: 'right',
-                                                marginTop: '20px',
-                                            }}
-                                            size="small"
-                                            current={pageInfo.pageNumber}
-                                            onChange={onChange}
-                                            total={pageInfo.total}
-                                        />
-                                    ) : ''
+                                    tableItems[+activeTableKey]?.name === 'Column'
+                                    || tableItems[+activeTableKey]?.name === 'Schema Changes'
+                                     || tableItems[+activeTableKey]?.name === 'Tables'
+                                      || tableItems[+activeTableKey]?.name === 'Metrics'
+                                       || tableItems[+activeTableKey]?.name === 'Issues' ? (
+                                            <Pagination
+                                               style={{
+                                                    float: 'right',
+                                                    marginTop: '20px',
+                                                }}
+                                               size="small"
+                                               current={pageInfo.pageNumber}
+                                               onChange={onChange}
+                                               total={total}
+                                           />
+                                        ) : ''
                                 }
                             </div>
 
@@ -761,10 +932,11 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
 
                         </span>
                         <div style={{ float: 'right' }}>
+                            {detailKey === '3' ? <Button onClick={refreshHistoryList} type="primary" style={{ marginRight: '10px' }}>刷新</Button> : ''}
                             <Button onClick={() => onRun(metricsId)} type="primary">运行</Button>
                             <Button onClick={() => onDelete(metricsId)} style={{ marginLeft: '10px' }}>删除</Button>
                         </div>
-                        <Detail id={metricsId} selectDatabases={selectDatabases} />
+                        <Detail ref={detailRef} id={metricsId} selectDatabases={selectDatabases} changeTabKey={changeDetailTabKey} />
                     </div>
                 </IF>
             </IF>
@@ -836,7 +1008,56 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     }
                 />
             </Modal>
+            <Modal
+                width="400px"
+                open={chooesColModalOpen}
+                title={intl.formatMessage({ id: 'job_chooes_col' })}
+                maskClosable={false}
+                footer={[
+                    <Button key="good" onClick={() => setChooesColModalOpen(false)}>
+                        {intl.formatMessage({ id: 'common_Cancel' })}
+                    </Button>,
+                    <Button key="bad" type="primary" onClick={() => runProfile()}>
+                        {intl.formatMessage({ id: 'jobs_run' })}
+                    </Button>,
+                ]}
+                onCancel={() => setChooesColModalOpen(false)}
+                destroyOnClose
+            >
+                <Table
+                    style={{ marginTop: 20 }}
+                    rowSelection={{
+                        type: 'checkbox',
+                        onChange: (val:any[]) => setColCheckList(val),
+                        defaultSelectedRowKeys: colCheckList,
+                    }}
+                    size="small"
+                    dataSource={chooesColList}
+                    columns={chooseColumns}
+                    pagination={
+                        false
+                    }
+                    rowKey="name"
+                    scroll={{
+                        y: 300,
+                    }}
+                />
+            </Modal>
             <RenderModal />
+            <Drawer width="50%" title={intl.formatMessage({ id: 'job_view_execution_history' })} placement="right" onClose={onDrawerClose} open={openDrawer}>
+                <Table
+                    loading={historyLoading}
+                    columns={historyColumns}
+                    dataSource={historyList}
+                    pagination={
+                        {
+                            total: historytotal,
+                            onChange: onPageChange,
+                        }
+                    }
+                />
+            </Drawer>
+            <RenderLoggerModal />
         </div>
     );
 };

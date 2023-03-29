@@ -62,12 +62,12 @@ const SelectSLAs = ({ innerRef, jobId, id }: InnerProps) => {
                 name: 'slaId',
                 rules: [
                     {
-                        required: true,
+                        required: false,
                         message: intl.formatMessage({ id: 'common_required' }),
                     },
                 ],
                 initialValue: id || undefined,
-                widget: <CustomSelect source={source} style={{ width: 300 }} sourceValueMap="id" sourceLabelMap="name" />,
+                widget: <CustomSelect allowClear source={source} style={{ width: 300 }} sourceValueMap="id" sourceLabelMap="name" />,
             },
         ],
     };

@@ -138,4 +138,5 @@ const DetailMain = () => {
     );
 };
 
+//   export default App;
 export default DetailMain;
