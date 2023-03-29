@@ -74,6 +74,11 @@ export const dataBaseCol:Col[][] = [[{
         dataIndex: 'columnName',
         key: 'columnName',
     },
+    {
+        title: <FormattedMessage id="warn_update_time" />,
+        dataIndex: 'updateTime',
+        key: 'updateTime',
+    },
 ]];
 export const tableTabs:Tab[] = [
     {

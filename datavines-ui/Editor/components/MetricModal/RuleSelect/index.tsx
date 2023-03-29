@@ -16,6 +16,7 @@ import {
 } from '../../../common';
 import Title from '../Title';
 import store, { RootReducer } from '@/store';
+import { useColModal } from '../useColModal';
 
 type InnerProps = {
     form: FormInstance,
@@ -43,6 +44,7 @@ const Index = ({
     const [table2, setTable2] = useState([]);
     const [column1, setCloumn1] = useState([]);
     const [column2, setCloumn2] = useState([]);
+    const { Render: RenderColModal, show } = useColModal({});
     useMount(async () => {
         try {
             getDatabases(id, 1, true);
@@ -108,17 +110,30 @@ const Index = ({
         if (!id || !database) return;
         const $table = await $http.get(`datasource/${id}/${database}/tables`);
         if (index === 1) {
+            form.setFieldValue(['metricParameter', 'table'], '');
             setTable1($table);
+            // eslint-disable-next-line no-unused-expressions
             isInit && setCloumn1([]);
         } else {
+            form.setFieldValue(['metricParamete2r', 'table2'], '');
             setTable2($table);
+            // eslint-disable-next-line no-unused-expressions
             isInit && setCloumn2([]);
         }
     };
     const getCloumn = async (table: string | undefined, id: string | undefined, database: string | undefined, index: number, isInit: boolean | undefined) => {
         if (!table || !id || !database) return;
         const $column = await $http.get(`datasource/${id}/${database}/${table}/columns`);
-        index === 1 ? setCloumn1($column.columns || []) : setCloumn2($column.columns || []);
+        // console.log('$column', $column);
+        // eslint-disable-next-line no-unused-expressions
+        index === 1 ? setCloumn1($column || []) : setCloumn2($column || []);
+    };
+    const seeColList = (index:number) => {
+        // console.log('upstreamUuid', upstreamUuid);
+        // eslint-disable-next-line no-unused-expressions
+        show({
+            list: index === 1 ? column1 : column2,
+        });
     };
     return (
         <div style={{ padding: '0 10px' }}>
@@ -214,6 +229,23 @@ const Index = ({
                             onChange={(e) => getCloumn(e, form.getFieldValue('dataSourceId'), form.getFieldValue(['metricParameter', 'database']), 1, false)}
                         />
                     </Form.Item>
+                    {form.getFieldValue('metricType') === 'multi_table_value_comparison' ? (
+                        <Button
+                            style={{
+                                position: 'absolute',
+                                right: '-4px',
+                                transform: 'translateX(100%)',
+                                zIndex: 1,
+                                top: 0,
+                            }}
+                            disabled={!form.getFieldValue(['metricParameter', 'table'])}
+                            onClick={() => seeColList(1)}
+                        >
+                            {intl.formatMessage({ id: 'dv_metric_column' })}
+
+                        </Button>
+                    ) : ''}
+
                 </Col>
                 <Col span={12}>
                     <Form.Item
@@ -228,6 +260,24 @@ const Index = ({
                             onChange={(e) => getCloumn(e, form.getFieldValue('dataSourceId2'), form.getFieldValue(['metricParameter2', 'database2']), 2, false)}
                         />
                     </Form.Item>
+                    {
+                        form.getFieldValue('metricType') === 'multi_table_value_comparison' ? (
+                            <Button
+                                style={{
+                                    position: 'absolute',
+                                    right: '-4px',
+                                    transform: 'translateX(100%)',
+                                    zIndex: 1,
+                                    top: 0,
+                                }}
+                                disabled={!form.getFieldValue(['metricParameter2', 'table2'])}
+                                onClick={() => seeColList(2)}
+                            >
+                                {intl.formatMessage({ id: 'dv_metric_column' })}
+                            </Button>
+                        ) : null
+                    }
+
                 </Col>
             </Row>
             <IF visible={metricType === 'multi_table_accuracy'}>
@@ -349,6 +399,7 @@ const Index = ({
                     </Col>
                 </Row>
             </IF>
+            <RenderColModal />
         </div>
     );
 };

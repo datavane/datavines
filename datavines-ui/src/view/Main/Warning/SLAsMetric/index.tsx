@@ -13,6 +13,7 @@ import { GoBack } from '@/component';
 import { $http } from '@/http';
 import { useMount } from '@/common';
 import Notification from '../SLAsSetting/Notification';
+import store from '@/store';
 
 const Index = () => {
     const intl = useIntl();
@@ -54,9 +55,13 @@ const Index = () => {
         });
     };
     const onEdit = (record: TWarnMetricTableItem) => {
+        store.dispatch({
+            type: 'save_datasource_modeType',
+            payload: 'quality',
+        });
         showJobsModal({
             slaId: qs.slaId,
-            record,
+            record: { ...record, id: record.jobId },
         });
     };
     const onDelete = async (record: TWarnMetricTableItem) => {
@@ -115,7 +120,7 @@ const Index = () => {
     const items: TabsProps['items'] = [
         {
             key: '1',
-            label: intl.formatMessage({ id: 'warn_notice' }),
+            label: intl.formatMessage({ id: 'warn_association_rule_jobs' }),
             children: <Table<TWarnMetricTableItem>
                 loading={loading}
                 size="middle"
@@ -135,7 +140,7 @@ const Index = () => {
         },
         {
             key: '2',
-            label: intl.formatMessage({ id: 'warn_association_rule_jobs' }),
+            label: intl.formatMessage({ id: 'warn_notice' }),
             children: <Notification />,
         },
     ];

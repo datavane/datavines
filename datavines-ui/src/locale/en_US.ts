@@ -204,6 +204,10 @@ export default {
     job_Avg: 'Avg',
     job_StdDev: 'StdDev',
     job_Variance: 'Variance',
+    job_chooes_col: 'Choose Col',
+    job_view_execution_history: 'View execution history',
+    jobs_status: 'Execution status',
+    jobs_execution_time: 'Execution time',
 
     warn_SLAs_name: 'Name',
     warn_SLAs_type: 'Type',

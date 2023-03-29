@@ -135,7 +135,7 @@ export const useMetricModal = () => {
         try {
             setLoading(true);
             const params = await innerRef.current.getValues();
-            // console.log('params', params);
+            console.log('params', params);
             const res = await $http.post('/job', { ...params, runningNow });
             console.log('res', res);
             message.success('Success!');

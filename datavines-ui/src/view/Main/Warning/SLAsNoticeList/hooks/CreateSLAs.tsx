@@ -22,7 +22,7 @@ export const CreateSLAsComponent = ({ form, detail, innerRef }: InnerProps) => {
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
     const schema: IFormRender = {
         name: 'sla-form',
-        layout: 'horizontal',
+        layout: 'vertical',
         formItemProps: {
             style: { marginBottom: 10 },
         },

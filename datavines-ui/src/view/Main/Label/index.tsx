@@ -147,7 +147,15 @@ const Index = () => {
                 <p className="dv-label-title">
                     {intl.formatMessage({ id: 'label_list' })}
                     <Tooltip title={intl.formatMessage({ id: 'label_add' })}>
-                        <Button onClick={() => showModal('tag')} className="fr" size="small" style={{ marginTop: '6px' }} shape="circle" icon={<PlusOutlined />} />
+                        <Button
+                            disabled={tagCategoryList.length === 0}
+                            onClick={() => showModal('tag')}
+                            className="fr"
+                            size="small"
+                            style={{ marginTop: '6px' }}
+                            shape="circle"
+                            icon={<PlusOutlined />}
+                        />
                     </Tooltip>
                 </p>
                 <List

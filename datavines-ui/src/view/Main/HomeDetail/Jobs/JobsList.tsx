@@ -86,7 +86,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
                 datasourceId: datasourceId || (match.params as any).id,
                 ...pageParams,
                 ...(values || form.getFieldsValue()),
-                type: typeData || type,
+                type: typeData !== undefined ? typeData : type,
             })) || [];
             setTableData({
                 list: res?.records || [],
@@ -235,18 +235,22 @@ const Jobs = ({ datasourceId }: TJobs) => {
 
     const onChangeTab = (key: string) => {
         setType(+key);
-        getData(undefined, +key);
+        setPageParams({
+            pageNumber: 1,
+            pageSize: 10,
+        });
+        // getData(undefined, +key);
     };
 
     const items: TabsProps['items'] = [
         {
             key: '0',
-            label: '数据质量检查作业',
+            label: intl.formatMessage({ id: 'jobs_tabs_title' }),
             children: '',
         },
         {
-            key: '1',
-            label: '数据比对作业',
+            key: '2',
+            label: intl.formatMessage({ id: 'jobs_tabs_comparison_title' }),
             children: '',
         },
     ];

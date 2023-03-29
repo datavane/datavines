@@ -204,6 +204,10 @@ export default {
     job_Avg: '平均',
     job_StdDev: '标准差',
     job_Variance: '方差',
+    job_chooes_col: '选择列',
+    job_view_execution_history: '查看历史记录',
+    jobs_status: '执行状态',
+    jobs_execution_time: '执行时间',
 
     warn_SLAs_name: '名称',
     warn_SLAs_type: '类型',
@@ -260,4 +264,5 @@ export default {
     label_add_category: '新增标签分类',
     label_add: '新增标签',
     label_name: '标签名',
+
 };
