@@ -18,6 +18,7 @@ package io.datavines.engine.local.connector.executor;
 
 import io.datavines.common.config.Config;
 import io.datavines.common.enums.DataType;
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.connector.api.Dialect;
@@ -25,7 +26,6 @@ import io.datavines.connector.api.TypeConverter;
 import io.datavines.connector.plugin.entity.JdbcOptions;
 import io.datavines.connector.plugin.entity.StructField;
 import io.datavines.connector.plugin.utils.JdbcUtils;
-import io.datavines.engine.api.ConfigConstants;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.entity.ConnectionItem;
 import io.datavines.engine.local.api.entity.ResultList;
@@ -62,17 +62,18 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
     }
 
     @Override
-    public void execute(Map<String, String> inputParameter) {
+    public void execute(Map<String, String> inputParameter) throws DataVinesException {
         try {
             sinkErrorData();
         } catch (Exception e) {
-            log.error("sink error-data error : {}", e);
+            log.error("sink error data error : {}", e);
+            throw new DataVinesException(e);
         } finally {
             after(env, config);
         }
     }
 
-    private void sinkErrorData() throws SQLException {
+    private void sinkErrorData() {
 
         if (TRUE.equals(config.getString(INVALIDATE_ITEM_CAN_OUTPUT))) {
 
@@ -211,9 +212,11 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                         }
                         errorDataPreparedStatement.executeBatch();
                     }
+                    log.info("sink error data finished");
                 }
             } catch (Exception e) {
                 log.error("sink error data error : ", e);
+                throw new DataVinesException("sink error data error", e);
             } finally {
                 SqlUtils.closeResultSet(countResultSet);
                 SqlUtils.closeStatement(sourceConnectionStatement);
@@ -242,9 +245,15 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                              String targetTableName, List<StructField> columns) throws SQLException {
         String createTableSql =
                 JdbcUtils.getCreateTableStatement(targetTableName, columns, dialect, typeConverter);
+        if (StringUtils.isEmpty(createTableSql)) {
+            log.error("generate create table sql error");
+            return;
+        }
         Statement statement = getConnectionItem().getConnection().createStatement();
         statement.execute(createTableSql);
         statement.close();
+
+        log.info("create error data table : " + createTableSql);
     }
 
     private List<StructField> getTableSchema(Statement statement, Config config, TypeConverter typeConverter) {

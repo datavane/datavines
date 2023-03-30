@@ -19,6 +19,7 @@ package io.datavines.engine.local.transform.sql;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
 import io.datavines.common.config.enums.TransformType;
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalTransform;
@@ -124,6 +125,8 @@ public class SqlTransform implements LocalTransform {
                     }
                 }
             }
+
+            throw new DataVinesException("transform execute error: ", e);
         }
 
         return resultList;

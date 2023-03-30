@@ -16,9 +16,11 @@
  */
 package io.datavines.engine.local.connector.executor;
 
+import io.datavines.common.exception.DataVinesException;
+
 import java.util.Map;
 
 public interface ISinkExecutor {
 
-    void execute(Map<String, String> inputParameter);
+    void execute(Map<String, String> inputParameter) throws DataVinesException;
 }
