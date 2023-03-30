@@ -40,6 +40,8 @@ import java.util.*;
 @RefreshToken
 public class MetricController {
 
+    private Set<String> excludeMetricSet = new HashSet<>(Arrays.asList("column_histogram"));
+
     @ApiOperation(value = "get metric list")
     @GetMapping(value = "/list")
     public Object getMetricList() {
@@ -71,8 +73,10 @@ public class MetricController {
                 metricList.forEach(it -> {
                     SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
                     if (sqlMetric != null && sqlMetric.getType().isSingleTable()) {
-                        MetricItem item = new MetricItem(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()), it, sqlMetric.getLevel().getDescription());
-                        items.add(item);
+                        if (!excludeMetricSet.contains(it)) {
+                            MetricItem item = new MetricItem(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()), it, sqlMetric.getLevel().getDescription());
+                            items.add(item);
+                        }
                     }
                 });
                 break;
@@ -117,8 +121,10 @@ public class MetricController {
         metricList.forEach(it -> {
             SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
             if (sqlMetric != null && sqlMetric.getType().isSingleTable() && level.equals(sqlMetric.getLevel().getDescription())) {
-                Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
-                items.add(item);
+                if (!excludeMetricSet.contains(it)) {
+                    Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
+                    items.add(item);
+                }
             }
         });
 

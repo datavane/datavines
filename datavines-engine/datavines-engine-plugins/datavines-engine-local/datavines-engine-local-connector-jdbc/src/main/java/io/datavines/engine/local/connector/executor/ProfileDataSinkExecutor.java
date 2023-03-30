@@ -17,6 +17,7 @@
 package io.datavines.engine.local.connector.executor;
 
 import io.datavines.common.config.Config;
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.entity.ConnectionItem;
 import io.datavines.engine.local.api.utils.LoggerFactory;
@@ -36,12 +37,13 @@ public class ProfileDataSinkExecutor extends BaseDataSinkExecutor {
     }
 
     @Override
-    public void execute(Map<String, String> inputParameter){
+    public void execute(Map<String, String> inputParameter) throws DataVinesException {
         try {
             innerExecute(inputParameter);
         } catch (Exception e) {
             log.error("sink profile data error : {}", e);
             after(env, config);
+            throw new DataVinesException("sink profile data error", e);
         }
     }
 }
