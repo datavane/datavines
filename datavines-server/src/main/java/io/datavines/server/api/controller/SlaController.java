@@ -64,26 +64,35 @@ public class SlaController {
     private SlaJobService slaJobService;
 
     @ApiOperation(value = "list job")
+    @GetMapping(value = "/job/page")
+    public Object pageSlaJob(@RequestParam("slaId") Long slaId,
+                             @RequestParam(value = "searchVal", required = false) String searchVal,
+                             @RequestParam("pageNumber") Integer pageNumber,
+                             @RequestParam("pageSize") Integer pageSize) {
+        return slaJobService.pageSlaJob(slaId,searchVal,pageNumber,pageSize);
+    }
+
+    @ApiOperation(value = "list job")
     @GetMapping(value = "/job/list")
-    public Object listSlaJob(@RequestParam("slaId") Long id){
+    public Object listSlaJob(@RequestParam("slaId") Long id) {
         return slaJobService.listSlaJob(id);
     }
 
     @ApiOperation(value = "create or update sla job")
     @PostMapping(value = "/job/createOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createOrUpdateSlaJob(@Valid @RequestBody SlaJobCreateOrUpdate createOrUpdate){
+    public Object createOrUpdateSlaJob(@Valid @RequestBody SlaJobCreateOrUpdate createOrUpdate) {
         return slaJobService.createOrUpdateSlaJob(createOrUpdate);
     }
 
     @ApiOperation(value = "create sla job")
     @DeleteMapping(value = "/job/{slaJobId}")
-    public Object deleteSlaJob(@PathVariable("slaJobId") Long  slaJobId){
+    public Object deleteSlaJob(@PathVariable("slaJobId") Long  slaJobId) {
         return slaJobService.removeById(slaJobId);
     }
 
     @ApiOperation(value = "test sla")
     @GetMapping(value = "/test/{slaId}")
-    public Object test(@PathVariable("slaId") Long slaId){
+    public Object test(@PathVariable("slaId") Long slaId) {
         SlaNotificationMessage message = new SlaNotificationMessage();
         message.setMessage("[\"test\"]");
         message.setSubject("just test slaId");
@@ -96,49 +105,49 @@ public class SlaController {
     public Object listSlas(@RequestParam("workspaceId") Long workspaceId,
                            @RequestParam(value = "searchVal", required = false) String searchVal,
                            @RequestParam("pageNumber") Integer pageNumber,
-                           @RequestParam("pageSize") Integer pageSize){
+                           @RequestParam("pageSize") Integer pageSize) {
         return slaService.listSlas(workspaceId, searchVal, pageNumber, pageSize);
     }
 
     @ApiOperation(value = "create sla")
     @PostMapping( consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createSla(@Valid @RequestBody SlaCreate create){
+    public Object createSla(@Valid @RequestBody SlaCreate create) {
         return slaService.createSla(create);
     }
 
     @ApiOperation(value = "update sla")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateSla(@Valid @RequestBody SlaUpdate update){
+    public Object updateSla(@Valid @RequestBody SlaUpdate update) {
         return slaService.updateSla(update);
     }
 
     @ApiOperation(value = "get sla")
     @GetMapping(value = "{slaId}")
-    public Object getSla(@PathVariable Long slaId){
+    public Object getSla(@PathVariable Long slaId) {
         return slaService.getById(slaId);
     }
 
     @ApiOperation(value = "delete sla")
     @DeleteMapping(value = "/{id}")
-    public Object deleteSla(@PathVariable("id") Long id){
+    public Object deleteSla(@PathVariable("id") Long id) {
         return slaService.deleteById(id);
     }
 
     @ApiOperation(value = "get support plugin")
     @GetMapping(value = "/plugin/support")
-    public Object getSupportPlugin(){
+    public Object getSupportPlugin() {
         return slaService.getSupportPlugin();
     }
 
     @ApiOperation(value = "get config param of sender")
     @GetMapping(value = "/sender/config/{type}")
-    public Object getSenderConfigJson(@PathVariable("type") String type){
+    public Object getSenderConfigJson(@PathVariable("type") String type) {
         return slaService.getSenderConfigJson(type);
     }
 
     @ApiOperation(value = "get config param of notification")
     @GetMapping(value = "/notification/config/{type}")
-    public Object getNotificationConfigJson(@PathVariable("type") String type){
+    public Object getNotificationConfigJson(@PathVariable("type") String type) {
         return slaNotificationService.getConfigJson(type);
     }
 
@@ -147,7 +156,7 @@ public class SlaController {
     public Object listSenders(@RequestParam("workspaceId") Long workspaceId,
                               @RequestParam(value = "searchVal", required = false) String searchVal,
                               @RequestParam("pageNumber") Integer pageNumber,
-                              @RequestParam("pageSize") Integer pageSize){
+                              @RequestParam("pageSize") Integer pageSize) {
         return slaSenderService.pageListSender(workspaceId, searchVal, pageNumber, pageSize);
     }
 
@@ -155,43 +164,43 @@ public class SlaController {
     @GetMapping(value = "/sender/list")
     public Object listSenders(@RequestParam("workspaceId") Long workspaceId,
                               @RequestParam(value = "type") String type,
-                              @RequestParam(value = "searchVal", required = false) String searchVal){
+                              @RequestParam(value = "searchVal", required = false) String searchVal) {
         return slaSenderService.listSenders(workspaceId, searchVal, type);
     }
 
     @ApiOperation(value = "create sender")
     @PostMapping(value = "/sender",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createSender(@Valid @RequestBody SlaSenderCreate create){
+    public Object createSender(@Valid @RequestBody SlaSenderCreate create) {
         return slaSenderService.createSender(create);
     }
 
     @ApiOperation(value = "update sender")
     @PutMapping(value = "/sender",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateSender(@Valid @RequestBody SlaSenderUpdate update){
+    public Object updateSender(@Valid @RequestBody SlaSenderUpdate update) {
         return slaSenderService.updateSender(update);
     }
 
     @ApiOperation(value = "delete sender")
     @DeleteMapping(value = "/sender/{id}")
-    public Object deleteSender(@PathVariable("id") Long id){
+    public Object deleteSender(@PathVariable("id") Long id) {
         return slaSenderService.removeById(id);
     }
 
     @ApiOperation(value = "create notification")
     @PostMapping(value = "/notification")
-    public Object createNotification(@Valid @RequestBody SlaNotificationCreate create){
+    public Object createNotification(@Valid @RequestBody SlaNotificationCreate create) {
         return slaNotificationService.createNotification(create);
     }
 
     @ApiOperation(value = "update notification")
     @PutMapping(value = "/notification")
-    public Object updateNotification(@Valid @RequestBody SlaNotificationUpdate update){
+    public Object updateNotification(@Valid @RequestBody SlaNotificationUpdate update) {
         return slaNotificationService.updateNotification(update);
     }
 
     @ApiOperation(value = "delete notification")
     @DeleteMapping(value = "/notification/{id}")
-    public Object deleteNotification(@PathVariable("id") Long id){
+    public Object deleteNotification(@PathVariable("id") Long id) {
         return slaNotificationService.removeById(id);
     }
 
@@ -200,7 +209,7 @@ public class SlaController {
     public Object pageListNotification(@RequestParam("workspaceId") Long workspaceId,
                                    @RequestParam(value = "searchVal", required = false) String searchVal,
                                    @RequestParam("pageNumber") Integer pageNumber,
-                                   @RequestParam("pageSize") Integer pageSize){
+                                   @RequestParam("pageSize") Integer pageSize) {
         return slaNotificationService.pageListNotification(workspaceId, searchVal, pageNumber, pageSize);
     }
 }

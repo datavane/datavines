@@ -103,7 +103,7 @@ const Index: React.FC<IndexProps> = ({
                                                 }}
                                                 >
                                                     <FundOutlined style={{ marginRight: '4px' }} />
-                                                    {intl.formatMessage({ id: 'home_Metadata_scraping' })}
+                                                    {intl.formatMessage({ id: 'home_metadata_fetch' })}
                                                 </a>
 
                                             ),
@@ -233,7 +233,7 @@ const Index: React.FC<IndexProps> = ({
             <Modal
                 width="700px"
                 footer={[]}
-                title={intl.formatMessage({ id: 'home_Metadata_crawl_schedule' })}
+                title={intl.formatMessage({ id: 'home_metadata_fetch_schedule' })}
                 onCancel={() => {
                     setisScheduleOpen(false);
                 }}

@@ -17,7 +17,10 @@
 package io.datavines.server.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.common.enums.JobType;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
@@ -28,6 +31,7 @@ import io.datavines.server.repository.mapper.SlaJobMapper;
 import io.datavines.server.repository.service.SlaJobService;
 import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
@@ -40,8 +44,27 @@ import java.util.Objects;
 public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> implements SlaJobService {
 
     @Override
-    public List<SlaJobVO>  listSlaJob(Long slaId) {
-        return baseMapper.listSlaJob(slaId);
+    public IPage<SlaJobVO> pageSlaJob(Long slaId, String searchVal, Integer pageNumber, Integer pageSize) {
+        Page<SlaJobVO> page = new Page<>(pageNumber, pageSize);
+        IPage<SlaJobVO> slaJobs = baseMapper.getSlaJobPage(page, searchVal, slaId);
+        List<SlaJobVO> slaJobList = slaJobs.getRecords();
+        if (CollectionUtils.isNotEmpty(slaJobList)) {
+            for (SlaJobVO slaJobVO: slaJobList) {
+                slaJobVO.setType(JobType.of(Integer.parseInt(slaJobVO.getType())).getDescription());
+            }
+        }
+        return slaJobs;
+    }
+
+    @Override
+    public List<SlaJobVO> listSlaJob(Long slaId) {
+        List<SlaJobVO> slaJobList = baseMapper.listSlaJob(slaId);
+        if (CollectionUtils.isNotEmpty(slaJobList)) {
+            for (SlaJobVO slaJobVO: slaJobList) {
+                slaJobVO.setType(JobType.of(Integer.parseInt(slaJobVO.getType())).getDescription());
+            }
+        }
+        return slaJobList;
     }
 
     @Override

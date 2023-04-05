@@ -64,4 +64,13 @@ public enum JobType {
         }
         throw new IllegalArgumentException("invalid job type : " + jobType);
     }
+
+    public static JobType of(int code){
+        for (JobType jobType : JobType.values()) {
+            if (code == jobType.code) {
+                return jobType;
+            }
+        }
+        throw new IllegalArgumentException("invalid job type code: " + code);
+    }
 }
