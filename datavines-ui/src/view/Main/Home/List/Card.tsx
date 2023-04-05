@@ -72,7 +72,7 @@ const Index: React.FC<IndexProps> = ({
                                             label: <div style={{ width: '100%', height: '100%' }} onClick={() => (onEdit(item))}>
                                                 <EditOutlined style={{ marginRight: '4px' }} />
                                                 {intl.formatMessage({ id: 'common_edit' })}
-                                            </div>,
+                                                   </div>,
                                             key: 'edit',
                                             // icon: ,
                                         },
@@ -103,7 +103,7 @@ const Index: React.FC<IndexProps> = ({
                                                 }}
                                                 >
                                                     <FundOutlined style={{ marginRight: '4px' }} />
-                                                    {intl.formatMessage({ id: 'home_metadata_scraping' })}
+                                                    {intl.formatMessage({ id: 'home_metadata_fetch' })}
                                                 </a>
 
                                             ),
@@ -233,7 +233,7 @@ const Index: React.FC<IndexProps> = ({
             <Modal
                 width="700px"
                 footer={[]}
-                title={intl.formatMessage({ id: 'home_metadata_crawl_schedule' })}
+                title={intl.formatMessage({ id: 'home_metadata_fetch_schedule' })}
                 onCancel={() => {
                     setisScheduleOpen(false);
                 }}

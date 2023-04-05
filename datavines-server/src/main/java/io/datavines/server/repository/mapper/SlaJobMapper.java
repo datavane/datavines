@@ -17,14 +17,22 @@
 package io.datavines.server.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.datavines.server.api.dto.vo.JobVO;
 import io.datavines.server.api.dto.vo.SlaJobVO;
 import io.datavines.server.repository.entity.SlaJob;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 @Mapper
 public interface SlaJobMapper extends BaseMapper<SlaJob> {
     List<SlaJobVO> listSlaJob(Long slaId);
+
+    IPage<SlaJobVO> getSlaJobPage(Page<SlaJobVO> page,
+                            @Param("searchVal") String searchVal,
+                            @Param("slaId") Long slaId);
 
 }

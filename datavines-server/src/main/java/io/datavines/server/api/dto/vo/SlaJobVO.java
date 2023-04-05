@@ -21,7 +21,6 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
@@ -38,6 +37,14 @@ public class SlaJobVO {
     private Long jobId;
 
     private String jobName;
+
+    private String databaseName;
+
+    private String tableName;
+
+    private String columnName;
+
+    private String type;
 
     private String updateBy;
 

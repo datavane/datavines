@@ -503,7 +503,7 @@ const ScheduleContainer = ({
         <PageContainer
             style={style}
             footer={[
-                isShowPush ? <Button style={{ marginRight: '10px' }} type="primary" onClick={() => onSave('push')}>{intl.formatMessage({ id: 'home_metadata_scraping' })}</Button> : undefined,
+                isShowPush ? <Button style={{ marginRight: '10px' }} type="primary" onClick={() => onSave('push')}>{intl.formatMessage({ id: 'home_metadata_fetch' })}</Button> : undefined,
                 <Button type="primary" onClick={() => onSave('add')}>{intl.formatMessage({ id: 'common_save' })}</Button>,
             ]}
         >
