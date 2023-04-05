@@ -769,10 +769,10 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                     menu={{
                                         items: [{
                                             key: '1',
-                                            label: intl.formatMessage({ id: 'jobs_schedule' }),
+                                            label: intl.formatMessage({ id: 'job_profile_schedule' }),
                                         }, {
                                             key: '2',
-                                            label: intl.formatMessage({ id: 'job_view_execution_history' }),
+                                            label: intl.formatMessage({ id: 'job_profile_execution_history' }),
                                         }],
                                         onClick: (data) => {
                                             if (data.key === '1') {
@@ -786,7 +786,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                     onClick={() => runProfileGetCol()}
                                     style={{ marginLeft: '10px', display: 'inline' }}
                                 >
-                                    {intl.formatMessage({ id: 'jobs_run_Profile' })}
+                                    {intl.formatMessage({ id: 'jobs_run_profile' })}
 
                                 </Dropdown.Button>
 
@@ -1011,7 +1011,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             <Modal
                 width="400px"
                 open={chooesColModalOpen}
-                title={intl.formatMessage({ id: 'job_chooes_col' })}
+                title={intl.formatMessage({ id: 'job_choose_col' })}
                 maskClosable={false}
                 footer={[
                     <Button key="good" onClick={() => setChooesColModalOpen(false)}>

@@ -20,12 +20,15 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.bo.sla.SlaJobCreateOrUpdate;
 import io.datavines.server.api.dto.vo.SlaJobVO;
 import io.datavines.server.repository.entity.SlaJob;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 
 import java.util.List;
 
 public interface SlaJobService extends IService<SlaJob> {
 
     List<SlaJobVO>  listSlaJob(Long slaId);
+
+    IPage<SlaJobVO> pageSlaJob(Long slaId, String searchVal, Integer pageNumber, Integer pageSize);
 
     boolean createOrUpdateSlaJob(SlaJobCreateOrUpdate createOrUpdate);
 }

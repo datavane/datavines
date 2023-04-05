@@ -20,23 +20,53 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="io.datavines.server.repository.mapper.SlaJobMapper">
 
+    <sql id="basic_sql">
+        SELECT id,
+               job_id,
+               update_by,
+               update_time
+        FROM dv_sla_job
+        WHERE sla_id = #{slaId}
+    </sql>
+
     <select id="listSlaJob" resultType="io.datavines.server.api.dto.vo.SlaJobVO" >
         SELECT dsj.id,
-                dsj.job_id,
-                dj.name AS job_name,
-                du.username AS update_by,
-                dsj.update_time
-        FROM
-            (SELECT id,
-                    job_id,
-                    update_by,
-                    update_time
-            FROM dv_sla_job
-            WHERE sla_id = #{slaId})dsj
-        JOIN dv_user du
-            ON du.id = dsj.update_by
-        JOIN dv_job dj
-            ON dsj.job_id = dj.id
+               dsj.job_id,
+               dj.name AS job_name,
+               dj.type AS type,
+               dj.schema_name AS database_name,
+               dj.table_name AS table_name,
+               dj.column_name AS column_name,
+               du.username AS update_by,
+               dsj.update_time
+        FROM (<include refid="basic_sql"/>) dsj
+                JOIN dv_user du
+                     ON du.id = dsj.update_by
+                JOIN dv_job dj
+                     ON dsj.job_id = dj.id
+    </select>
+
+    <select id="getSlaJobPage" resultType="io.datavines.server.api.dto.vo.SlaJobVO">
+        SELECT dsj.id,
+               dsj.job_id,
+               dj.name AS job_name,
+               dj.type AS type,
+               dj.schema_name AS database_name,
+               dj.table_name AS table_name,
+               dj.column_name AS column_name,
+               du.username AS update_by,
+               dsj.update_time
+        FROM (<include refid="basic_sql"/>) dsj
+                JOIN dv_user du
+                    ON du.id = dsj.update_by
+                JOIN dv_job dj
+                    ON dsj.job_id = dj.id
+        <where>
+            <if test="searchVal != null">
+                LOWER(dj.`name`) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
+            </if>
+        </where>
+        ORDER BY dsj.update_time DESC
     </select>
 
 </mapper>
