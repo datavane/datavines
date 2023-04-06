@@ -902,16 +902,16 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                      || tableItems[+activeTableKey]?.name === 'Tables'
                                       || tableItems[+activeTableKey]?.name === 'Metrics'
                                        || tableItems[+activeTableKey]?.name === 'Issues' ? (
-                                           <Pagination
-                                                style={{
+                                            <Pagination
+                                               style={{
                                                     float: 'right',
                                                     marginTop: '20px',
                                                 }}
-                                                size="small"
-                                                current={pageInfo.pageNumber}
-                                                onChange={onChange}
-                                                total={total}
-                                            />
+                                               size="small"
+                                               current={pageInfo.pageNumber}
+                                               onChange={onChange}
+                                               total={total}
+                                           />
                                         ) : ''
                                 }
                             </div>
@@ -1044,7 +1044,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 />
             </Modal>
             <RenderModal />
-            <Drawer width="50%" title={intl.formatMessage({ id: 'job_view_execution_history' })} placement="right" onClose={onDrawerClose} open={openDrawer}>
+            <Drawer width="50%" title={intl.formatMessage({ id: 'job_profile_execution_history' })} placement="right" onClose={onDrawerClose} open={openDrawer}>
                 <Table
                     loading={historyLoading}
                     columns={historyColumns}

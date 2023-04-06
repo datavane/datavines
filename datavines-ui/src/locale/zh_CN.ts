@@ -236,7 +236,6 @@ export default {
     workspace_edit: '编辑空间',
     workspace_delete: '删除空间',
     workspace_delete_tip: '确定删除当前空间？',
-
     workspace_user_invite: '邀请用户',
 
     datasource: '数据源',
@@ -269,5 +268,4 @@ export default {
     label_add_category: '新增标签分类',
     label_add: '新增标签',
     label_name: '标签名',
-
 };
