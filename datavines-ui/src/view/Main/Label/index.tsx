@@ -199,7 +199,7 @@ const Index = () => {
                     form={form}
                 >
                     <Form.Item
-                        label={intl.formatMessage({ id: 'warn_SLAs_name' })}
+                        label={intl.formatMessage({ id: 'warn_sLAs_name' })}
                         name="name"
                         rules={[{ required: true, message: intl.formatMessage({ id: 'common_input_tip' }) }]}
                     >

@@ -23,14 +23,14 @@ export type Col = {
 
 export const dataBaseTabs:Tab[] = [
     {
-        label: <FormattedMessage id="job_Table" />, name: 'Tables', children: null, key: '0',
+        label: <FormattedMessage id="job_table" />, name: 'Tables', children: null, key: '0',
     },
     {
-        label: <FormattedMessage id="job_Schema_Changes" />, name: 'Schema Changes', children: null, key: '1',
+        label: <FormattedMessage id="job_schema_changes" />, name: 'Schema Changes', children: null, key: '1',
     },
 ];
 export const dataBaseCol:Col[][] = [[{
-    title: <FormattedMessage id="job_Table" />,
+    title: <FormattedMessage id="job_table" />,
     dataIndex: 'name',
     key: 'name',
     render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
@@ -46,7 +46,7 @@ export const dataBaseCol:Col[][] = [[{
     key: 'updateTime',
 },
 {
-    title: <FormattedMessage id="job_Column" />,
+    title: <FormattedMessage id="job_column" />,
     dataIndex: 'columns',
     key: 'columns',
 }, {
@@ -55,7 +55,7 @@ export const dataBaseCol:Col[][] = [[{
     key: 'metrics',
 }], [
     {
-        title: <FormattedMessage id="warn_SLAs_type" />,
+        title: <FormattedMessage id="warn_sLAs_type" />,
         dataIndex: 'changeType',
         key: 'changeType',
     },
@@ -65,12 +65,12 @@ export const dataBaseCol:Col[][] = [[{
         key: 'databaseName',
     },
     {
-        title: <FormattedMessage id="job_Table" />,
+        title: <FormattedMessage id="job_table" />,
         dataIndex: 'tableName',
         key: 'tableName',
     },
     {
-        title: <FormattedMessage id="job_Column" />,
+        title: <FormattedMessage id="job_column" />,
         dataIndex: 'columnName',
         key: 'columnName',
     },
@@ -82,28 +82,28 @@ export const dataBaseCol:Col[][] = [[{
 ]];
 export const tableTabs:Tab[] = [
     {
-        label: <FormattedMessage id="job_Profile" />, name: 'Profile', children: null, key: '0',
+        label: <FormattedMessage id="job_profile" />, name: 'Profile', children: null, key: '0',
     },
     {
-        label: <FormattedMessage id="job_Column" />, name: 'Column', children: null, key: '1',
+        label: <FormattedMessage id="job_column" />, name: 'Column', children: null, key: '1',
     },
     {
-        label: <FormattedMessage id="job_Metrics" />, name: 'Metrics', children: null, key: '2',
+        label: <FormattedMessage id="job_metrics" />, name: 'Metrics', children: null, key: '2',
     },
     {
-        label: <FormattedMessage id="job_Schema_Changes" />, name: 'Schema Changes', children: null, key: '3',
+        label: <FormattedMessage id="job_schema_changes" />, name: 'Schema Changes', children: null, key: '3',
     },
     {
         label: <FormattedMessage id="job_issue" />, name: 'Issues', children: null, key: '4',
     },
 ];
 export const tableCol:Col[][] = [[{
-    title: <FormattedMessage id="job_Column" />,
+    title: <FormattedMessage id="job_column" />,
     dataIndex: 'name',
     key: 'name',
     // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 }, {
-    title: <FormattedMessage id="warn_SLAs_type" />,
+    title: <FormattedMessage id="warn_sLAs_type" />,
     dataIndex: 'type',
     key: 'type',
 
@@ -136,7 +136,7 @@ export const tableCol:Col[][] = [[{
     ),
 
 }, {
-    title: <FormattedMessage id="job_Unique" />,
+    title: <FormattedMessage id="job_unique" />,
     dataIndex: 'uniqueCount',
     key: 'uniqueCount',
     render: (_: any, { uniqueCount, uniquePercentage }: any) => (
@@ -150,7 +150,7 @@ export const tableCol:Col[][] = [[{
     ),
 
 }, {
-    title: <FormattedMessage id="job_Distinct" />,
+    title: <FormattedMessage id="job_distinct" />,
     dataIndex: 'distinctCount',
     key: 'distinctCount',
     render: (_: any, { distinctCount, distinctPercentage }: any) => (
@@ -164,7 +164,7 @@ export const tableCol:Col[][] = [[{
     ),
 }], [
     {
-        title: <FormattedMessage id="job_Column" />,
+        title: <FormattedMessage id="job_column" />,
         dataIndex: 'name',
         key: 'name',
         render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
@@ -175,38 +175,38 @@ export const tableCol:Col[][] = [[{
         // }),
     },
     {
-        title: <FormattedMessage id="warn_SLAs_type" />,
+        title: <FormattedMessage id="warn_sLAs_type" />,
         dataIndex: 'type',
         key: 'type',
     },
     {
-        title: <FormattedMessage id="job_Comment" />,
+        title: <FormattedMessage id="job_comment" />,
         dataIndex: 'comment',
         key: 'comment',
     },
     {
-        title: <FormattedMessage id="job_Metrics" />,
+        title: <FormattedMessage id="job_metrics" />,
         dataIndex: 'metrics',
         key: 'metrics',
     }, {
-        title: <FormattedMessage id="job_Last_Update_Time" />,
+        title: <FormattedMessage id="job_last_update_time" />,
         dataIndex: 'updateTime',
         key: 'updateTime',
     },
 ], [{
-    title: <FormattedMessage id="warn_SLAs_name" />,
+    title: <FormattedMessage id="warn_sLAs_name" />,
     dataIndex: 'name',
     key: 'name',
     render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 },
 {
-    title: <FormattedMessage id="job_Status" />,
+    title: <FormattedMessage id="job_status" />,
     dataIndex: 'status',
     key: 'status',
     width: '100px',
 },
 {
-    title: <FormattedMessage id="job_Trend" />,
+    title: <FormattedMessage id="job_trend" />,
     dataIndex: 'columns',
     key: 'columns',
     render: (_: any, { charts, id }: any) => (
@@ -249,18 +249,18 @@ export const tableCol:Col[][] = [[{
         />
     ),
 }, {
-    title: <FormattedMessage id="job_Last_Update_Time" />,
+    title: <FormattedMessage id="job_last_update_time" />,
     dataIndex: 'updateTime',
     key: 'updateTime',
     width: '200px',
 }, {
-    title: <FormattedMessage id="job_Action" />,
+    title: <FormattedMessage id="job_action" />,
     dataIndex: 'action',
     key: 'action',
     width: '80px',
     // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 }], [{
-    title: <FormattedMessage id="warn_SLAs_type" />,
+    title: <FormattedMessage id="warn_sLAs_type" />,
     dataIndex: 'changeType',
     key: 'changeType',
 }, {
@@ -268,19 +268,19 @@ export const tableCol:Col[][] = [[{
     dataIndex: 'databaseName',
     key: 'databaseName',
 }, {
-    title: <FormattedMessage id="job_Table" />,
+    title: <FormattedMessage id="job_table" />,
     dataIndex: 'tableName',
     key: 'tableName',
 }, {
-    title: <FormattedMessage id="job_Column" />,
+    title: <FormattedMessage id="job_column" />,
     dataIndex: 'columnName',
     key: 'columnName',
 }, {
-    title: <FormattedMessage id="job_Before" />,
+    title: <FormattedMessage id="job_before" />,
     dataIndex: 'changeBefore',
     key: 'changeBefore',
 }, {
-    title: <FormattedMessage id="job_After" />,
+    title: <FormattedMessage id="job_after" />,
     dataIndex: 'changeAfter',
     key: 'changeAfter',
 }, {
@@ -288,23 +288,23 @@ export const tableCol:Col[][] = [[{
     dataIndex: 'updateTime',
     key: 'updateTime',
 }], [{
-    title: <FormattedMessage id="job_Metrics" />,
+    title: <FormattedMessage id="job_metrics" />,
     dataIndex: 'metricName',
     key: 'metricName',
     width: '190px',
 },
 {
-    title: <FormattedMessage id="job_Title" />,
+    title: <FormattedMessage id="job_title" />,
     dataIndex: 'title',
     key: 'title',
 },
 {
-    title: <FormattedMessage id="job_Status" />,
+    title: <FormattedMessage id="job_status" />,
     dataIndex: 'status',
     key: 'status',
     width: '80px',
 }, {
-    title: <FormattedMessage id="job_Create_Time" />,
+    title: <FormattedMessage id="job_Create_time" />,
     dataIndex: 'updateTime',
     key: 'updateTime',
     width: '160px',
@@ -317,27 +317,27 @@ export const tableCol:Col[][] = [[{
 }]];
 export const colTabs:Tab[] = [
     {
-        label: <FormattedMessage id="job_Metrics" />, name: 'Metrics', children: null, key: '0',
+        label: <FormattedMessage id="job_metrics" />, name: 'Metrics', children: null, key: '0',
     },
     {
         label: <FormattedMessage id="job_issue" />, name: 'Issues', children: null, key: '1',
     },
     {
-        label: <FormattedMessage id="job_Schema_Changes" />, name: 'Schema Changes', children: null, key: '2',
+        label: <FormattedMessage id="job_schema_changes" />, name: 'Schema Changes', children: null, key: '2',
     },
 ];
 export const colCol:Col[][] = [[{
-    title: <FormattedMessage id="warn_SLAs_name" />,
+    title: <FormattedMessage id="warn_sLAs_name" />,
     dataIndex: 'name',
     key: 'name',
     render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 }, {
-    title: <FormattedMessage id="job_Status" />,
+    title: <FormattedMessage id="job_status" />,
     dataIndex: 'status',
     key: 'status',
     width: '100px',
 }, {
-    title: <FormattedMessage id="job_Trend" />,
+    title: <FormattedMessage id="job_trend" />,
     dataIndex: 'trend',
     key: 'trend',
     render: (_: any, { charts, id }: any) => (
@@ -381,7 +381,7 @@ export const colCol:Col[][] = [[{
     )
     ,
 }, {
-    title: <FormattedMessage id="job_Last_Update_Time" />,
+    title: <FormattedMessage id="job_last_update_time" />,
     dataIndex: 'updateTime',
     key: 'updateTime',
 }, {
@@ -391,23 +391,23 @@ export const colCol:Col[][] = [[{
     width: '80px',
     // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 }], [{
-    title: <FormattedMessage id="job_Metrics" />,
+    title: <FormattedMessage id="job_metrics" />,
     dataIndex: 'metricName',
     key: 'metricName',
     width: '190px',
 },
 {
-    title: <FormattedMessage id="job_Title" />,
+    title: <FormattedMessage id="job_title" />,
     dataIndex: 'title',
     key: 'title',
 },
 {
-    title: <FormattedMessage id="job_Status" />,
+    title: <FormattedMessage id="job_status" />,
     dataIndex: 'status',
     key: 'status',
     width: '80px',
 }, {
-    title: <FormattedMessage id="job_Create_Time" />,
+    title: <FormattedMessage id="job_Create_time" />,
     dataIndex: 'updateTime',
     key: 'updateTime',
     width: '160px',
@@ -418,7 +418,7 @@ export const colCol:Col[][] = [[{
     width: '80px',
     // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 }], [{
-    title: <FormattedMessage id="warn_SLAs_type" />,
+    title: <FormattedMessage id="warn_sLAs_type" />,
     dataIndex: 'changeType',
     key: 'changeType',
 }, {
@@ -426,15 +426,15 @@ export const colCol:Col[][] = [[{
     dataIndex: 'databaseName',
     key: 'databaseName',
 }, {
-    title: <FormattedMessage id="job_Table" />,
+    title: <FormattedMessage id="job_table" />,
     dataIndex: 'tableName',
     key: 'tableName',
 }, {
-    title: <FormattedMessage id="job_Column" />,
+    title: <FormattedMessage id="job_column" />,
     dataIndex: 'columnName',
     key: 'columnName',
 }, {
-    title: <FormattedMessage id="job_Before" />,
+    title: <FormattedMessage id="job_before" />,
     dataIndex: 'changeBefore',
     key: 'changeBefore',
 }, {

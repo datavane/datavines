@@ -228,7 +228,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 getCurrentTagList(selectDatabases[index].uuid);
                 setName({
                     name: intl.formatMessage({ id: 'job_database' }),
-                    colName: `${intl.formatMessage({ id: 'job_Table' })}  ${intl.formatMessage({ id: 'job_quantity' })}`,
+                    colName: intl.formatMessage({ id: 'job_table_quantity' }),
                     colKeys: 'tables',
                 });
                 break;
@@ -250,8 +250,8 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 tableCol[4][4].render = (_: any, { content, id }:{content:string, id:string}) => <a onClick={() => onSeeView(content, id)}>{intl.formatMessage({ id: 'common_view' })}</a>;
                 setColums(tableCol[0]);
                 setName({
-                    name: intl.formatMessage({ id: 'job_Table' }),
-                    colName: `${intl.formatMessage({ id: 'job_Column' })} ${intl.formatMessage({ id: 'job_quantity' })}`,
+                    name: intl.formatMessage({ id: 'job_table' }),
+                    colName: `${intl.formatMessage({ id: 'job_column_quantity' })}`,
                     colKeys: 'columns',
                 });
                 break;
@@ -268,8 +268,8 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 // }
                 getMetric(selectDatabases[index].uuid);
                 setName({
-                    name: intl.formatMessage({ id: 'job_Column' }),
-                    colName: `${intl.formatMessage({ id: 'job_alter' })} ${intl.formatMessage({ id: 'job_quantity' })}`,
+                    name: intl.formatMessage({ id: 'job_column' }),
+                    colName: `${intl.formatMessage({ id: 'job_alter_quantity' })}`,
                     colKeys: 'tables',
                 });
                 break;
@@ -469,7 +469,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     const [colCheckList, setColCheckList] = useState<string[]>([]);
     // const [defaultSelectedRowKeys, setDefaultSelectedRowKeys] = useState([]);
     const chooseColumns = [{
-        title: intl.formatMessage({ id: 'job_Column_Name' }),
+        title: intl.formatMessage({ id: 'job_column_Name' }),
         dataIndex: 'name',
         key: 'value',
     }];
@@ -799,7 +799,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     </div>
                     <div className="dv-database-label">
                         <div>
-                            <p>{intl.formatMessage({ id: 'jobs_Last_Scan_Time' })}</p>
+                            <p>{intl.formatMessage({ id: 'jobs_last_scan_time' })}</p>
                             <p>
                                 <Tag color="success">{detailData.updateTime}</Tag>
                             </p>
@@ -812,7 +812,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                         </div>
                         <div>
                             <p>
-                                {intl.formatMessage({ id: 'jobs_Number_Of_Labels' })}
+                                {intl.formatMessage({ id: 'jobs_number_of_labels' })}
                             </p>
                             <p>
                                 <Tag color="default">{detailData.tags}</Tag>
@@ -820,7 +820,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                         </div>
                         <div>
                             <p>
-                                {intl.formatMessage({ id: 'jobs_Number_Of_Rules' })}
+                                {intl.formatMessage({ id: 'jobs_number_of_rules' })}
                             </p>
                             <p>
                                 <Tag color="warning">{detailData.metrics}</Tag>
@@ -828,7 +828,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                         </div>
                         <div>
                             <p>
-                                {intl.formatMessage({ id: 'jobs_Use_heat' })}
+                                {intl.formatMessage({ id: 'jobs_use_heat' })}
                             </p>
                             <p>
                                 <Tag color="error">{detailData.usages}</Tag>
@@ -1044,7 +1044,8 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 />
             </Modal>
             <RenderModal />
-            <Drawer width="50%" title={intl.formatMessage({ id: 'job_view_execution_history' })} placement="right" onClose={onDrawerClose} open={openDrawer}>
+            <Drawer width="50%" title={intl.formatMessage({ id: 'job_profile_execution_history' })} placement="right" onClose={onDrawerClose} open={openDrawer}>
+
                 <Table
                     loading={historyLoading}
                     columns={historyColumns}

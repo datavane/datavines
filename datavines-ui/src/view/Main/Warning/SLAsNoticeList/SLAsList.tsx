@@ -12,6 +12,7 @@ import { useMount, Popconfirm } from '@/common';
 import { SearchForm } from '@/component';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
+import { defaultRender } from '@/utils/helper';
 
 const Index = () => {
     const [loading, setLoading] = useState(false);
@@ -145,7 +146,7 @@ const Index = () => {
                             onClick={() => { show(null); }}
                             icon={<PlusOutlined />}
                         >
-                            {intl.formatMessage({ id: 'warn_create_SLAs' })}
+                            {intl.formatMessage({ id: 'warn_create_sLAs' })}
                         </Button>
                     </div>
                 </div>

@@ -81,7 +81,7 @@ const Inner = ({ form }: InnerProps) => {
         },
         meta: [
             {
-                label: intl.formatMessage({ id: 'warn_SLAs_name' }),
+                label: intl.formatMessage({ id: 'warn_sLAs_name' }),
                 name: 'name',
                 rules: [
                     {
@@ -92,7 +92,7 @@ const Inner = ({ form }: InnerProps) => {
                 widget: <Input autoComplete="off" />,
             },
             {
-                label: intl.formatMessage({ id: 'warn_SLAs_type' }),
+                label: intl.formatMessage({ id: 'warn_sLAs_type' }),
                 name: 'type',
                 rules: [
                     {

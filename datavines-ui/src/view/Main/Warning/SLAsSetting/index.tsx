@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Tabs } from 'antd';
 import { useIntl } from 'react-intl';
 import querystring from 'querystring';
-import { GoBack } from '@/component';
+import { GoBack, Title } from '@/component';
 import Notification from './Notification';
 
 const { TabPane } = Tabs;

@@ -1,20 +1,17 @@
-import React, { useState, useImperativeHandle } from 'react';
+import React, { useState } from 'react';
 import {
-    Row, Col, Form, Input, FormInstance, Button,
+    Row, Col, Form, FormInstance, Button,
 } from 'antd';
 import './index.less';
 import { useIntl } from 'react-intl';
 import TextArea from 'antd/lib/input/TextArea';
 import { MinusCircleOutlined } from '@ant-design/icons';
-import { layoutItem, layoutOneLineItem, layoutNoneItem } from '../helper';
+import { layoutItem, layoutNoneItem } from '../helper';
 import useRequest from '../../../hooks/useRequest';
-import useRequiredRule from '../../../hooks/useRequiredRule';
-import { TDetail, TMetricParameter } from '../type';
-import { useEditorContextState } from '../../../store/editor';
+import { TDetail } from '../type';
 import {
-    CustomSelect, useMount, usePersistFn, IF,
+    CustomSelect, useMount, IF,
 } from '../../../common';
-import Title from '../Title';
 import store, { RootReducer } from '@/store';
 import { useColModal } from '../useColModal';
 
@@ -23,11 +20,6 @@ type InnerProps = {
     id: any,
     detail: TDetail,
     setMetricTypeParent: React.Dispatch<React.SetStateAction<string>>
-}
-
-type dynamicConfigItem = {
-    label: string,
-    key: string,
 }
 
 const Index = ({
@@ -51,7 +43,7 @@ const Index = ({
             if (!detail || !detail.id) {
                 form.setFieldsValue({
                     mappingColumns: [{}],
-                    dataSourceId: parseInt(id),
+                    dataSourceId: parseInt(id, 10),
                 });
             } else {
                 form.setFieldsValue({
@@ -91,6 +83,7 @@ const Index = ({
         setMetricTypeParent(val);
         setMetricType(val);
     };
+    // eslint-disable-next-line no-shadow
     const getDatabases = async (id: string | undefined, index: number, isInit: boolean | undefined) => {
         if (!id) return;
         const $databases = await $http.get(`datasource/${id}/databases`);
@@ -106,21 +99,26 @@ const Index = ({
             setCloumn2([]);
         }
     };
+    // eslint-disable-next-line no-shadow
     const getTable = async (database: string | undefined, id: string | undefined, index: number, isInit: boolean | undefined) => {
         if (!id || !database) return;
         const $table = await $http.get(`datasource/${id}/${database}/tables`);
         if (index === 1) {
-            form.setFieldValue(['metricParameter', 'table'], '');
+            // eslint-disable-next-line no-unused-expressions
+            !isInit && form.setFieldValue(['metricParameter', 'table'], '');
             setTable1($table);
             // eslint-disable-next-line no-unused-expressions
-            isInit && setCloumn1([]);
+            !isInit && setCloumn1([]);
         } else {
-            form.setFieldValue(['metricParamete2r', 'table2'], '');
+            // eslint-disable-next-line no-unused-expressions
+            !isInit && form.setFieldValue(['metricParameter', 'table2'], '');
             setTable2($table);
             // eslint-disable-next-line no-unused-expressions
-            isInit && setCloumn2([]);
+            !isInit && setCloumn2([]);
+
         }
     };
+    // eslint-disable-next-line no-shadow
     const getCloumn = async (table: string | undefined, id: string | undefined, database: string | undefined, index: number, isInit: boolean | undefined) => {
         if (!table || !id || !database) return;
         const $column = await $http.get(`datasource/${id}/${database}/${table}/columns`);
@@ -302,7 +300,7 @@ const Index = ({
                     </Col>
                 </Row>
                 <Form.List name="mappingColumns">
-                    {(fields, { add, remove }, { errors }) => (
+                    {(fields, { add, remove }, { }) => (
                         <>
                             <Row gutter={30}>
                                 <Col span={21} push={3} className="dv-editor-title_flex">
@@ -317,7 +315,7 @@ const Index = ({
                                 </Col>
                             </Row>
                             {
-                                fields.map((field, index) => (
+                                fields.map((field) => (
                                     <Form.Item
                                         required={false}
                                         key={field.key}
