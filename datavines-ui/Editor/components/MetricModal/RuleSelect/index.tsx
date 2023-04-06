@@ -115,6 +115,7 @@ const Index = ({
             setTable2($table);
             // eslint-disable-next-line no-unused-expressions
             !isInit && setCloumn2([]);
+
         }
     };
     // eslint-disable-next-line no-shadow

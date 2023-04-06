@@ -1045,6 +1045,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             </Modal>
             <RenderModal />
             <Drawer width="50%" title={intl.formatMessage({ id: 'job_profile_execution_history' })} placement="right" onClose={onDrawerClose} open={openDrawer}>
+
                 <Table
                     loading={historyLoading}
                     columns={historyColumns}

@@ -164,6 +164,7 @@ export default {
     jobs_number_of_labels: 'Labels',
     jobs_number_of_rules: 'Rules',
     jobs_use_heat: 'Use heat',
+
     job_quantity: 'quantity',
     job_table_quantity: 'Tables',
     job_column_quantity: 'Columns',
@@ -206,18 +207,19 @@ export default {
     job_avg: 'Avg',
     job_stdDev: 'StdDev',
     job_variance: 'Variance',
+
     job_choose_col: 'Choose Col',
     job_profile_schedule: 'Schedule',
     job_profile_execution_history: 'Execution History',
     jobs_status: 'Execution Status',
     jobs_execution_time: 'Execution Time',
-
     warn_sLAs_name: 'SLA Name',
     warn_sLAs_type: 'Type',
     warn_update_time: 'Update Time',
     warn_sLAs_tip_one: 'For Monitoring ',
     warn_sLAs_tip_two: ' related data',
     warn_create_sLAs: 'Create SLA',
+
     warn_create_widget: 'Create Channel',
     warn_widget_name: 'Channel Name',
     warn_setting_basic_info: 'Basic Data',
