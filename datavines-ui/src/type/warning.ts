@@ -21,6 +21,7 @@ export type TWarnMetricTableItem = {
     id: string | number,
     name: string,
     jobId: string | number,
+    type:string
 }
 
 export type TWarnMetricTableData = {

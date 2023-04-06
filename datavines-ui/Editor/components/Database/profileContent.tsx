@@ -101,14 +101,14 @@ const Index = ({ uuid, type }:{uuid:string;type:string}) => {
             <div style={{ width: '250px' }}>
                 <p className="profile-text">
                     <span>
-                        {intl.formatMessage({ id: 'job_Maximum' })}
+                        {intl.formatMessage({ id: 'job_maximum' })}
                         :
                     </span>
                     <Tooltip title={data.maxValue}><span>{data.maxValue}</span></Tooltip>
                 </p>
                 <p className="profile-text">
                     <span>
-                        {intl.formatMessage({ id: 'job_Minimum' })}
+                        {intl.formatMessage({ id: 'job_minimum' })}
                         :
                     </span>
                     <Tooltip title={data.minValue}><span>{data.minValue}</span></Tooltip>
@@ -119,28 +119,28 @@ const Index = ({ uuid, type }:{uuid:string;type:string}) => {
                             <>
                                 <p className="profile-text">
                                     <span>
-                                        {intl.formatMessage({ id: 'job_Max_Length' })}
+                                        {intl.formatMessage({ id: 'job_max_length' })}
                                         :
                                     </span>
                                     <Tooltip title={data.maxLength}><span>{data.maxLength}</span></Tooltip>
                                 </p>
                                 <p className="profile-text">
                                     <span>
-                                        {intl.formatMessage({ id: 'job_Min_Length' })}
+                                        {intl.formatMessage({ id: 'job_min_length' })}
                                         :
                                     </span>
                                     <Tooltip title={data.minLength}><span>{data.minLength}</span></Tooltip>
                                 </p>
                                 <p className="profile-text">
                                     <span>
-                                        {intl.formatMessage({ id: 'job_Avg_Length' })}
+                                        {intl.formatMessage({ id: 'job_avg_length' })}
                                         :
                                     </span>
                                     <Tooltip title={data.avgLength}><span>{data.avgLength}</span></Tooltip>
                                 </p>
                                 <p className="profile-text">
                                     <span>
-                                        {intl.formatMessage({ id: 'job_Blank' })}
+                                        {intl.formatMessage({ id: 'job_blank' })}
                                         :
                                     </span>
                                     <Tooltip title={data.blankCount}><span>{data.blankCount}</span></Tooltip>
@@ -155,28 +155,28 @@ const Index = ({ uuid, type }:{uuid:string;type:string}) => {
                             <>
                                 <p className="profile-text">
                                     <span>
-                                        {intl.formatMessage({ id: 'job_Sum' })}
+                                        {intl.formatMessage({ id: 'job_sum' })}
                                         :
                                     </span>
                                     <Tooltip title={data.sumValue}><span>{data.sumValue}</span></Tooltip>
                                 </p>
                                 <p className="profile-text">
                                     <span>
-                                        {intl.formatMessage({ id: 'job_Avg' })}
+                                        {intl.formatMessage({ id: 'job_avg' })}
                                         :
                                     </span>
                                     <Tooltip title={data.avgValue}><span>{data.avgValue}</span></Tooltip>
                                 </p>
                                 <p className="profile-text">
                                     <span>
-                                        {intl.formatMessage({ id: 'job_StdDev' })}
+                                        {intl.formatMessage({ id: 'job_stdDev' })}
                                         :
                                     </span>
                                     <Tooltip title={data.stdDev}><span>{data.stdDev}</span></Tooltip>
                                 </p>
                                 <p className="profile-text">
                                     <span>
-                                        {intl.formatMessage({ id: 'job_Variance' })}
+                                        {intl.formatMessage({ id: 'job_variance' })}
                                         :
                                     </span>
                                     <Tooltip title={data.variance}><span>{data.variance}</span></Tooltip>

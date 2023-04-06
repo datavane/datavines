@@ -67,13 +67,13 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
         { label: getIntl('jobs_schedule_cycle_nminute'), value: 'nminute' },
     ];
     const WeekSrouce = [
-        { label: getIntl('jobs_Monday'), value: 1, key: 'week_1' },
-        { label: getIntl('jobs_Tuesday'), value: 2, key: 'week_2' },
-        { label: getIntl('jobs_Wednesday'), value: 3, key: 'week_3' },
-        { label: getIntl('jobs_Thursday'), value: 4, key: 'week_4' },
-        { label: getIntl('jobs_Friday'), value: 5, key: 'week_5' },
-        { label: getIntl('jobs_Saturday'), value: 6, key: 'week_6' },
-        { label: getIntl('jobs_Sunday'), value: 0, key: 'week_0' },
+        { label: getIntl('jobs_monday'), value: 1, key: 'week_1' },
+        { label: getIntl('jobs_tuesday'), value: 2, key: 'week_2' },
+        { label: getIntl('jobs_wednesday'), value: 3, key: 'week_3' },
+        { label: getIntl('jobs_thursday'), value: 4, key: 'week_4' },
+        { label: getIntl('jobs_friday'), value: 5, key: 'week_5' },
+        { label: getIntl('jobs_saturday'), value: 6, key: 'week_6' },
+        { label: getIntl('jobs_sunday'), value: 0, key: 'week_0' },
     ];
     // @ts-ignore
     const Date = <DatePicker showTime />;
@@ -503,7 +503,7 @@ const ScheduleContainer = ({
         <PageContainer
             style={style}
             footer={[
-                isShowPush ? <Button style={{ marginRight: '10px' }} type="primary" onClick={() => onSave('push')}>{intl.formatMessage({ id: 'home_Metadata_scraping' })}</Button> : undefined,
+                isShowPush ? <Button style={{ marginRight: '10px' }} type="primary" onClick={() => onSave('push')}>{intl.formatMessage({ id: 'home_metadata_scraping' })}</Button> : undefined,
                 <Button type="primary" onClick={() => onSave('add')}>{intl.formatMessage({ id: 'common_save' })}</Button>,
             ]}
         >

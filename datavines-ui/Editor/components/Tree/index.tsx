@@ -189,7 +189,8 @@ const Index = ({
         }
         return () => {
             if (databases.length > 0 && expandedKeys.length === 0) {
-                setTreeHeight(document.getElementsByClassName('dv-editor-tree_list')[0].scrollHeight);
+                setTreeHeight(document.getElementsByClassName('dv-editor-tree_list') ? document.getElementsByClassName('dv-editor-tree_list')[0].scrollHeight
+                    : document.documentElement.clientHeight - 63);
             }
         };
     }, [databases]);

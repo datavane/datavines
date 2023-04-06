@@ -28,7 +28,7 @@ export const CreateSLAsComponent = ({ form, detail, innerRef }: InnerProps) => {
         },
         meta: [
             {
-                label: intl.formatMessage({ id: 'warn_SLAs_name' }),
+                label: intl.formatMessage({ id: 'warn_sLAs_name' }),
                 name: 'name',
                 initialValue: detail?.name,
                 rules: [
@@ -97,7 +97,7 @@ export const useCreateSLAs = (options: ModalProps) => {
     const {
         Render, hide, show, ...rest
     } = useModal<any>({
-        title: intl.formatMessage({ id: 'warn_create_SLAs' }),
+        title: intl.formatMessage({ id: 'warn_create_sLAs' }),
         onOk,
         ...(options || {}),
     });

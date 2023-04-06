@@ -108,7 +108,7 @@ const DetailMain = () => {
             {renderDataSourcSelect()}
             {!location.pathname.includes('jobs') ? (
                 <Button style={{ marginLeft: '10px' }} onClick={changeType}>
-                    { editType ? intl.formatMessage({ id: 'jobs_Directory' }) : intl.formatMessage({ id: 'jobs_Editor' })}
+                    { editType ? intl.formatMessage({ id: 'jobs_directory' }) : intl.formatMessage({ id: 'jobs_editor' })}
                 </Button>
             ) : ''}
 

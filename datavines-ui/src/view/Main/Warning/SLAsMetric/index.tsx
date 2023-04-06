@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Table, Popconfirm, message,
     Tabs,
@@ -14,6 +14,7 @@ import { $http } from '@/http';
 import { useMount } from '@/common';
 import Notification from '../SLAsSetting/Notification';
 import store from '@/store';
+import { defaultRender } from '@/utils/helper';
 
 const Index = () => {
     const intl = useIntl();
@@ -27,18 +28,19 @@ const Index = () => {
     const [qs] = useState<any>(querystring.parse(window.location.href.split('?')[1] || ''));
     const [tableData, setTableData] = useState<TWarnMetricTableData>({ list: [], total: 0 });
     const [pageParams, setPageParams] = useState({
-        pageNo: 1,
+        pageNumber: 1,
         pageSize: 10,
     });
     const getData = async () => {
         try {
             setLoading(true);
-            const res = (await $http.get('/sla/job/list', {
+            const res = (await $http.get('/sla/job/page', {
+                ...pageParams,
                 slaId: qs.slaId,
             })) || [];
             setTableData({
-                list: res,
-                total: res.length,
+                list: res?.records || [],
+                total: res?.total || 0,
             });
         } catch (error) {
         } finally {
@@ -48,16 +50,19 @@ const Index = () => {
     useMount(() => {
         getData();
     });
+    useEffect(() => {
+        getData();
+    }, [pageParams]);
     const onChange = ({ current, pageSize }: any) => {
         setPageParams({
-            pageNo: current,
+            pageNumber: current,
             pageSize,
         });
     };
     const onEdit = (record: TWarnMetricTableItem) => {
         store.dispatch({
             type: 'save_datasource_modeType',
-            payload: 'quality',
+            payload: record.type === 'DATA_QUALITY' ? 'quality' : 'comparison',
         });
         showJobsModal({
             slaId: qs.slaId,
@@ -77,11 +82,32 @@ const Index = () => {
     };
     const columns: ColumnsType<TWarnMetricTableItem> = [
         {
-            title: intl.formatMessage({ id: 'jobs_task_name' }),
+            title: intl.formatMessage({ id: 'sla_rule_job_name' }),
             dataIndex: 'jobName',
             fixed: 'left',
             key: 'jobName',
             render: (text: string) => <div>{text}</div>,
+        },
+        {
+            title: intl.formatMessage({ id: 'dv_metric_database' }),
+            dataIndex: 'databaseName',
+            key: 'databaseName',
+            width: 200,
+            render: (text: string) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'dv_metric_table' }),
+            dataIndex: 'tableName',
+            key: 'tableName',
+            width: 200,
+            render: (text: string) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'dv_metric_column' }),
+            dataIndex: 'columnName',
+            key: 'columnName',
+            width: 200,
+            render: (text: string) => defaultRender(text, 200),
         },
         {
             title: intl.formatMessage({ id: 'jobs_updater' }),
@@ -133,7 +159,7 @@ const Index = () => {
                     size: 'small',
                     total: tableData.total,
                     showSizeChanger: true,
-                    current: pageParams.pageNo,
+                    current: pageParams.pageNumber,
                     pageSize: pageParams.pageSize,
                 }}
             />,

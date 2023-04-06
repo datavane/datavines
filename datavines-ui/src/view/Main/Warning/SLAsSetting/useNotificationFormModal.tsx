@@ -91,7 +91,7 @@ const Inner = ({ form }: InnerProps) => {
         },
         meta: [
             {
-                label: intl.formatMessage({ id: 'warn_SLAs_type' }),
+                label: intl.formatMessage({ id: 'warn_sLAs_type' }),
                 name: 'type',
                 rules: [
                     {

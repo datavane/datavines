@@ -21,13 +21,13 @@ const Inner = (props: InnerProps) => {
     //     pageSize: 10,
     // });
     const columns = [{
-        title: intl.formatMessage({ id: 'job_Column_Name' }),
+        title: intl.formatMessage({ id: 'job_column_Name' }),
         dataIndex: 'name',
         key: 'name',
         // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
     },
         // {
-        //     title: intl.formatMessage({ id: 'warn_SLAs_type' }),
+        //     title: intl.formatMessage({ id: 'warn_sLAs_type' }),
         //     dataIndex: 'type',
         //     key: 'type',
 
@@ -61,7 +61,7 @@ const Inner = (props: InnerProps) => {
         //     ),
 
         // }, {
-        //     title: intl.formatMessage({ id: 'job_Unique' }),
+        //     title: intl.formatMessage({ id: 'job_unique' }),
         //     dataIndex: 'uniqueCount',
         //     key: 'uniqueCount',
         //     render: (_: any, { uniqueCount, uniquePercentage }: any) => (
@@ -75,7 +75,7 @@ const Inner = (props: InnerProps) => {
         //     ),
 
     // }, {
-    //     title: intl.formatMessage({ id: 'job_Distinct' }),
+    //     title: intl.formatMessage({ id: 'job_distinct' }),
     //     dataIndex: 'distinctCount',
     //     key: 'distinctCount',
     //     render: (_: any, { distinctCount, distinctPercentage }: any) => (
@@ -140,7 +140,7 @@ export const useColModal = (options: ModalProps) => {
     const {
         Render, hide, show, ...rest
     } = useModal<any>({
-        title: `${intl.formatMessage({ id: 'job_Column' })}`,
+        title: `${intl.formatMessage({ id: 'job_column' })}`,
         footer: null,
         width: '40%',
         ...(options || {}),
