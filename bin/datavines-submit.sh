@@ -19,7 +19,7 @@
 usage="Usage: datavines-submit.sh <command> "
 
 # if no args specified, show usage
-if [ $# -le 1 ]; then
+if [ $# -l 1 ]; then
   echo $usage
   exit 1
 fi
