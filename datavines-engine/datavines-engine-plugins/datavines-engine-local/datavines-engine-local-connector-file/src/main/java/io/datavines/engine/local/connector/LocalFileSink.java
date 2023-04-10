@@ -102,6 +102,11 @@ public class LocalFileSink implements LocalSink {
             return null;
         }
 
+        String[] splitValues = sql.split("ON DUPLICATE KEY UPDATE");
+        if (splitValues.length >= 1) {
+            sql = splitValues[0];
+        }
+
         String[] values = sql.substring(sql.indexOf("("))
                 .replaceAll("\\(","")
                 .replaceAll("\\)","")

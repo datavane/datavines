@@ -97,7 +97,7 @@ public class JobRunner {
                 executeRequestParam.setDataSourceParam(validateResultDataStorageParameter);
 
                 Map<String,String> scriptConfigMap = new HashMap<>();
-                scriptConfigMap.put("execution_id", jobExecutionId+"");
+                scriptConfigMap.put("execution_id", String.valueOf(jobExecutionId));
                 executeRequestParam.setScript(validateResultStorageFactory.getValidateResultDataScript(scriptConfigMap));
                 ConnectorResponse response = validateResultStorageFactory.getStorageExecutor().queryForOne(executeRequestParam);
                 if (response != null && response.getResult()!= null) {
