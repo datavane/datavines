@@ -23,6 +23,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.entity.ConnectionInfo;
+import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.entity.job.builder.JobExecutionParameterBuilderFactory;
 import io.datavines.common.enums.DataVinesDataType;
@@ -41,6 +42,7 @@ import io.datavines.server.api.dto.bo.job.JobCreate;
 import io.datavines.server.api.dto.bo.job.JobUpdate;
 import io.datavines.server.api.dto.vo.JobVO;
 import io.datavines.server.api.dto.vo.SlaVO;
+import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.repository.entity.*;
@@ -411,6 +413,19 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     private void executeJob(Job job, LocalDateTime scheduleTime) {
 
+        JobExecution jobExecution = getJobExecution(job, scheduleTime);
+
+        jobExecutionService.save(jobExecution);
+
+        // add a command
+        Command command = new Command();
+        command.setType(CommandType.START);
+        command.setPriority(Priority.MEDIUM);
+        command.setJobExecutionId(jobExecution.getId());
+        commandService.insert(command);
+    }
+
+    private JobExecution getJobExecution(Job job, LocalDateTime scheduleTime) {
         String executionParameter = buildJobExecutionParameter(job);
 
         long jobId = job.getId();
@@ -462,15 +477,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         jobExecution.setScheduleTime(scheduleTime);
         jobExecution.setCreateTime(LocalDateTime.now());
         jobExecution.setUpdateTime(LocalDateTime.now());
-
-        jobExecutionService.save(jobExecution);
-
-        // add a command
-        Command command = new Command();
-        command.setType(CommandType.START);
-        command.setPriority(Priority.MEDIUM);
-        command.setJobExecutionId(jobExecution.getId());
-        commandService.insert(command);
+        return jobExecution;
     }
 
     @Override
@@ -504,6 +511,19 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             default:
                 return String.format("%s[%s.%s.%s]%s", "JOB", database, table, column, System.currentTimeMillis());
         }
+    }
+
+    @Override
+    public String getJobConfig(Long jobId) {
+        Job job = baseMapper.selectById(jobId);
+        if  (job == null) {
+            throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobId);
+        }
+
+        JobExecution jobExecution = getJobExecution(job, null);
+        jobExecution.setId(System.currentTimeMillis());
+        JobExecutionRequest request = JobExecuteManager.buildJobExecutionRequest(jobExecution);
+        return request.getApplicationParameter();
     }
 
     private String getErrorDataFileName(String parameter) {
