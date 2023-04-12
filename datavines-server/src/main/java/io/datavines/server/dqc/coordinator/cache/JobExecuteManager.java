@@ -496,7 +496,7 @@ public class JobExecuteManager {
         jobExecutionQueue.offer(commandContext);
     }
 
-    private JobExecutionRequest buildJobExecutionRequest(JobExecution jobExecution) throws DataVinesException {
+    public static JobExecutionRequest buildJobExecutionRequest(JobExecution jobExecution) throws DataVinesException {
         // need to convert job parameter to other parameter
         JobExecutionRequest jobExecutionRequest = new JobExecutionRequest();
         jobExecutionRequest.setJobExecutionId(jobExecution.getId());
