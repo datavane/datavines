@@ -35,7 +35,7 @@ public class DefaultDataSourceInfoUtils {
         ConnectionInfo connectionInfo = JdbcUrlParser.getConnectionInfo(hikariDataSource.getJdbcUrl(),
                 hikariDataSource.getUsername(),hikariDataSource.getPassword());
 
-        if(connectionInfo != null) {
+        if (connectionInfo != null) {
             connectionInfo.setDriverName(hikariDataSource.getDriverClassName());
         }
 

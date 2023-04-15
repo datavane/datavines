@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.bo.sla.SlaCreate;
 import io.datavines.server.api.dto.bo.sla.SlaUpdate;
+import io.datavines.server.api.dto.vo.SlaConfigVO;
 import io.datavines.server.api.dto.vo.SlaPageVO;
 import io.datavines.server.api.dto.vo.SlaVO;
 import io.datavines.server.repository.entity.Sla;
@@ -42,4 +43,6 @@ public interface SlaService extends IService<Sla> {
     boolean updateSla(SlaUpdate update);
 
     List<SlaVO> getSlaByJobId(Long jobId);
+
+    List<SlaConfigVO> getSlaConfigByJobId(Long jobId);
 }

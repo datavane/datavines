@@ -27,6 +27,7 @@ import io.datavines.core.utils.BeanConvertUtils;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
 import io.datavines.server.api.dto.bo.sla.SlaCreate;
 import io.datavines.server.api.dto.bo.sla.SlaUpdate;
+import io.datavines.server.api.dto.vo.SlaConfigVO;
 import io.datavines.server.api.dto.vo.SlaPageVO;
 import io.datavines.server.api.dto.vo.JobVO;
 import io.datavines.server.api.dto.vo.SlaVO;
@@ -130,5 +131,10 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
     @Override
     public List<SlaVO> getSlaByJobId(Long jobId) {
         return baseMapper.getSlaByJobId(jobId);
+    }
+
+    @Override
+    public List<SlaConfigVO> getSlaConfigByJobId(Long jobId) {
+        return baseMapper.getSlaConfigByJobId(jobId);
     }
 }

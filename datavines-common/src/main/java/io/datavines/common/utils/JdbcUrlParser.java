@@ -33,7 +33,7 @@ public class JdbcUrlParser {
         throw new IllegalStateException("Utility class");
     }
 
-    public static ConnectionInfo getConnectionInfo(String jdbcUrl,String username, String password) {
+    public static ConnectionInfo getConnectionInfo(String jdbcUrl, String username, String password) {
 
         ConnectionInfo connectionInfo = new ConnectionInfo();
 
@@ -89,7 +89,7 @@ public class JdbcUrlParser {
         connectionInfo.setHost(host);
         connectionInfo.setPort(port);
         connectionInfo.setDatabase(database);
-        connectionInfo.setParams(params);
+        connectionInfo.setProperties(params);
         connectionInfo.setAddress("jdbc:" + type + "://" + host + COLON + port);
         connectionInfo.setUsername(username);
         connectionInfo.setPassword(password);

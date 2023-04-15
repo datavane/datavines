@@ -65,4 +65,14 @@
         ON sla.id = sj.sla_id
 
     </select>
+
+    <select id="getSlaConfigByJobId" resultType="io.datavines.server.api.dto.vo.SlaConfigVO">
+        select c.type, d.config, c.receiver
+        from
+            (select b.type, b.sender_id, b.config as receiver from (select sla_id from dv_sla_job where job_id = #{jobId}) a
+                join dv_sla_notification b
+                on a.sla_id = b.sla_id) c
+            join dv_sla_sender d
+            on c.sender_id = d.id
+    </select>
 </mapper>

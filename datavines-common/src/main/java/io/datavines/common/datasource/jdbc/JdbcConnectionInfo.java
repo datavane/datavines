@@ -26,7 +26,7 @@ public class JdbcConnectionInfo {
     /**
      * user
      */
-    protected String user;
+    protected String username;
 
     /**
      * user password
@@ -41,7 +41,7 @@ public class JdbcConnectionInfo {
     /**
      * datasource port
      */
-    private int port;
+    private String port;
 
     /**
      * catalog name
@@ -64,7 +64,7 @@ public class JdbcConnectionInfo {
                 "&" + port +
                 "&" + getOrEmpty(catalog) +
                 "&" + getOrEmpty(database) +
-                "&" + getOrEmpty(user) +
+                "&" + getOrEmpty(username) +
                 "&" + getOrEmpty(password) +
                 "&" + properties;
     }

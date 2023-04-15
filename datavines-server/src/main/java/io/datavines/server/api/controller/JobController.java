@@ -92,7 +92,7 @@ public class JobController {
     }
 
     @ApiOperation(value = "get job config")
-    @PostMapping(value = "/config/{id}")
+    @GetMapping(value = "/config/{id}")
     public Object getJobConfig(@PathVariable("id") Long jobId) throws DataVinesServerException {
         return jobService.getJobConfig(jobId);
     }

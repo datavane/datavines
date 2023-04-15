@@ -41,7 +41,7 @@ public class ConnectionInfo {
 
     private String database;
 
-    private String params;
+    private String properties;
 
     private String address;
 
@@ -56,7 +56,7 @@ public class ConnectionInfo {
                 + ", port='" + port + '\''
                 + ", driverName='" + driverName + '\''
                 + ", database='" + database + '\''
-                + ", params='" + params + '\''
+                + ", properties='" + properties + '\''
                 + ", address='" + address + '\''
                 + '}';
     }
@@ -68,7 +68,7 @@ public class ConnectionInfo {
         configMap.put("host",host);
         configMap.put("port",port);
         configMap.put("user",username);
-        configMap.put("properties",params);
+        configMap.put("properties",properties);
         configMap.put("catalog", catalog);
         return configMap;
     }
@@ -79,7 +79,7 @@ public class ConnectionInfo {
         this.host = (String)configMap.get("host");
         this.port = (String)configMap.get("port");
         this.username = (String)configMap.get("user");
-        this.params = (String)configMap.get("properties");
+        this.properties = (String)configMap.get("properties");
         this.catalog = (String)configMap.get("catalog");
     }
 }

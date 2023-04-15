@@ -23,8 +23,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.entity.ConnectionInfo;
-import io.datavines.common.entity.JobExecutionRequest;
+import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.job.BaseJobParameter;
+import io.datavines.common.entity.job.NotificationParameter;
+import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.common.entity.job.builder.JobExecutionParameterBuilderFactory;
 import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.ExecutionStatus;
@@ -41,8 +43,8 @@ import io.datavines.server.api.dto.bo.job.DataProfileJobCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.JobCreate;
 import io.datavines.server.api.dto.bo.job.JobUpdate;
 import io.datavines.server.api.dto.vo.JobVO;
+import io.datavines.server.api.dto.vo.SlaConfigVO;
 import io.datavines.server.api.dto.vo.SlaVO;
-import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.repository.entity.*;
@@ -51,6 +53,7 @@ import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
 import io.datavines.server.repository.mapper.*;
 import io.datavines.server.repository.service.*;
 import io.datavines.server.utils.ContextHolder;
+import io.datavines.server.utils.DefaultDataSourceInfoUtils;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -515,6 +518,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     @Override
     public String getJobConfig(Long jobId) {
+        SubmitJob submitJob = new SubmitJob();
+
         Job job = baseMapper.selectById(jobId);
         if  (job == null) {
             throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobId);
@@ -522,8 +527,32 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         JobExecution jobExecution = getJobExecution(job, null);
         jobExecution.setId(System.currentTimeMillis());
-        JobExecutionRequest request = JobExecuteManager.buildJobExecutionRequest(jobExecution);
-        return request.getApplicationParameter();
+
+        submitJob.setName(jobExecution.getName());
+        submitJob.setExecutePlatformType(jobExecution.getExecutePlatformType());
+        submitJob.setExecutePlatformParameter(JSONUtils.toMap(jobExecution.getExecutePlatformParameter(), String.class, Object.class));
+        submitJob.setEngineType(jobExecution.getEngineType());
+        submitJob.setEngineParameter(JSONUtils.toMap(jobExecution.getEngineParameter(), String.class, Object.class));
+        submitJob.setParameter(JSONUtils.parseObject(jobExecution.getParameter(), JobExecutionParameter.class));
+        submitJob.setErrorDataStorageType(jobExecution.getErrorDataStorageType());
+        submitJob.setErrorDataStorageParameter(JSONUtils.toMap(jobExecution.getErrorDataStorageParameter(), String.class, Object.class));
+        submitJob.setValidateResultDataStorageType(DefaultDataSourceInfoUtils.getDefaultConnectionInfo().getType());
+        submitJob.setValidateResultDataStorageParameter(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap());
+        submitJob.setLanguageEn(!LanguageUtils.isZhContext());
+
+        List<SlaConfigVO> slaConfigList = slaService.getSlaConfigByJobId(jobId);
+        if (CollectionUtils.isNotEmpty(slaConfigList)) {
+            List<NotificationParameter> notificationParameterList = new ArrayList<>();
+            slaConfigList.forEach(item->{
+                NotificationParameter notificationParameter = new NotificationParameter();
+                notificationParameter.setType(item.getType());
+                notificationParameter.setConfig(JSONUtils.toMap(item.getConfig(), String.class, Object.class));
+                notificationParameter.setReceiver(JSONUtils.toMap(item.getReceiver(), String.class, Object.class));
+                notificationParameterList.add(notificationParameter);
+            });
+            submitJob.setNotificationParameters(notificationParameterList);
+        }
+        return JSONUtils.toJsonString(submitJob);
     }
 
     private String getErrorDataFileName(String parameter) {
