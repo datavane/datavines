@@ -147,8 +147,9 @@ public class DataSourceController {
     public Object getConnectorTypeList() {
         Set<String> connectorList = PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
+
         connectorList.forEach(it -> {
-            if (!"file".equalsIgnoreCase(it)) {
+            if (!"file".equalsIgnoreCase(it) && !"hive".equalsIgnoreCase(it)) {
                 Item item = new Item(it,it);
                 items.add(item);
             }

@@ -91,7 +91,7 @@ public class JdbcUrlParser {
         connectionInfo.setDatabase(database);
         connectionInfo.setProperties(params);
         connectionInfo.setAddress("jdbc:" + type + "://" + host + COLON + port);
-        connectionInfo.setUsername(username);
+        connectionInfo.setUser(username);
         connectionInfo.setPassword(password);
 
         return connectionInfo;

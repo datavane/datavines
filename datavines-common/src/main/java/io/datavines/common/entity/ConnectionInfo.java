@@ -45,7 +45,7 @@ public class ConnectionInfo {
 
     private String address;
 
-    private String username;
+    private String user;
 
     private String password;
 
@@ -67,7 +67,7 @@ public class ConnectionInfo {
         configMap.put("password",password);
         configMap.put("host",host);
         configMap.put("port",port);
-        configMap.put("user",username);
+        configMap.put("user",user);
         configMap.put("properties",properties);
         configMap.put("catalog", catalog);
         return configMap;
@@ -78,7 +78,7 @@ public class ConnectionInfo {
         this.password = (String)configMap.get("password");
         this.host = (String)configMap.get("host");
         this.port = (String)configMap.get("port");
-        this.username = (String)configMap.get("user");
+        this.user = (String)configMap.get("user");
         this.properties = (String)configMap.get("properties");
         this.catalog = (String)configMap.get("catalog");
     }

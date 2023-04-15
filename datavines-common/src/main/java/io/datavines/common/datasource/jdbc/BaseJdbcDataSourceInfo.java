@@ -37,7 +37,7 @@ public abstract class BaseJdbcDataSourceInfo {
     }
 
     public String getUser() {
-        return jdbcConnectionInfo.getUsername();
+        return jdbcConnectionInfo.getUser();
     }
 
     public String getPassword() {

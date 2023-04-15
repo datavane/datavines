@@ -48,7 +48,7 @@ public class DefaultDataSourceInfoUtils {
 
         Map<String,Object> configMap = new HashMap<>();
         configMap.put(URL, connectionInfo.getUrl());
-        configMap.put(USER, connectionInfo.getUsername());
+        configMap.put(USER, connectionInfo.getUser());
         configMap.put(PASSWORD, connectionInfo.getPassword());
         configMap.put(DRIVER, connectionInfo.getDriverName());
 
