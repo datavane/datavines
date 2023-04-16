@@ -4,6 +4,7 @@ body, html {
     margin: 0;
     font-size: 13px;
     color: #333;
+    
 }
 
 // theme variable
@@ -43,11 +44,21 @@ body, html {
 }
 
 // global modal
-
+@-moz-document url-prefix(){
+    ::-webkit-scrollbar {
+        width: 0px;
+        height: 0px;
+        display: none;
+    }
+}
 ::-webkit-scrollbar {
     width: 0px;
     height: 0px;
 }
+* {
+    // scrollbar-color:#f33 green;
+    scrollbar-width:none;
+  }
 // ::-webkit-scrollbar-thumb {
 //     border-radius: 10px;
 //     background: transparent;

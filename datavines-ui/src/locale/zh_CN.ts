@@ -118,6 +118,9 @@ export default {
     jobs_tabs_SLA: 'SLA配置',
     jobs_add_metric: '添加作业',
     jobs_run_profile: '运行数据概览',
+    jobs_tabs_config_file: '配置文件',
+    jobs_tabs_config_file_copy: '复制',
+    jobs_tabs_config_file_download: '下载',
 
     jobs_schedule_type: '调度类型',
     jobs_schedule_cycle: '调度周期',

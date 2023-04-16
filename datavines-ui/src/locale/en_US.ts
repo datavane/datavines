@@ -118,6 +118,9 @@ export default {
     jobs_tabs_SLA: 'SLA Configuration',
     jobs_add_metric: 'Add Metric',
     jobs_run_profile: 'Run Profile',
+    jobs_tabs_config_file: 'Configuration File',
+    jobs_tabs_config_file_copy: 'Copy',
+    jobs_tabs_config_file_download: 'Download',
 
     jobs_schedule_type: 'Schedule Type',
     jobs_schedule_cycle: 'Schedule Cycle',

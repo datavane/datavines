@@ -3,7 +3,6 @@ import { Form, Button, Radio } from 'antd';
 import { IdcardOutlined, TableOutlined, PlusOutlined } from '@ant-design/icons';
 import { useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
-import { setEditorFn, useEditorActions } from '@Editor/store/editor';
 import { IDataSourceListItem, IDataSourceList } from '@/type/dataSource';
 import {
     IF, usePersistFn, useWatch, useLoading,
@@ -35,6 +34,7 @@ function App() {
         pageSize: 20,
     });
     const getData = usePersistFn(async (values = {}) => {
+        console.log('pageParams', pageParams, values);
         try {
             const res = (await $http.get('/datasource/page', {
                 workSpaceId: workspaceId,
@@ -64,9 +64,9 @@ function App() {
     const onSearch = usePersistFn((values) => {
         getData(values);
     });
-    const onPageChange = usePersistFn(({ pageNumber, pageSize }) => {
+    const onPageChange = usePersistFn(({ current, pageSize }) => {
         setPageParams({
-            pageNumber,
+            pageNumber: current,
             pageSize,
         });
     });
