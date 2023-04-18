@@ -2,7 +2,7 @@ import React, {
     useRef, useImperativeHandle, useState, useMemo,
 } from 'react';
 import {
-    ModalProps, Tabs, Spin, Button, message,
+    ModalProps, Tabs, Spin, Button, message, Input,
 } from 'antd';
 import {
     useModal, useImmutable, usePersistFn, useContextModal, useMount, useLoading, IF,
@@ -42,6 +42,7 @@ export const Inner = ({
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
     const { locale } = useSelector((r) => r.commonReducer);
     const { entityUuid } = useSelector((r) => r.datasourceReducer);
+    const [jsonData, setJsonData] = useState('');
     const editorParams = useMemo(() => ({
         baseURL: '/api/v1',
         workspaceId,
@@ -67,14 +68,32 @@ export const Inner = ({
             return res;
         }
     };
+    const getConfig = async (id: string) => {
+        const res = await $http.get(`/job/config/${id}`);
+        setJsonData(JSON.stringify(JSON.parse(res), null, 4));
+    };
+    const downLoadConfig = () => {
+        const blob = new Blob([jsonData], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        // eslint-disable-next-line no-nested-ternary
+        a.download = data.record?.name ? `${data.record.name}.json`
+            : (data.record?.jobName ? `${data.record.jobName}.json` : 'test.json');
+        document.documentElement.appendChild(a);
+        a.click();
+        document.documentElement.removeChild(a);
+    };
     useMount(async () => {
         if (!data.record?.id) {
             $setLoading(false);
             return;
         }
         try {
+            console.log('data', data);
             const res = await getData(data.record.id, false);
-            console.log('data.record?.id)', data.record?.id, '获取详情');
+            getConfig(data.record.id);
+            // console.log('data.record?.id)', data.record?.id, '获取详情');
             setMetricDetail(res);
         } catch (error) {
         } finally {
@@ -115,6 +134,15 @@ export const Inner = ({
             setLoading(false);
         }
     });
+    const onCopy = async () => {
+        const tempInputDOM = document.createElement('input');
+        tempInputDOM.value = jsonData;
+        document.body.appendChild(tempInputDOM);
+        tempInputDOM.select(); // 选中input里的内容
+        document.execCommand('Copy'); // 执行浏览器复制命令
+        document.body.removeChild(tempInputDOM);
+        message.success(intl.formatMessage({ id: 'common_success' }));
+    };
     if (loading) {
         return <Spin spinning={loading} />;
     }
@@ -155,6 +183,19 @@ export const Inner = ({
                 </TabPane>
                 <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_SLA' })} key="SLA">
                     <IF visible={jobId}><SelectSLAsComponent jobId={jobId} id={slaId} style={styleTabContent || {}} /></IF>
+                </TabPane>
+                <TabPane tab={intl.formatMessage({ id: 'jobs_tabs_config_file' })} key="config">
+                    <IF visible={jobId}>
+                        <div style={{ marginBottom: 20, textAlign: 'right' }}>
+                            <Button type="primary" onClick={onCopy}>
+                                {intl.formatMessage({ id: 'jobs_tabs_config_file_copy' })}
+                            </Button>
+                            <Button style={{ marginLeft: 10 }} onClick={downLoadConfig}>
+                                {intl.formatMessage({ id: 'jobs_tabs_config_file_download' })}
+                            </Button>
+                        </div>
+                        <Input.TextArea style={{ height: 'calc(100vh - 200px)', marginBottom: 24 }} readOnly value={jsonData} />
+                    </IF>
                 </TabPane>
             </Tabs>
         </div>

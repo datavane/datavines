@@ -81,7 +81,7 @@ const Index = ({
                 <span className="dv-editor-tree-title">
                     {tableItem.name}
                 </span>
-            </Tooltip>,
+                   </Tooltip>,
             key: `${item.uuid}@@${item.name}##${tableItem.uuid}@@${tableItem.name}`,
             dataName: tableItem.name,
             parentName: item.name,
@@ -191,7 +191,6 @@ const Index = ({
             if (databases.length > 0 && expandedKeys.length === 0) {
                 setTreeHeight(document.getElementsByClassName('dv-editor-tree_list') ? document.getElementsByClassName('dv-editor-tree_list')[0].scrollHeight
                     : document.documentElement.clientHeight - 63);
-
             }
         };
     }, [databases]);
@@ -219,7 +218,7 @@ const Index = ({
                                     label: <span onClick={() => refresh(nodeData)}>
                                         {' '}
                                         {intl.formatMessage({ id: 'job_log_refresh' })}
-                                    </span>,
+                                           </span>,
                                 },
                             ]}
                         />
