@@ -40,7 +40,6 @@ const Index = (props: IDvEditorProps) => {
             return {};
         }
         return {
-
         };
     }, [height]);
     const getDatabases = usePersistFn(async (data:string) => {

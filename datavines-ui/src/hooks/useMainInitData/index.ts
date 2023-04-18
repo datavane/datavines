@@ -10,10 +10,10 @@ export default () => {
     const { setLoginInfo } = useUserActions();
     useMount(() => {
         const loginInfo = shareData.sessionGet(DV_STORAGE_LOGIN) as ILoginInfo;
-        if (!loginInfo?.token) {
-            history.replace('/login');
-            return;
-        }
+        // if (!loginInfo?.token) {
+        //     history.replace('/login');
+        //     return;
+        // }
         setLoginInfo(loginInfo || {});
     });
 };
