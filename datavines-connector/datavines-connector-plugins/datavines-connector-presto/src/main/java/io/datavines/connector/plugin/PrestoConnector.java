@@ -63,17 +63,23 @@ public class PrestoConnector extends JdbcConnector {
         dataSourceInfo.loadClass();
 
         try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(), dataSourceInfo.getUser(), null)) {
-            boolean result = con!=null;
+            boolean result = (con!=null);
             if (result) {
+                try {
+                    getMetadataDatabases(con);
+                } catch (Exception e) {
+                    logger.error(e.toString(), e);
+                    return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
+                }
+
                 con.close();
             }
 
-            return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(result).build();
+            return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(true).build();
         } catch (SQLException e) {
             logger.error(e.toString(), e);
+            return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
         }
-
-        return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
     }
 
     @Override
