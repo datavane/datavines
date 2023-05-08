@@ -31,7 +31,7 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.catalog.enums.SchemaChangeType;
+import io.datavines.server.enums.SchemaChangeType;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 import io.datavines.server.repository.entity.catalog.CatalogEntityRel;
@@ -43,7 +43,6 @@ import io.datavines.server.utils.SpringApplicationContext;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.BeanUtils;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;

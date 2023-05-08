@@ -17,7 +17,7 @@
 package io.datavines.server.catalog.metadata;
 
 import io.datavines.common.utils.*;
-import io.datavines.server.catalog.enums.FetchType;
+import io.datavines.server.enums.FetchType;
 import io.datavines.server.catalog.metadata.task.CatalogTaskContext;
 import io.datavines.server.catalog.metadata.task.CatalogTaskResponse;
 import io.datavines.server.catalog.metadata.task.CatalogTaskResponseQueue;
@@ -30,6 +30,7 @@ import io.datavines.server.utils.NamedThreadFactory;
 import io.datavines.server.utils.SpringApplicationContext;
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -71,6 +72,11 @@ public class CatalogMetaDataFetchTaskManager {
                 try {
                     CatalogTaskContext catalogTaskContext = taskQueue.take();
                     taskExecuteService.execute(new CatalogMetaDataFetchTaskRunner(catalogTaskContext));
+                    CatalogMetaDataFetchTask catalogMetaDataFetchTask = catalogMetaDataFetchTaskService.getById(catalogTaskContext.getCatalogTaskId());
+                    if (catalogMetaDataFetchTask != null) {
+                        catalogMetaDataFetchTask.setStartTime(LocalDateTime.now());
+                        catalogMetaDataFetchTaskService.update(catalogMetaDataFetchTask);
+                    }
                     ThreadUtils.sleep(1000);
                 } catch(Exception e) {
                     log.error("dispatcher catalog task error",e);
@@ -94,6 +100,7 @@ public class CatalogMetaDataFetchTaskManager {
                     CatalogMetaDataFetchTask catalogMetaDataFetchTask = catalogMetaDataFetchTaskService.getById(taskResponse.getCatalogTaskId());
                     if (catalogMetaDataFetchTask != null) {
                         catalogMetaDataFetchTask.setStatus(taskResponse.getStatus());
+                        catalogMetaDataFetchTask.setEndTime(LocalDateTime.now());
                         catalogMetaDataFetchTaskService.update(catalogMetaDataFetchTask);
                     }
                     ThreadUtils.sleep(1000);

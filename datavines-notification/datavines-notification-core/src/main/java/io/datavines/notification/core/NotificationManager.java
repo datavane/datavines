@@ -34,7 +34,7 @@ import java.util.Set;
 @Slf4j
 public class NotificationManager {
 
-    private Set<String> supportedPlugins;
+    private final Set<String> supportedPlugins;
 
     public NotificationManager(){
         supportedPlugins = PluginLoader

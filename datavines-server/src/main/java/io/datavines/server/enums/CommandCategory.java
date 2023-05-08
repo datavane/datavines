@@ -36,9 +36,9 @@ public enum CommandCategory {
     }
 
     @EnumValue
-    private int code;
+    private final int code;
 
-    private String description;
+    private final String description;
 
     private static final Map<Integer, CommandCategory> COMMAND_CATEGORY_MAP = new HashMap<>();
 

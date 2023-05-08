@@ -33,10 +33,10 @@ public enum ScheduleJobType {
         this.description = description;
     }
 
-    private int code;
+    private final int code;
 
     @EnumValue
-    private String description;
+    private final String description;
 
     private static final Map<String, ScheduleJobType> TYPE_MAP = new HashMap<>();
 

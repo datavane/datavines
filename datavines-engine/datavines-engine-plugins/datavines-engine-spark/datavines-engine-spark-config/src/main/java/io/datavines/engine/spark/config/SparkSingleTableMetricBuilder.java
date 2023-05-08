@@ -49,7 +49,7 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
                         .getPluginLoader(ExpectedValue.class)
                         .getNewPlugin(expectedType);
 
-                metricInputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(inputParameter)));
+                metricInputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(metricInputParameter)));
 
                 //get the actual value storage parameter
                 SinkConfig actualValueSinkConfig = getValidateResultDataSinkConfig(

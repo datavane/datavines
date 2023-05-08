@@ -53,17 +53,16 @@ public class EmailConstants {
 
     public static final String MARKDOWN_ENTER = "\n";
 
-    public static final String HTML_HEADER_PREFIX = new StringBuilder("<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'>")
-            .append("<html>")
-            .append("<head>")
-            .append("<title>datavines</title>")
-            .append("<meta name='Keywords' content=''>")
-            .append("<meta name='Description' content=''>")
-            .append("<style type=\"text/css\">")
-            .append("</style>")
-            .append("</head>")
-            .append("<body style=\"margin:0;padding:0\"><table border=\"1px\" cellpadding=\"5px\" cellspacing=\"-10px\" style=\"font-size: 15px;\"> ")
-            .toString();
+    public static final String HTML_HEADER_PREFIX = "<!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN' 'http://www.w3.org/TR/html4/loose.dtd'>" +
+            "<html>" +
+            "<head>" +
+            "<title>datavines</title>" +
+            "<meta name='Keywords' content=''>" +
+            "<meta name='Description' content=''>" +
+            "<style type=\"text/css\">" +
+            "</style>" +
+            "</head>" +
+            "<body style=\"margin:0;padding:0\"><table border=\"1px\" cellpadding=\"5px\" cellspacing=\"-10px\" style=\"font-size: 15px;\"> ";
 
     public static final String TABLE_HTML_TAIL = "</table></html>";
 

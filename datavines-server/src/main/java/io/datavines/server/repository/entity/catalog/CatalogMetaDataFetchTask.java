@@ -21,6 +21,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.datavines.server.enums.FetchType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -35,8 +36,17 @@ public class CatalogMetaDataFetchTask implements Serializable {
     @TableId(type= IdType.AUTO)
     private Long id;
 
+    @TableField(value = "type")
+    private FetchType type;
+
     @TableField(value = "datasource_id")
     private Long dataSourceId;
+
+    @TableField(value = "database_name")
+    private String databaseName;
+
+    @TableField(value = "table_name")
+    private String tableName;
 
     @TableField(value = "parameter")
     private String parameter;

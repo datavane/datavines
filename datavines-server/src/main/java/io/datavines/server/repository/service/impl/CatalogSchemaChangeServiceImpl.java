@@ -41,7 +41,7 @@ public class CatalogSchemaChangeServiceImpl extends ServiceImpl<CatalogSchemaCha
         QueryWrapper<CatalogSchemaChange> queryWrapper = new QueryWrapper<>();
 
         queryWrapper.lambda()
-                .eq(CatalogSchemaChange::getEntityUuid, uuid).or().eq(CatalogSchemaChange::getParentUuid, uuid);
+                .eq(CatalogSchemaChange::getEntityUuid, uuid).or().eq(CatalogSchemaChange::getParentUuid, uuid).orderByDesc(CatalogSchemaChange::getUpdateTime);
         return page(page, queryWrapper);
     }
 }

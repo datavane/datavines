@@ -41,6 +41,4 @@ public class NotificationClientImpl implements NotificationClient {
         return result;
     }
 
-
-
 }

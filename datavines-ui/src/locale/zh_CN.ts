@@ -126,7 +126,7 @@ export default {
     jobs_schedule_cycle: '调度周期',
     jobs_schedule_time: '调度时间',
     jobs_schedule_express: 'Crontab表达式',
-    jobs_schedule_obtain_time: '获取时间',
+    jobs_schedule_obtain_time: '有效时间',
     jobs_schedule_custom: '常规调度',
     jobs_schedule_crontab: 'Crontab调度',
     jobs_schedule_offline: '不调度',

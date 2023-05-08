@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTask;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CatalogMetaDataFetchTaskService extends IService<CatalogMetaDataFetchTask> {
@@ -39,4 +40,6 @@ public interface CatalogMetaDataFetchTaskService extends IService<CatalogMetaDat
     String getTaskExecuteHost(Long catalogTaskId);
 
     boolean deleteByDataSourceId(long dataSourceId);
+
+    LocalDateTime getRefreshTime(long dataSourceId, String databaseName, String tableName);
 }

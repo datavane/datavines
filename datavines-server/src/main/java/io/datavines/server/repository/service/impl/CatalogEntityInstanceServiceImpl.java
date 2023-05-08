@@ -78,6 +78,9 @@ public class CatalogEntityInstanceServiceImpl
     @Autowired
     private CatalogEntityProfileService catalogEntityProfileService;
 
+    @Autowired
+    private CatalogMetaDataFetchTaskService catalogMetaDataFetchTaskService;
+
     @Override
     public String create(CatalogEntityInstance entityInstance) {
         baseMapper.insert(entityInstance);
@@ -319,7 +322,7 @@ public class CatalogEntityInstanceServiceImpl
         detail.setName(databaseInstance.getDisplayName());
         detail.setType(databaseInstance.getType());
         detail.setUuid(uuid);
-        detail.setUpdateTime(databaseInstance.getUpdateTime());
+        detail.setUpdateTime(catalogMetaDataFetchTaskService.getRefreshTime(databaseInstance.getDatasourceId(), databaseInstance.getDisplayName(),null));
         List<CatalogEntityInstance> tableList = getCatalogEntityInstances(uuid);
         detail.setTables((long)(CollectionUtils.isEmpty(tableList)? 0 : tableList.size()));
         detail.setMetrics(getEntityMetricCount(uuid));
@@ -331,18 +334,28 @@ public class CatalogEntityInstanceServiceImpl
     @Override
     public CatalogTableDetailVO getTableEntityDetail(String uuid) {
         CatalogTableDetailVO detail = new CatalogTableDetailVO();
-        CatalogEntityInstance databaseInstance = getCatalogEntityInstance(uuid);
-        if (databaseInstance == null) {
+        CatalogEntityInstance instance = getCatalogEntityInstance(uuid);
+        if (instance == null) {
             return detail;
         }
 
-        detail.setName(databaseInstance.getDisplayName());
-        detail.setType(databaseInstance.getType());
+        detail.setName(instance.getDisplayName());
+        detail.setType(instance.getType());
         detail.setUuid(uuid);
-        detail.setUpdateTime(databaseInstance.getUpdateTime());
+        String database = "";
+        String table = "";
+        String fqn = instance.getFullyQualifiedName();
+        String[] values = fqn.split("\\.");
+        if (values.length == 2) {
+            database = values[0];
+            table = values[1];
+            detail.setUpdateTime(catalogMetaDataFetchTaskService.getRefreshTime(instance.getDatasourceId(), database,table));
+        } else {
+            detail.setUpdateTime(instance.getUpdateTime());
+        }
         List<CatalogEntityInstance> columnList = getCatalogEntityInstances(uuid);
         detail.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
-        detail.setComment(databaseInstance.getDescription());
+        detail.setComment(instance.getDescription());
         detail.setTags(getEntityTagCount(uuid));
         detail.setMetrics(getEntityMetricCount(uuid));
 
@@ -357,16 +370,27 @@ public class CatalogEntityInstanceServiceImpl
     @Override
     public CatalogColumnDetailVO getColumnEntityDetail(String uuid) {
         CatalogColumnDetailVO detail = new CatalogColumnDetailVO();
-        CatalogEntityInstance databaseInstance = getCatalogEntityInstance(uuid);
-        if (databaseInstance == null) {
+        CatalogEntityInstance instance = getCatalogEntityInstance(uuid);
+        if (instance == null) {
             return detail;
         }
 
-        detail.setName(databaseInstance.getDisplayName());
-        detail.setType(databaseInstance.getType());
+        detail.setName(instance.getDisplayName());
+        detail.setType(instance.getType());
         detail.setUuid(uuid);
-        detail.setUpdateTime(databaseInstance.getUpdateTime());
-        detail.setComment(databaseInstance.getDescription());
+        String database = "";
+        String table = "";
+        String fqn = instance.getFullyQualifiedName();
+        String[] values = fqn.split("\\.");
+        if (values.length == 3) {
+            database = values[0];
+            table = values[1];
+            detail.setUpdateTime(catalogMetaDataFetchTaskService.getRefreshTime(instance.getDatasourceId(), database,table));
+        } else {
+            detail.setUpdateTime(instance.getUpdateTime());
+        }
+
+        detail.setComment(instance.getDescription());
         detail.setTags(getEntityTagCount(uuid));
         detail.setMetrics(getEntityMetricCount(uuid));
 
@@ -513,7 +537,7 @@ public class CatalogEntityInstanceServiceImpl
             String metricName = entityProfile.getMetricName();
             if (StringUtils.isEmpty(metricName)
                     || StringUtils.isEmpty(entityProfile.getActualValue())
-                    || "null".equals(entityProfile.getActualValue().toLowerCase())) {
+                    || "null".equalsIgnoreCase(entityProfile.getActualValue())) {
                 continue;
             }
             switch (metricName) {
@@ -596,7 +620,7 @@ public class CatalogEntityInstanceServiceImpl
             String metricName = entityProfile.getMetricName();
             if (StringUtils.isEmpty(metricName)
                     || StringUtils.isEmpty(entityProfile.getActualValue())
-                    || "null".equals(entityProfile.getActualValue().toLowerCase())) {
+                    || "null".equalsIgnoreCase(entityProfile.getActualValue())) {
                 continue;
             }
 
@@ -665,7 +689,7 @@ public class CatalogEntityInstanceServiceImpl
             String metricName = entityProfile.getMetricName();
             if (StringUtils.isEmpty(metricName)
                     || StringUtils.isEmpty(entityProfile.getActualValue())
-                    || "null".equals(entityProfile.getActualValue().toLowerCase())) {
+                    || "null".equalsIgnoreCase(entityProfile.getActualValue())) {
                 continue;
             }
 

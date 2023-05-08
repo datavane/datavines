@@ -357,7 +357,10 @@ CREATE TABLE `dv_catalog_tag_category` (
 DROP TABLE IF EXISTS `dv_catalog_metadata_fetch_task`;
 CREATE TABLE `dv_catalog_metadata_fetch_task` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `type` varchar(128) DEFAULT NULL COMMENT '类型',
   `datasource_id` bigint(20) NOT NULL DEFAULT '-1' COMMENT '数据源ID',
+  `database_name` varchar(128) DEFAULT NULL COMMENT '数据库',
+  `table_name` varchar(128) DEFAULT NULL COMMENT '表',
   `status` int(11) DEFAULT NULL COMMENT '任务状态',
   `parameter` text COMMENT '任务参数',
   `execute_host` varchar(255) DEFAULT NULL COMMENT '执行任务的主机',
@@ -653,7 +656,8 @@ CREATE TABLE `dv_sla_job` (
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `unique` (`workspace_id`,`sla_id`,`job_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='告警和规则作业关联关系';
 
 -- ----------------------------

@@ -35,8 +35,8 @@ public enum JobScheduleType {
     }
 
     @EnumValue
-    int code;
-    String description;
+    private final int code;
+    private final String description;
 
     private static final Map<String, JobScheduleType> JON_SCHEDULE_TYPE_MAP = new HashMap<>();
 
