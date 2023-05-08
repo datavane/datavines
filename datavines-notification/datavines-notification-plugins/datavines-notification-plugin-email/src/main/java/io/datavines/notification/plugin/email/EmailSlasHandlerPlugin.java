@@ -83,12 +83,12 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
                 String recordMessage = "";
 
                 if (!CollectionUtils.isEmpty(toReceivers)) {
-                    to = toReceivers.stream().collect(Collectors.joining(","));
+                    to = String.join(",", toReceivers);
                     recordMessage = String.format("send to %s fail", to);
                 }
                 String cc = "";
                 if (!CollectionUtils.isEmpty(ccReceivers)) {
-                    cc = ccReceivers.stream().collect(Collectors.joining(","));
+                    cc = String.join(",", ccReceivers);
                     recordMessage += String.format("copy to %s fail", cc);
                 }
                 record.setMessage(recordMessage);

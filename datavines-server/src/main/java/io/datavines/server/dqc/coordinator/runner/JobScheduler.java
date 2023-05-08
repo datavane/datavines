@@ -65,7 +65,7 @@ public class JobScheduler extends Thread {
                         CommonPropertyUtils.getDouble(RESERVED_MEMORY, RESERVED_MEMORY_DEFAULT));
 
                 if (!runCheckFlag) {
-                    ThreadUtils.sleep(SLEEP_TIME_MILLIS);
+                    ThreadUtils.sleep(SLEEP_TIME_MILLIS*10);
                     continue;
                 }
 

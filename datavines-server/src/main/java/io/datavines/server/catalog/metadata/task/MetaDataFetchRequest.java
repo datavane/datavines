@@ -16,7 +16,7 @@
  */
 package io.datavines.server.catalog.metadata.task;
 
-import io.datavines.server.catalog.enums.FetchType;
+import io.datavines.server.enums.FetchType;
 import io.datavines.server.repository.entity.DataSource;
 import lombok.Data;
 

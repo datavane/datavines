@@ -21,7 +21,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.datavines.server.catalog.enums.SchemaChangeType;
+import io.datavines.server.enums.SchemaChangeType;
 import lombok.Data;
 
 import java.io.Serializable;

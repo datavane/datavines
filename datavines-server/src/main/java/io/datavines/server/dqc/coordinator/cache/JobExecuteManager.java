@@ -477,7 +477,7 @@ public class JobExecuteManager {
         try {
             jobExecutionRequest = buildJobExecutionRequest(jobExecution);
         } catch (Exception e) {
-            logger.error("build job execution request error : {}", e);
+            logger.error("build job execution request error :", e);
             jobExecution.setEndTime(LocalDateTime.now());
             jobExecution.setStatus(ExecutionStatus.FAILURE);
             jobExternalService.updateJobExecution(jobExecution);

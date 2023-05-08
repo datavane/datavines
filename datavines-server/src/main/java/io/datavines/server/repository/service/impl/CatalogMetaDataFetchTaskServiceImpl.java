@@ -22,7 +22,11 @@ import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.NetUtils;
+import io.datavines.common.utils.StringUtils;
+import io.datavines.core.enums.Status;
+import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
+import io.datavines.server.enums.FetchType;
 import io.datavines.server.registry.RegistryHolder;
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchCommand;
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTask;
@@ -37,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service("catalogMetaDataFetchTaskService")
 public class CatalogMetaDataFetchTaskServiceImpl
@@ -58,11 +63,14 @@ public class CatalogMetaDataFetchTaskServiceImpl
 
         Long taskId = 0L;
         registryHolder.blockUtilAcquireLock("1028");
+        QueryWrapper<CatalogMetaDataFetchTask> queryWrapper = new QueryWrapper<>();
+
+        queryWrapper.lambda().eq(CatalogMetaDataFetchTask::getStatus,0)
+                .eq(CatalogMetaDataFetchTask::getDataSourceId, catalogRefresh.getDatasourceId())
+                .eq(CatalogMetaDataFetchTask::getParameter, JSONUtils.toJsonString(catalogRefresh));
         List<CatalogMetaDataFetchTask> oldTaskList =
-                baseMapper.selectList(new QueryWrapper<CatalogMetaDataFetchTask>()
-                        .eq("status",0)
-                        .eq("datasource_id", catalogRefresh.getDatasourceId())
-                        .eq("parameter", JSONUtils.toJsonString(catalogRefresh)));
+                baseMapper.selectList(queryWrapper);
+
         if (CollectionUtils.isNotEmpty(oldTaskList)) {
             registryHolder.release("1028");
             return 0L;
@@ -75,6 +83,34 @@ public class CatalogMetaDataFetchTaskServiceImpl
         catalogMetaDataFetchTask.setStatus(0);
         catalogMetaDataFetchTask.setExecuteHost(NetUtils.getAddr(
                 CommonPropertyUtils.getInt(CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT)));
+
+        String parameter = catalogMetaDataFetchTask.getParameter();
+        if (StringUtils.isNotEmpty(parameter)) {
+            Map<String, String> parameterMap = JSONUtils.toMap(parameter);
+            if (parameterMap != null) {
+                String database = parameterMap.get("database");
+                String table = parameterMap.get("table");
+
+                if (StringUtils.isEmpty(database) && StringUtils.isEmpty(table)) {
+                    catalogMetaDataFetchTask.setType(FetchType.DATASOURCE);
+                }
+
+                if (StringUtils.isEmpty(database) && StringUtils.isNotEmpty(table)) {
+                    throw new DataVinesServerException(Status.CATALOG_FETCH_METADATA_PARAMETER_ERROR);
+                }
+
+                if (StringUtils.isNotEmpty(database) && StringUtils.isEmpty(table)) {
+                    catalogMetaDataFetchTask.setDatabaseName(database);
+                    catalogMetaDataFetchTask.setType(FetchType.DATABASE);
+                }
+
+                if (StringUtils.isNotEmpty(database) && StringUtils.isNotEmpty(table)) {
+                    catalogMetaDataFetchTask.setTableName(table);
+                    catalogMetaDataFetchTask.setType(FetchType.TABLE);
+                }
+            }
+        }
+
         catalogMetaDataFetchTask.setSubmitTime(now);
         catalogMetaDataFetchTask.setCreateTime(now);
         catalogMetaDataFetchTask.setUpdateTime(now);
@@ -131,5 +167,51 @@ public class CatalogMetaDataFetchTaskServiceImpl
         remove(new QueryWrapper<CatalogMetaDataFetchTask>().eq("datasource_id", dataSourceId));
         catalogMetaDataFetchTaskScheduleService.deleteByDataSourceId(dataSourceId);
         return false;
+    }
+
+    @Override
+    public LocalDateTime getRefreshTime(long dataSourceId, String databaseName, String tableName) {
+
+        CatalogMetaDataFetchTask task = null;
+        QueryWrapper<CatalogMetaDataFetchTask> queryWrapper = new QueryWrapper<>();
+        LocalDateTime refreshTime = null;
+
+        queryWrapper.lambda().eq(CatalogMetaDataFetchTask::getDataSourceId,dataSourceId)
+                .eq(CatalogMetaDataFetchTask::getType,FetchType.DATASOURCE)
+                .orderByDesc(CatalogMetaDataFetchTask::getCreateTime).last("limit 1");
+        task = getOne(queryWrapper);
+        if (task != null) {
+            refreshTime = task.getCreateTime();
+        }
+
+        if (StringUtils.isNotEmpty(databaseName)) {
+            queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(CatalogMetaDataFetchTask::getDataSourceId,dataSourceId)
+                    .eq(CatalogMetaDataFetchTask::getDatabaseName, databaseName)
+                    .eq(CatalogMetaDataFetchTask::getType,FetchType.DATABASE)
+                    .orderByDesc(CatalogMetaDataFetchTask::getCreateTime).last("limit 1");
+            task = getOne(queryWrapper);
+            if (task != null) {
+                if (task.getCreateTime().isAfter(refreshTime)) {
+                    refreshTime = task.getCreateTime();
+                }
+            }
+        }
+
+        if (StringUtils.isNotEmpty(databaseName) && StringUtils.isNotEmpty(tableName)) {
+            queryWrapper = new QueryWrapper<>();
+            queryWrapper.lambda().eq(CatalogMetaDataFetchTask::getDataSourceId,dataSourceId)
+                    .eq(CatalogMetaDataFetchTask::getDatabaseName, databaseName)
+                    .eq(CatalogMetaDataFetchTask::getTableName,tableName)
+                    .orderByDesc(CatalogMetaDataFetchTask::getCreateTime).last("limit 1");
+            task = getOne(queryWrapper);
+            if (task != null) {
+                if (task.getCreateTime().isAfter(refreshTime)) {
+                    refreshTime = task.getCreateTime();
+                }
+            }
+        }
+
+        return refreshTime;
     }
 }

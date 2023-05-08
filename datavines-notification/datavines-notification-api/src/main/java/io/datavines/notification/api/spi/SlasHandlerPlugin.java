@@ -27,6 +27,7 @@ import java.util.Set;
 
 @SPI
 public interface SlasHandlerPlugin {
+
     /**
      * save message to db then send message to receiver , return the status finally
      * @param slaNotificationMessage issue message a

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.catalog.enums;
+package io.datavines.server.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 
@@ -38,9 +38,9 @@ public enum FetchType {
         this.description = description;
     }
 
-    @EnumValue
     private final int code;
 
+    @EnumValue
     private final String description;
 
     private static final Map<Integer, FetchType> FETCH_TYPE_MAP = new HashMap<>();
