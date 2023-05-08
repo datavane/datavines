@@ -126,7 +126,7 @@ export default {
     jobs_schedule_cycle: 'Schedule Cycle',
     jobs_schedule_time: 'Schedule Time',
     jobs_schedule_express: 'Crontab Expression',
-    jobs_schedule_obtain_time: 'Obtain Time',
+    jobs_schedule_obtain_time: 'Effective Time',
     jobs_schedule_custom: 'Custom Schedule',
     jobs_schedule_crontab: 'Crontab Schedule',
     jobs_schedule_offline: 'Offline',
