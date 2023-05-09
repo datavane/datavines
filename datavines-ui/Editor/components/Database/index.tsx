@@ -673,7 +673,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         await $http.post('catalog/refresh', {
             database: selectDatabases[1]?.name,
             datasourceId: id,
-            table: selectDatabases[2] ? selectDatabases[2]?.uuid : '',
+            table: selectDatabases[2] ? selectDatabases[2]?.name : '',
         });
         message.success(intl.formatMessage({ id: 'common_success' }));
     };
