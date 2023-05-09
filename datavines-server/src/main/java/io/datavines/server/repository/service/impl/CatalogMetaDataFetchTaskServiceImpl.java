@@ -106,6 +106,7 @@ public class CatalogMetaDataFetchTaskServiceImpl
 
                 if (StringUtils.isNotEmpty(database) && StringUtils.isNotEmpty(table)) {
                     catalogMetaDataFetchTask.setTableName(table);
+                    catalogMetaDataFetchTask.setDatabaseName(database);
                     catalogMetaDataFetchTask.setType(FetchType.TABLE);
                 }
             }
