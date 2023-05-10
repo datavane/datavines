@@ -193,7 +193,7 @@ public class CatalogMetaDataFetchTaskServiceImpl
                     .orderByDesc(CatalogMetaDataFetchTask::getCreateTime).last("limit 1");
             task = getOne(queryWrapper);
             if (task != null) {
-                if (task.getCreateTime().isAfter(refreshTime)) {
+                if (refreshTime == null || task.getCreateTime().isAfter(refreshTime)) {
                     refreshTime = task.getCreateTime();
                 }
             }
@@ -207,7 +207,7 @@ public class CatalogMetaDataFetchTaskServiceImpl
                     .orderByDesc(CatalogMetaDataFetchTask::getCreateTime).last("limit 1");
             task = getOne(queryWrapper);
             if (task != null) {
-                if (task.getCreateTime().isAfter(refreshTime)) {
+                if (refreshTime == null || task.getCreateTime().isAfter(refreshTime)) {
                     refreshTime = task.getCreateTime();
                 }
             }

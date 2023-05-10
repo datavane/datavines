@@ -41,9 +41,10 @@ public class ProfileDataSinkExecutor extends BaseDataSinkExecutor {
         try {
             innerExecute(inputParameter);
         } catch (Exception e) {
-            log.error("sink profile data error : {}", e);
-            after(env, config);
+            log.error("sink profile data error : ", e);
             throw new DataVinesException("sink profile data error", e);
+        } finally {
+            after(env, config);
         }
     }
 }
