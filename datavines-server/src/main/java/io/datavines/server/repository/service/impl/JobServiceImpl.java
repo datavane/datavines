@@ -539,6 +539,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         submitJob.setValidateResultDataStorageType(DefaultDataSourceInfoUtils.getDefaultConnectionInfo().getType());
         submitJob.setValidateResultDataStorageParameter(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap());
         submitJob.setLanguageEn(!LanguageUtils.isZhContext());
+        if (StringUtils.isNotEmpty(jobExecution.getEnv())) {
+            submitJob.setEnv(jobExecution.getEnv());
+        }
 
         List<SlaConfigVO> slaConfigList = slaService.getSlaConfigByJobId(jobId);
         if (CollectionUtils.isNotEmpty(slaConfigList)) {
