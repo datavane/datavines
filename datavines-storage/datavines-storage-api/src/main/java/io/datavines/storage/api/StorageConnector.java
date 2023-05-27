@@ -16,6 +16,9 @@
  */
 package io.datavines.storage.api;
 
+import io.datavines.common.param.ConnectorResponse;
+import io.datavines.common.param.TestConnectionRequestParam;
+
 import java.util.Map;
 
 public interface StorageConnector {
@@ -23,4 +26,6 @@ public interface StorageConnector {
     String getConfigJson(boolean isEn);
 
     Map<String,Object> getParamMap(Map<String, Object> parameter);
+
+    ConnectorResponse testConnect(TestConnectionRequestParam param);
 }

@@ -35,7 +35,7 @@ public class MysqlStorageExecutor implements StorageExecutor, IJdbcDataSourceInf
     private final JdbcExecutorClientManager jdbcExecutorClientManager = JdbcExecutorClientManager.getInstance();
 
     @Override
-    public ConnectorResponse executeSyncQuery(ExecuteRequestParam param) {
+    public ConnectorResponse queryForPage(ExecuteRequestParam param) {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
 

@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datavines.common.CommonConstants;
+import io.datavines.common.param.ConnectorResponse;
+import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.common.param.form.PluginParams;
 import io.datavines.common.param.form.PropsType;
 import io.datavines.common.param.form.Validate;
@@ -92,4 +94,8 @@ public class LocalFileStorageConnector implements StorageConnector {
         return parameter;
     }
 
+    @Override
+    public ConnectorResponse testConnect(TestConnectionRequestParam param) {
+        return null;
+    }
 }

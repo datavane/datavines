@@ -273,7 +273,7 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 
         Object result = null;
         try {
-            result = storageFactory.getStorageExecutor().executeSyncQuery(param).getResult();
+            result = storageFactory.getStorageExecutor().queryForPage(param).getResult();
         } catch (Exception exception) {
             log.error("read error-data error: ", exception);
         }
