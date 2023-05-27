@@ -152,7 +152,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
                 .eq("name",job.getName())
                 .eq("schema_name",job.getSchemaName())
                 .eq("table_name",job.getTableName())
-                .eq(job.getColumnName()!=null, "column_name",job.getColumnName())
+                .eq("datasource_id",job.getDataSourceId())
+                .eq(job.getDataSourceId2() != 0, "datasource_id_2", job.getDataSourceId2())
+                .eq(StringUtils.isNotEmpty(job.getColumnName()), "column_name",job.getColumnName())
          );
          return CollectionUtils.isNotEmpty(list);
     }

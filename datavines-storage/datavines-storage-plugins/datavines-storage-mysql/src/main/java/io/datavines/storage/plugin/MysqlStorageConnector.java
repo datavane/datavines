@@ -20,19 +20,28 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datavines.common.CommonConstants;
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.param.ConnectorResponse;
+import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.common.param.form.PluginParams;
 import io.datavines.common.param.form.PropsType;
 import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.props.InputParamsProps;
 import io.datavines.common.param.form.type.InputParam;
+import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.storage.api.StorageConnector;
 import lombok.extern.slf4j.Slf4j;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static io.datavines.common.datasource.jdbc.JdbcDataSourceInfoManager.getDatasourceInfo;
 
 @Slf4j
 public class MysqlStorageConnector implements StorageConnector {
@@ -142,5 +151,24 @@ public class MysqlStorageConnector implements StorageConnector {
         }
 
         return url;
+    }
+
+    @Override
+    public ConnectorResponse testConnect(TestConnectionRequestParam param) {
+        BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(param.getDataSourceParam());
+        dataSourceInfo.loadClass();
+
+        try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(), dataSourceInfo.getUser(), dataSourceInfo.getPassword())) {
+            boolean result = con != null;
+            if (result) {
+                con.close();
+            }
+
+            return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(result).build();
+        } catch (SQLException e) {
+            log.error(e.toString(), e);
+        }
+
+        return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
     }
 }

@@ -38,7 +38,7 @@ import java.util.stream.Stream;
 public class LocalFileStorageExecutor implements StorageExecutor {
 
     @Override
-    public ConnectorResponse executeSyncQuery(ExecuteRequestParam param) throws Exception {
+    public ConnectorResponse queryForPage(ExecuteRequestParam param) throws Exception {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
 
         int pageNumber = param.getPageNumber();

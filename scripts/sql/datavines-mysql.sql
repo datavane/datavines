@@ -509,7 +509,7 @@ CREATE TABLE `dv_job` (
   `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `unique_name` (`name`,`schema_name`,`table_name`,`column_name`) USING BTREE
+  UNIQUE KEY `unique_name` (`name`,`datasource_id`,`schema_name`,`table_name`,`column_name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='规则作业';
 
 -- ----------------------------

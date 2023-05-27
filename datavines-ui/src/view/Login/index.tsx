@@ -47,7 +47,7 @@ const Login = () => {
             <div className="dv-login__switch-language"><SwitchLanguage /></div>
             <div className="dv-login-containner">
                 <div className="dv-login-wrap">
-                    <div className="dv-login-title main-color">DataVines</div>
+                    <div className="dv-login-title main-color">Datavines</div>
                     <Form
                         form={form}
                         layout="vertical"

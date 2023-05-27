@@ -211,9 +211,9 @@ public class CatalogEntityInstanceServiceImpl
                     .map(CatalogEntityRel::getEntity2Uuid)
                     .collect(Collectors.toList());
 
-            remove(new QueryWrapper<CatalogEntityInstance>().in("uuid",upstreamIds));
-            entityRelService.remove(new QueryWrapper<CatalogEntityRel>().in("entity1_uuid",upstreamIds));
-            catalogEntityMetricJobRelService.deleteByEntityUUID(upstreamIds);
+            remove(new QueryWrapper<CatalogEntityInstance>().eq("uuid",upstreamId));
+            entityRelService.remove(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid",upstreamId));
+            catalogEntityMetricJobRelService.deleteByEntityUUID(Collections.singletonList(upstreamId));
 
             deleteEntityInstance(entityRelList);
         }
