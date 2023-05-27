@@ -127,7 +127,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
         return sourceConfigs;
     }
 
-    protected SinkConfig getErrorSinkConfig() {
+    protected SinkConfig getErrorSinkConfig(Map<String, String> inputParameter) {
         SinkConfig errorDataSinkConfig = null;
         if (StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageType())
                 && StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageParameter())) {

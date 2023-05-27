@@ -52,9 +52,9 @@ public interface CatalogEntityInstanceService extends IService<CatalogEntityInst
 
     List<CatalogTableDetailVO> getCatalogTableWithDetailList(String upstreamId);
 
-    IPage<CatalogColumnDetailVO> getCatalogColumnWithDetailPage(String upstreamId, Integer pageNumber, Integer pageSize);
+    IPage<CatalogColumnDetailVO> getCatalogColumnWithDetailPage(String upstreamId, String name, Integer pageNumber, Integer pageSize);
 
-    IPage<CatalogTableDetailVO> getCatalogTableWithDetailPage(String upstreamId, Integer pageNumber, Integer pageSize);
+    IPage<CatalogTableDetailVO> getCatalogTableWithDetailPage(String upstreamId, String name, Integer pageNumber, Integer pageSize);
 
     CatalogDatabaseDetailVO getDatabaseEntityDetail(String uuid);
 

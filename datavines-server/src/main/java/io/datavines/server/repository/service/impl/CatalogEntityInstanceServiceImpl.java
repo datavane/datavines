@@ -150,7 +150,7 @@ public class CatalogEntityInstanceServiceImpl
         return entityInstanceList;
     }
 
-    private IPage<CatalogEntityInstance> getCatalogEntityInstancePage(String upstreamId,Integer pageNumber, Integer pageSize) {
+    private IPage<CatalogEntityInstance> getCatalogEntityInstancePage(String upstreamId, String name, Integer pageNumber, Integer pageSize) {
         List<CatalogEntityRel> entityRelList = entityRelService.list(new QueryWrapper<CatalogEntityRel>()
                 .eq("entity1_uuid", upstreamId).eq("type",EntityRelType.CHILD.getDescription()));
         List<String> uuidList = new ArrayList<>();
@@ -165,6 +165,7 @@ public class CatalogEntityInstanceServiceImpl
             queryWrapper.lambda()
                     .in(CatalogEntityInstance::getUuid, uuidList)
                     .eq(CatalogEntityInstance::getStatus, "active")
+                    .like(StringUtils.isNotEmpty(name), CatalogEntityInstance::getDisplayName, name)
                     .orderBy(true, true, CatalogEntityInstance::getId);
             return page(page, queryWrapper);
         }
@@ -220,8 +221,8 @@ public class CatalogEntityInstanceServiceImpl
     }
 
     @Override
-    public IPage<CatalogColumnDetailVO> getCatalogColumnWithDetailPage(String upstreamId, Integer pageNumber, Integer pageSize) {
-        IPage<CatalogEntityInstance> entityPage = getCatalogEntityInstancePage(upstreamId, pageNumber, pageSize);
+    public IPage<CatalogColumnDetailVO> getCatalogColumnWithDetailPage(String upstreamId, String name, Integer pageNumber, Integer pageSize) {
+        IPage<CatalogEntityInstance> entityPage = getCatalogEntityInstancePage(upstreamId, name, pageNumber, pageSize);
         if (entityPage == null || CollectionUtils.isEmpty(entityPage.getRecords())) {
             return null;
         }
@@ -244,8 +245,8 @@ public class CatalogEntityInstanceServiceImpl
     }
 
     @Override
-    public IPage<CatalogTableDetailVO> getCatalogTableWithDetailPage(String upstreamId, Integer pageNumber, Integer pageSize) {
-        IPage<CatalogEntityInstance> entityPage = getCatalogEntityInstancePage(upstreamId, pageNumber, pageSize);
+    public IPage<CatalogTableDetailVO> getCatalogTableWithDetailPage(String upstreamId, String name, Integer pageNumber, Integer pageSize) {
+        IPage<CatalogEntityInstance> entityPage = getCatalogEntityInstancePage(upstreamId, name, pageNumber, pageSize);
         if (entityPage == null || CollectionUtils.isEmpty(entityPage.getRecords())) {
             return null;
         }
