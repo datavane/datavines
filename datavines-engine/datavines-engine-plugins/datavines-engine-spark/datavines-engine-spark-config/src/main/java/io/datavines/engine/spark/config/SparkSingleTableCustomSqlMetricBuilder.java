@@ -98,7 +98,7 @@ public class SparkSingleTableCustomSqlMetricBuilder extends BaseSparkConfigurati
 
                 //get the error data storage parameter
                 //support file(hdfs/minio/s3)/es
-                SinkConfig errorDataSinkConfig = getErrorSinkConfig();
+                SinkConfig errorDataSinkConfig = getErrorSinkConfig(metricInputParameter);
                 if (errorDataSinkConfig != null) {
                     sinkConfigs.add(errorDataSinkConfig);
                 }

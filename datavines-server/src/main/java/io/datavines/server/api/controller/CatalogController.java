@@ -128,9 +128,10 @@ public class CatalogController {
     @ApiOperation(value = "get table with detail page", response = CatalogTableDetailVO.class, responseContainer = "page")
     @GetMapping(value = "/page/table-with-detail")
     public Object getTableWithDetailPage(@RequestParam("upstreamUuid") String upstreamUuid,
+                                         @RequestParam(value = "name",required = false) String name,
                                          @RequestParam("pageNumber") Integer pageNumber,
                                          @RequestParam("pageSize") Integer pageSize) {
-        return catalogEntityInstanceService.getCatalogTableWithDetailPage(upstreamUuid, pageNumber, pageSize);
+        return catalogEntityInstanceService.getCatalogTableWithDetailPage(upstreamUuid, name, pageNumber, pageSize);
     }
 
     @ApiOperation(value = "get column with detail list", response = CatalogColumnDetailVO.class, responseContainer = "list")
@@ -142,9 +143,10 @@ public class CatalogController {
     @ApiOperation(value = "get column with detail page", response = CatalogColumnDetailVO.class, responseContainer = "page")
     @GetMapping(value = "/page/column-with-detail")
     public Object getColumnWithDetailPage(@RequestParam("upstreamUuid") String upstreamUuid,
+                                          @RequestParam(value = "name",required = false) String name,
                                           @RequestParam("pageNumber") Integer pageNumber,
                                           @RequestParam("pageSize") Integer pageSize) {
-        return catalogEntityInstanceService.getCatalogColumnWithDetailPage(upstreamUuid, pageNumber, pageSize);
+        return catalogEntityInstanceService.getCatalogColumnWithDetailPage(upstreamUuid, name, pageNumber, pageSize);
     }
 
     @ApiOperation(value = "get database entity detail", response = CatalogDatabaseDetailVO.class)
