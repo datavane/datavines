@@ -64,8 +64,8 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
     }
 
     @Override
-    public int deleteByJobExecutionId(long taskId) {
-        return baseMapper.delete(new QueryWrapper<JobExecutionResult>().eq("job_execution_id",taskId));
+    public int deleteByJobExecutionId(long jobExecutionId) {
+        return baseMapper.delete(new QueryWrapper<JobExecutionResult>().eq("job_execution_id",jobExecutionId));
     }
 
     @Override
@@ -74,12 +74,19 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
     }
 
     @Override
-    public JobExecutionResult getByJobExecutionId(long taskId) {
-        List<JobExecutionResult> list = baseMapper.selectList(new QueryWrapper<JobExecutionResult>().eq("job_execution_id", taskId).orderByDesc("update_time"));
+    public JobExecutionResult getByJobExecutionId(long jobExecutionId) {
+        List<JobExecutionResult> list = baseMapper.selectList(new QueryWrapper<JobExecutionResult>().eq("job_execution_id", jobExecutionId).orderByDesc("update_time"));
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
         return list.get(0);
+    }
+
+    @Override
+    public List<JobExecutionResult> listByJobExecutionId(long jobExecutionId) {
+        return baseMapper.selectList(new QueryWrapper<JobExecutionResult>()
+                .eq("job_execution_id", jobExecutionId)
+                .orderByDesc("update_time"));
     }
 
     @Override
@@ -90,9 +97,9 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
         if (jobExecutionResult == null) {
             return null;
         }
-        parameters.put("actual_value", jobExecutionResult.getActualValue()+"");
-        parameters.put("expected_value", jobExecutionResult.getExpectedValue()+"");
-        parameters.put("threshold", jobExecutionResult.getThreshold()+"");
+        parameters.put("actual_value", String.valueOf(jobExecutionResult.getActualValue()));
+        parameters.put("expected_value", String.valueOf(jobExecutionResult.getExpectedValue()));
+        parameters.put("threshold", String.valueOf(jobExecutionResult.getThreshold()));
         parameters.put("operator",OperatorType.of(jobExecutionResult.getOperator()).getSymbol());
 
         JobExecution jobExecution = jobExecutionService.getById(jobExecutionId);
@@ -115,9 +122,9 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
                             + jobExecutionResult.getColumnName();
 
                     if (uniqueName.equalsIgnoreCase(taskResultUniqueName)) {
-                        configMap.entrySet().stream().filter(x->{
-                            return !("column".equalsIgnoreCase(x.getKey()) || "table".equalsIgnoreCase(x.getKey()) || "filter".equalsIgnoreCase(x.getKey()));
-                        }).forEach(config -> {
+                        configMap.entrySet().stream().filter(
+                                x-> !("column".equalsIgnoreCase(x.getKey()) || "table".equalsIgnoreCase(x.getKey()) || "filter".equalsIgnoreCase(x.getKey())))
+                                .forEach(config -> {
                             paramMap.put(config.getValue().getLabel(!LanguageUtils.isZhContext()), jobParameter.getMetricParameter().get(config.getKey()));
                         });
                         jobExecutionResultVO.setMetricParameter(paramMap);

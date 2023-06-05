@@ -28,11 +28,13 @@ public interface JobExecutionResultService extends IService<JobExecutionResult> 
 
     int update(JobExecutionResult jobExecutionResult);
 
-    int deleteByJobExecutionId(long taskId);
+    int deleteByJobExecutionId(long jobExecutionId);
 
     JobExecutionResult getById(long id);
 
-    JobExecutionResult getByJobExecutionId(long taskId);
+    JobExecutionResult getByJobExecutionId(long jobExecutionId);
+
+    List<JobExecutionResult> listByJobExecutionId(long jobExecutionId);
 
     JobExecutionResultVO getResultVOByJobExecutionId(long taskId);
 

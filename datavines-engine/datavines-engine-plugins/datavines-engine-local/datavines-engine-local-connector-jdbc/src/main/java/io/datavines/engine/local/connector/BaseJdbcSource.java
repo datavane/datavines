@@ -39,7 +39,7 @@ import static io.datavines.engine.api.ConfigConstants.TABLE;
 
 public class BaseJdbcSource implements LocalSource {
 
-    private Logger log = LoggerFactory.getLogger(BaseJdbcSource.class);
+    private final Logger log = LoggerFactory.getLogger(BaseJdbcSource.class);
 
     private Config config = new Config();
 

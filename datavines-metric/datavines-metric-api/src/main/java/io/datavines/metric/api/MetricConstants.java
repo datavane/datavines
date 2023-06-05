@@ -29,6 +29,7 @@ public class MetricConstants {
 
     static {
         RESULT_COLUMN_LIST.add(new ColumnInfo("job_execution_id",false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("metric_unique_key",true));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_type",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_name",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_dimension",false));

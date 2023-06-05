@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.engine.api.ConfigConstants.METRIC_UNIQUE_KEY;
 import static io.datavines.engine.api.ConfigConstants.UNIQUE_CODE;
 import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
@@ -43,7 +44,7 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
-
+                metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
                 ExpectedValue expectedValue = PluginLoader
                         .getPluginLoader(ExpectedValue.class)
