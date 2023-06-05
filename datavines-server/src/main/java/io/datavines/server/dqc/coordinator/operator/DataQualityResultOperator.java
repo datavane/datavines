@@ -36,6 +36,7 @@ import io.datavines.server.repository.entity.JobExecutionResult;
 import io.datavines.server.repository.service.*;
 import io.datavines.server.repository.service.impl.JobExternalService;
 import io.datavines.spi.PluginLoader;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -67,20 +68,32 @@ public class DataQualityResultOperator {
      */
     public void operateDqExecuteResult(JobExecutionRequest jobExecutionRequest) {
 
-        JobExecutionResult jobExecutionResult =
-                jobExternalService.getJobExecutionResultByJobExecutionId(jobExecutionRequest.getJobExecutionId());
+        List<JobExecutionResult> jobExecutionResultList =
+                jobExternalService.listJobExecutionResultByJobExecutionId(jobExecutionRequest.getJobExecutionId());
 
-        if (jobExecutionResult != null) {
-
-            // 判断期望值是否为空，如果为空并且不是固定值类型，则将期望值设置为实际值
-            if (jobExecutionResult.getExpectedValue() == null && !FIX_VALUE.equalsIgnoreCase(jobExecutionResult.getExpectedType())) {
-                jobExecutionResult.setExpectedValue(jobExecutionResult.getActualValue());
-                jobExternalService.getJobExecutionResultService().updateById(jobExecutionResult);
+        if (CollectionUtils.isNotEmpty(jobExecutionResultList)) {
+            boolean isSuccess = true;
+            Long jobExecutionId = 0L;
+            for (JobExecutionResult jobExecutionResult : jobExecutionResultList) {
+                if (jobExecutionResult != null) {
+                    jobExecutionId = jobExecutionResult.getJobExecutionId();
+                    // 判断期望值是否为空，如果为空并且不是固定值类型，则将期望值设置为实际值
+                    if (jobExecutionResult.getExpectedValue() == null && !FIX_VALUE.equalsIgnoreCase(jobExecutionResult.getExpectedType())) {
+                        jobExecutionResult.setExpectedValue(jobExecutionResult.getActualValue());
+                        jobExternalService.getJobExecutionResultService().updateById(jobExecutionResult);
+                    }
+                    //check the result ,if result is failure do some operator by failure strategy
+                    isSuccess &= checkDqExecuteResult(jobExecutionResult);
+                }
             }
 
-            //check the result ,if result is failure do some operator by failure strategy
-            checkDqExecuteResult(jobExecutionResult);
+            if (!isSuccess) {
+                jobExternalService.updateJobExecutionStatus(jobExecutionId, ExecutionStatus.FAILURE);
+                sendErrorEmail(jobExecutionId);
+            }
         }
+
+
     }
 
     /**
@@ -88,19 +101,19 @@ public class DataQualityResultOperator {
      * and if the result is failure that will alert or block
      * @param jobExecutionResult jobExecutionResult
      */
-    private void checkDqExecuteResult(JobExecutionResult jobExecutionResult) {
+    private boolean checkDqExecuteResult(JobExecutionResult jobExecutionResult) {
+        boolean result = false;
         MetricExecutionResult metricExecutionResult = new MetricExecutionResult();
         BeanUtils.copyProperties(jobExecutionResult, metricExecutionResult);
         if (MetricValidator.isSuccess(metricExecutionResult)) {
             jobExecutionResult.setState(DqJobExecutionState.SUCCESS.getCode());
+            result = true;
         } else {
             jobExecutionResult.setState(DqJobExecutionState.FAILURE.getCode());
-            Long jobExecutionId = jobExecutionResult.getJobExecutionId();
-            jobExternalService.updateJobExecutionStatus(jobExecutionId, ExecutionStatus.FAILURE);
-            sendErrorEmail(jobExecutionId);
         }
 
         jobExternalService.updateJobExecutionResult(jobExecutionResult);
+        return result;
     }
 
     private void sendErrorEmail(Long jobExecutionId){

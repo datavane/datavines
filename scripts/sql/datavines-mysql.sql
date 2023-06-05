@@ -559,6 +559,7 @@ DROP TABLE IF EXISTS `dv_job_execution_result`;
 CREATE TABLE `dv_job_execution_result` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `job_execution_id` bigint(20) DEFAULT NULL COMMENT '任务执行实例ID',
+  `metric_unique_key` varchar(255) DEFAULT NULL COMMENT '规则运行唯一标识',
   `metric_type` varchar(255) DEFAULT NULL COMMENT '规则类型',
   `metric_dimension` varchar(255) DEFAULT NULL COMMENT '规则维度',
   `metric_name` varchar(255) DEFAULT NULL COMMENT '规则名称',
@@ -575,7 +576,7 @@ CREATE TABLE `dv_job_execution_result` (
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `execution_id_un` (`job_execution_id`) USING BTREE
+  UNIQUE KEY `execution_id_un` (`job_execution_id`,`metric_unique_key`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='规则作业运行结果';
 
 -- ----------------------------

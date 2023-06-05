@@ -27,6 +27,7 @@ public class MySQLSink extends BaseJdbcSink {
         return "CREATE TABLE `dv_job_execution_result` (\n" +
                 "    `id` bigint(20) NOT NULL AUTO_INCREMENT,\n" +
                 "    `job_execution_id` bigint(20) DEFAULT NULL,\n" +
+                "    `metric_unique_key` varchar(255) DEFAULT NULL,\n" +
                 "    `metric_type` varchar(255) DEFAULT NULL,\n" +
                 "    `metric_dimension` varchar(255) DEFAULT NULL,\n" +
                 "    `metric_name` varchar(255) DEFAULT NULL,\n" +

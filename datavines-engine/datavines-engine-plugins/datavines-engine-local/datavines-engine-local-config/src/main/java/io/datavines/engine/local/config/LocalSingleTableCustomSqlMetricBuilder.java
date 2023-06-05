@@ -46,7 +46,7 @@ public class LocalSingleTableCustomSqlMetricBuilder extends LocalSingleTableMetr
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
-
+                metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
                 String metricType = parameter.getMetricType();
                 SqlMetric sqlMetric = PluginLoader
                         .getPluginLoader(SqlMetric.class)

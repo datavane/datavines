@@ -165,6 +165,10 @@ public class JobExternalService {
         return jobExecutionResultService.getByJobExecutionId(jobExecutionId);
     }
 
+    public List<JobExecutionResult> listJobExecutionResultByJobExecutionId(long jobExecutionId) {
+        return jobExecutionResultService.listByJobExecutionId(jobExecutionId);
+    }
+
     public int deleteJobExecutionResultByJobExecutionId(long jobExecutionId) {
         return jobExecutionResultService.deleteByJobExecutionId(jobExecutionId);
     }

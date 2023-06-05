@@ -38,6 +38,9 @@ public class JobExecutionResult implements Serializable {
     @TableField(value = "job_execution_id")
     private Long jobExecutionId;
 
+    @TableField(value = "metric_unique_key")
+    private String metricUniqueKey;
+
     @TableField(value = "metric_name")
     private String metricName;
 
