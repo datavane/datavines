@@ -14,13 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.entity.job.builder;
+package io.datavines.server.dqc.coordinator.builder;
 
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.utils.JSONUtils;
+import io.datavines.server.utils.JobParameterUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class DataQualityJobParameterBuilder implements ParameterBuilder {
         List<BaseJobParameter> jobParameters = JSONUtils.toList(jobParameter, BaseJobParameter.class);
 
         if (CollectionUtils.isNotEmpty(jobParameters)) {
+            jobParameters = JobParameterUtils.regenerateJobParameterList(jobParameters);
             JobExecutionParameter jobExecutionParameter = new JobExecutionParameter();
             String database = "";
             for (BaseJobParameter metricJobParameter : jobParameters) {

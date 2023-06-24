@@ -91,12 +91,18 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
 
     @Override
     public JobExecutionResultVO getResultVOByJobExecutionId(long jobExecutionId) {
-        JobExecutionResultVO jobExecutionResultVO = new JobExecutionResultVO();
-        Map<String,String> parameters = new HashMap<>();
+
         JobExecutionResult jobExecutionResult = baseMapper.getOne(jobExecutionId);
         if (jobExecutionResult == null) {
             return null;
         }
+
+        return generateJobExecutionResultVO(jobExecutionId, jobExecutionResult);
+    }
+
+    private JobExecutionResultVO generateJobExecutionResultVO(long jobExecutionId, JobExecutionResult jobExecutionResult) {
+        JobExecutionResultVO jobExecutionResultVO = new JobExecutionResultVO();
+        Map<String,String> parameters = new HashMap<>();
         parameters.put("actual_value", String.valueOf(jobExecutionResult.getActualValue()));
         parameters.put("expected_value", String.valueOf(jobExecutionResult.getExpectedValue()));
         parameters.put("threshold", String.valueOf(jobExecutionResult.getThreshold()));
@@ -145,8 +151,22 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobExecutionResult.getMetricName());
         jobExecutionResultVO.setMetricName(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()));
         jobExecutionResultVO.setResultFormulaFormat(PlaceholderUtils.replacePlaceholders(resultFormulaFormat, parameters, true));
-
         return jobExecutionResultVO;
+    }
+
+    @Override
+    public List<JobExecutionResultVO> getResultVOListByJobExecutionId(long jobExecutionId) {
+        List<JobExecutionResult> jobExecutionResultList = listByJobExecutionId(jobExecutionId);
+        if (CollectionUtils.isEmpty(jobExecutionResultList)) {
+            return new ArrayList<>();
+        }
+
+        List<JobExecutionResultVO> result = new ArrayList<>();
+        for (JobExecutionResult jobExecutionResult : jobExecutionResultList) {
+            result.add(generateJobExecutionResultVO(jobExecutionId,jobExecutionResult));
+        }
+
+        return result;
     }
 
     @Override

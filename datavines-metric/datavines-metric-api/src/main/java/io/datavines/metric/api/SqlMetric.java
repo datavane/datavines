@@ -16,6 +16,7 @@
  */
 package io.datavines.metric.api;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -83,4 +84,12 @@ public interface SqlMetric {
     }
 
     List<DataVinesDataType> suitableType();
+
+    default boolean supportMultiple() {
+        return false;
+    }
+
+    default List<Map<String,Object>> getMetricParameter(Map<String,Object> metricParameter) {
+        return Collections.singletonList(metricParameter);
+    }
 }

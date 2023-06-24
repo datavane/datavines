@@ -27,7 +27,7 @@ import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.entity.job.NotificationParameter;
 import io.datavines.common.entity.job.SubmitJob;
-import io.datavines.common.entity.job.builder.JobExecutionParameterBuilderFactory;
+import io.datavines.server.dqc.coordinator.builder.JobExecutionParameterBuilderFactory;
 import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.JobType;
@@ -54,6 +54,7 @@ import io.datavines.server.repository.mapper.*;
 import io.datavines.server.repository.service.*;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.server.utils.DefaultDataSourceInfoUtils;
+import io.datavines.server.utils.JobParameterUtils;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -118,6 +119,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         BeanUtils.copyProperties(jobCreate, job);
 
         List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
+        jobParameters = JobParameterUtils.regenerateJobParameterList(jobParameters);
+
         isMetricSuitable(jobCreate.getDataSourceId(), jobParameters);
         List<String> fqnList = setJobAttribute(job, jobParameters);
         job.setName(getJobName(jobCreate.getType(), jobCreate.getParameter()));

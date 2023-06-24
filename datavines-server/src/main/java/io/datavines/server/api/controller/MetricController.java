@@ -24,6 +24,7 @@ import io.datavines.metric.api.*;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.server.api.dto.vo.Item;
+import io.datavines.server.api.dto.vo.MetricConfigItem;
 import io.datavines.server.api.dto.vo.MetricItem;
 import io.datavines.spi.PluginLoader;
 import io.swagger.annotations.Api;
@@ -40,7 +41,7 @@ import java.util.*;
 @RefreshToken
 public class MetricController {
 
-    private Set<String> excludeMetricSet = new HashSet<>(Arrays.asList("column_histogram"));
+    private final Set<String> excludeMetricSet = new HashSet<>(Collections.singletonList("column_histogram"));
 
     @ApiOperation(value = "get metric list")
     @GetMapping(value = "/list")
@@ -137,9 +138,9 @@ public class MetricController {
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name);
         if (sqlMetric != null) {
             Map<String, ConfigItem> resultSet = sqlMetric.getConfigMap();
-            List<Item> items = new ArrayList<>();
+            List<MetricConfigItem> items = new ArrayList<>();
             resultSet.forEach((k,v) -> {
-                Item item = new Item(v.getLabel(!LanguageUtils.isZhContext()),k);
+                MetricConfigItem item = new MetricConfigItem(v.getLabel(!LanguageUtils.isZhContext()),k,v.isSupportMultiple());
                 items.add(item);
             });
             return items;
