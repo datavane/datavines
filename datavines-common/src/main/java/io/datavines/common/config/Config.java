@@ -71,6 +71,10 @@ public class Config {
         return config.entrySet();
     }
 
+    public Map<String,Object> configMap() {
+        return config;
+    }
+
     public boolean isEmpty() {
         return config.size() <= 0;
     }

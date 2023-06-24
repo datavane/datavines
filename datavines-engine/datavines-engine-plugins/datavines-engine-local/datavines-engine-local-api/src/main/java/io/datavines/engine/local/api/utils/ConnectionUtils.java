@@ -17,40 +17,31 @@
 package io.datavines.engine.local.api.utils;
 
 import io.datavines.common.config.Config;
+import io.datavines.common.datasource.jdbc.JdbcDataSourceManager;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.utils.StringUtils;
+
 import org.slf4j.Logger;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectionUtils {
 
-    public static Connection getConnection(Config config) {
+    public static Connection getConnection(Config config) throws DataVinesException {
         Logger logger = LoggerFactory.getLogger(ConnectionUtils.class);
-        String driver = config.getString("driver");
-        String url = config.getString("url");
-        String username = config.getString("user");
-        String password = config.getString("password");
         try {
-            Class.forName(driver);
-        } catch (ClassNotFoundException exception) {
-            logger.error("load driver error: " + exception.getLocalizedMessage());
-            throw new DataVinesException(exception);
-        }
-
-        Connection connection = null;
-
-        try {
-            connection = DriverManager.getConnection(url, username, StringUtils.isEmpty(password) ? null : password);
+            DataSource dataSource = JdbcDataSourceManager.getInstance().getDataSource(config.configMap());
+            if (dataSource != null) {
+                logger.info("get connection success : {}", config.getString("url") + "[username=" + config.getString("user") + "]");
+                return dataSource.getConnection();
+            } else {
+                logger.error("get datasource error");
+                throw new DataVinesException("can not get datasource");
+            }
         } catch (SQLException exception) {
-            logger.error("get connection error: " + exception.getLocalizedMessage());
+            logger.error("get connection error :", exception);
             throw new DataVinesException(exception);
         }
-
-        logger.info("create connection success : {}", url + "[username=" + username + "]");
-
-        return connection;
     }
 }
