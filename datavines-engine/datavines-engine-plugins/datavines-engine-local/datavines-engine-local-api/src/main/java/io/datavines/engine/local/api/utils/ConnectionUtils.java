@@ -17,19 +17,13 @@
 package io.datavines.engine.local.api.utils;
 
 import io.datavines.common.config.Config;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
-import io.datavines.common.datasource.jdbc.JdbcDataSourceInfoManager;
 import io.datavines.common.datasource.jdbc.JdbcDataSourceManager;
-import io.datavines.common.datasource.jdbc.JdbcExecutorClient;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.utils.StringUtils;
-import lombok.extern.slf4j.Slf4j;
+
 import org.slf4j.Logger;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class ConnectionUtils {

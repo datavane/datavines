@@ -21,11 +21,8 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.Md5Utils;
 import io.datavines.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
