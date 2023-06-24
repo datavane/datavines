@@ -54,9 +54,9 @@ public class JdbcUtils {
 
     public static String getCreateTableStatement(String table, List<StructField> fields, Dialect dialect, TypeConverter typeConverter) {
         if (CollectionUtils.isNotEmpty(fields)) {
-            String columns = String.join(",", fields.stream().map(field -> {
+            String columns = fields.stream().map(field -> {
                 return dialect.quoteIdentifier(field.getName()) + " " + typeConverter.convertToOriginType(field.getDataType());
-            }).collect(Collectors.toList()));
+            }).collect(Collectors.joining(","));
 
             return String.format("CREATE TABLE IF NOT EXISTS %s (%s)", table, columns);
         }
@@ -66,13 +66,13 @@ public class JdbcUtils {
 
     public static String getInsertStatement(String table, List<StructField> fields, Dialect dialect) {
         if (CollectionUtils.isNotEmpty(fields)) {
-            String columns = String.join(",", fields.stream().map(field -> {
+            String columns = fields.stream().map(field -> {
                 return dialect.quoteIdentifier(field.getName());
-            }).collect(Collectors.toList()));
+            }).collect(Collectors.joining(","));
 
-            String placeholders = String.join(",",fields.stream().map(field -> {
+            String placeholders = fields.stream().map(field -> {
                 return "?";
-            }).collect(Collectors.toList()));
+            }).collect(Collectors.joining(","));
 
             return String.format("INSERT INTO %s (%s) VALUES (%s)", table, columns, placeholders);
         }
@@ -95,7 +95,7 @@ public class JdbcUtils {
             try {
                 isSigned = metaData.isSigned(i + 1);
             } catch (SQLException e) {
-                log.error("isSigned method : {}", e);
+                log.error("isSigned method : ", e);
             }
             boolean isNullable = metaData.isNullable(i + 1) != ResultSetMetaData.columnNoNulls;
 

@@ -19,15 +19,18 @@ package io.datavines.server.api.dto.vo;
 import lombok.Data;
 
 @Data
-public class Item {
+public class MetricConfigItem {
 
-    public Item(String label, String key) {
+    public MetricConfigItem(String label, String key, boolean supportMultiple) {
         this.label = label;
         this.key = key;
+        this.supportMultiple = supportMultiple;
     }
 
     private String label;
 
     private String key;
+
+    private boolean supportMultiple;
 
 }

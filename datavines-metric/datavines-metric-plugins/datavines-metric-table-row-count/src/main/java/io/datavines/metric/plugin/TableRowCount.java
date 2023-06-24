@@ -18,12 +18,15 @@ package io.datavines.metric.plugin;
 
 import io.datavines.common.entity.ExecuteSql;
 import io.datavines.common.enums.DataVinesDataType;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTable;
 
 import java.util.*;
+
+import static io.datavines.common.CommonConstants.TABLE;
 
 public class TableRowCount extends BaseSingleTable {
 
@@ -63,6 +66,7 @@ public class TableRowCount extends BaseSingleTable {
 
     @Override
     public Map<String, ConfigItem> getConfigMap() {
+        configMap.put("table",new ConfigItem("table", "表名", "table", true));
         return configMap;
     }
 
@@ -89,5 +93,32 @@ public class TableRowCount extends BaseSingleTable {
     @Override
     public List<DataVinesDataType> suitableType() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public boolean supportMultiple() {
+        return true;
+    }
+
+    @Override
+    public List<Map<String, Object>> getMetricParameter(Map<String, Object> metricParameter) {
+        ArrayList<Map<String, Object>> result = new ArrayList<>();
+        String table = String.valueOf(metricParameter.get(TABLE));
+        if (StringUtils.isEmpty(table)) {
+            return super.getMetricParameter(metricParameter);
+        }
+
+        String[] tables = table.split(",");
+        if (tables.length == 1) {
+            return super.getMetricParameter(metricParameter);
+        } else {
+            for (String s : tables) {
+                Map<String, Object> newMetricParameter = new HashMap<>(metricParameter);
+                newMetricParameter.put("table", s);
+                result.add(newMetricParameter);
+            }
+        }
+
+        return result;
     }
 }

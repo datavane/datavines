@@ -26,7 +26,7 @@ public class ConnectionItem {
 
     private Connection connection;
 
-    private Config config;
+    private final Config config;
 
     public ConnectionItem(Config config){
         this.config = config;

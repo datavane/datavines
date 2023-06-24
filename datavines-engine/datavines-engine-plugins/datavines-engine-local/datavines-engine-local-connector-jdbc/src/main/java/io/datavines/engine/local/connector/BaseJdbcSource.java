@@ -101,7 +101,7 @@ public class BaseJdbcSource implements LocalSource {
             try {
                  return JdbcUtils.tableExists(connectionItem.getConnection(),jdbcOptions, connectorFactory.getDialect());
             } catch (Exception e) {
-                log.error("check table {} exists error {}", config.getString(TABLE), e);
+                log.error("check table {} exists error ", config.getString(TABLE), e);
                 return false;
             }
         }

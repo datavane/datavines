@@ -36,7 +36,9 @@ public interface JobExecutionResultService extends IService<JobExecutionResult> 
 
     List<JobExecutionResult> listByJobExecutionId(long jobExecutionId);
 
-    JobExecutionResultVO getResultVOByJobExecutionId(long taskId);
+    JobExecutionResultVO getResultVOByJobExecutionId(long jobExecutionId);
+
+    List<JobExecutionResultVO> getResultVOListByJobExecutionId(long jobExecutionId);
 
     List<JobExecutionResult> listByJobIdAndTimeRange(Long jobId, String startTime, String endTime);
 }

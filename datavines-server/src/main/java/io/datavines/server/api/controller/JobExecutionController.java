@@ -79,10 +79,17 @@ public class JobExecutionController {
         return jobExecutionService.listByJobId(jobId);
     }
 
+    @Deprecated
     @ApiOperation(value = "get job execution result", response = JobExecutionResultVO.class)
     @GetMapping(value = "/result/{executionId}")
     public Object getJobExecutionResultInfo(@PathVariable("executionId") Long executionId) {
         return jobExecutionResultService.getResultVOByJobExecutionId(executionId);
+    }
+
+    @ApiOperation(value = "get job execution result", response = JobExecutionResultVO.class)
+    @GetMapping(value = "/list/result/{executionId}")
+    public Object getJobExecutionResultInfoList(@PathVariable("executionId") Long executionId) {
+        return jobExecutionResultService.getResultVOListByJobExecutionId(executionId);
     }
 
     @ApiOperation(value = "get job execution page", response = JobExecutionResultVO.class, responseContainer = "page")

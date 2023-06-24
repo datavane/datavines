@@ -24,10 +24,20 @@ public class ConfigItem {
 
     private final String key;
 
+    private final boolean supportMultiple;
+
     public ConfigItem(String esLabel, String zhLabel, String key) {
         this.esLabel = esLabel;
         this.zhLabel = zhLabel;
         this.key = key;
+        this.supportMultiple = false;
+    }
+
+    public ConfigItem(String esLabel, String zhLabel, String key, boolean supportMultiple) {
+        this.esLabel = esLabel;
+        this.zhLabel = zhLabel;
+        this.key = key;
+        this.supportMultiple = supportMultiple;
     }
 
     public String getKey() {
@@ -36,5 +46,9 @@ public class ConfigItem {
 
     public String getLabel(boolean isEn) {
         return isEn ? esLabel : zhLabel;
+    }
+
+    public boolean isSupportMultiple() {
+        return supportMultiple;
     }
 }
