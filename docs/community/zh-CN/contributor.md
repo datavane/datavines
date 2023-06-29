@@ -3,8 +3,8 @@
 ## 提交 issue
 
  - 在提交 issue 之前，请经过充分的搜索，确定该 issue 不是通过简单的检索即可以解决的问题。
- - 查看 [issue 列表](https://github.com/datavines-ops/datavines/issues)，确定该 issue 不是一个重复的问题。
- - [新建](https://github.com/datavines-ops/datavines/issues/new/choose)一个 issue 并选择您的 issue 类型。
+ - 查看 [issue 列表](https://github.com/datavane/datavines/issues)，确定该 issue 不是一个重复的问题。
+ - [新建](https://github.com/datavane/datavines/issues/new/choose)一个 issue 并选择您的 issue 类型。
  - 使用一个清晰并有描述性的标题来定义 issue。
  - 根据模板填写必要信息。
  - 请对自己提交的 issue 保持关注，在讨论中进一步提供必要信息。
@@ -13,7 +13,7 @@
 
 **1. 准备仓库**
 
-到 [DataVines GitHub Repo]( https://github.com/datavines-ops/datavines ) fork 仓库到你的 GitHub 账号。
+到 [DataVines GitHub Repo]( https://github.com/datavane/datavines ) fork 仓库到你的 GitHub 账号。
 
 克隆到本地。
 ```shell
@@ -22,7 +22,7 @@ git clone https://github.com/(your_github_name)/datavines.git
 
 添加 DataVines 远程仓库。
 ```shell
-git remote add upstream https://github.com/datavines-ops/datavines.git
+git remote add upstream https://github.com/datavane/datavines.git
 git remote -v
 ```
 
