@@ -3,8 +3,8 @@ You can report a bug, submit a new function enhancement suggestion, or submit a 
 ## Submit an Issue
 
  - Before submitting an issue, please go through a comprehensive search to make sure the problem cannot be solved just by searching.
- - Check the [Issue List](https://github.com/datavines-ops/datavines/issues) to make sure the problem is not repeated.
- - [Create](https://github.com/datavines-ops/datavines/issues/new/choose) a new issue and choose the type of issue.
+ - Check the [Issue List](https://github.com/datavane/datavines/issues) to make sure the problem is not repeated.
+ - [Create](https://github.com/datavane/datavines/issues/new/choose) a new issue and choose the type of issue.
  - Define the issue with a clear and descriptive title.
  - Fill in necessary information according to the template.
  - Please pay attention for your issue, you may need provide more information during discussion.
@@ -13,7 +13,7 @@ You can report a bug, submit a new function enhancement suggestion, or submit a 
 
 **1. Prepare repository**
 
-Go to [DataVines GitHub Repo]( https://github.com/datavines-ops/datavines ) and fork repository to your account.
+Go to [DataVines GitHub Repo]( https://github.com/datavane/datavines ) and fork repository to your account.
 
 Clone repository to local machine.
 ```shell
@@ -22,7 +22,7 @@ git clone https://github.com/(your_github_name)/datavines.git
 
 Add DataVines remote repository.
 ```shell
-git remote add upstrem https://github.com/datavines-ops/datavines.git
+git remote add upstrem https://github.com/datavane/datavines.git
 git remote -v
 ```
 
