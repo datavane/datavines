@@ -52,7 +52,7 @@ public class LocalSingleTableCustomSqlMetricBuilder extends LocalSingleTableMetr
                         .getPluginLoader(SqlMetric.class)
                         .getNewPlugin(metricType);
 
-                MetricParserUtils.operateInputParameter(inputParameter, sqlMetric, jobExecutionInfo);
+                MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
 
                 List<TransformConfig> transformConfigs = new ArrayList<>();
                 //get custom aggregate sql
