@@ -120,7 +120,7 @@ public class LocalFileSink implements LocalSink {
     private void sinkErrorData(LocalRuntimeEnvironment env) throws SQLException{
         String columnSeparator = config.getString(COLUMN_SEPARATOR);
         String outputTable = config.getString(INVALIDATE_ITEMS_TABLE);
-        if (TRUE.equals(config.getString(INVALIDATE_ITEM_CAN_OUTPUT))) {
+        if (TRUE.equals(config.getString(INVALIDATE_ITEM_CAN_OUTPUT)) && StringUtils.isNotEmpty(outputTable) && !"null".equalsIgnoreCase(outputTable)) {
             int count = 0;
             //执行统计行数语句
             Statement statement = env.getSourceConnection().getConnection().createStatement();
