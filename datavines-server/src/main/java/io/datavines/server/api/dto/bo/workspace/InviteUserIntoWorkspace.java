@@ -31,6 +31,6 @@ public class InviteUserIntoWorkspace {
     @NotBlank(message = "email cannot be empty")
     private String email;
 
-    @NotBlank(message = "workspaceId cannot be null")
+    @NotNull(message = "workspaceId cannot be null")
     private Long workspaceId;
 }
