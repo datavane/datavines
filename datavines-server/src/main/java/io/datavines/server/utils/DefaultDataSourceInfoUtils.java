@@ -23,7 +23,7 @@ import io.datavines.common.utils.JdbcUrlParser;
 import java.util.HashMap;
 import java.util.Map;
 
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.*;
 
 public class DefaultDataSourceInfoUtils {
 

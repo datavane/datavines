@@ -26,6 +26,8 @@ import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.api.SqlMetric;
 
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
+
 public class MultiTableAccuracy implements SqlMetric {
 
     private final StringBuilder sourceTableSql = new StringBuilder("SELECT * FROM ${table}");
@@ -97,7 +99,8 @@ public class MultiTableAccuracy implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems(String uniqueKey) {
+    public ExecuteSql getInvalidateItems(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
         ExecuteSql executeSql = new ExecuteSql();
         executeSql.setResultTable("invalidate_items_" + uniqueKey);
         executeSql.setSql(invalidateItemsSql.toString());
@@ -106,7 +109,8 @@ public class MultiTableAccuracy implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getActualValue(String uniqueKey) {
+    public ExecuteSql getActualValue(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
         ExecuteSql executeSql = new ExecuteSql();
         executeSql.setResultTable("invalidate_count_" + uniqueKey);
         executeSql.setSql("select count(1) as actual_value_" + uniqueKey + " from ${invalidate_items_table}");

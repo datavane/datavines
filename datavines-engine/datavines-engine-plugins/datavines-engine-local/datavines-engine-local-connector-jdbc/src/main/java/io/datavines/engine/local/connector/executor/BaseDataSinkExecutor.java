@@ -17,8 +17,8 @@
 package io.datavines.engine.local.connector.executor;
 
 import io.datavines.common.config.Config;
+import io.datavines.common.utils.ParameterUtils;
 import io.datavines.common.utils.StringUtils;
-import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import io.datavines.engine.local.api.utils.SqlUtils;
@@ -28,8 +28,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
-import static io.datavines.engine.api.ConfigConstants.INVALIDATE_ITEMS_TABLE;
-import static io.datavines.engine.api.ConfigConstants.SQL;
+import static io.datavines.common.ConfigConstants.INVALIDATE_ITEMS_TABLE;
+import static io.datavines.common.ConfigConstants.SQL;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 import static io.datavines.engine.local.connector.BaseJdbcSink.CREATE_TABLE_SQL;
 import static io.datavines.engine.local.connector.BaseJdbcSink.SINK_TABLE_NAME;
@@ -61,12 +61,12 @@ public abstract class BaseDataSinkExecutor implements ISinkExecutor {
         }
 
         String sql = config.getString(SQL);
-        sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
+        sql = ParameterUtils.convertParameterPlaceholders(sql, inputParameter);
         log.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
         if (StringUtils.isNotEmpty(sql) && !sql.contains("${")) {
             executeInsert(sql, env);
         } else {
-            log.error("output sql {} contains placeholder ${}", sql);
+            log.error("output sql {} contains placeholder", sql);
         }
     }
 

@@ -40,8 +40,8 @@ import java.sql.*;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.api.ConfigConstants.*;
-import static io.datavines.engine.api.ConfigConstants.ERROR_DATA_FILE_NAME;
+import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.ERROR_DATA_FILE_NAME;
 
 public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
 
@@ -66,7 +66,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
         try {
             sinkErrorData();
         } catch (Exception e) {
-            log.error("sink error data error : {}", e);
+            log.error("sink error data error : ", e);
             throw new DataVinesException(e);
         } finally {
             after(env, config);
@@ -270,7 +270,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                 String getSchemaQuery = dialect.getSchemaQuery(tableName);
                 return JdbcUtils.getSchema(statement.executeQuery(getSchemaQuery), dialect, typeConverter);
             } catch (Exception e) {
-                log.error("check table {} exists error {}", config.getString(INVALIDATE_ITEMS_TABLE), e);
+                log.error("check table {} exists error ：", config.getString(INVALIDATE_ITEMS_TABLE), e);
                 return null;
             }
         } else {

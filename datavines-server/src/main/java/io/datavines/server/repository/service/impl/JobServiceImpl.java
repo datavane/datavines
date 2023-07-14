@@ -70,7 +70,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.CommonConstants.LOCAL;
+import static io.datavines.common.ConfigConstants.*;
 
 @Slf4j
 @Service("jobService")
@@ -121,7 +122,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
         jobParameters = JobParameterUtils.regenerateJobParameterList(jobParameters);
 
-        isMetricSuitable(jobCreate.getDataSourceId(), jobParameters);
+        isMetricSuitable(jobCreate.getDataSourceId(), jobCreate.getDataSourceId2(), jobCreate.getEngineType(), jobParameters);
         List<String> fqnList = setJobAttribute(job, jobParameters);
         job.setName(getJobName(jobCreate.getType(), jobCreate.getParameter()));
         if (getByKeyAttribute(job)) {
@@ -172,7 +173,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         BeanUtils.copyProperties(jobUpdate, job);
         List<BaseJobParameter> jobParameters = JSONUtils.toList(jobUpdate.getParameter(), BaseJobParameter.class);
-        isMetricSuitable(jobUpdate.getDataSourceId(), jobParameters);
+        isMetricSuitable(jobUpdate.getDataSourceId(), jobUpdate.getDataSourceId2(), jobUpdate.getEngineType(), jobParameters);
         List<String> fqnList = setJobAttribute(job, jobParameters);
         job.setName(getJobName(jobUpdate.getType(), jobUpdate.getParameter()));
         job.setUpdateBy(ContextHolder.getUserId());
@@ -270,9 +271,14 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         return job.getId();
     }
 
-    private void isMetricSuitable(Long dataSourceId, List<BaseJobParameter> jobParameters) {
+    private void isMetricSuitable(long datasourceId, long datasourceId2, String engine, List<BaseJobParameter> jobParameters) {
         if (CollectionUtils.isNotEmpty(jobParameters)) {
             for (BaseJobParameter jobParameter : jobParameters) {
+
+                if (datasourceId2 !=0 && LOCAL.equalsIgnoreCase(engine) && "multi_table_accuracy".equalsIgnoreCase(jobParameter.getMetricType())) {
+                    throw new DataVinesServerException(Status.MULTI_TABLE_ACCURACY_NOT_SUPPORT_LOCAL_ENGINE);
+                }
+
                 if (StringUtils.isEmpty(getFQN(jobParameter))) {
                     throw new DataVinesServerException(Status.METRIC_JOB_RELATED_ENTITY_NOT_EXIST);
                 }
@@ -282,7 +288,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
                 }
 
                 CatalogEntityInstance columnEntity =
-                        catalogEntityInstanceService.getByDataSourceAndFQN(dataSourceId, getFQN(jobParameter));
+                        catalogEntityInstanceService.getByDataSourceAndFQN(datasourceId, getFQN(jobParameter));
                 if (columnEntity == null) {
                     return;
                 }

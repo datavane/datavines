@@ -27,7 +27,7 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.*;
 
 public class ActualValueExecutor implements ITransformExecutor {
 

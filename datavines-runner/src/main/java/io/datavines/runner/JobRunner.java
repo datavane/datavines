@@ -27,9 +27,9 @@ import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.LoggerUtils;
+import io.datavines.common.utils.ParameterUtils;
 import io.datavines.common.utils.StringUtils;
-import io.datavines.common.utils.placeholder.PlaceholderUtils;
-import io.datavines.engine.api.ConfigConstants;
+import io.datavines.common.ConfigConstants;
 import io.datavines.engine.api.engine.EngineExecutor;
 import io.datavines.metric.api.*;
 import io.datavines.notification.api.entity.SlaConfigMessage;
@@ -167,7 +167,7 @@ public class JobRunner {
         messages.add((isEn ? "Expected Value Type" : "期望值类型") + " : " + expectedValue.getNameByLanguage(isEn));
 
         String resultFormulaFormat = resultFormula.getResultFormat(isEn)+" ${operator} ${threshold}";
-        messages.add((isEn ? "Result Formula" : "检查公式") + " : " + PlaceholderUtils.replacePlaceholders(resultFormulaFormat, parameters, true));
+        messages.add((isEn ? "Result Formula" : "检查公式") + " : " + ParameterUtils.convertParameterPlaceholders(resultFormulaFormat, parameters));
 
         messages.add(isEn ? "Check Result : Failure" : "检查结果 : 异常" );
 

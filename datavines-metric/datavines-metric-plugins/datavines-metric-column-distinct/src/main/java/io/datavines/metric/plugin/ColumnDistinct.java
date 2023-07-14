@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
+
 public class ColumnDistinct extends BaseSingleTableColumn {
 
     public ColumnDistinct(){
@@ -53,12 +55,13 @@ public class ColumnDistinct extends BaseSingleTableColumn {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems(String uniqueKey) {
+    public ExecuteSql getInvalidateItems(Map<String,String> inputParameter) {
         return null;
     }
 
     @Override
-    public ExecuteSql getActualValue(String uniqueKey) {
+    public ExecuteSql getActualValue(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
         ExecuteSql executeSql = new ExecuteSql();
         executeSql.setResultTable("invalidate_count_" + uniqueKey);
         StringBuilder actualValueSql = new StringBuilder();

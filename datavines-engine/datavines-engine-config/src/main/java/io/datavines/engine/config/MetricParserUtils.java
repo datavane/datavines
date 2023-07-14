@@ -17,7 +17,9 @@
 package io.datavines.engine.config;
 
 import io.datavines.common.entity.JobExecutionInfo;
+import io.datavines.common.entity.MappingColumn;
 import io.datavines.common.utils.Md5Utils;
+import io.datavines.common.utils.ParameterUtils;
 import io.datavines.common.utils.StringUtils;
 
 import io.datavines.metric.api.ConfigItem;
@@ -26,16 +28,18 @@ import org.apache.commons.collections4.MapUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import io.datavines.common.config.TransformConfig;
 import io.datavines.common.entity.ExecuteSql;
-
-import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.metric.api.SqlMetric;
 
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.CommonConstants.AND;
+import static io.datavines.common.CommonConstants.TABLE;
+import static io.datavines.common.CommonConstants.TABLE2;
+import static io.datavines.common.ConfigConstants.*;
 
 public class MetricParserUtils {
 
@@ -81,7 +85,7 @@ public class MetricParserUtils {
             }
             Map<String,Object> config = new HashMap<>();
             config.put(INDEX,index++);
-            config.put(SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult, true));
+            config.put(SQL, ParameterUtils.convertParameterPlaceholders(executeSql.getSql(), inputParameterValueResult));
             config.put(OUTPUT_TABLE,executeSql.getResultTable());
 
             TransformConfig transformerConfig = new TransformConfig(SQL,config);
@@ -102,7 +106,7 @@ public class MetricParserUtils {
 
         Map<String,Object> config = new HashMap<>();
         config.put(INDEX, index++);
-        config.put(SQL, PlaceholderUtils.replacePlaceholders(executeSql.getSql(), inputParameterValueResult,true));
+        config.put(SQL, ParameterUtils.convertParameterPlaceholders(executeSql.getSql(), inputParameterValueResult));
         config.put(OUTPUT_TABLE, executeSql.getResultTable());
         config.put(INVALIDATE_ITEMS_TABLE, inputParameterValueResult.get(INVALIDATE_ITEMS_TABLE));
         TransformConfig transformerConfig = new TransformConfig(SQL, config);
@@ -138,5 +142,56 @@ public class MetricParserUtils {
         }
 
         return Md5Utils.getMd5(sb.toString(),true);
+    }
+
+    public static String getOnClause(List<MappingColumn> mappingColumnList, Map<String,String> inputParameterValueResult) {
+        //get on clause
+        String[] columnList = new String[mappingColumnList.size()];
+        for (int i = 0; i < mappingColumnList.size(); i++) {
+            MappingColumn column = mappingColumnList.get(i);
+            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE),column.getColumn())
+                    + column.getOperator()
+                    + getCoalesceString(inputParameterValueResult.get(TABLE2),column.getColumn2());
+        }
+
+        return String.join(AND,columnList);
+    }
+
+    public static String getWhereClause(List<MappingColumn> mappingColumnList,Map<String,String> inputParameterValueResult) {
+        String columnNotNull = "( NOT (" + getColumnIsNullStr(inputParameterValueResult.get(TABLE),getColumnListInTable(mappingColumnList)) + " ))";
+        String columnIsNull2 = "( " + getColumnIsNullStr(inputParameterValueResult.get(TABLE2),getColumnListInTable2(mappingColumnList)) + " )";
+
+        return columnNotNull + AND + columnIsNull2;
+    }
+
+    public static String getCoalesceString(String table, String column) {
+        return "coalesce(" + table + "." + column + ", '')";
+    }
+
+    public static String getColumnIsNullStr(String table, List<String> columns) {
+        String[] columnList = new String[columns.size()];
+        for (int i = 0; i < columns.size(); i++) {
+            String column = columns.get(i);
+            columnList[i] = table + "." + column + " IS NULL";
+        }
+        return  String.join(AND, columnList);
+    }
+
+    public static List<String> getColumnListInTable(List<MappingColumn> mappingColumns) {
+        List<String> list = new ArrayList<>();
+        mappingColumns.forEach(item ->
+                list.add(item.getColumn())
+        );
+
+        return list;
+    }
+
+    public static List<String> getColumnListInTable2(List<MappingColumn> mappingColumns) {
+        List<String> list = new ArrayList<>();
+        mappingColumns.forEach(item ->
+                list.add(item.getColumn2())
+        );
+
+        return list;
     }
 }

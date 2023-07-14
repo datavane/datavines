@@ -106,8 +106,8 @@ export const Inner = ({
         try {
             setLoading(true);
             const params = await metricConfigRef.current.getValues();
-            if (data.record?.id) {
-                await $http.put('/job', { ...params, id: data.record?.id, runningNow });
+            if (jobId) {
+                await $http.put('/job', { ...params, id: jobId, runningNow });
             } else {
                 let resData = {};
                 let url = '/job';

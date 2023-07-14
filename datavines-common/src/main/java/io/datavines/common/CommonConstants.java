@@ -177,4 +177,115 @@ public class CommonConstants {
     public static final String TABLE = "table";
 
     public static final String TABLE2 = "table2";
+
+    /**
+     * month_begin
+     */
+    public static final String MONTH_BEGIN = "month_begin";
+    /**
+     * add_months
+     */
+    public static final String ADD_MONTHS = "add_months";
+    /**
+     * month_end
+     */
+    public static final String MONTH_END = "month_end";
+    /**
+     * week_begin
+     */
+    public static final String WEEK_BEGIN = "week_begin";
+    /**
+     * week_end
+     */
+    public static final String WEEK_END = "week_end";
+
+    public static final String TODAY = "today";
+
+    public static final String YESTERDAY = "yesterday";
+
+    public static final String TOMORROW = "tomorrow";
+
+    public static final String MONTH_FIRST_DAY = "month_first_day";
+
+    /**
+     * month_last_day
+     */
+    public static final String MONTH_LAST_DAY = "month_last_day";
+
+    /**
+     * week_first_day
+     */
+    public static final String WEEK_FIRST_DAY = "week_first_day";
+
+    /**
+     * week_last_day
+     */
+    public static final String WEEK_LAST_DAY = "week_last_day";
+
+    /**
+     * year_week
+     */
+    public static final String YEAR_WEEK = "year_week";
+    /**
+     * timestamp
+     */
+    public static final String TIMESTAMP = "timestamp";
+
+    public static final char SUBTRACT_CHAR = '-';
+    /**
+     * hyphen
+     */
+    public static final String HYPHEN = "-";
+
+
+    public static final char ADD_CHAR = '+';
+
+    public static final char MULTIPLY_CHAR = '*';
+
+    public static final char DIVISION_CHAR = '/';
+
+    public static final char LEFT_BRACE_CHAR = '(';
+
+    public static final char RIGHT_BRACE_CHAR = ')';
+
+    public static final String ADD_STRING = "+";
+
+    public static final String MULTIPLY_STRING = "*";
+
+    public static final String DIVISION_STRING = "/";
+
+    public static final String LEFT_BRACE_STRING = "(";
+
+    public static final char P = 'P';
+
+    public static final char N = 'N';
+
+    public static final String SUBTRACT_STRING = "-";
+
+    public static final String PARAMETER_FORMAT_TIME = "yyyyMMddHHmmss";
+
+    /**
+     * system date(yyyyMMddHHmmss)
+     */
+    public static final String PARAMETER_DATETIME = "system.datetime";
+
+    /**
+     * system date(yyyymmdd) today
+     */
+    public static final String PARAMETER_CURRENT_DATE = "system.biz.curdate";
+
+    /**
+     * system date(yyyymmdd) yesterday
+     */
+    public static final String PARAMETER_BUSINESS_DATE = "system.biz.date";
+
+    /**
+     * new
+     * schedule time
+     */
+    public static final String PARAMETER_SCHEDULE_TIME = "schedule.time";
+
+    public static final String LOCAL = "local";
+
+    public static final String SPARK = "spark";
 }

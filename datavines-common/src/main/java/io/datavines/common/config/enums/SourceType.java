@@ -27,8 +27,9 @@ public enum SourceType {
      * 1 invalidate items
      * 2 actual value
      **/
-    NORMAL(0, "normal"),
-    METADATA(1, "metadata");
+    SOURCE(0, "source"),
+    TARGET(1, "target"),
+    METADATA(2, "metadata");
 
     SourceType(int code, String description){
         this.code = code;

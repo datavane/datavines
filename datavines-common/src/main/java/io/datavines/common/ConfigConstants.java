@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.api;
+package io.datavines.common;
 
 public class ConfigConstants {
 
@@ -85,7 +85,6 @@ public class ConfigConstants {
     public static final String DATA_DIR = "data_dir";
     public static final String METRIC_DATABASE = "metric_database";
     public static final String METRIC_UNIQUE_KEY = "metric_unique_key";
-
     public static final String FIX_VALUE = "fix_value";
 
     public static final String TRUE = "true";

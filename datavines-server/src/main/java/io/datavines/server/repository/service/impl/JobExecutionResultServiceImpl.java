@@ -18,7 +18,7 @@ package io.datavines.server.repository.service.impl;
 
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.common.utils.ParameterUtils;
 import io.datavines.core.utils.LanguageUtils;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.ExpectedValue;
@@ -145,12 +145,13 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
 
         jobExecutionResultVO.setCheckSubject(jobExecutionResult.getDatabaseName() + "." + jobExecutionResult.getTableName() + "." + jobExecutionResult.getColumnName());
         jobExecutionResultVO.setCheckResult(DqJobExecutionState.of(jobExecutionResult.getState()).getDescription(!LanguageUtils.isZhContext()));
-        ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(jobExecution.getEngineType() + "_" + jobExecutionResult.getExpectedType());
-
-        jobExecutionResultVO.setExpectedType(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()));
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobExecutionResult.getMetricName());
+        if (!sqlMetric.getName().equalsIgnoreCase("multi_table_value_comparison")) {
+            ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(jobExecution.getEngineType() + "_" + jobExecutionResult.getExpectedType());
+            jobExecutionResultVO.setExpectedType(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()));
+        }
         jobExecutionResultVO.setMetricName(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()));
-        jobExecutionResultVO.setResultFormulaFormat(PlaceholderUtils.replacePlaceholders(resultFormulaFormat, parameters, true));
+        jobExecutionResultVO.setResultFormulaFormat(ParameterUtils.convertParameterPlaceholders(resultFormulaFormat, parameters));
         return jobExecutionResultVO;
     }
 

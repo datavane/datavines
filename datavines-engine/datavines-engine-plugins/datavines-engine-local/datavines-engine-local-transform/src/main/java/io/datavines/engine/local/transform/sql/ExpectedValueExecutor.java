@@ -24,7 +24,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static io.datavines.engine.api.ConfigConstants.SQL;
+import static io.datavines.common.ConfigConstants.SQL;
 
 public class ExpectedValueExecutor implements ITransformExecutor {
 

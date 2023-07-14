@@ -24,4 +24,5 @@ public interface LocalSource extends Component {
     ConnectionItem getConnectionItem(LocalRuntimeEnvironment env);
 
     boolean checkTableExist();
+
 }

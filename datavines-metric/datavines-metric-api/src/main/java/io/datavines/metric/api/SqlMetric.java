@@ -50,13 +50,13 @@ public interface SqlMetric {
      * get invalidate items execute sql
      * @return ExecuteSql
      */
-    ExecuteSql getInvalidateItems(String uniqueKey);
+    ExecuteSql getInvalidateItems(Map<String,String> inputParameter);
 
     /**
      * get actual value execute sql
      * @return ExecuteSql
      */
-    ExecuteSql getActualValue(String uniqueKey);
+    ExecuteSql getActualValue(Map<String,String> inputParameter);
 
     /**
      * get actual name

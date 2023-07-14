@@ -61,13 +61,8 @@ public class SparkSinkSqlBuilder {
 
     public static String getMultiTableComparisonSinkSql() {
         return getBasicSql()
-                + " from ( ${actual_execute_sql} ) tmp1 "
-                + "join ( ${expected_execute_sql} ) tmp2";
+                + " from ( ${actual_execute_sql} ) tmp1"
+                + " join ( ${expected_execute_sql} ) tmp2";
     }
 
-    public static String getSingleTableCustomSqlSinkSql() {
-        return getBasicSql()
-                + " from ( ${actual_table} ) tmp1 "
-                + "join ${expected_table}";
-    }
 }

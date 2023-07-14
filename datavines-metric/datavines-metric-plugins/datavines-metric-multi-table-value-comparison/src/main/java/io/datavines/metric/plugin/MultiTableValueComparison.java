@@ -56,12 +56,12 @@ public class MultiTableValueComparison implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems(String uniqueKey) {
+    public ExecuteSql getInvalidateItems(Map<String,String> inputParameter) {
         return null;
     }
 
     @Override
-    public ExecuteSql getActualValue(String uniqueKey) {
+    public ExecuteSql getActualValue(Map<String,String> inputParameter) {
         return null;
     }
 
