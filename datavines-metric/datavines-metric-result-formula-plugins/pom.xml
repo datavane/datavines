@@ -36,6 +36,7 @@
         <module>datavines-metric-result-formula-percentage</module>
         <module>datavines-metric-result-formula-diff-percentage</module>
         <module>datavines-metric-result-formula-count</module>
+        <module>datavines-metric-result-formula-diff-actual-expected</module>
     </modules>
 
     <dependencies>

@@ -20,7 +20,6 @@ import io.datavines.common.config.*;
 import io.datavines.common.config.enums.SinkType;
 import io.datavines.common.entity.*;
 import io.datavines.common.entity.job.BaseJobParameter;
-import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
@@ -37,7 +36,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.datavines.common.CommonConstants.TABLE2;
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.*;
 
 public abstract class BaseSparkConfigurationBuilder extends BaseJobConfigurationBuilder {
 

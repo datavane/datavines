@@ -34,8 +34,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.datavines.engine.api.ConfigConstants.SRC_CONNECTOR_TYPE;
-import static io.datavines.engine.api.ConfigConstants.TABLE;
+import static io.datavines.common.ConfigConstants.SRC_CONNECTOR_TYPE;
+import static io.datavines.common.ConfigConstants.TABLE;
 
 public class BaseJdbcSource implements LocalSource {
 
@@ -101,7 +101,7 @@ public class BaseJdbcSource implements LocalSource {
             try {
                  return JdbcUtils.tableExists(connectionItem.getConnection(),jdbcOptions, connectorFactory.getDialect());
             } catch (Exception e) {
-                log.error("check table {} exists error ", config.getString(TABLE), e);
+                log.error("check table {} exists error :", config.getString(TABLE), e);
                 return false;
             }
         }

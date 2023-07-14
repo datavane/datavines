@@ -22,17 +22,21 @@ import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.ConfigChecker;
 import io.datavines.common.entity.ExecuteSql;
 import io.datavines.common.enums.DataVinesDataType;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.api.SqlMetric;
-import org.apache.commons.collections4.MapUtils;
+
+import static io.datavines.common.CommonConstants.TABLE;
+import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
 
 public class CustomAggregateSql implements SqlMetric {
 
-    private Set<String> requiredOptions = new HashSet<>();
+    private final Set<String> requiredOptions = new HashSet<>();
 
-    private HashMap<String,ConfigItem> configMap = new HashMap<>();
+    private final HashMap<String,ConfigItem> configMap = new HashMap<>();
 
     public CustomAggregateSql() {
         configMap.put("table",new ConfigItem("table", "表名", "table"));
@@ -59,7 +63,7 @@ public class CustomAggregateSql implements SqlMetric {
 
     @Override
     public MetricType getType() {
-        return MetricType.SINGLE_TABLE_CUSTOM_SQL;
+        return MetricType.SINGLE_TABLE;
     }
 
     @Override
@@ -83,13 +87,18 @@ public class CustomAggregateSql implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems(String uniqueKey) {
+    public ExecuteSql getInvalidateItems(Map<String,String> inputParameter) {
         return null;
     }
 
     @Override
-    public ExecuteSql getActualValue(String uniqueKey) {
-        return null;
+    public ExecuteSql getActualValue(Map<String,String> inputParameter) {
+        inputParameter.put(ACTUAL_TABLE, inputParameter.get(TABLE));
+        String actualAggregateSql = inputParameter.get(ACTUAL_AGGREGATE_SQL);
+        if (StringUtils.isNotEmpty(actualAggregateSql)) {
+            actualAggregateSql = actualAggregateSql.replace("as actual_value", "as actual_value_" + inputParameter.get(METRIC_UNIQUE_KEY));
+        }
+        return new ExecuteSql(actualAggregateSql, inputParameter.get(TABLE));
     }
 
     @Override

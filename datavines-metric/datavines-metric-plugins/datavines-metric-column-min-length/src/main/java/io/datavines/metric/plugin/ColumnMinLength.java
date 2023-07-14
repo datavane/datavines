@@ -26,6 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
+
 public class ColumnMinLength extends BaseSingleTableColumn {
 
     public ColumnMinLength(){
@@ -61,14 +63,15 @@ public class ColumnMinLength extends BaseSingleTableColumn {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems(String uniqueKey) {
+    public ExecuteSql getInvalidateItems(Map<String,String> inputParameter) {
        return null;
     }
 
     @Override
-    public ExecuteSql getActualValue(String uniqueKey) {
+    public ExecuteSql getActualValue(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
         ExecuteSql executeSql = new ExecuteSql();
-        executeSql.setResultTable("invalidate_count_"+uniqueKey);
+        executeSql.setResultTable("invalidate_count_" + uniqueKey);
         StringBuilder actualValueSql = new StringBuilder();
         actualValueSql.append("select min(length(${column})) as actual_value_").append(uniqueKey).append(" from ${table}");
         if (filters.size() > 0) {

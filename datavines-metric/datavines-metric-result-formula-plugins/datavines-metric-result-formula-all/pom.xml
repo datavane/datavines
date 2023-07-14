@@ -53,6 +53,12 @@
             <artifactId>datavines-metric-result-formula-percentage</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-result-formula-diff-actual-expected</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

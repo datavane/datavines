@@ -22,13 +22,18 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
+import java.util.TimeZone;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * date utils
  */
+@Slf4j
 public class DateUtils {
 
     private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
@@ -409,5 +414,157 @@ public class DateUtils {
         Instant instant = Instant.ofEpochMilli(timestamp);
         ZoneId zone = ZoneId.systemDefault();
         return LocalDateTime.ofInstant(instant, zone);
+    }
+
+    /**
+     * get date
+     *
+     * @param date          date
+     * @param calendarField calendarField
+     * @param amount        amount
+     * @return date
+     */
+    public static Date add(final Date date, final int calendarField, final int amount) {
+        if (date == null) {
+            throw new IllegalArgumentException("The date must not be null");
+        }
+        final Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        c.add(calendarField, amount);
+        return c.getTime();
+    }
+
+    /**
+     * starting from the current time, get how many seconds are left before the target time.
+     * targetTime = baseTime + intervalSeconds
+     *
+     * @param baseTime        base time
+     * @param intervalSeconds a period of time
+     * @return the number of seconds
+     */
+    public static long getRemainTime(Date baseTime, long intervalSeconds) {
+        if (baseTime == null) {
+            return 0;
+        }
+        long usedTime = (System.currentTimeMillis() - baseTime.getTime()) / 1000;
+        return intervalSeconds - usedTime;
+    }
+
+    public static long getRemainTime(Long baseTime, long intervalSeconds) {
+        if (baseTime == null) {
+            return 0;
+        }
+        long usedTime = (System.currentTimeMillis() - baseTime) / 1000;
+        return intervalSeconds - usedTime;
+    }
+
+    /**
+     * get current time stamp : yyyyMMddHHmmssSSS
+     *
+     * @return date string
+     */
+    public static String getCurrentTimeStamp() {
+        return getCurrentTime(YYYYMMDDHHMMSS);
+    }
+
+    /**
+     * get timezone by timezoneId
+     */
+    public static TimeZone getTimezone(String timezoneId) {
+        if (StringUtils.isEmpty(timezoneId)) {
+            return null;
+        }
+        return TimeZone.getTimeZone(timezoneId);
+    }
+
+    /**
+     * Time unit representing one thousandth of a second
+     */
+    public static class MILLISECONDS {
+
+        static final long C0 = 1L;
+        static final long C1 = C0 * 1000L;
+        static final long C2 = C1 * 1000L;
+        static final long C3 = C2 * 1000L;
+        static final long C4 = C3 * 60L;
+        static final long C5 = C4 * 60L;
+        static final long C6 = C5 * 24L;
+
+        public static long toDays(long d) {
+            return d / (C6 / C2);
+        }
+
+        public static long toDurationSeconds(long d) {
+            return (d % (C4 / C2)) / (C3 / C2);
+        }
+
+        public static long toDurationMinutes(long d) {
+            return (d % (C5 / C2)) / (C4 / C2);
+        }
+
+        public static long toDurationHours(long d) {
+            return (d % (C6 / C2)) / (C5 / C2);
+        }
+
+    }
+
+    /**
+     * transform timeStamp to local date
+     *
+     * @param timeStamp time stamp (milliseconds)
+     * @return local date
+     */
+    public static Date timeStampToDate(long timeStamp) {
+        return timeStamp <= 0L ? null : new Date(timeStamp);
+    }
+
+    /**
+     * transform date to timeStamp
+     * @param date date
+     * @return time stamp (milliseconds)
+     */
+    public static long dateToTimeStamp(Date date) {
+        return date == null ? 0L : date.getTime();
+    }
+
+    /**
+     * a default datetime formatter for the timestamp
+     */
+    private static final DateTimeFormatter DEFAULT_DATETIME_FORMATTER =
+            DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+    /**
+     * @param timeMillis timeMillis like System.currentTimeMillis()
+     * @return string formatted as yyyy-MM-dd HH:mm:ss
+     */
+    public static String formatTimeStamp(long timeMillis) {
+        return formatTimeStamp(timeMillis, DEFAULT_DATETIME_FORMATTER);
+    }
+
+    /**
+     * @param timeMillis timeMillis like System.currentTimeMillis()
+     * @param dateTimeFormatter expect formatter, like yyyy-MM-dd HH:mm:ss
+     * @return formatted string
+     */
+    public static String formatTimeStamp(long timeMillis, DateTimeFormatter dateTimeFormatter) {
+        Objects.requireNonNull(dateTimeFormatter);
+        return dateTimeFormatter.format(LocalDateTime.ofInstant(Instant.ofEpochMilli(timeMillis),
+                ZoneId.systemDefault()));
+    }
+
+    public static Date addMonths(Date date, int amount) {
+        return add(date, 2, amount);
+    }
+
+    public static Date addDays(Date date, int amount) {
+        return add(date, 5, amount);
+    }
+
+    public static Date addMinutes(Date date, int amount) {
+        return add(date, 12, amount);
+    }
+
+    public static String getTimestampString() {
+        return String.valueOf(System.currentTimeMillis());
     }
 }

@@ -24,6 +24,7 @@ import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.JSONUtils;
+import io.datavines.common.utils.ParameterUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.metric.api.ExpectedValue;
@@ -38,7 +39,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.*;
 import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public abstract class BaseJobConfigurationBuilder implements JobConfigurationBuilder {
@@ -148,8 +149,8 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                 metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 
                 // generate invalidate item execute sql
-                if (sqlMetric.getInvalidateItems(metricUniqueKey) != null) {
-                    ExecuteSql invalidateItemExecuteSql = sqlMetric.getInvalidateItems(metricUniqueKey);
+                if (sqlMetric.getInvalidateItems(metricInputParameter) != null) {
+                    ExecuteSql invalidateItemExecuteSql = sqlMetric.getInvalidateItems(metricInputParameter);
                     metricInputParameter.put(INVALIDATE_ITEMS_TABLE, invalidateItemExecuteSql.getResultTable());
                     invalidateItemExecuteSql.setResultTable(invalidateItemExecuteSql.getResultTable());
                     MetricParserUtils.setTransformerConfig(
@@ -160,15 +161,15 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                 }
 
                 // generate actual value execute sql
-                ExecuteSql actualValueExecuteSql = sqlMetric.getActualValue(metricUniqueKey);
+                ExecuteSql actualValueExecuteSql = sqlMetric.getActualValue(metricInputParameter);
                 if (actualValueExecuteSql != null) {
-                    actualValueExecuteSql.setResultTable(sqlMetric.getActualValue(metricUniqueKey).getResultTable());
+                    actualValueExecuteSql.setResultTable(sqlMetric.getActualValue(metricInputParameter).getResultTable());
                     MetricParserUtils.setTransformerConfig(
                             metricInputParameter,
                             transformConfigs,
                             actualValueExecuteSql,
                             TransformType.ACTUAL_VALUE.getDescription());
-                    metricInputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue(metricUniqueKey).getResultTable());
+                    metricInputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue(metricInputParameter).getResultTable());
                 }
 
                 // generate expected value transform sql
@@ -227,8 +228,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
         SinkConfig validateResultDataStorageConfig = new SinkConfig();
         validateResultDataStorageConfig.setPlugin(jobExecutionInfo.getValidateResultDataStorageType());
         Map<String, Object> configMap = getValidateResultSourceConfigMap(
-                PlaceholderUtils.replacePlaceholders(
-                        sql, inputParameter,true),dbTable);
+                ParameterUtils.convertParameterPlaceholders(sql, inputParameter),dbTable);
         configMap.put(JOB_EXECUTION_ID, jobExecutionInfo.getId());
         configMap.put(INVALIDATE_ITEMS_TABLE, inputParameter.get(INVALIDATE_ITEMS_TABLE));
 

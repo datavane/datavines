@@ -18,7 +18,6 @@ package io.datavines.engine.spark.config;
 
 import io.datavines.common.config.SinkConfig;
 import io.datavines.common.entity.job.BaseJobParameter;
-import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.metric.api.ExpectedValue;
@@ -29,8 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.api.ConfigConstants.METRIC_UNIQUE_KEY;
-import static io.datavines.engine.api.ConfigConstants.UNIQUE_CODE;
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
+import static io.datavines.common.ConfigConstants.UNIQUE_CODE;
 import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder {
@@ -63,7 +62,8 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
                 }
 
                 //get the task data storage parameter
-                SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(expectedValue, taskSinkSql, "dv_job_execution_result", metricInputParameter);
+                SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(
+                        expectedValue, taskSinkSql, "dv_job_execution_result", metricInputParameter);
                 sinkConfigs.add(taskResultSinkConfig);
 
                 //get the error data storage parameter

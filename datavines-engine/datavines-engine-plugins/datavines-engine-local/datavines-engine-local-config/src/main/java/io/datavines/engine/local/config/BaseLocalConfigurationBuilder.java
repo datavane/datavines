@@ -20,9 +20,7 @@ import io.datavines.common.config.*;
 import io.datavines.common.config.enums.SourceType;
 import io.datavines.common.entity.*;
 import io.datavines.common.entity.job.BaseJobParameter;
-import io.datavines.common.entity.job.DataQualityJobParameter;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.config.BaseJobConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
@@ -31,7 +29,8 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.CommonConstants.TABLE2;
+import static io.datavines.common.ConfigConstants.*;
 
 public abstract class BaseLocalConfigurationBuilder extends BaseJobConfigurationBuilder {
 
@@ -46,7 +45,8 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
     protected List<SourceConfig> getSourceConfigs() throws DataVinesException {
         List<SourceConfig> sourceConfigs = new ArrayList<>();
         boolean isAddValidateResultDataSource = false;
-        Set<String> connectorSet = new HashSet<>();
+        Set<String> sourceConnectorSet = new HashSet<>();
+        Set<String> targetConnectorSet = new HashSet<>();
         List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
         if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
             for (BaseJobParameter parameter : metricJobParameterList) {
@@ -74,22 +74,22 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     invalidateItemCanOutput &= Boolean.parseBoolean(connectorFactory.getDialect().invalidateItemCanOutput());
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 
-                    if (connectorSet.contains(connectorUUID)) {
+                    if (sourceConnectorSet.contains(connectorUUID)) {
                         continue;
                     }
                     SourceConfig sourceConfig = new SourceConfig();
                     sourceConfig.setPlugin(connectorFactory.getCategory());
                     sourceConfig.setConfig(connectorParameterMap);
-                    sourceConfig.setType(SourceType.NORMAL.getDescription());
+                    sourceConfig.setType(SourceType.SOURCE.getDescription());
                     sourceConfigs.add(sourceConfig);
-                    connectorSet.add(connectorUUID);
+                    sourceConnectorSet.add(connectorUUID);
                 }
 
                 if (jobExecutionParameter.getConnectorParameter2() != null && jobExecutionParameter.getConnectorParameter2().getParameters() !=null) {
                     ConnectorParameter connectorParameter2 = jobExecutionParameter.getConnectorParameter2();
                     Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter2.getParameters());
                     connectorParameterMap.putAll(metricInputParameter);
-
+                    connectorParameterMap.put(TABLE,metricInputParameter.get(TABLE2));
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
                             .getNewPlugin(connectorParameter2.getType());
@@ -100,17 +100,24 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     String outputTable = metricInputParameter.get(TARGET_TABLE);
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
+                    connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
+                    metricInputParameter.put(REGEX_KEY, connectorFactory.getDialect().getRegexKey());
+                    metricInputParameter.put(NOT_REGEX_KEY, connectorFactory.getDialect().getNotRegexKey());
+                    metricInputParameter.put(STRING_TYPE, connectorFactory.getDialect().getStringType());
+                    metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
+                    invalidateItemCanOutput &= Boolean.parseBoolean(connectorFactory.getDialect().invalidateItemCanOutput());
+                    metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 
-                    if (connectorSet.contains(connectorUUID)) {
+                    if (targetConnectorSet.contains(connectorUUID)) {
                         continue;
                     }
 
                     SourceConfig sourceConfig = new SourceConfig();
                     sourceConfig.setPlugin(connectorFactory.getCategory());
                     sourceConfig.setConfig(connectorParameterMap);
-                    sourceConfig.setType(SourceType.NORMAL.getDescription());
+                    sourceConfig.setType(SourceType.TARGET.getDescription());
                     sourceConfigs.add(sourceConfig);
-                    connectorSet.add(connectorUUID);
+                    targetConnectorSet.add(connectorUUID);
                 }
 
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();

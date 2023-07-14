@@ -25,6 +25,8 @@ import io.datavines.metric.api.SqlMetric;
 
 import java.util.*;
 
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
+
 public abstract class BaseSingleTable implements SqlMetric {
 
     protected StringBuilder invalidateItemsSql = new StringBuilder("select * from ${table}");
@@ -43,17 +45,18 @@ public abstract class BaseSingleTable implements SqlMetric {
     }
 
     @Override
-    public ExecuteSql getInvalidateItems(String uniqueKey) {
+    public ExecuteSql getInvalidateItems(Map<String,String> inputParameter) {
         ExecuteSql executeSql = new ExecuteSql();
-        executeSql.setResultTable("invalidate_items_" + uniqueKey);
+        executeSql.setResultTable("invalidate_items_" + inputParameter.get(METRIC_UNIQUE_KEY));
         executeSql.setSql(invalidateItemsSql.toString());
         executeSql.setErrorOutput(isInvalidateItemsCanOutput());
         return executeSql;
     }
 
     @Override
-    public ExecuteSql getActualValue(String uniqueKey) {
+    public ExecuteSql getActualValue(Map<String,String> inputParameter) {
         ExecuteSql executeSql = new ExecuteSql();
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
         executeSql.setResultTable("invalidate_count_" + uniqueKey);
         String actualValueSql = "select count(1) as actual_value_"+ uniqueKey +" from ${invalidate_items_table}";
         executeSql.setSql(actualValueSql);

@@ -51,8 +51,14 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
 
         sources.forEach(localSource -> {
             switch (SourceType.of(localSource.getConfig().getString(PLUGIN_TYPE))){
-                case NORMAL:
+                case SOURCE:
                     localRuntimeEnvironment.setSourceConnection(localSource.getConnectionItem(localRuntimeEnvironment));
+                    if (!localSource.checkTableExist()) {
+                        throw new DataVinesException("source table is not exist");
+                    }
+                    break;
+                case TARGET:
+                    localRuntimeEnvironment.setTargetConnection(localSource.getConnectionItem(localRuntimeEnvironment));
                     if (!localSource.checkTableExist()) {
                         throw new DataVinesException("target table is not exist");
                     }

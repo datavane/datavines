@@ -20,19 +20,13 @@ import io.datavines.common.config.SinkConfig;
 import io.datavines.common.config.enums.SinkType;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.utils.StringUtils;
-import io.datavines.metric.api.ExpectedValue;
-import io.datavines.spi.PluginLoader;
-import io.datavines.storage.api.StorageFactory;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.*;
 
 public class LocalDataProfileMetricBuilder extends BaseLocalConfigurationBuilder {
 

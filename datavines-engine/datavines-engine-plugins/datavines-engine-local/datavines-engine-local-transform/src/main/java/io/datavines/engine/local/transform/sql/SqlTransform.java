@@ -32,13 +32,13 @@ import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static io.datavines.engine.api.ConfigConstants.INVALIDATE_ITEMS_TABLE;
-import static io.datavines.engine.api.ConfigConstants.SQL;
+import static io.datavines.common.ConfigConstants.INVALIDATE_ITEMS_TABLE;
+import static io.datavines.common.ConfigConstants.SQL;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
 public class SqlTransform implements LocalTransform {
 
-    private Logger logger = LoggerFactory.getLogger(SqlTransform.class);
+    private final Logger logger = LoggerFactory.getLogger(SqlTransform.class);
 
     private Config config = new Config();
 
@@ -100,6 +100,9 @@ public class SqlTransform implements LocalTransform {
                     break;
                 case EXPECTED_VALUE_FROM_SOURCE :
                     resultList = new ExpectedValueExecutor().execute(env.getSourceConnection().getConnection(), config);
+                    break;
+                case EXPECTED_VALUE_FROM_TARGET_SOURCE:
+                    resultList = new ExpectedValueExecutor().execute(env.getTargetConnection().getConnection(), config);
                     break;
                 default:
                     break;

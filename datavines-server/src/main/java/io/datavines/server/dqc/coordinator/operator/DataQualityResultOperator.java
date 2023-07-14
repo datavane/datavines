@@ -20,7 +20,7 @@ import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.OperatorType;
 import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.common.utils.ParameterUtils;
 import io.datavines.core.utils.LanguageUtils;
 import io.datavines.metric.api.*;
 import io.datavines.notification.api.entity.SlaConfigMessage;
@@ -43,7 +43,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.*;
 
-import static io.datavines.engine.api.ConfigConstants.FIX_VALUE;
+import static io.datavines.common.ConfigConstants.FIX_VALUE;
 
 @Component
 public class DataQualityResultOperator {
@@ -171,7 +171,7 @@ public class DataQualityResultOperator {
         messages.add((isEn ? "Expected Value Type" : "期望值类型") + " : " + expectedValue.getNameByLanguage(isEn));
 
         String resultFormulaFormat = resultFormula.getResultFormat(isEn)+" ${operator} ${threshold}";
-        messages.add((isEn ? "Result Formula" : "检查公式") + " : " + PlaceholderUtils.replacePlaceholders(resultFormulaFormat, parameters, true));
+        messages.add((isEn ? "Result Formula" : "检查公式") + " : " + ParameterUtils.convertParameterPlaceholders(resultFormulaFormat, parameters));
 
         messages.add(isEn ? "Check Result : Failure" : "检查结果 : 异常" );
 

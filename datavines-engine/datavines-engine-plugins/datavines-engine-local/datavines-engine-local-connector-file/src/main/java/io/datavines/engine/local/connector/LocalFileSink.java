@@ -19,8 +19,8 @@ package io.datavines.engine.local.connector;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
 import io.datavines.common.config.enums.SinkType;
+import io.datavines.common.utils.ParameterUtils;
 import io.datavines.common.utils.StringUtils;
-import io.datavines.common.utils.placeholder.PlaceholderUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.connector.api.TypeConverter;
 import io.datavines.engine.api.env.RuntimeEnvironment;
@@ -41,12 +41,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.*;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
 public class LocalFileSink implements LocalSink {
 
-    private Logger log = LoggerFactory.getLogger(LocalFileSink.class);
+    private final Logger log = LoggerFactory.getLogger(LocalFileSink.class);
 
     private Config config = new Config();
 
@@ -66,7 +66,7 @@ public class LocalFileSink implements LocalSink {
             case ACTUAL_VALUE:
             case VALIDATE_RESULT:
                 String sql = config.getString(SQL);
-                sql = PlaceholderUtils.replacePlaceholders(sql, inputParameter,true);
+                sql = ParameterUtils.convertParameterPlaceholders(sql, inputParameter);
                 FileUtils.writeToLocal(parseSqlToList(sql), validateResultDataDir,config.getString(PLUGIN_TYPE).toLowerCase());
                 log.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
                 break;

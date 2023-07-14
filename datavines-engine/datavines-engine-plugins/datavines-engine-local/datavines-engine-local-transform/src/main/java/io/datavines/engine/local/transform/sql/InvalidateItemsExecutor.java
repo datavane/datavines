@@ -17,19 +17,13 @@
 package io.datavines.engine.local.transform.sql;
 
 import io.datavines.common.config.Config;
-import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.connector.api.TypeConverter;
 import io.datavines.engine.local.api.entity.ResultList;
-import io.datavines.engine.local.api.entity.ResultListWithColumns;
-import io.datavines.engine.local.api.utils.FileUtils;
-import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static io.datavines.engine.api.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.*;
 
 @Slf4j
 public class InvalidateItemsExecutor implements ITransformExecutor {
