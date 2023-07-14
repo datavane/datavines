@@ -28,9 +28,7 @@ table column need to check
         "metricType":"column_unique",
         "metricParameter":{
             "table":"jobExecution",
-            "column":"parameter",
-            "comparator": ">",
-            "length": 50
+            "column":"parameter"
         },
         "srcConnectorParameter":{
             "type":"postgresql",
