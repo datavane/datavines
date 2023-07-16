@@ -32,16 +32,6 @@ public class HiveConnector extends JdbcConnector {
     }
 
     @Override
-    public ResultSet getMetadataColumns(DatabaseMetaData metaData, String catalog, String schema, String tableName, String columnName) throws SQLException {
-        return metaData.getColumns(catalog, schema, tableName, columnName);
-    }
-
-    @Override
-    public ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {
-        return metaData.getTables(null, schema, null, TABLE_TYPES);
-    }
-
-    @Override
     protected ResultSet getPrimaryKeys(DatabaseMetaData metaData, String catalog, String schema, String tableName) throws SQLException {
         return null;
     }
