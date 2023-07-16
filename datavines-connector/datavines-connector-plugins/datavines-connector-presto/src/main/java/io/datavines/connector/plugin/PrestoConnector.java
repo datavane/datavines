@@ -36,16 +36,6 @@ public class PrestoConnector extends JdbcConnector {
     }
 
     @Override
-    public ResultSet getMetadataColumns(DatabaseMetaData metaData, String catalog, String schema, String tableName, String columnName) throws SQLException {
-        return metaData.getColumns(catalog, schema, tableName, "%");
-    }
-
-    @Override
-    public ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {
-        return metaData.getTables(catalog, schema, null, TABLE_TYPES);
-    }
-
-    @Override
     public ResultSet getMetadataDatabases(Connection connection) throws SQLException {
         java.sql.Statement stmt = connection.createStatement();
         return stmt.executeQuery("SHOW SCHEMAS");

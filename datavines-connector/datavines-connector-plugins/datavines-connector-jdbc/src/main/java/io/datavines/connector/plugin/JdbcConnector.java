@@ -216,10 +216,78 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         try {
             result = mapper.writeValueAsString(params);
         } catch (JsonProcessingException e) {
-            logger.error("json parse error : {}", e);
+            logger.error("json parse error : ", e);
         }
 
         return result;
+    }
+
+    private List<String> getPrimaryKeys(String catalog, String schema, String tableName, DatabaseMetaData metaData) {
+        ResultSet rs = null;
+        List<String> primaryKeys = new ArrayList<>();
+        try {
+
+            rs = getPrimaryKeys(metaData, catalog, schema, tableName);
+
+            if (rs == null) {
+                return primaryKeys;
+            }
+            while (rs.next()) {
+                primaryKeys.add(rs.getString("COLUMN_NAME"));
+            }
+        } catch (Exception e) {
+            logger.error(e.toString(), e);
+        } finally {
+            JdbcDataSourceUtils.closeResult(rs);
+        }
+        return primaryKeys;
+    }
+
+    public List<ColumnInfo> getColumns(String catalog, String schema, String tableName, DatabaseMetaData metaData) {
+        ResultSet rs = null;
+        List<ColumnInfo> columnList = new ArrayList<>();
+        try {
+            rs = getMetadataColumns(metaData, catalog, schema, tableName, "%");
+            if (rs == null) {
+                return columnList;
+            }
+            while (rs.next()) {
+                String name = rs.getString("COLUMN_NAME");
+                String rawType = rs.getString("TYPE_NAME");
+                String comment = rs.getString("REMARKS");
+                columnList.add(new ColumnInfo(name, rawType, comment,false));
+            }
+        } catch (Exception e) {
+            logger.error(e.toString(), e);
+        } finally {
+            JdbcDataSourceUtils.closeResult(rs);
+        }
+        return columnList;
+    }
+
+    @Override
+    public List<String> keyProperties() {
+        return Arrays.asList("host","port","database");
+    }
+
+
+    protected ResultSet getMetadataDatabases(Connection connection) throws SQLException {
+        java.sql.Statement stmt = connection.createStatement();
+        return stmt.executeQuery("show databases");
+    }
+
+    protected ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {
+        return metaData.getTables(catalog, schema, null, TABLE_TYPES);
+    }
+
+    protected ResultSet getMetadataColumns(DatabaseMetaData metaData,
+                                                    String catalog, String schema,
+                                                    String tableName, String columnName) throws SQLException {
+        return metaData.getColumns(catalog, schema, tableName, columnName);
+    }
+
+    protected ResultSet getPrimaryKeys(DatabaseMetaData metaData,String catalog, String schema, String tableName) throws SQLException {
+        return metaData.getPrimaryKeys(schema, null, tableName);
     }
 
     protected InputParam getHostInput(boolean isEn) {
@@ -287,66 +355,4 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
                 .build();
     }
 
-    private List<String> getPrimaryKeys(String catalog, String schema, String tableName, DatabaseMetaData metaData) {
-        ResultSet rs = null;
-        List<String> primaryKeys = new ArrayList<>();
-        try {
-
-            rs = getPrimaryKeys(metaData, catalog, schema, tableName);
-
-            if (rs == null) {
-                return primaryKeys;
-            }
-            while (rs.next()) {
-                primaryKeys.add(rs.getString("COLUMN_NAME"));
-            }
-        } catch (Exception e) {
-            logger.error(e.toString(), e);
-        } finally {
-            JdbcDataSourceUtils.closeResult(rs);
-        }
-        return primaryKeys;
-    }
-
-    public List<ColumnInfo> getColumns(String catalog, String schema, String tableName, DatabaseMetaData metaData) {
-        ResultSet rs = null;
-        List<ColumnInfo> columnList = new ArrayList<>();
-        try {
-            rs = getMetadataColumns(metaData, catalog, schema, tableName, "%");
-            if (rs == null) {
-                return columnList;
-            }
-            while (rs.next()) {
-                String name = rs.getString("COLUMN_NAME");
-                String rawType = rs.getString("TYPE_NAME");
-                String comment = rs.getString("REMARKS");
-                columnList.add(new ColumnInfo(name, rawType, comment,false));
-            }
-        } catch (Exception e) {
-            logger.error(e.toString(), e);
-        } finally {
-            JdbcDataSourceUtils.closeResult(rs);
-        }
-        return columnList;
-    }
-
-    @Override
-    public List<String> keyProperties() {
-        return Arrays.asList("host","port","database");
-    }
-
-    protected abstract ResultSet getMetadataColumns(DatabaseMetaData metaData,
-                                                    String catalog, String schema,
-                                                    String tableName, String columnName) throws SQLException;
-
-    protected abstract ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException;
-
-    protected ResultSet getPrimaryKeys(DatabaseMetaData metaData,String catalog, String schema, String tableName) throws SQLException {
-        return metaData.getPrimaryKeys(schema, null, tableName);
-    }
-
-    protected ResultSet getMetadataDatabases(Connection connection) throws SQLException {
-        java.sql.Statement stmt = connection.createStatement();
-        return stmt.executeQuery("show databases");
-    }
 }
