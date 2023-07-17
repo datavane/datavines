@@ -64,7 +64,7 @@ $ mvn clean package -Prelease -DskipTests
 - 支持**表行数趋势**监控 
 - 支持列的**数据分布**情况查看
 
-![数据目录](docs/img/data-catalog.jpg)
+![数据目录](docs/img/data-profile.jpg)
 
 ### 插件化设计
 
@@ -119,7 +119,7 @@ $ mvn clean package -Prelease -DskipTests
 
 
 ## License
-`Datavines` 基于 [Apache License 2.0](LICENSE) 协议。`Datavines` 依赖了一些第三方组件，它们的开源协议也为 `Apache License 2.0` 或者兼容 `Apache License 2.0`， 此外 `DataVines` 也直接引用或者修改了 `Apache DolphinScheduler`、`SeaTunnel` 以及 `Dubbo` 中的一些代码，均为 `Apache License 2.0` 协议的，感谢这些项目的贡献。
+`Datavines` 基于 [Apache License 2.0](LICENSE) 协议。`Datavines` 依赖了一些第三方组件，它们的开源协议也为 `Apache License 2.0` 或者兼容 `Apache License 2.0`， 此外 `Datavines` 也直接引用或者修改了 `Apache DolphinScheduler`、`SeaTunnel` 以及 `Dubbo` 中的一些代码，均为 `Apache License 2.0` 协议的，感谢这些项目的贡献。
 
 ## 社交媒体
 

@@ -45,12 +45,12 @@ $ mvn clean package -Prelease -DskipTests
 ### Data Quality
 
 - Built-in **27** data quality check rules
-- Supports **4** data quality check rule types
+- Support **4** data quality check rule types
     - Single Table-Column Check
-    - Single Table custom `SQL` check 
+    - Single Table Custom `SQL` check 
     - Cross Table Accuracy Check
     - Two Table Value Comparison Check
-  - Supports schedule tasks for check
+- Support schedule tasks for check
 - Support `SLA` for **check result alert**
 
 ![Data Quality](docs/img/data-quality.jpg)
@@ -62,7 +62,7 @@ $ mvn clean package -Prelease -DskipTests
 - Support **table row number trend** monitoring
 - Support **data distribution** view
 
-![数据目录](docs/img/data-catalog.jpg)
+![数据目录](docs/img/data-profile.jpg)
 
 ### Plug-in Design
 
@@ -116,7 +116,7 @@ Thank you to all the people who already contributed to Datavines!
 
 ## License
 
-Datavines is licensed under the [Apache License 2.0](LICENSE). Datavines relies on some third-party components, and their open source protocols are also Apache License 2.0 or compatible with Apache License 2.0. In addition, DataVines also directly references or modifies some codes in Apache DolphinScheduler, SeaTunnel and Dubbo, all of which are Apache License 2.0. Thanks for contributions to these projects.
+Datavines is licensed under the [Apache License 2.0](LICENSE). Datavines relies on some third-party components, and their open source protocols are also Apache License 2.0 or compatible with Apache License 2.0. In addition, Datavines also directly references or modifies some codes in Apache DolphinScheduler, SeaTunnel and Dubbo, all of which are Apache License 2.0. Thanks for contributions to these projects.
 
 ## Social Media
 
