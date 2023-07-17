@@ -1,4 +1,0 @@
-# Notification Plugins
-
-| name | doc | 
-|:----:|:---:|
