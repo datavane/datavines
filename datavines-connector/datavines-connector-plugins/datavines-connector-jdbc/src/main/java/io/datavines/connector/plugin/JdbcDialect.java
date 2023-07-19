@@ -19,9 +19,23 @@ package io.datavines.connector.plugin;
 import io.datavines.connector.api.Dialect;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static io.datavines.common.ConfigConstants.*;
 
 public abstract class JdbcDialect implements Dialect {
+
+    protected final HashMap<String,String> dialectKeyMap = new HashMap<>();
+
+    @Override
+    public Map<String, String> getDialectKeyMap() {
+        dialectKeyMap.put(REGEX_KEY, "${column} regexp '${regexp}'");
+        dialectKeyMap.put(NOT_REGEX_KEY, "${column} not regexp '${regexp}'");
+        dialectKeyMap.put(STRING_TYPE, "varchar");
+        return dialectKeyMap;
+    }
 
     @Override
     public String getColumnPrefix() {
@@ -34,17 +48,8 @@ public abstract class JdbcDialect implements Dialect {
     }
 
     @Override
-    public String getRegexKey(){
-        return "${column} regexp '${regexp}'";
-    }
-
-    @Override
-    public String getNotRegexKey() {
-        return "${column} not regexp '${regexp}'";
-    }
-
-    @Override
     public List<String> getExcludeDatabases() {
         return Arrays.asList("sys", "information_schema", "performance_schema", "mysql");
     }
+
 }
