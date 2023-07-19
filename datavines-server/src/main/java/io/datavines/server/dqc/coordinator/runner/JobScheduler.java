@@ -80,17 +80,15 @@ public class JobScheduler extends Thread {
                         if (jobExecution != null) {
                             logger.info("start submit jobExecution : {} ", JSONUtils.toJsonString(jobExecution));
                             jobExecuteManager.addExecuteCommand(jobExecution);
-                            jobExternalService.deleteCommandById(command.getId());
                             logger.info(String.format("submit success, jobExecution : %s", jobExecution.getName()) );
                         } else {
-                            jobExternalService.deleteCommandById(command.getId());
-                            logger.info(String.format("jobexecution not found , command : %s", JSONUtils.toJsonString(command)));
+                            logger.warn(String.format("jobExecution not found , command : %s", JSONUtils.toJsonString(command)));
                         }
                     } else if (CommandType.STOP == command.getType()) {
                         jobExecuteManager.addKillCommand(command.getJobExecutionId());
-                        jobExternalService.deleteCommandById(command.getId());
                         logger.info(String.format("kill task : %s", command.getJobExecutionId()) );
                     }
+                    jobExternalService.deleteCommandById(command.getId());
                     register.release(JOB_EXECUTION_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                 } else {

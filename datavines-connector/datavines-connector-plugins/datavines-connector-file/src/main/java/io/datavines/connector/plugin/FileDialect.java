@@ -38,16 +38,6 @@ public class FileDialect implements Dialect {
     }
 
     @Override
-    public String getRegexKey() {
-        return null;
-    }
-
-    @Override
-    public String getNotRegexKey() {
-        return null;
-    }
-
-    @Override
     public List<String> getExcludeDatabases() {
         return null;
     }

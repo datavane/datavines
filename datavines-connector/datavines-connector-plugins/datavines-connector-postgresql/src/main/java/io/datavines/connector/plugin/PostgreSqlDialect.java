@@ -16,20 +16,22 @@
  */
 package io.datavines.connector.plugin;
 
+import java.util.Map;
+
+import static io.datavines.common.ConfigConstants.*;
+
 public class PostgreSqlDialect extends JdbcDialect {
+
+    @Override
+    public Map<String, String> getDialectKeyMap() {
+        super.getDialectKeyMap();
+        dialectKeyMap.put(REGEX_KEY, "${column} ~ '${regexp}'");
+        dialectKeyMap.put(NOT_REGEX_KEY, "${column} !~ '${regexp}'");
+        return dialectKeyMap;
+    }
 
     @Override
     public String getDriver() {
         return "org.postgresql.Driver";
-    }
-
-    @Override
-    public String getRegexKey(){
-        return "${column} ~ '${regexp}'";
-    }
-
-    @Override
-    public String getNotRegexKey() {
-        return "${column} !~ '${regexp}'";
     }
 }

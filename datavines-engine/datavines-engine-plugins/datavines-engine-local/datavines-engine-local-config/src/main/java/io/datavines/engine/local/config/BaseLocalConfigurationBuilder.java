@@ -67,9 +67,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
-                    metricInputParameter.put(REGEX_KEY, connectorFactory.getDialect().getRegexKey());
-                    metricInputParameter.put(NOT_REGEX_KEY, connectorFactory.getDialect().getNotRegexKey());
-                    metricInputParameter.put(STRING_TYPE, connectorFactory.getDialect().getStringType());
+                    metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                     invalidateItemCanOutput &= Boolean.parseBoolean(connectorFactory.getDialect().invalidateItemCanOutput());
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
@@ -101,9 +99,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
-                    metricInputParameter.put(REGEX_KEY, connectorFactory.getDialect().getRegexKey());
-                    metricInputParameter.put(NOT_REGEX_KEY, connectorFactory.getDialect().getNotRegexKey());
-                    metricInputParameter.put(STRING_TYPE, connectorFactory.getDialect().getStringType());
+                    metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
                     invalidateItemCanOutput &= Boolean.parseBoolean(connectorFactory.getDialect().invalidateItemCanOutput());
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));

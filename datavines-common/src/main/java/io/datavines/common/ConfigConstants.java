@@ -84,6 +84,7 @@ public class ConfigConstants {
     public static final String LINE_SEPERATOR = "line_separator";
     public static final String DATA_DIR = "data_dir";
     public static final String METRIC_DATABASE = "metric_database";
+
     public static final String METRIC_UNIQUE_KEY = "metric_unique_key";
     public static final String FIX_VALUE = "fix_value";
 
@@ -92,9 +93,14 @@ public class ConfigConstants {
 
     //sql dialect on regex key
     public static final String REGEX_KEY = "regex_key";
+
     public static final String NOT_REGEX_KEY = "not_regex_key";
+
     public static final String UNIX_TIMESTAMP = "unix_timestamp";
+
+
     public static final String STRING_TYPE = "string_type";
+
     public static final String LIMIT_KEY = "limit_key";
 
     public static final String INVALIDATE_ITEMS_TABLE = "invalidate_items_table";

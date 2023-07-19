@@ -16,7 +16,18 @@
  */
 package io.datavines.connector.plugin;
 
+import java.util.Map;
+
+import static io.datavines.common.ConfigConstants.STRING_TYPE;
+
 public class HiveDialect extends JdbcDialect {
+
+    @Override
+    public Map<String, String> getDialectKeyMap() {
+        super.getDialectKeyMap();
+        dialectKeyMap.put(STRING_TYPE, "string");
+        return dialectKeyMap;
+    }
 
     @Override
     public String getDriver() {
@@ -26,10 +37,5 @@ public class HiveDialect extends JdbcDialect {
     @Override
     public String invalidateItemCanOutput() {
         return "false";
-    }
-
-    @Override
-    public String getStringType() {
-        return "string";
     }
 }

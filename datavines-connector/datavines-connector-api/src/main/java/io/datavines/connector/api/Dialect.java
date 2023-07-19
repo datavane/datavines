@@ -17,8 +17,11 @@
 package io.datavines.connector.api;
 
 import io.datavines.common.enums.DataType;
+import org.apache.commons.collections4.MapUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface Dialect {
 
@@ -28,9 +31,9 @@ public interface Dialect {
 
     String getColumnSuffix();
 
-    String getRegexKey();
-
-    String getNotRegexKey();
+    default Map<String,String> getDialectKeyMap() {
+        return new HashMap<>();
+    }
 
     List<String> getExcludeDatabases();
 
@@ -38,16 +41,12 @@ public interface Dialect {
         return "true";
     }
 
-    default String getStringType() {
-        return "varchar";
-    }
-
     default String getJDBCType(DataType dataType){
         return dataType.toString();
     }
 
     default DataType getDataType(String jdbcType) {
-        return DataType.STRING_TYPE;
+        return DataType.valueOf(jdbcType);
     }
 
     default String quoteIdentifier(String column) {
