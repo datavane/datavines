@@ -82,6 +82,9 @@ public class JobScheduler extends Thread {
                             jobExecuteManager.addExecuteCommand(jobExecution);
                             jobExternalService.deleteCommandById(command.getId());
                             logger.info(String.format("submit success, jobExecution : %s", jobExecution.getName()) );
+                        } else {
+                            jobExternalService.deleteCommandById(command.getId());
+                            logger.info(String.format("jobexecution not found , command : %s", JSONUtils.toJsonString(command)));
                         }
                     } else if (CommandType.STOP == command.getType()) {
                         jobExecuteManager.addKillCommand(command.getJobExecutionId());
