@@ -22,12 +22,16 @@ import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.socket.ConnectionSocketFactory;
 import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
@@ -39,6 +43,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Map;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -100,7 +105,7 @@ public class HttpUtils {
             logger.error("SSLContext init with KeyManagementException", e);
         }
         SSLConnectionSocketFactory socketFactory = new SSLConnectionSocketFactory(ctx, NoopHostnameVerifier.INSTANCE);
-        
+
         // set timeout、request time、socket timeout
         REQUEST_CONFIG = RequestConfig.custom().setCookieSpec(CookieSpecs.IGNORE_COOKIES)
                 .setExpectContinueEnabled(Boolean.TRUE)
@@ -130,6 +135,19 @@ public class HttpUtils {
         return getResponseContentString(httpget, httpclient);
     }
 
+    public static String post(String url, String body, Map<String,String> headers) {
+        CloseableHttpClient httpclient = HttpUtils.getInstance();
+
+        StringEntity stringEntity=new StringEntity(body, ContentType.APPLICATION_JSON);
+        HttpPost httpPost = new HttpPost(url);
+        if(headers != null && !headers.isEmpty()){
+            headers.forEach((k, v) -> httpPost.addHeader(k,v));
+        }
+
+        httpPost.setEntity(stringEntity);
+        return getResponseContentString(httpPost, httpclient);
+    }
+
     /**
      * get http response content
      *
@@ -137,7 +155,7 @@ public class HttpUtils {
      * @param httpClient httpClient
      * @return http get request response content
      */
-    public static String getResponseContentString(HttpGet httpget, CloseableHttpClient httpClient) {
+    public static String getResponseContentString(HttpRequestBase httpget, CloseableHttpClient httpClient) {
         String responseContent = null;
         CloseableHttpResponse response = null;
         try {
