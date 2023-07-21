@@ -108,6 +108,7 @@ export const Inner = ({
             const params = await metricConfigRef.current.getValues();
             if (jobId) {
                 await $http.put('/job', { ...params, id: jobId, runningNow });
+                getConfig(jobId);
             } else {
                 let resData = {};
                 let url = '/job';
@@ -122,6 +123,7 @@ export const Inner = ({
                 }
                 const res = await $http.post(url, resData);
                 setJobId(res);
+                getConfig(res);
             }
             message.success('Success!');
             if (runningNow) {
@@ -194,7 +196,7 @@ export const Inner = ({
                                 {intl.formatMessage({ id: 'jobs_tabs_config_file_download' })}
                             </Button>
                         </div>
-                        <Input.TextArea style={{ height: 'calc(100vh - 200px)', marginBottom: 24 }} readOnly value={jsonData} />
+                        <Input.TextArea key={activeKey}  style={{ height: 'calc(100vh - 200px)', marginBottom: 24 }} readOnly value={jsonData} />
                     </IF>
                 </TabPane>
             </Tabs>

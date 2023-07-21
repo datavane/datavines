@@ -44,7 +44,7 @@ public class HourCronImpl implements FunCron {
 
         String minute = parameter.get("minute");
         String[] times = {"minute"};
-        Boolean verify = verifyIsNeedParam(parameter, times);
+        boolean verify = verifyIsNeedParam(parameter, times);
         if(!verify){
             throw new DataVinesServerException(Status.CREATE_ENV_ERROR);
         }

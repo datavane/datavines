@@ -43,13 +43,13 @@ public class NhourCronImpl implements FunCron {
         MapParam mapParam = JSONUtils.parseObject(param,MapParam.class);
         Map<String ,String> parameter = mapParam.getParameter();
         String[]  times = {"nhour", "hour", "minute"};
-        Boolean verify = verifyIsNeedParam(parameter, times);
+        boolean verify = verifyIsNeedParam(parameter, times);
         if(!verify){
             throw new DataVinesServerException(Status.CREATE_ENV_ERROR);
         }
-        Integer hour = Integer.parseInt(parameter.get("hour"));
-        Integer nhour = Integer.parseInt(parameter.get("nhour"));
-        Integer minute = Integer.parseInt(parameter.get("minute"));
+        int hour = Integer.parseInt(parameter.get("hour"));
+        int nhour = Integer.parseInt(parameter.get("nhour"));
+        int minute = Integer.parseInt(parameter.get("minute"));
         Cron cron = CronBuilder.cron(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ))
                 .withYear(always())
                 .withDoW(questionMark())

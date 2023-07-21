@@ -154,7 +154,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
                 quartzExecutor.deleteJob(scheduleJobInfo);
                 addScheduleJob(jobScheduleUpdate, jobSchedule, job);
             } catch (Exception e) {
-                throw new DataVinesServerException(Status.ADD_QUARTZ_ERROR);
+                throw new DataVinesServerException(Status.ADD_QUARTZ_ERROR, e.getMessage());
             }
         }
 
