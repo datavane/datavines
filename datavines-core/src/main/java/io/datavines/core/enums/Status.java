@@ -82,7 +82,7 @@ public enum Status {
     CREATE_JOB_SCHEDULE_ERROR(14020002, "Create Job Schedule {0} Error", "创建作业定时任务 {0} 错误"),
     JOB_SCHEDULE_NOT_EXIST_ERROR(14020003, "Job Schedule {0} is not Exist error", "作业定时任务 {0} 不存在错误"),
     UPDATE_JOB_SCHEDULE_ERROR(14020004, "Update Job Schedule {0} Error", "更新作业定时任务 {0} 错误"),
-    ADD_QUARTZ_ERROR(14020005, "Create Quartz {0} Error", "创建定时器 {0} 错误"),
+    ADD_QUARTZ_ERROR(14020005, "Create Quartz Error {0}", "创建定时器错误: {0}"),
     SCHEDULE_PARAMETER_IS_NULL_ERROR(14020006, "Schedule {0} Parameter is Null Error", "定时器参数 {0} 为空错误"),
     SCHEDULE_TYPE_NOT_VALIDATE_ERROR(14020007, "Schedule type {0} is not Validate Error", "定时器类型参数 {0} 错误"),
     SCHEDULE_CYCLE_NOT_VALIDATE_ERROR(14020008, "Schedule Param Cycle {0} is not Validate Error", "定时器周期参数 {0} 错误"),

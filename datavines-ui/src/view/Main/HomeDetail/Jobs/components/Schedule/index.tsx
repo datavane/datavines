@@ -8,15 +8,14 @@ import {
     Input, InputNumber, Form, Radio, DatePicker, Col, Row, Button, FormInstance, message, Spin,
 } from 'antd';
 import useRequiredRule from '@Editor/hooks/useRequiredRule';
-import moment from 'moment';
 import { CustomSelect, useMount, useLoading } from '@/common';
 import PageContainer from '../../useAddEditJobsModal/PageContainer';
 import { pickProps } from '@/utils';
 import { $http } from '@/http';
+import dayjs from "dayjs";
 
 const get100Years = () => {
-    const year = moment().year();
-    return moment().set('year', year + 100);
+    return dayjs().add(100, "year");
 };
 type TParam = {
     cycle: string,
@@ -67,13 +66,13 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
         { label: getIntl('jobs_schedule_cycle_nminute'), value: 'nminute' },
     ];
     const WeekSrouce = [
-        { label: getIntl('jobs_monday'), value: 1, key: 'week_1' },
-        { label: getIntl('jobs_tuesday'), value: 2, key: 'week_2' },
-        { label: getIntl('jobs_wednesday'), value: 3, key: 'week_3' },
-        { label: getIntl('jobs_thursday'), value: 4, key: 'week_4' },
-        { label: getIntl('jobs_friday'), value: 5, key: 'week_5' },
-        { label: getIntl('jobs_saturday'), value: 6, key: 'week_6' },
-        { label: getIntl('jobs_sunday'), value: 0, key: 'week_0' },
+        { label: getIntl('jobs_monday'), value: 2, key: 'week_1' },
+        { label: getIntl('jobs_tuesday'), value: 3, key: 'week_2' },
+        { label: getIntl('jobs_wednesday'), value: 4, key: 'week_3' },
+        { label: getIntl('jobs_thursday'), value: 5, key: 'week_4' },
+        { label: getIntl('jobs_friday'), value: 6, key: 'week_5' },
+        { label: getIntl('jobs_saturday'), value: 7, key: 'week_6' },
+        { label: getIntl('jobs_sunday'), value: 1, key: 'week_0' },
     ];
     // @ts-ignore
     const Date = <DatePicker showTime />;
@@ -347,7 +346,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                                 <Form.Item
                                     label={intl.formatMessage({ id: 'jobs_schedule_obtain_time' })}
                                     name="startTime"
-                                    initialValue={detail?.startTime ? moment(detail?.startTime) : moment()}
+                                    initialValue={detail?.startTime ? dayjs(detail?.startTime) : dayjs()}
                                     rules={requiredRule}
                                 >
                                     {Date}
@@ -360,7 +359,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                             <Form.Item
                                 label=""
                                 name="endTime"
-                                initialValue={detail?.endTime ? moment(detail?.endTime) : get100Years()}
+                                initialValue={detail?.endTime ? dayjs(detail?.endTime) : get100Years()}
                                 rules={requiredRule}
                                 style={{ display: 'inline-block' }}
                             >
@@ -388,8 +387,8 @@ const ScheduleContainer = ({
                 type: values.type,
             };
             if (values.type !== 'offline') {
-                params.startTime = moment(values.startTime).format('YYYY-MM-DD HH:mm:ss');
-                params.endTime = moment(values.endTime).format('YYYY-MM-DD HH:mm:ss');
+                params.startTime = dayjs(values.startTime).format('YYYY-MM-DD HH:mm:ss');
+                params.endTime = dayjs(values.endTime).format('YYYY-MM-DD HH:mm:ss');
                 params.param = {};
             }
             if (values.type === 'cron') {
@@ -423,10 +422,10 @@ const ScheduleContainer = ({
                     day: res?.param?.parameter?.day,
                     wday: res?.param?.parameter?.wday ? +res.param.parameter.wday : '',
                     hour: res?.param?.parameter?.hour,
-                    endTime: res?.endTime ? moment(detail?.endTime) : get100Years(),
-                    startTime: res?.startTime ? moment(detail?.startTime) : moment(),
+                    endTime: res?.endTime ? dayjs(res?.endTime) : get100Years(),
+                    startTime: res?.startTime ? dayjs(res?.startTime) : dayjs(),
                     crontab: res?.param?.crontab,
-                    '': '',
+                    // '': '',
                     cycle: res?.param?.cycle,
                 });
                 setDetail(res);
@@ -438,10 +437,10 @@ const ScheduleContainer = ({
                     nhour: '',
                     day: '',
                     hour: '',
-                    endTime: '',
-                    startTime: '',
+                    // endTime: '',
+                    // startTime: '',
                     crontab: '',
-                    '': '',
+                    // '': '',
                     cycle: '',
                     wday: '',
 

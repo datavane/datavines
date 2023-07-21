@@ -42,12 +42,12 @@ public class NminuteCronImpl implements FunCron {
         MapParam mapParam = JSONUtils.parseObject(param,MapParam.class);
         Map<String ,String> parameter = mapParam.getParameter();
         String[]  times = {"nminute", "minute"};
-        Boolean verify = verifyIsNeedParam(parameter, times);
+        boolean verify = verifyIsNeedParam(parameter, times);
         if(!verify){
             throw new DataVinesServerException(Status.CREATE_ENV_ERROR);
         }
-        Integer nminute = Integer.parseInt(parameter.get("nminute"));
-        Integer minute = Integer.parseInt(parameter.get("minute"));
+        int nminute = Integer.parseInt(parameter.get("nminute"));
+        int minute = Integer.parseInt(parameter.get("minute"));
         Cron cron = CronBuilder.cron(CronDefinitionBuilder.instanceDefinitionFor(CronType.QUARTZ))
                 .withYear(always())
                 .withDoW(questionMark())

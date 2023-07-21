@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Table } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
-import moment from 'moment';
 import { defaultRender } from '@/utils/helper';
 import { IDvSqlTable, IDvSqlTableResultItem } from '../../type';
+import dayjs from "dayjs";
 
 type SqlTableProps = {
     style?: React.CSSProperties,
@@ -29,7 +29,7 @@ const SqlTable = ({ style, tableData }: SqlTableProps) => {
         ellipsis: true,
         render: (text) => {
             if (item.type === 'DATETIME') {
-                return text ? moment(text).format('YYYY-MM-DD HH:mm:ss') : '';
+                return text ? dayjs(text).format('YYYY-MM-DD HH:mm:ss') : '';
             }
             if (text) {
                 return defaultRender(text, 160);
