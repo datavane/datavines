@@ -34,7 +34,18 @@ public class PasswordFilterUtils {
         String tempMsg = msg;
 
         if (StringUtils.isNotEmpty(tempMsg)) {
-            tempMsg = passwordHandler(pwdPattern, tempMsg);
+            tempMsg = passwordHandler(pwdPattern, tempMsg, false);
+        }
+
+        return tempMsg;
+    }
+
+    public static String convertPasswordToNULL(Pattern pwdPattern, final String msg) {
+
+        String tempMsg = msg;
+
+        if (StringUtils.isNotEmpty(tempMsg)) {
+            tempMsg = passwordHandler(pwdPattern, tempMsg, true);
         }
 
         return tempMsg;
@@ -45,17 +56,21 @@ public class PasswordFilterUtils {
      *
      * @param logMsg original log
      */
-    private static String passwordHandler(Pattern pwdPattern, String logMsg) {
+    private static String passwordHandler(Pattern pwdPattern, String logMsg, boolean convertToNull) {
 
         Matcher matcher = pwdPattern.matcher(logMsg);
         StringBuffer sb = new StringBuffer(logMsg.length());
         while (matcher.find()) {
             String password = matcher.group();
-            String maskPassword = SensitiveLogUtils.maskDataSourcePwd(password);
+            String maskPassword = "";
+            if (!convertToNull) {
+                maskPassword = SensitiveLogUtils.maskDataSourcePwd(password);
+            }
             matcher.appendReplacement(sb, maskPassword);
         }
         matcher.appendTail(sb);
 
         return sb.toString();
     }
+
 }

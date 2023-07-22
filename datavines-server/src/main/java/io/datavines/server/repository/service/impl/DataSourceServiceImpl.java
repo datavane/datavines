@@ -231,7 +231,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
                 throw new DataVinesException("encrypt datasource param error : {}", e);
             }
 
-            dataSourceVO.setParam(PasswordFilterUtils.convertPassword(PWD_PATTERN_1, param));
+            dataSourceVO.setParam(PasswordFilterUtils.convertPasswordToNULL(PWD_PATTERN_1, param));
         });
         return dataSources;
     }

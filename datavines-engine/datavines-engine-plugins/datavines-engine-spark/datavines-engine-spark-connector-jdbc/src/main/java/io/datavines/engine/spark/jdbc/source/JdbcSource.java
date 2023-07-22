@@ -16,6 +16,7 @@
  */
 package io.datavines.engine.spark.jdbc.source;
 
+import io.datavines.common.utils.StringUtils;
 import org.apache.spark.sql.DataFrameReader;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -54,7 +55,7 @@ public class JdbcSource implements SparkBatchSource {
 
     @Override
     public CheckResult checkConfig() {
-        List<String> requiredOptions = Arrays.asList("url", "table", "user", "password");
+        List<String> requiredOptions = Arrays.asList("url", "table", "user");
 
         List<String> nonExistsOptions = new ArrayList<>();
         requiredOptions.forEach(x->{
@@ -89,8 +90,11 @@ public class JdbcSource implements SparkBatchSource {
                 .option("url", config.getString("url"))
                 .option("dbtable", config.getString("table"))
                 .option("user", config.getString("user"))
-                .option("password", config.getString("password"))
                 .option("driver", config.getString("driver"));
+
+        if (StringUtils.isNotEmpty(config.getString("password"))) {
+            reader.option("password", config.getString("password"));
+        }
 
         Config jdbcConfig = TypesafeConfigUtils.extractSubConfigThrowable(config, "jdbc.", false);
 

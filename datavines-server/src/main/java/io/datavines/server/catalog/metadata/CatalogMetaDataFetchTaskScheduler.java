@@ -73,9 +73,11 @@ public class CatalogMetaDataFetchTaskScheduler extends Thread {
                     if (task != null) {
                         log.info("start submit catalog metadata fetch task : {} ", JSONUtils.toJsonString(task));
                         catalogMetaDataFetchTaskManager.putCatalogTask(task);
-                        jobExternalService.deleteCatalogCommandById(command.getId());
-                        log.info(String.format("submit success, catalog  metadata fetch task : %s", task.getParameter()) );
+                        log.info(String.format("submit success, catalog metadata fetch task : %s", task.getParameter()) );
+                    } else {
+                        log.warn("catalog metadata fetch task {} is null", command.getTaskId());
                     }
+                    jobExternalService.deleteCatalogCommandById(command.getId());
                     register.release(CATALOG_METADATA_TASK_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                 } else {

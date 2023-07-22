@@ -23,6 +23,7 @@ import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.type.InputParam;
 import io.datavines.common.utils.JSONUtils;
+import io.datavines.common.utils.StringUtils;
 
 import java.sql.*;
 import java.util.Arrays;
@@ -52,13 +53,14 @@ public class PrestoConnector extends JdbcConnector {
         BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(jdbcConnectionInfo);
         dataSourceInfo.loadClass();
 
-        try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(), dataSourceInfo.getUser(), null)) {
+        try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(),
+                dataSourceInfo.getUser(), StringUtils.isEmpty(dataSourceInfo.getPassword()) ? null : dataSourceInfo.getPassword())) {
             boolean result = (con!=null);
             if (result) {
                 try {
                     getMetadataDatabases(con);
                 } catch (Exception e) {
-                    logger.error(e.toString(), e);
+                    logger.error("create connection error", e);
                     return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
                 }
 
@@ -67,7 +69,7 @@ public class PrestoConnector extends JdbcConnector {
 
             return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(true).build();
         } catch (SQLException e) {
-            logger.error(e.toString(), e);
+            logger.error("create connection error", e);
             return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
         }
     }

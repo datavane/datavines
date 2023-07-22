@@ -29,9 +29,9 @@ import java.util.List;
 @Slf4j
 public class MetaDataFetchTaskFailover {
 
-    private CatalogMetaDataFetchTaskService metaDataFetchTaskService;
+    private final CatalogMetaDataFetchTaskService metaDataFetchTaskService;
 
-    private CatalogMetaDataFetchTaskManager metaDataFetchTaskManager;
+    private final CatalogMetaDataFetchTaskManager metaDataFetchTaskManager;
 
     public MetaDataFetchTaskFailover(CatalogMetaDataFetchTaskManager metaDataFetchTaskManager) {
         this.metaDataFetchTaskService = SpringApplicationContext.getBean(CatalogMetaDataFetchTaskService.class);
@@ -53,7 +53,7 @@ public class MetaDataFetchTaskFailover {
                 try {
                     metaDataFetchTaskManager.putCatalogTask(task);
                 } catch (Exception e) {
-                    log.error("put the task need failover into manager error : {}", e);
+                    log.error("put the task need failover into manager error : ", e);
                 }
             });
         }
