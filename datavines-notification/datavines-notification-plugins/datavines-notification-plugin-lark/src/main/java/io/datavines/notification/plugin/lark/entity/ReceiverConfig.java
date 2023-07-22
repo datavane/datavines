@@ -28,17 +28,17 @@ import java.util.Objects;
 public class ReceiverConfig {
 
     /**
-     * 飞书群名
+     * Feishu Group Name
      */
     private String groupName;
 
     /**
-     * 飞书群webhook地址，不包含https://open.feishu.cn/open-apis/bot/v2/hook/部分
+     * Feishu Group webhook address, excluding "https://open.feishu.cn/open-apis/bot/v2/hook/" part
      */
     private String token;
 
     /**
-     * 是否@所有人
+     * Is it @ everyone
      */
     private Boolean atAll;
 

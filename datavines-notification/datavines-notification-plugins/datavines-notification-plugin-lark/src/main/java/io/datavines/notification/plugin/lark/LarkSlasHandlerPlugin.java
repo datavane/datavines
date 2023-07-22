@@ -44,19 +44,27 @@ public class LarkSlasHandlerPlugin implements SlasHandlerPlugin {
 
     private final String STRING_FALSE = "FALSE";
 
+    /**
+     * notify by Feishu
+     * @param config In config, there are not only email channels, but also channels such as Feishu. SlaSenderMessage represents each channel, and then Set<SlaConfigMessage> represents the set of people sent to A and B
+     *               config里面不仅是邮箱途径，还会是飞书等途径，SlaSenderMessage就表示各个途径，然后Set<SlaConfigMessage>表示发送给A这批人，发送给B这批人的集合
+     * @return
+     */
     @Override
-    public SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config) { // config里面不仅是邮箱途径，还会是目前扩展的飞书途径，SlaSenderMessage就表示各个途径，然后Set<SlaConfigMessage>表示发送给A这批人，发送给B这批人的集合
+    public SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config) {
         Set<SlaSenderMessage> larkSenderSet = config.keySet().stream().filter(x -> "lark".equals(x.getType())).collect(Collectors.toSet());
         SlaNotificationResult result = new SlaNotificationResult();
         ArrayList<SlaNotificationResultRecord> records = new ArrayList<>();
         result.setStatus(true);
         String subject = slaNotificationMessage.getSubject();
         String message = slaNotificationMessage.getMessage();
-        for (SlaSenderMessage senderMessage: larkSenderSet) { // 开始循环每个告警途径
+        // Start looping each alarm channel. 开始循环每个告警途径。
+        for (SlaSenderMessage senderMessage: larkSenderSet) {
             LarkSender larkSender = new LarkSender(senderMessage);
             Set<SlaConfigMessage> slaConfigMessageSet = config.get(senderMessage);
             HashSet<ReceiverConfig> toReceivers = new HashSet<>();
-            for (SlaConfigMessage receiver: slaConfigMessageSet) { // 开始循环要发送给哪组人，把通知人放到同一个list里，后续统一告警出去。
+            // At the beginning of the loop, which group of people should be sent? Place the notifier in the same list and issue a unified alarm in the future. 开始循环要发送给哪组人；把通知人放到同一个list里，后续统一告警出去。
+            for (SlaConfigMessage receiver: slaConfigMessageSet) {
                 String receiverConfigStr = receiver.getConfig();
                 ReceiverConfig receiverConfig = JSONUtils.parseObject(receiverConfigStr, ReceiverConfig.class);
                 toReceivers.add(receiverConfig);
@@ -73,8 +81,13 @@ public class LarkSlasHandlerPlugin implements SlasHandlerPlugin {
         return result;
     }
 
+    /**
+     *
+     * The alarm channel has unchanged configuration, such as the server configuration of the email channel. 告警途径，不变的配置，比如邮箱途径的服务器配置是不变的配置。
+     * @return
+     */
     @Override
-    public String getConfigSenderJson() { // 告警途径，不变的配置，比如邮箱途径的服务器配置是不变的配置，发送给谁这个是会变化的。
+    public String getConfigSenderJson() {
 
         List<PluginParams> paramsList = new ArrayList<>();
 
@@ -102,7 +115,7 @@ public class LarkSlasHandlerPlugin implements SlasHandlerPlugin {
     }
 
     @Override
-    public String getConfigJson() { // 告警人，告警给谁的配置项。
+    public String getConfigJson() {
 
         List<PluginParams> paramsList = new ArrayList<>();
 

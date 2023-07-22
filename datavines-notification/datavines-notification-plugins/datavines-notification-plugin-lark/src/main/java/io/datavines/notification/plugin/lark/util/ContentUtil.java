@@ -21,26 +21,19 @@ import java.util.Map;
 
 public class ContentUtil {
 
-
-
     public static Map<String, String> createParamMap(Object... elements) {
-
         Map<String, String> paramMap = new HashMap<>(32);
-
         if (elements.length % 2 == 1) {
             throw new RuntimeException("params length must be even!");
         }
-
         for (int i = 0; i < elements.length / 2; i++) {
             Object key = elements[2 * i];
             Object value = elements[2 * i + 1];
             if (key == null) {
                 continue;
             }
-
             paramMap.put(key.toString(), value == null ? "" : value.toString());
         }
-
         return paramMap;
     }
 }
