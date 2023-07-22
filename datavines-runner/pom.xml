@@ -124,6 +124,12 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-notification-plugin-lark</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-notification-core</artifactId>
             <version>${project.version}</version>
         </dependency>
