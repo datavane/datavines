@@ -105,7 +105,7 @@ public class CatalogMetaDataFetchTaskManager {
                     }
                     ThreadUtils.sleep(1000);
                 } catch(Exception e) {
-                    log.info("operate catalog task response error {0}", e);
+                    log.error("operate catalog task response error", e);
                 }
             }
         }

@@ -115,7 +115,7 @@ $ mvn clean package -Prelease -DskipTests
 
 感谢所有已经为 Datavines 做出贡献的人！
 
-[![contrib graph](https://contrib.rocks/image?repo=datavane/datavines)](https://github.com/datavane/datavinesk/graphs/contributors)
+[![contrib graph](https://contrib.rocks/image?repo=datavane/datavines)](https://github.com/datavane/datavines/graphs/contributors)
 
 
 ## License

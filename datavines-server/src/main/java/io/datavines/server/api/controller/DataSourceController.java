@@ -149,7 +149,7 @@ public class DataSourceController {
         List<Item> items = new ArrayList<>();
 
         connectorList.forEach(it -> {
-            if (!"file".equalsIgnoreCase(it) && !"hive".equalsIgnoreCase(it)) {
+            if (!"file".equalsIgnoreCase(it)) {
                 Item item = new Item(it,it);
                 items.add(item);
             }

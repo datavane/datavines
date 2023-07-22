@@ -112,7 +112,7 @@ You can submit any ideas as [pull requests](https://github.com/datavane/datavine
 
 Thank you to all the people who already contributed to Datavines!
 
-[![contrib graph](https://contrib.rocks/image?repo=datavane/datavines)](https://github.com/datavane/datavinesk/graphs/contributors)
+[![contrib graph](https://contrib.rocks/image?repo=datavane/datavines)](https://github.com/datavane/datavines/graphs/contributors)
 
 ## License
 
