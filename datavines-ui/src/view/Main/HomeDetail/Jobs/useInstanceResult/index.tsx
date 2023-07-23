@@ -1,118 +1,94 @@
 /* eslint-disable react/no-danger */
 import React, { useRef, useState } from 'react';
-import { ModalProps, Row, Col } from 'antd';
+import {
+    ModalProps, Table,
+} from 'antd';
+import { ColumnsType } from 'antd/lib/table';
 import {
     useModal, useImmutable, useMount,
 } from 'src/common';
 import { useIntl } from 'react-intl';
 import { $http } from '@/http';
-import { useSelector } from '@/store';
+import { defaultRender } from '@/utils/helper';
 
-type ResultProps = {
-    checkResult?: string,
-    checkSubject?: string,
-    expectedType?: string,
-    metricName?: string,
-    resultFormulaFormat?: string,
-    metricParameter?: Record<string, any>
+type ResultItem = {
+    checkSubject: string;
+    metricName: string;
+    metricParameter: string;
+    checkResult: string;
+    expectedType: string;
+    resultFormulaFormat: string;
 }
+
+type TResultItemData = {
+    list: ResultItem[];
+    total: number;
+}
+
 const Inner = (props: any) => {
-    const { locale } = useSelector((r) => r.commonReducer);
-    const [result, setResult] = useState<ResultProps>({});
+    const [loading, setLoading] = useState(false);
+    const [tableData, setTableData] = useState<TResultItemData>({ list: [], total: 0 });
     const intl = useIntl();
-    const getIntl = (id: any) => intl.formatMessage({ id });
     const getData = async () => {
         try {
-            const res = (await $http.get<ResultProps>(`job/execution/result/${props.record.id}`)) || {};
-            setResult(res);
+            setLoading(true);
+            const res = (await $http.get<any>(`job/execution/list/result/${props.record.id}`)) || {};
+            setTableData({ list: res || [], total: (res || []).length });
         } catch (error) {
             console.log(error);
         } finally {
+            setLoading(false);
         }
     };
+    const columns: ColumnsType<ResultItem> = [
+        {
+            title: intl.formatMessage({ id: 'jobs_task_check_subject' }),
+            dataIndex: 'checkSubject',
+            key: 'checkSubject',
+            width: 200,
+            render: (text: any) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_check_rule' }),
+            dataIndex: 'metricName',
+            key: 'metricName',
+            width: 180,
+            render: (text: any) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_check_result' }),
+            dataIndex: 'checkResult',
+            key: 'checkResult',
+            width: 180,
+            render: (text: any) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_check_expectVal_type' }),
+            dataIndex: 'expectedType',
+            key: 'expectedType',
+            width: 180,
+            render: (text: any) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_check_formula' }),
+            dataIndex: 'resultFormulaFormat',
+            key: 'resultFormulaFormat',
+            width: 200,
+            render: (text: any) => defaultRender(text, 200),
+        },
+    ];
 
-    const getItem = (key: string, value: any) => (
-        <Row style={{ marginBottom: key === 'jobs_task_check_formula' ? 30 : 10 }}>
-            <Col span={locale === 'zh_CN' ? 4 : 7} style={{ textAlign: 'right' }}>
-                {getIntl(key)}
-                ：
-            </Col>
-            <Col span={locale === 'zh_CN' ? 20 : 17}>{value}</Col>
-        </Row>
-    );
-    const getParams = () => {
-        const metricParameter = result.metricParameter || {};
-        if (Object.keys(metricParameter).length <= 0) {
-            return null;
-        }
-        return (
-            <>
-                <Row style={{
-                    marginBottom: 10,
-                }}
-                >
-                    <Col span={locale === 'zh_CN' ? 4 : 7} style={{ textAlign: 'right' }}>
-                        {getIntl('jobs_task_check_params')}
-                        ：
-                    </Col>
-                    <Col
-                        span={locale === 'zh_CN' ? 20 : 17}
-                    >
-                        <div style={{ height: 22 }}>{' '}</div>
-                        {
-                            Object.keys(metricParameter).map((item) => (
-                                <div>
-                                    <span style={{ marginRight: 5 }}>-</span>
-                                    {item}
-                                    <span style={{ marginRight: 2 }}>：</span>
-                                    {metricParameter[item]}
-                                </div>
-                            ))
-                        }
-                    </Col>
-                </Row>
-            </>
-        );
-    };
-    useMount(() => {
-        getData();
-    });
+    useMount(getData);
     return (
-        <div style={{
-            fontSize: 14,
-            minHeight: 260,
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-        }}
-        >
-            {
-                Object.keys(result).length > 0 ? (
-                    <>
-                        {getItem('jobs_task_check_subject', result.checkSubject)}
-                        {getItem('jobs_task_check_rule', result.metricName)}
-                        {getParams()}
-                        {getItem('jobs_task_check_result', result.checkResult)}
-                        {getItem('jobs_task_check_expectVal_type', result.expectedType)}
-                        {getItem('jobs_task_check_formula', result.resultFormulaFormat)}
-                    </>
-                ) : (
-                    <span style={{
-                        textAlign: 'center',
-                    }}
-                    >
-                        暂无数据
-                    </span>
-                )
-            }
-
-            {/* <Row style={{ marginBottom: 10, fontWeight: 500 }}>
-                <Col span={locale === 'zh_CN' ? 4 : 7} style={{ textAlign: 'right' }}>
-                    {getIntl('jobs_task_check_explain')}
-                    ：
-                </Col>
-                <Col span={locale === 'zh_CN' ? 20 : 17}>{getIntl('jobs_task_check_explain_text')}</Col>
-            </Row> */}
+        <div>
+            <Table<ResultItem>
+                loading={loading}
+                size="middle"
+                bordered
+                columns={columns}
+                dataSource={tableData.list || []}
+                pagination={false}
+            />
         </div>
     );
 };
@@ -125,7 +101,7 @@ export const useInstanceResult = (options: ModalProps) => {
     } = useModal<any>({
         title: `${intl.formatMessage({ id: 'jobs_task_check_result' })}`,
         footer: null,
-        width: '600px',
+        width: '1000px',
         ...(options || {}),
         afterClose() {
             recordRef.current = null;

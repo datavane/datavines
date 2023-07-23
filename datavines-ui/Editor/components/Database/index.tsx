@@ -13,7 +13,7 @@ import { IF } from '@Editor/common';
 import { useIntl } from 'react-intl';
 import dayjs, { Dayjs } from 'dayjs';
 import useRequest from '../../hooks/useRequest';
-import { useWatch } from '@/common';
+import { useWatch, usePersistFn } from '@/common';
 import {
     dataBaseTabs, dataBaseCol, tableTabs, tableCol, colTabs, colCol,
     Tab, Col,
@@ -23,7 +23,7 @@ import { useMetricModal } from '../MetricModal';
 import DashBoard from './Detail/dashBoard';
 import ProfileContent from './profileContent';
 import Schedule from '@/view/Main/HomeDetail/Jobs/components/Schedule';
-
+import SearchForm from './SearchForm';
 import store from '@/store';
 import { useLogger } from '@/view/Main/HomeDetail/Jobs/useLogger';
 
@@ -40,6 +40,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     const intl = useIntl();
     const { Render: RenderLoggerModal, show: showLoggerModal } = useLogger({});
     const { RangePicker } = DatePicker;
+    const searchForm = Form.useForm()[0];
     useEffect(() => {
         getTagList();
     }, []);
@@ -298,6 +299,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         $http.get('/catalog/page/table-with-detail', {
             upstreamUuid: uuid,
             ...pageInfo,
+            name: searchForm.getFieldsValue()?.name || '',
         }).then((res) => {
             setTableData(res.records || []);
             setTotal(res.total);
@@ -366,6 +368,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         await $http.get('/catalog/page/column-with-detail', {
             ...pageInfo,
             upstreamUuid: uuid,
+            name: searchForm.getFieldsValue()?.name || '',
         }).then((res) => {
             setTableData(res.records || []);
             setTotal(res.total);
@@ -566,6 +569,11 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         tableItems[+activeTableKey].name === 'Metrics' && getMetric(selectDatabases[currentIndex].uuid);
     });
 
+    const onSearch = usePersistFn(() => {
+        // getData(values);
+        setPageInfo({ ...pageInfo, pageNumber: 1 });
+    });
+
     const onFieldClick = (index?:number, name?:string, uuid?:string) => {
         const $record = {
             parameterItem: {
@@ -598,21 +606,27 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         }
     };
     const createTag = async (data: {tagUUID:string}) => {
-        await $http.post(`catalog/tag/entity-tag?tagUUID=${data.tagUUID}&entityUUID=${selectDatabases[currentIndex]?.uuid}`, {
-            ...data,
-            entityUUID: selectDatabases[currentIndex]?.uuid,
-        });
-        message.success(intl.formatMessage({ id: 'common_success' }));
-        getCurrentTagList(selectDatabases[currentIndex].uuid);
-        handleCancel();
-        getDetail(selectDatabases[currentIndex].uuid);
+        try {
+            await $http.post(`catalog/tag/entity-tag?tagUUID=${data.tagUUID}&entityUUID=${selectDatabases[currentIndex]?.uuid}`, {
+                ...data,
+                entityUUID: selectDatabases[currentIndex]?.uuid,
+            });
+            message.success(intl.formatMessage({ id: 'common_success' }));
+            getCurrentTagList(selectDatabases[currentIndex].uuid);
+            handleCancel();
+            getDetail(selectDatabases[currentIndex].uuid);
+        } catch (error) {
+        }
     };
     const onClose = async (e: React.MouseEvent<HTMLElement, MouseEvent>, data:{uuid:string}) => {
-        e.preventDefault();
-        await $http.delete(`catalog/tag/entity-tag?tagUUID=${data.uuid}&entityUUID=${selectDatabases[currentIndex]?.uuid}`);
-        message.success(intl.formatMessage({ id: 'common_success' }));
-        getCurrentTagList(selectDatabases[currentIndex].uuid);
-        getDetail(selectDatabases[currentIndex].uuid);
+        try {
+            e.preventDefault();
+            await $http.delete(`catalog/tag/entity-tag?tagUUID=${data.uuid}&entityUUID=${selectDatabases[currentIndex]?.uuid}`);
+            message.success(intl.formatMessage({ id: 'common_success' }));
+            getCurrentTagList(selectDatabases[currentIndex].uuid);
+            getDetail(selectDatabases[currentIndex].uuid);
+        } catch (error) {
+        }
     };
     const [metricsId, setMetricid] = useState('');
     const [metricsName, setMetricName] = useState('');
@@ -875,6 +889,15 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
 
                                     ) : ''
                                 }
+                                <React.Fragment key={tableItems[+activeTableKey]?.name}>
+                                    <IF visible={['Tables', 'Column'].includes(tableItems[+activeTableKey]?.name)}>
+                                        <SearchForm
+                                            form={searchForm}
+                                            onSearch={onSearch}
+                                            placeholder={intl.formatMessage({ id: tableItems[+activeTableKey]?.name === 'Column' ? 'editor_dv_search_column' : 'editor_dv_search_table' })}
+                                        />
+                                    </IF>
+                                </React.Fragment>
                                 <Table
                                     size="small"
                                     scroll={{ y: 'calc(100vh - 454px)' }}
