@@ -60,7 +60,12 @@ export const Inner = ({
             setLoading(true);
         }
         const res = await $http.get(`/job/${id}`);
-        res.parameterItem = res.parameter ? JSON.parse(res.parameter)[0] : {};
+        try {
+            res.parameter = res.parameter ? JSON.parse(res.parameter) || [] : [];
+            res.parameterItem = res.parameter?.[0] || {};
+        } catch (error) {
+            console.log(error);
+        }
         if (showLoading) {
             setMetricDetail(res);
             setLoading(false);
@@ -90,10 +95,8 @@ export const Inner = ({
             return;
         }
         try {
-            console.log('data', data);
             const res = await getData(data.record.id, false);
             getConfig(data.record.id);
-            // console.log('data.record?.id)', data.record?.id, '获取详情');
             setMetricDetail(res);
         } catch (error) {
         } finally {
@@ -196,7 +199,7 @@ export const Inner = ({
                                 {intl.formatMessage({ id: 'jobs_tabs_config_file_download' })}
                             </Button>
                         </div>
-                        <Input.TextArea key={activeKey}  style={{ height: 'calc(100vh - 200px)', marginBottom: 24 }} readOnly value={jsonData} />
+                        <Input.TextArea key={activeKey} style={{ height: 'calc(100vh - 200px)', marginBottom: 24 }} readOnly value={jsonData} />
                     </IF>
                 </TabPane>
             </Tabs>

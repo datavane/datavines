@@ -18,6 +18,7 @@ import { pickProps } from './helper';
 import ErrorDataStoreConfig from './ErrorDataStoreConfig';
 import { TDetail } from './type';
 import store, { RootReducer } from '@/store';
+import MetricTabs from './MetricTabs';
 
 type InnerProps = {
     innerRef?: {
@@ -41,18 +42,26 @@ const keys = [
 ];
 export const MetricConfig = (props: InnerProps) => {
     const { innerRef, detail } = props;
-    // console.log('detail', detail, props);
     const [form] = Form.useForm();
-    const metricSelectRef = useRef<any>();
+    const metricRef = useRef<any>();
     const id = props.id || detail?.dataSourceId;
-    const [metricType, setMetricTypeParent] = useState('');
     const { datasourceReducer } = store.getState() as RootReducer;
     useImperativeHandle(innerRef, () => ({
         form,
         getValues() {
+            // eslint-disable-next-line no-async-promise-executor
             return new Promise((resolve, reject) => {
-                innerRef?.current.form.validateFields().then((values) => {
-                    console.log('values', values);
+                innerRef?.current.form.validateFields().then(async (values) => {
+                    let parameterArray: any = null;
+                    try {
+                        parameterArray = await metricRef.current.getValues();
+                    } catch (error) {
+                        console.log(error);
+                    }
+                    if (!parameterArray || parameterArray?.length < 1) {
+                        reject();
+                        return;
+                    }
                     const params: any = {
                         type: datasourceReducer.modeType === 'comparison' ? 'DATA_RECONCILIATION' : 'DATA_QUALITY',
                         dataSourceId: id,
@@ -64,59 +73,35 @@ export const MetricConfig = (props: InnerProps) => {
                             ...pickProps(values, ['deployMode', 'driverCores', 'driverMemory', 'numExecutors', 'executorMemory', 'executorCores', 'others']),
                         });
                     }
-                    const parameter: any = {
-                        ...(pickProps(values, ['metricType', 'expectedType', 'resultFormula', 'operator', 'threshold'])),
-                        metricParameter: {
-                            ...(pickProps(values, ['database', 'table', 'column', 'filter'])),
-                        },
-                    };
-                    if (values.expectedType === 'fix_value') {
-                        parameter.expectedParameter = {
-                            expected_value: values.expected_value,
-                        };
-                    }
-                    if (datasourceReducer.modeType === 'comparison') {
-                        params.dataSourceId2 = values.dataSourceId2;
-                        Object.assign(parameter, pickProps(values, ['metricParameter', 'metricParameter2']));
-                        if (values.metricType === 'multi_table_accuracy') {
-                            values.mappingColumns.forEach((item: any) => {
-                                item.operator = '=';
-                            });
-                            parameter.mappingColumns = values.mappingColumns;
-                        }
-                    } else if (datasourceReducer.modeType === 'quality') {
-                        parameter.metricParameter = {
-                            ...(pickProps(values, ['database', 'table', 'column', 'filter'])),
-                            ...metricSelectRef.current.getDynamicValues(),
-                        };
-                    }
-                    params.parameter = JSON.stringify([parameter]);
-                    console.log('params', params);
+                    params.parameter = JSON.stringify(parameterArray);
                     resolve(params);
                 }).catch((error) => {
-                    console.log('error', error);
+                    console.log(error);
                     reject(error);
                 });
             });
         },
     }));
     return (
-        <Form form={form}>
-            <IF visible={datasourceReducer.modeType === 'comparison'}>
-                <RuleSelect detail={detail} id={id} form={form} setMetricTypeParent={setMetricTypeParent} />
-            </IF>
-            <IF visible={datasourceReducer.modeType === 'quality'}>
-                <MetricSelect detail={detail} id={id} form={form} metricSelectRef={metricSelectRef} />
-            </IF>
-            <IF visible={datasourceReducer.modeType === 'quality' || metricType === 'multi_table_accuracy'}>
-                <ExpectedValue detail={detail} form={form} />
-            </IF>
-            <VerifyConfigure detail={detail} form={form} />
-            <ActuatorConfigure detail={detail} form={form} />
-            <RunEvnironment id={id} form={form} detail={detail} />
-            <OtherConfig detail={detail} form={form} />
-            <ErrorDataStoreConfig detail={detail} form={form} />
-        </Form>
+        <>
+            <MetricTabs detail={detail} id={id} metricRef={metricRef} />
+            <Form form={form}>
+                {/* <IF visible={datasourceReducer.modeType === 'comparison'}>
+                    <RuleSelect detail={detail} id={id} form={form} setMetricTypeParent={setMetricTypeParent} />
+                </IF>
+                <IF visible={datasourceReducer.modeType === 'quality'}>
+                    <MetricSelect detail={detail} id={id} form={form} metricSelectRef={metricSelectRef} />
+                </IF>
+                <IF visible={datasourceReducer.modeType === 'quality' || metricType === 'multi_table_accuracy'}>
+                    <ExpectedValue detail={detail} form={form} />
+                </IF>
+                <VerifyConfigure detail={detail} form={form} /> */}
+                <ActuatorConfigure detail={detail} form={form} />
+                <RunEvnironment id={id} form={form} detail={detail} />
+                <OtherConfig detail={detail} form={form} />
+                <ErrorDataStoreConfig detail={detail} form={form} />
+            </Form>
+        </>
     );
 };
 
@@ -135,7 +120,6 @@ export const useMetricModal = () => {
         try {
             setLoading(true);
             const params = await innerRef.current.getValues();
-            console.log('params', params);
             const res = await $http.post('/job', { ...params, runningNow });
             console.log('res', res);
             message.success('Success!');

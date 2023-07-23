@@ -66,4 +66,5 @@ export default {
     editor_dv_Runs: 'Runs',
     editor_dv_search_table: 'please enter table',
     editor_dv_search_column: 'please enter column',
+    editor_dv_metric_name: 'name',
 };
