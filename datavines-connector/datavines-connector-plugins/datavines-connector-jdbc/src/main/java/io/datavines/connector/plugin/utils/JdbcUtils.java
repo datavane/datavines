@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin.utils;
 
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.TypeConverter;
 import io.datavines.connector.plugin.entity.JdbcOptions;
@@ -34,7 +35,12 @@ public class JdbcUtils {
     public static boolean tableExists(Connection connection, JdbcOptions options, Dialect dialect) {
         PreparedStatement statement = null;
         try {
-            statement = connection.prepareStatement(dialect.getTableExistsQuery(options.getTableName()));
+            String table = options.getTableName();
+            if (StringUtils.isNotEmpty(options.getDatabaseName())) {
+                table = options.getDatabaseName() + "." + options.getTableName();
+            }
+
+            statement = connection.prepareStatement(dialect.getTableExistsQuery(table));
             statement.setQueryTimeout(options.getQueryTimeout());
             statement.execute();
         } catch (SQLException e) {

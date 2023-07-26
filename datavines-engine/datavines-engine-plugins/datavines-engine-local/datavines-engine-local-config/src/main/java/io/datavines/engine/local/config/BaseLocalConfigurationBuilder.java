@@ -18,19 +18,25 @@ package io.datavines.engine.local.config;
 
 import io.datavines.common.config.*;
 import io.datavines.common.config.enums.SourceType;
+import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.*;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.config.BaseJobConfigurationBuilder;
+import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
+import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 
+import static io.datavines.common.CommonConstants.DATABASE2;
 import static io.datavines.common.CommonConstants.TABLE2;
 import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public abstract class BaseLocalConfigurationBuilder extends BaseJobConfigurationBuilder {
 
@@ -64,6 +70,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 
                     String outputTable = metricInputParameter.get(TABLE);
+                    connectorParameterMap.put(DATABASE, metricInputParameter.get(METRIC_DATABASE));
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
@@ -95,7 +102,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
 
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
-                    String outputTable = metricInputParameter.get(TARGET_TABLE);
+                    String outputTable = metricInputParameter.get(TABLE2);
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
@@ -132,5 +139,77 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
         }
 
         return sourceConfigs;
+    }
+
+    @Override
+    public void buildTransformConfigs() {
+        List<TransformConfig> transformConfigs = new ArrayList<>();
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
+        if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
+            for (BaseJobParameter parameter : metricJobParameterList) {
+                String metricUniqueKey = getMetricUniqueKey(parameter);
+                Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
+                metricInputParameter.put(TABLE, metricInputParameter.get(METRIC_DATABASE)+"."+metricInputParameter.get(TABLE));
+                metricInputParameter.put(TABLE2, metricInputParameter.get(DATABASE2)+"."+metricInputParameter.get(TABLE2));
+                String metricType = parameter.getMetricType();
+                SqlMetric sqlMetric = PluginLoader
+                        .getPluginLoader(SqlMetric.class)
+                        .getNewPlugin(metricType);
+
+                MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
+                invalidateItemCanOutput &= sqlMetric.isInvalidateItemsCanOutput();
+                metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
+
+                // generate invalidate item execute sql
+                if (sqlMetric.getInvalidateItems(metricInputParameter) != null) {
+                    ExecuteSql invalidateItemExecuteSql = sqlMetric.getInvalidateItems(metricInputParameter);
+                    metricInputParameter.put(INVALIDATE_ITEMS_TABLE, invalidateItemExecuteSql.getResultTable());
+                    invalidateItemExecuteSql.setResultTable(invalidateItemExecuteSql.getResultTable());
+                    MetricParserUtils.setTransformerConfig(
+                            metricInputParameter,
+                            transformConfigs,
+                            invalidateItemExecuteSql,
+                            TransformType.INVALIDATE_ITEMS.getDescription());
+                }
+
+                // generate actual value execute sql
+                ExecuteSql actualValueExecuteSql = sqlMetric.getActualValue(metricInputParameter);
+                if (actualValueExecuteSql != null) {
+                    actualValueExecuteSql.setResultTable(sqlMetric.getActualValue(metricInputParameter).getResultTable());
+                    MetricParserUtils.setTransformerConfig(
+                            metricInputParameter,
+                            transformConfigs,
+                            actualValueExecuteSql,
+                            TransformType.ACTUAL_VALUE.getDescription());
+                    metricInputParameter.put(ACTUAL_TABLE, sqlMetric.getActualValue(metricInputParameter).getResultTable());
+                }
+
+                // generate expected value transform sql
+                String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
+                ExpectedValue expectedValue = PluginLoader
+                        .getPluginLoader(ExpectedValue.class)
+                        .getNewPlugin(expectedType);
+
+                ExecuteSql expectedValueExecuteSql =
+                        new ExecuteSql(expectedValue.getExecuteSql(), expectedValue.getOutputTable());
+
+                if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
+                    metricInputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
+                }
+
+                metricInputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(metricInputParameter)));
+
+                if (expectedValue.isNeedDefaultDatasource()) {
+                    MetricParserUtils.setTransformerConfig(metricInputParameter, transformConfigs,
+                            expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_METADATA_SOURCE.getDescription());
+                } else {
+                    MetricParserUtils.setTransformerConfig(metricInputParameter, transformConfigs,
+                            expectedValueExecuteSql, TransformType.EXPECTED_VALUE_FROM_SOURCE.getDescription());
+                }
+                metric2InputParameter.put(metricUniqueKey, metricInputParameter);
+            }
+
+            configuration.setTransformParameters(transformConfigs);
+        }
     }
 }
