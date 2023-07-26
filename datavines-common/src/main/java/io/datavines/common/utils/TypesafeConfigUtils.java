@@ -83,7 +83,7 @@ public class TypesafeConfigUtils {
         Config config = extractSubConfig(source, prefix, keepPrefix);
 
         if (config.isEmpty()) {
-            logger.error("config is empty");
+            logger.warn("config is empty");
         }
 
         return config;

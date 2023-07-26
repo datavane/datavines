@@ -49,7 +49,7 @@ const SqlTable = ({ style, tableData }: SqlTableProps) => {
                     className="dv-table-small"
                     scroll={{
                         x: '100%',
-                        y: tableData.resultList.length > 0 ? 280 : undefined,
+                        y: tableData.resultList? (tableData.resultList.length > 0 ? 280 : undefined) : undefined,
                     }}
                     sticky
                     pagination={{

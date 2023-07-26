@@ -30,6 +30,8 @@ public class TrinoConnectorParameterConverter implements ConnectorParameterConve
         config.put("table", parameter.get("table"));
         config.put("user", parameter.get("user"));
         config.put("password", parameter.get("password"));
+        config.put("database", parameter.get("database"));
+        config.put("catalog", parameter.get("catalog"));
         String database = (String)parameter.get("database");
         if (StringUtils.isNotEmpty(database)) {
             config.put("url", String.format("jdbc:trino://%s:%s/%s/%s",

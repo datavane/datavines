@@ -75,7 +75,7 @@ public class CommonPropertyUtils {
     public static final String LINE_SEPARATOR_DEFAULT = "\r\n";
 
     public static final String COLUMN_SEPARATOR = "column.separator";
-    public static final String COLUMN_SEPARATOR_DEFAULT = ",";
+    public static final String COLUMN_SEPARATOR_DEFAULT = "\001";
 
     public static final String AES_KEY = "aes.key";
     public static final String AES_KEY_DEFAULT = "1234567890123456";

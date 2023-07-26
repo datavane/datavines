@@ -23,6 +23,8 @@ public class JdbcOptions {
 
     private String url;
 
+    private String databaseName;
+
     private String tableName;
 
     private String query;

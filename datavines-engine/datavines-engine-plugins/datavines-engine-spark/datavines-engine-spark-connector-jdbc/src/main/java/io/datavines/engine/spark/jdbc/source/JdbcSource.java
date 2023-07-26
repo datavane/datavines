@@ -20,13 +20,8 @@ import io.datavines.common.utils.StringUtils;
 import org.apache.spark.sql.DataFrameReader;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import io.datavines.common.config.CheckResult;
@@ -35,7 +30,6 @@ import io.datavines.common.utils.TypesafeConfigUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.spark.api.SparkRuntimeEnvironment;
 import io.datavines.engine.spark.api.batch.SparkBatchSource;
-import org.apache.spark.sql.jdbc.JdbcDialects;
 
 public class JdbcSource implements SparkBatchSource {
 
@@ -81,31 +75,21 @@ public class JdbcSource implements SparkBatchSource {
 
     @Override
     public Dataset<Row> getData(SparkRuntimeEnvironment env) {
-        return jdbcReader(env.sparkSession()).load();
-    }
-
-    private DataFrameReader jdbcReader(SparkSession sparkSession) {
-        DataFrameReader reader = sparkSession.read()
-                .format("jdbc")
-                .option("url", config.getString("url"))
-                .option("dbtable", config.getString("table"))
-                .option("user", config.getString("user"))
-                .option("driver", config.getString("driver"));
-
-        if (StringUtils.isNotEmpty(config.getString("password"))) {
-            reader.option("password", config.getString("password"));
+        Properties properties = new Properties();
+        properties.setProperty("user", config.getString("user"));
+        if (StringUtils.isNotEmpty(config.getString("password")) && !"null".equalsIgnoreCase(config.getString("password"))) {
+            properties.put("password", config.getString("password"));
         }
 
         Config jdbcConfig = TypesafeConfigUtils.extractSubConfigThrowable(config, "jdbc.", false);
 
-        if (!config.isEmpty()) {
-            Map<String,String> optionMap = new HashMap<>(16);
+        if (!jdbcConfig.isEmpty()) {
             jdbcConfig.entrySet().forEach(x -> {
-                optionMap.put(x.getKey(),String.valueOf(x.getValue()));
+                properties.put(x.getKey(),String.valueOf(x.getValue()));
             });
-            reader.options(optionMap);
         }
 
-        return reader;
+        DataFrameReader reader = new DataFrameReader(env.sparkSession());
+        return reader.jdbc(config.getString("url"), config.getString("table"),properties);
     }
 }

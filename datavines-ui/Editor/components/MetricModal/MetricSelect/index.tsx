@@ -15,6 +15,7 @@ import {
     CustomSelect, useMount, usePersistFn, IF,
 } from '../../../common';
 import { useSelector } from '@/store';
+import Title from '../Title';
 
 type InnerProps = {
     form: FormInstance,
@@ -175,79 +176,80 @@ const Index = ({
         </Form.Item>
     );
     return (
-        <div style={{ padding: '0 10px' }}>
-            <Row gutter={30}>
-                <Col span={12}>
-                    <Form.Item
-                        {...layoutItem}
-                        label="Metric"
-                        name="metricType"
-                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_placeholder' }) }]}
-                    >
-                        <CustomSelect
-                            source={metricList}
-                            sourceValueMap="key"
-                            onChange={getConfigsName}
-                        />
-                    </Form.Item>
-                    <Form.Item
-                        {...layoutItem}
-                        label={intl.formatMessage({ id: 'dv_metric_database' })}
-                        name="database"
-                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
-                    >
-                        <CustomSelect disabled={!isJobsPage && (!!entityUuid || !!dsiabledEdit)} onChange={databasesChange} allowClear source={databases} sourceValueMap="name" />
-                    </Form.Item>
-                    <IF visible={!!configsMap.table}>
+        <Title title={intl.formatMessage({ id: 'dv_metric_config' })}>
+            <div>
+                <Row gutter={30}>
+                    <Col span={12}>
                         <Form.Item
                             {...layoutItem}
-                            label={configsMap.table?.label || intl.formatMessage({ id: 'dv_metric_table' })}
-                            name="table"
-                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
+                            label="Metric"
+                            name="metricType"
+                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_placeholder' }) }]}
                         >
                             <CustomSelect
-                                disabled={!isJobsPage && (!!entityUuid || !!dsiabledEdit) && !!detail?.parameterItem?.metricParameter?.table}
-                                onChange={tableChange}
-                                allowClear
-                                source={tables}
-                                sourceValueMap="name"
+                                source={metricList}
+                                sourceValueMap="key"
+                                onChange={getConfigsName}
                             />
                         </Form.Item>
-                    </IF>
-                    <Form.Item noStyle dependencies={['table', 'metricType']}>
-                        {() => {
-                            const value = form.getFieldValue('table');
-                            if (!value || !configsMap.column) {
-                                return null;
-                            }
-                            return renderColumn();
-                        }}
-                    </Form.Item>
-                    {
-                        configsName.map((item) => <React.Fragment key={item.key}>{dynamicRender(item)}</React.Fragment>)
-                    }
-                </Col>
-                <Col span={12}>
-                    <IF visible={!!configsMap.filter}>
-                        <div style={{ paddingTop: 20 }} />
                         <Form.Item
-                            className="dv-editor__condition"
-                            colon={false}
-                            label={(
-                                <div>
-                                    {intl.formatMessage({ id: 'dv_metric_condition' })}
-                                    :
-                                </div>
-                            )}
-                            name="filter"
+                            {...layoutItem}
+                            label={intl.formatMessage({ id: 'dv_metric_database' })}
+                            name="database"
+                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
                         >
-                            <Input.TextArea autoComplete="off" style={{ marginLeft: context.locale === 'en_US' ? -100 : -62 }} rows={5} />
+                            <CustomSelect disabled={!isJobsPage && (!!entityUuid || !!dsiabledEdit)} onChange={databasesChange} allowClear source={databases} sourceValueMap="name" />
                         </Form.Item>
-                    </IF>
-
-                </Col>
-            </Row>
-        </div>
+                        <IF visible={!!configsMap.table}>
+                            <Form.Item
+                                {...layoutItem}
+                                label={configsMap.table?.label || intl.formatMessage({ id: 'dv_metric_table' })}
+                                name="table"
+                                rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
+                            >
+                                <CustomSelect
+                                    disabled={!isJobsPage && (!!entityUuid || !!dsiabledEdit) && !!detail?.parameterItem?.metricParameter?.table}
+                                    onChange={tableChange}
+                                    allowClear
+                                    source={tables}
+                                    sourceValueMap="name"
+                                />
+                            </Form.Item>
+                        </IF>
+                        <Form.Item noStyle dependencies={['table', 'metricType']}>
+                            {() => {
+                                const value = form.getFieldValue('table');
+                                if (!value || !configsMap.column) {
+                                    return null;
+                                }
+                                return renderColumn();
+                            }}
+                        </Form.Item>
+                        {
+                            configsName.map((item) => <React.Fragment key={item.key}>{dynamicRender(item)}</React.Fragment>)
+                        }
+                    </Col>
+                    <Col span={12}>
+                        <IF visible={!!configsMap.filter}>
+                            <div style={{ paddingTop: 20 }} />
+                            <Form.Item
+                                className="dv-editor__condition"
+                                colon={false}
+                                label={(
+                                    <div>
+                                        {intl.formatMessage({ id: 'dv_metric_condition' })}
+                                        :
+                                    </div>
+                                )}
+                                name="filter"
+                            >
+                                <Input.TextArea autoComplete="off" style={{ marginLeft: context.locale === 'en_US' ? -100 : -62 }} rows={4} />
+                            </Form.Item>
+                        </IF>
+                    </Col>
+                </Row>
+            </div>
+        </Title>
     );
 };
 
