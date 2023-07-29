@@ -77,6 +77,7 @@ public class JdbcSource implements SparkBatchSource {
     public Dataset<Row> getData(SparkRuntimeEnvironment env) {
         Properties properties = new Properties();
         properties.setProperty("user", config.getString("user"));
+        properties.setProperty("driver", config.getString("driver"));
         if (StringUtils.isNotEmpty(config.getString("password")) && !"null".equalsIgnoreCase(config.getString("password"))) {
             properties.put("password", config.getString("password"));
         }
