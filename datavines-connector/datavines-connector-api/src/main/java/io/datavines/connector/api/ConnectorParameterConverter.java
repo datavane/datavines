@@ -26,9 +26,10 @@ public interface ConnectorParameterConverter {
 
     default String getConnectorUUID(Map<String,Object> parameter) {
         Map<String, Object> convertResult = converter(parameter);
-        return DigestUtils.md5Hex(String.valueOf(convertResult.get("url")) +
-                String.valueOf(convertResult.get("table")) +
-                String.valueOf(convertResult.get("user")) +
-                String.valueOf(convertResult.get("password")));
+        return DigestUtils.md5Hex(
+                String.valueOf(convertResult.get("url")) +
+                convertResult.get("table") +
+                convertResult.get("user") +
+                convertResult.get("password"));
     }
 }

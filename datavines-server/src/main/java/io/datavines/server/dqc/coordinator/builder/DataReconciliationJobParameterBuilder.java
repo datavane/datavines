@@ -23,10 +23,7 @@ import io.datavines.common.entity.job.DataReconciliationJobParameter;
 import io.datavines.common.utils.JSONUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DataReconciliationJobParameterBuilder implements ParameterBuilder {
 
@@ -44,7 +41,7 @@ public class DataReconciliationJobParameterBuilder implements ParameterBuilder {
             metricParameters.putAll(dataReconciliationJobParameter.getMetricParameter2());
             metricParameters.put("mappingColumns", JSONUtils.toJsonString(dataReconciliationJobParameter.getMappingColumns()));
             dataReconciliationJobParameter.setMetricParameter(metricParameters);
-            jobExecutionParameter.setMetricParameterList(new ArrayList<>(Arrays.asList(dataReconciliationJobParameter)));
+            jobExecutionParameter.setMetricParameterList(new ArrayList<>(Collections.singletonList(dataReconciliationJobParameter)));
 
             ConnectorParameter connectorParameter = new ConnectorParameter();
             connectorParameter.setType(connectionInfo.getType());

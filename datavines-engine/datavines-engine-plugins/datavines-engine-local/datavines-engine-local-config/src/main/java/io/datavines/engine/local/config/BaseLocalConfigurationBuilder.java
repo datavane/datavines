@@ -59,7 +59,6 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
                 if (jobExecutionParameter.getConnectorParameter() != null) {
-
                     ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
@@ -68,6 +67,9 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.putAll(metricInputParameter);
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
+                    if (sourceConnectorSet.contains(connectorUUID)) {
+                        continue;
+                    }
 
                     String outputTable = metricInputParameter.get(TABLE);
                     connectorParameterMap.put(DATABASE, metricInputParameter.get(METRIC_DATABASE));
@@ -79,9 +81,6 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     invalidateItemCanOutput &= Boolean.parseBoolean(connectorFactory.getDialect().invalidateItemCanOutput());
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 
-                    if (sourceConnectorSet.contains(connectorUUID)) {
-                        continue;
-                    }
                     SourceConfig sourceConfig = new SourceConfig();
                     sourceConfig.setPlugin(connectorFactory.getCategory());
                     sourceConfig.setConfig(connectorParameterMap);
@@ -100,8 +99,11 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                             .getNewPlugin(connectorParameter2.getType());
 
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
-
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
+                    if (targetConnectorSet.contains(connectorUUID)) {
+                        continue;
+                    }
+
                     String outputTable = metricInputParameter.get(TABLE2);
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
@@ -110,10 +112,6 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
                     invalidateItemCanOutput &= Boolean.parseBoolean(connectorFactory.getDialect().invalidateItemCanOutput());
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
-
-                    if (targetConnectorSet.contains(connectorUUID)) {
-                        continue;
-                    }
 
                     SourceConfig sourceConfig = new SourceConfig();
                     sourceConfig.setPlugin(connectorFactory.getCategory());
