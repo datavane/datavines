@@ -68,9 +68,6 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
 
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
-                    if (sourceConnectorSet.contains(connectorUUID)) {
-                        continue;
-                    }
 
                     String outputTable = connectorParameter.getParameters().get(DATABASE) + "_" + metricInputParameter.get(TABLE);
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
@@ -79,6 +76,10 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     metricInputParameter.put(REGEX_KEY, "regexp(${column}, ${regex})");
                     metricInputParameter.put(NOT_REGEX_KEY, "!regexp(${column}, ${regex})");
                     metricInputParameter.put(STRING_TYPE, "string");
+
+                    if (sourceConnectorSet.contains(connectorUUID)) {
+                        continue;
+                    }
 
                     sourceConfig.setPlugin(connectorFactory.getCategory());
                     sourceConfig.setConfig(connectorParameterMap);
@@ -100,14 +101,15 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
 
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
-                    if (targetConnectorSet.contains(connectorUUID)) {
-                        continue;
-                    }
 
                     String outputTable = connectorParameter2.getParameters().get(DATABASE) + "_" + metricInputParameter.get(TABLE2) + "2";
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     metricInputParameter.put(TABLE2, outputTable);
+
+                    if (targetConnectorSet.contains(connectorUUID)) {
+                        continue;
+                    }
 
                     sourceConfig.setPlugin(connectorFactory.getCategory());
                     sourceConfig.setConfig(connectorParameterMap);
