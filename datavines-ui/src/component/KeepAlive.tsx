@@ -39,7 +39,6 @@ function KeepAlive({
     const { pathname } = useLocation();
     const update = useUpdate();
     const isActive = findIndex(propEq('name', pathname))(components.current);
-    console.log('components.current', components.current);
     // 如果没有配置include，exclude 则不缓存
     if (isNil(exclude) && isNil(include)) {
         components.current = [

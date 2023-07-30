@@ -26,7 +26,6 @@ type TIndexProps = {
 const Index = ({
     getDatabases, onShowModal,
 }: TIndexProps) => {
-    // console.log('onShowModal1', onShowModal);
     const { $http } = useRequest();
     const { Render: RenderModal, show } = useMetricModal();
     const [spinning, setSpinning] = useState(false);
@@ -44,31 +43,6 @@ const Index = ({
     });
     const { onRequestTable, onRequestCloumn, onSeletCol } = useTableCloumn({ $setExpandedKeys });
 
-    // const onFieldClick = (database: string, table: string, column?: string) => {
-    //     const $record = {
-    //         parameterItem: {
-    //             metricParameter: {
-    //                 database,
-    //                 table,
-    //                 column: column || '',
-    //             },
-    //         },
-    //     };
-    //     if (onShowModal) {
-    //         store.dispatch({
-    //             type: 'save_datasource_modeType',
-    //             payload: 'quality',
-    //         });
-    //         onShowModal({
-    //             parameter: JSON.stringify($record.parameterItem),
-    //             parameterItem: $record.parameterItem,
-    //         });
-    //         return;
-    //     }
-
-    //     show(id as string, $record as TDetail);
-    // };
-
     const renderSingle = (item: IDvDataBaseItem) => ({
         title: <span className="dv-editor-tree-title">{item.name}</span>,
         key: `${item.uuid}@@${item.name}`,
@@ -77,11 +51,13 @@ const Index = ({
         icon: <DatabaseOutlined />,
         uuid: item.uuid,
         children: (item.children || []).map((tableItem) => ({
-            title: <Tooltip title={tableItem.name}>
-                <span className="dv-editor-tree-title">
-                    {tableItem.name}
-                </span>
-                   </Tooltip>,
+            title: (
+                <Tooltip title={tableItem.name}>
+                    <span className="dv-editor-tree-title">
+                        {tableItem.name}
+                    </span>
+                </Tooltip>
+            ),
             key: `${item.uuid}@@${item.name}##${tableItem.uuid}@@${tableItem.name}`,
             dataName: tableItem.name,
             parentName: item.name,
@@ -119,13 +95,6 @@ const Index = ({
     });
     const onSelect: TreeProps['onSelect'] = (selectedKeys, e: any) => {
         if (e.node?.selected) return;
-        // if (e.node.children?.length >= 1) {
-        //     if (e.selected) {
-        //         $setExpandedKeys(e.node.key,true);
-        //     } else {
-        //         $setExpandedKeys(e.node.key, true);
-        //     }
-        // }
         const allData = e.node.key.split('##');
         const allSelectDatabases = allData.map((item:any) => {
             const itemData = item.split('@@');
@@ -135,8 +104,6 @@ const Index = ({
             };
         });
         allSelectDatabases.unshift(selectDatabases[0]);
-        // console.log("allSelectDatabases",allSelectDatabases,allData)
-        // fns.setEditorFn({ selectDatabases: [...allSelectDatabases],databases });
         // 这里会出现跳数据然后获取下级
         if (e.node.type === 'database') {
             setSpinning(true);
@@ -149,13 +116,11 @@ const Index = ({
                 setSpinning(false);
             });
         } else if (e.node.type === 'column') {
-            // console.log(' e.node', e.node);
             onSeletCol(e.node.dataName, e.node.uuid, allSelectDatabases);
         }
     };
 
     const onExpand = (expandedKeysValue: React.Key[]) => {
-        // console.log("expandedKeysValue",expandedKeysValue)
         setExpandedKeys(expandedKeysValue);
     };
     // 右键刷新
@@ -185,7 +150,6 @@ const Index = ({
             });
             setDefaultSelectId(`${databases[0].uuid}@@${databases[0].name}`);
             setExpandedKeys([`${databases[0].uuid}@@${databases[0].name}`]);
-            // setDefaultSelectId(`${databases[0].uuid}@@${databases[0].name}`);
         }
         return () => {
             if (databases.length > 0 && expandedKeys.length === 0) {
@@ -216,10 +180,12 @@ const Index = ({
                             items={[
                                 {
                                     key: 'refresh',
-                                    label: <span onClick={() => refresh(nodeData)}>
-                                        {' '}
-                                        {intl.formatMessage({ id: 'job_log_refresh' })}
-                                           </span>,
+                                    label: (
+                                        <span onClick={() => refresh(nodeData)}>
+                                            {' '}
+                                            {intl.formatMessage({ id: 'job_log_refresh' })}
+                                        </span>
+                                    ),
                                 },
                             ]}
                         />

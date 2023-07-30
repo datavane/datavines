@@ -18,7 +18,6 @@ import { DV_LANGUAGE, DV_STORAGE_LOGIN, DV_WORKSPACE_ID } from '@/utils/constant
 import { useAddSpace } from '../../Header/WorkSpaceSwitch/useAddSpace';
 
 const Logo = memo(({ style }:any) => <img style={style} className="logo" src={logoPng} />);
-// const Escape = memo(({ style, onClick }:any) => <img style={style} className="escape" src={EscapePng} onClick={onClick} />);
 const Eh = memo(({ style, onClick }:any) => <img style={style} className="escape" src={EhPng} onClick={onClick} />);
 const Ch = memo(({ style, onClick }:any) => <img style={style} className="escape" src={ChPng} onClick={onClick} />);
 export type MenuItem = {
@@ -159,8 +158,6 @@ const MenuAside: React.FC<TMenuAside> = ({ menus, history }) => {
         return {
             ...rest,
             style: {
-                // paddingLeft: 15,
-                // paddingRight: 15,
                 fontSize: 14,
                 color: '#000',
             },

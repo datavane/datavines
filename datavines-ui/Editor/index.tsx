@@ -21,13 +21,9 @@ const App = (props: IDvEditorProps) => {
     const [loading, setLoading] = useState(true);
     const fns = useEditorActions({ setEditorFn });
     const [qs] = useState(querystring.parse(window.location.href.split('?')[1] || ''));
-
-    // console.log("qs", qs)
-    // console.log('selectDatabases', JSON.stringify(selectDatabases));
     useMount(async () => {
         let { name } = qs;
         let uuid = '';
-        // if (!name && id) {
         const $dataSoucrce = await $http.get('/datasource/page', {
             workSpaceId: workspaceId,
             pageNumber: 1,
@@ -35,16 +31,12 @@ const App = (props: IDvEditorProps) => {
         });
         $dataSoucrce.records.forEach((element: {
                 uuid: string; id: string | number; name: string | string[] | undefined;
-}) => {
-            // console.log(element.id === id, element.id, id);
+        }) => {
             if (`${element.id}` === id) {
                 name = element.name;
                 uuid = element.uuid;
             }
         });
-        // console.log('执行');
-        // }
-        console.log('uuid');
         fns.setEditorFn({
             workspaceId,
             monacoConfig,
@@ -63,7 +55,6 @@ const App = (props: IDvEditorProps) => {
     useWatch(id, async () => {
         let { name } = qs;
         let uuid = '';
-        // if (!name && id) {
         const $dataSoucrce = await $http.get('/datasource/page', {
             workSpaceId: workspaceId,
             pageNumber: 1,
@@ -71,14 +62,12 @@ const App = (props: IDvEditorProps) => {
         });
         $dataSoucrce.records.forEach((element: {
                 uuid: string; id: string | number; name: string | string[] | undefined;
-}) => {
+        }) => {
             if (element.id === id) {
                 name = element.name;
                 uuid = element.uuid;
             }
         });
-        console.log('执行');
-        // }
         fns.setEditorFn({
             id,
             selectDatabases: [{

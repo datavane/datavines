@@ -52,10 +52,8 @@ const Login = () => {
                         form={form}
                         layout="vertical"
                         name="dv-login"
-                        // onFinish={onFinish}
                     >
                         <Form.Item
-                            // label={<span style={{ fontSize: 14 }}>{intl.formatMessage({ id: 'userName_text' })}</span>}
                             name="username"
                             style={{ marginBottom: 15 }}
                             rules={[{ required: true, message: intl.formatMessage({ id: 'login_username_msg' }) }]}
@@ -64,7 +62,6 @@ const Login = () => {
                         </Form.Item>
 
                         <Form.Item
-                            // label={<span style={{ fontSize: 14 }}>{intl.formatMessage({ id: 'password_text' })}</span>}
                             name="password"
                             style={{ marginBottom: 15 }}
                             rules={[{ required: true, message: intl.formatMessage({ id: 'login_password_msg' }) }]}
@@ -75,23 +72,12 @@ const Login = () => {
 
                             <a href="#/register" className="dv-register-btn">
                                 {intl.formatMessage({ id: 'register' })}
-                                {/* <ArrowRightOutlined /> */}
                             </a>
                             <span onClick={() => onFinish()}>
                                 {intl.formatMessage({ id: 'login_btn_text' })}
                                 <ArrowRightOutlined />
                             </span>
                         </p>
-                        {/* <Form.Item>
-                            <Button loading={loading} style={{ width: '100%' }} size="large" type="primary" htmlType="submit">
-                                {intl.formatMessage({ id: 'login_btn_text' })}
-                            </Button>
-                        </Form.Item> */}
-                        {/* <div className="dv-flex-between">
-                            <span /> */}
-                        {/* <a href="#/forgetPwd">{intl.formatMessage({ id: 'forget_password' })}</a> */}
-                        {/* <a href="#/register">{intl.formatMessage({ id: 'register' })}</a>
-                        </div> */}
                     </Form>
                 </div>
             </div>

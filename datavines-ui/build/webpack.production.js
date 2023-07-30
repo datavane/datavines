@@ -19,22 +19,22 @@ module.exports = {
     optimization: {
         minimize: true,
         minimizer: [
-            new TerserPlugin({
-                extractComments: false,
-                parallel: true,
-                terserOptions: {
-                    ecma: 5,
-                    warnings: false,
-                    compress: {
-                        properties: false,
-                        drop_console: process.env.DV_ENV === 'prod' || false,
-                    },
-                    output: {
-                        comments: false,
-                        beautify: false,
-                    },
-                },
-            }),
+            // new TerserPlugin({
+            //     extractComments: false,
+            //     parallel: true,
+            //     terserOptions: {
+            //         ecma: 5,
+            //         warnings: false,
+            //         compress: {
+            //             properties: false,
+            //             drop_console: process.env.DV_ENV === 'prod' || false,
+            //         },
+            //         output: {
+            //             comments: false,
+            //             beautify: false,
+            //         },
+            //     },
+            // }),
         ],
     },
     plugins: [

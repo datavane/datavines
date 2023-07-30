@@ -48,7 +48,6 @@ const MetricItem = (props: TMetricItem) => {
                 };
             }
             if (datasourceReducer.modeType === 'comparison') {
-                // params.dataSourceId2 = values.dataSourceId2;
                 parameter.dataSourceId2 = values.dataSourceId2;
                 Object.assign(parameter, pickProps(values, ['metricParameter', 'metricParameter2']));
                 if (values.metricType === 'multi_table_accuracy') {
@@ -136,8 +135,6 @@ const MetricTabs = (props: TmetricTabsProps) => {
         }),
     };
 
-    console.log('detail', detail);
-
     useWatch(detail, () => {
         const $items: any[] = [];
         ((detail?.parameter || []) as any).forEach((item: any) => {
@@ -171,10 +168,12 @@ const MetricTabs = (props: TmetricTabsProps) => {
                     // @ts-ignore
                     $name: values.name, uuid: guid(), ...detail, parameterItem: {},
                 };
+                if (detail?.parameterItem && !detail?.id) {
+                    // @ts-ignore
+                    item.parameterItem = { ...(detail?.parameterItem || {}) };
+                }
                 newPanes.push(item);
                 setItems(newPanes);
-
-                // setActiveKey(item?.uuid as string);
             },
         });
     };
@@ -211,7 +210,7 @@ const MetricTabs = (props: TmetricTabsProps) => {
     };
 
     return (
-        <div style={{ paddingTop: 20 }}>
+        <div>
             <Tabs
                 type="editable-card"
                 onEdit={onEdit}
@@ -234,10 +233,6 @@ const MetricTabs = (props: TmetricTabsProps) => {
                         </TabPane>
                     ))
                 }
-
-                {/* <TabPane tab="SLA2" key="SLAS2" forceRender>
-                    <div>测试</div>
-                </TabPane> */}
             </Tabs>
             <Render />
             <Divider />

@@ -45,7 +45,7 @@ const Inner = (props: any) => {
             title: intl.formatMessage({ id: 'jobs_task_check_subject' }),
             dataIndex: 'checkSubject',
             key: 'checkSubject',
-            width: 200,
+            width: 260,
             render: (text: any) => defaultRender(text, 200),
         },
         {
@@ -59,7 +59,7 @@ const Inner = (props: any) => {
             title: intl.formatMessage({ id: 'jobs_task_check_result' }),
             dataIndex: 'checkResult',
             key: 'checkResult',
-            width: 180,
+            width: 120,
             render: (text: any) => defaultRender(text, 200),
         },
         {

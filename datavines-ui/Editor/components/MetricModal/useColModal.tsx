@@ -14,111 +14,12 @@ type tableItem = {
 }
 const Inner = (props: InnerProps) => {
     const intl = useIntl();
-    // const [loading, setLoading] = useState(false);
-    // const [tableData, setTableData] = useState<any[]>([]);
-    // const [pageParams, setPageParams] = useState({
-    //     pageNumber: 1,
-    //     pageSize: 10,
-    // });
     const columns = [{
         title: intl.formatMessage({ id: 'job_column_Name' }),
 
         dataIndex: 'name',
         key: 'name',
-        // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
-    },
-        // {
-        //     title: intl.formatMessage({ id: 'warn_sLAs_type' }),
-
-        //     dataIndex: 'type',
-        //     key: 'type',
-
-        // },
-        // , {
-        //     title: intl.formatMessage({ id: 'job_null' }),
-        //     dataIndex: 'nullCount',
-        //     key: 'nullCount',
-        //     render: (_: any, { nullCount, nullPercentage }: any) => (
-        //         <span>
-        //             {nullCount}
-        //             {' '}
-        //             [
-        //             {nullPercentage}
-        //             ]
-        //         </span>
-        //     ),
-
-        // }, {
-        //     title: intl.formatMessage({ id: 'job_notNull' }),
-        //     dataIndex: 'notNullCount',
-        //     key: 'notNullCount',
-        //     render: (_: any, { notNullCount, notNullPercentage }: any) => (
-        //         <span>
-        //             {notNullCount}
-        //             {' '}
-        //             [
-        //             {notNullPercentage}
-        //             ]
-        //         </span>
-        //     ),
-
-        // }, {
-        //     title: intl.formatMessage({ id: 'job_unique' }),
-
-        //     dataIndex: 'uniqueCount',
-        //     key: 'uniqueCount',
-        //     render: (_: any, { uniqueCount, uniquePercentage }: any) => (
-        //         <span>
-        //             {uniqueCount}
-        //             {' '}
-        //             [
-        //             {uniquePercentage}
-        //             ]
-        //         </span>
-        //     ),
-
-    // }, {
-    //     title: intl.formatMessage({ id: 'job_distinct' }),
-
-    //     dataIndex: 'distinctCount',
-    //     key: 'distinctCount',
-    //     render: (_: any, { distinctCount, distinctPercentage }: any) => (
-    //         <span>
-    //             {distinctCount}
-    //             {' '}
-    //             [
-    //             {distinctPercentage}
-    //             ]
-    //         </span>
-    //     ),
-    // }
-    ];
-    // const getData = async () => {
-    //     console.log('props', props);
-    //     setTableData([]);
-    //     try {
-    //         setLoading(true);
-    //         const { table, id, database } = props.record;
-    //         if (!table || !id || !database) return;
-    //         const $column = await $http.get(`datasource/${id}/${database}/${table}/columns`);
-    //         // console.log('$column', $column);
-    //         // eslint-disable-next-line no-unused-expressions
-    //         // index === 1 ? setCloumn1($column || []) : setCloumn2($column || []);
-    //         setTableData($column);
-    //     } catch (error) {
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-    // useWatch([pageParams], async () => {
-    //     getData();
-    // }, { immediate: true });
-    // const onChange = ({ current, pageSize }: any) => {
-    //     setPageParams({
-    //         pageNumber: current,
-    //         pageSize,
-    //     });
-    // };
+    }];
     return (
         <div>
             <Table<tableItem>

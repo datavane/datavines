@@ -11,10 +11,7 @@ const EditorData = () => {
     const [visible, setVisible] = useState(true);
     let action:any = null;
     const afterClose = (cb?: () => void) => {
-        // console.log('关闭');
         action = cb;
-        // eslint-disable-next-line no-unused-expressions
-        // cb && cb();
     };
     const { Render: RenderJobsModal, show: showJobsModal } = useAddEditJobsModal({
         title: intl.formatMessage({ id: 'jobs_tabs_title' }),
@@ -37,7 +34,6 @@ const EditorData = () => {
         },
     }), [workspaceId]);
     const onShowModal = usePersistFn((data: any) => {
-        // console.log('显示弹窗', params, data);
         showJobsModal({
             id: params.id,
             record: data,

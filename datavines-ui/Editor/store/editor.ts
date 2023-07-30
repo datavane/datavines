@@ -31,7 +31,6 @@ const reducer = (state: TEditor, action: any) => ({
 
 // @ts-ignore
 const setEditorFn = ({ dispatch, getState }) => (value) => {
-    console.log('editor state', { ...getState(), ...value });
     dispatch({ payload: { ...value } });
 };
 

@@ -68,7 +68,6 @@ const Index = ({
         }
     };
     useMount(async () => {
-        // console.log('初次加载');
         try {
             const $metricList = await $http.get('metric/list/DATA_QUALITY');
             const $databases = await $http.get(`/datasource/${id}/databases`);
@@ -85,14 +84,11 @@ const Index = ({
             if (metricType) {
                 await getConfigsName(metricType);
             }
-            // console.log('$metricList', $metricList, entityUuid);
             let $resmetricList = $metricList ? JSON.parse(JSON.stringify($metricList)) : [];
-            // console.log('dsiabledEdit', dsiabledEdit);
             if (entityUuid || dsiabledEdit) {
                 const isTable = dsiabledEdit?.isTable;
                 $resmetricList = $resmetricList?.filter((item:any) => (isTable ? item.level === 'table' : item.level === 'column'));
             }
-            // console.log('$resmetricList', $resmetricList);
             setDataBases($databases || []);
             setMetricList($resmetricList || []);
             const options: Record<string, any> = {
@@ -105,7 +101,6 @@ const Index = ({
             Object.keys(rest).forEach((item) => {
                 options[item] = rest[item];
             });
-            console.log('options', options, detail);
             form.setFieldsValue(options);
         } catch (error) {
             console.log('error', error);
@@ -146,13 +141,6 @@ const Index = ({
         const {
             column,
         } = detail?.parameterItem?.metricParameter || {} as TMetricParameter;
-        // if (column) {
-        //     setTimeout(() => {
-        //         form.setFieldsValue({
-        //             column,
-        //         });
-        //     }, 0);
-        // }
         return (
             <Form.Item
                 {...layoutItem}

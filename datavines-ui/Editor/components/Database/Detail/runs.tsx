@@ -34,11 +34,9 @@ const Index = (props: any, ref:any) => {
         showLoggerModal(record);
     };
     const onResult = (record: TJobsInstanceTableItem) => {
-        console.log(record);
         showResultModal(record);
     };
     const onErrorData = (record: TJobsInstanceTableItem) => {
-        console.log(record);
         showErrorDataModal(record);
     };
     const [tableData, setTableData] = useState([]);

@@ -84,8 +84,6 @@ const Index = ({ uuid, type }:{uuid:string;type:string}) => {
     });
     const [option, setOption] = useState({});
     useEffect(() => {
-        // /catalog/profile/column/{uuid}
-        // console.log('家在', uuid);
         if (uuid) {
             getData();
         }

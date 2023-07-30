@@ -24,7 +24,6 @@ const DetailMain = () => {
     const { workspaceId } = useSelector((r:any) => r.workSpaceReducer);
     const { editType } = useSelector((r:any) => r.datasourceReducer);
     const location = useLocation();
-    // const [uuid, setUuid] = useState(''); // 添加uuid选项,获取数据库列表需要uuid
     const [dataSourceList, setDataSourceList] = useState<DataSource[]>([]);
     const params = useParams<{ id: string}>();
     useEffect(() => {
@@ -53,16 +52,13 @@ const DetailMain = () => {
         key: item.path.replace(/:id/, (match.params as any).id || ''),
         label: intl.formatMessage({ id: item.path as any }),
     })) as MenuItem[];
-    // console.log('menusArray', detailMenus);
     const generateRoute = (menusArray: MenuItem[]) => menusArray.map((route) => (
-        // <KeepAlive name={route.path} key={`${route.label}-${route.path}`}>
         <Route
             key={`${route.label}-${route.path}`}
             path={route.path}
             exact={route.exact ? true : undefined}
             component={route.component}
         />
-        // </KeepAlive>
     ));
     const history = useHistory();
     const goBack = () => {
@@ -130,9 +126,6 @@ const DetailMain = () => {
             >
                 <Jobs />
             </div>
-            {/* <Switch>
-                {generateRoute(detailMenus)}
-            </Switch> */}
         </MenuLayout>
 
     );

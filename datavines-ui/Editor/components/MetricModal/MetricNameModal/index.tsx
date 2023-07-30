@@ -23,7 +23,6 @@ export const MetricNameComponent = ({ form, name, innerRef }: InnerProps) => {
         },
         meta: [
             {
-                // label: intl.formatMessage({ id: 'editor_dv_metric_name' }),
                 label: '',
                 name: 'name',
                 initialValue: name,
@@ -44,7 +43,6 @@ export const MetricNameComponent = ({ form, name, innerRef }: InnerProps) => {
     useImperativeHandle(innerRef, () => ({
         saveUpdate(callback?: (...args: any[]) => any) {
             form.validateFields().then(async (values) => {
-                console.log('values', values);
                 callback?.(values);
             }).catch((err) => {
                 console.log(err);

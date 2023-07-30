@@ -3,7 +3,6 @@ import { IResponseInterface } from './type';
 
 export const responseOnSuccess = (response: IResponseInterface) => {
     const { data } = response;
-    // console.log('response', response, data);
     if (data) {
         if (data instanceof Blob) {
             return {

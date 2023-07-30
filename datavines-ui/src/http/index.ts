@@ -4,7 +4,6 @@ import shareData from 'src/utils/shareData';
 import { DV_STORAGE_LOGIN } from 'src/utils/constants';
 import store, { RootReducer } from '@/store';
 
-// const url = './';
 export const history = createHashHistory();
 
 const refreshToken = (newToken: string) => {
@@ -37,7 +36,6 @@ export const $http = getHttp({
         return config;
     },
     responseInterceptor(response) {
-        // console.log('esponse.data?.code', response.data?.code);
         if (response.data?.code === 10010002 || response.data?.code === 10010003 || response.data?.code === 10010004) {
             setTimeout(() => {
                 window.location.href = '#/login';

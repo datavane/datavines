@@ -179,13 +179,6 @@ const Jobs = ({ datasourceId }: TJobs) => {
             width: 200,
             render: (text: string) => defaultRender(text, 200),
         },
-        // {
-        //     title: intl.formatMessage({ id: 'jobs_type' }),
-        //     dataIndex: 'type',
-        //     key: 'type',
-        //     width: 160,
-        //     render: (text: string) => <div>{text}</div>,
-        // },
         {
             title: intl.formatMessage({ id: 'jobs_updater' }),
             dataIndex: 'updater',
