@@ -600,7 +600,8 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 },
             });
             onShowModal({
-                parameter: JSON.stringify($record.parameterItem),
+                // parameter: JSON.stringify($record.parameterItem),
+                parameter: [$record.parameterItem],
                 parameterItem: $record.parameterItem,
             });
         }
