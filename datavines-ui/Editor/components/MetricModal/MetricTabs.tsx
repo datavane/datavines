@@ -138,6 +138,8 @@ const MetricTabs = (props: TmetricTabsProps) => {
         }),
     };
 
+    console.log('detail', detail);
+
     useWatch(detail, () => {
         const $items: any[] = [];
         ((detail?.parameter || []) as any).forEach((item: any) => {
