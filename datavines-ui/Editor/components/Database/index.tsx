@@ -13,7 +13,7 @@ import { IF } from '@Editor/common';
 import { useIntl } from 'react-intl';
 import dayjs, { Dayjs } from 'dayjs';
 import useRequest from '../../hooks/useRequest';
-import { useWatch } from '@/common';
+import { useWatch, usePersistFn } from '@/common';
 import {
     dataBaseTabs, dataBaseCol, tableTabs, tableCol, colTabs, colCol,
     Tab, Col,
@@ -23,7 +23,7 @@ import { useMetricModal } from '../MetricModal';
 import DashBoard from './Detail/dashBoard';
 import ProfileContent from './profileContent';
 import Schedule from '@/view/Main/HomeDetail/Jobs/components/Schedule';
-
+import SearchForm from './SearchForm';
 import store from '@/store';
 import { useLogger } from '@/view/Main/HomeDetail/Jobs/useLogger';
 
@@ -40,6 +40,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     const intl = useIntl();
     const { Render: RenderLoggerModal, show: showLoggerModal } = useLogger({});
     const { RangePicker } = DatePicker;
+    const searchForm = Form.useForm()[0];
     useEffect(() => {
         getTagList();
     }, []);
@@ -83,7 +84,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     const getCurrentTagList = async (entityUUID:string) => {
         const res = await $http.get(`/catalog/tag/list-in-entity/${entityUUID}`);
         setCurrentList(res || []);
-        // console.log('res', res);
     };
     // 获取表格数据
     const [columns, setColums] = useState<Col[]>([]);
@@ -126,7 +126,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     total: 0,
                 });
                 setTotal(0);
-                // getTableList(uuid);
                 setRowKey('uuid');
                 break;
             case 'Schema Changes':
@@ -136,7 +135,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     total: 0,
                 });
                 setTotal(0);
-                // getSchemaChanges(uuid);
                 setRowKey('uuid');
                 break;
             case 'Column':
@@ -146,7 +144,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     total: 0,
                 });
                 setTotal(0);
-                // getColList(uuid);
                 setRowKey('uuid');
                 break;
             case 'Metrics':
@@ -156,7 +153,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     total: 0,
                 });
                 setTotal(0);
-                // getMetric(uuid);
                 setRowKey('id');
                 break;
             case 'Issues':
@@ -166,7 +162,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                     total: 0,
                 });
                 setTotal(0);
-                // getIssue(uuid);
                 setRowKey('id');
                 break;
             default:
@@ -200,7 +195,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         setMetricName(record.name);
     };
     const onSeeView = (content:string, id:string) => {
-        // console.log('content', content);
         issueId.current = id;
         setIsIssueModalOpen(true);
         setIssuesTableData(JSON.parse(content).map((item:string) => {
@@ -233,7 +227,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 });
                 break;
             case 2:
-                // console.log('进入表格');
                 setTimer(null);
                 getProfile(selectDatabases[index].uuid);
                 getProfileTable(selectDatabases[index].uuid);
@@ -262,10 +255,8 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 colCol[0][0].onCell = (record) => ({
                     onClick: () => renderMetrics(record),
                 });
-                // if (!colCol[0][4].render) {
                 colCol[0][4].render = (_: any, { id }: any) => <a onClick={() => onRun(id)}>{intl.formatMessage({ id: 'jobs_run' })}</a>;
                 colCol[1][4].render = (_: any, { content, id }: {content:string, id:string}) => <a onClick={() => onSeeView(content, id)}>{intl.formatMessage({ id: 'common_view' })}</a>;
-                // }
                 getMetric(selectDatabases[index].uuid);
                 setName({
                     name: intl.formatMessage({ id: 'job_column' }),
@@ -293,18 +284,13 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     // 获取表格数
     const getTableList = async (uuid:string) => {
         setLoading(true);
-        // console.log('pageInfo', pageInfo);
-        // catalog/page/table-with-detail
         $http.get('/catalog/page/table-with-detail', {
             upstreamUuid: uuid,
             ...pageInfo,
+            name: searchForm.getFieldsValue()?.name || '',
         }).then((res) => {
             setTableData(res.records || []);
             setTotal(res.total);
-            // setPageInfo({
-            //     ...pageInfo,
-            //     total: res.total,
-            // });
         }).finally(() => {
             setLoading(false);
         });
@@ -355,24 +341,16 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             pageSize,
             total: pageInfo.total,
         });
-
-        // setPageInfo({
-        //     pageNumber:
-        // })
-        // getMetric(selectDatabases[selectDatabases.length - 1].uuid);
     };
     // 获取列
     const getColList = async (uuid:string) => {
         await $http.get('/catalog/page/column-with-detail', {
             ...pageInfo,
             upstreamUuid: uuid,
+            name: searchForm.getFieldsValue()?.name || '',
         }).then((res) => {
             setTableData(res.records || []);
             setTotal(res.total);
-            // setPageInfo({
-            //     ...pageInfo,
-            //     total: res.total,
-            // });
         }).finally(() => {
             setLoading(false);
         });
@@ -385,10 +363,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             uuid,
         }).then((res) => {
             setTableData(res.records || []);
-            // setPageInfo({
-            //     ...pageInfo,
-            //     total: res.total,
-            // });
         }).finally(() => {
             setLoading(false);
         });
@@ -400,7 +374,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         }).then((res) => {
             setTableData(res.columnProfile || []);
         }).finally(() => {
-            // setLoading(false);
         });
     };
     const getIssue = async (uuid:string) => {
@@ -410,14 +383,9 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             ...pageInfo,
         }).then((res) => {
             setTableData(res.records || []);
-            // setPageInfo({
-            //     ...pageInfo,
-            //     total: res.total,
-            // });
         }).finally(() => {
             setLoading(false);
         });
-        // catalog/page/entity/issue
     };
     const [option, setOption] = useState<any>(null);
     const [timer, setTimer] = useState<RangeValue>(null);
@@ -425,7 +393,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         getProfileTable(selectDatabases[currentIndex]?.uuid);
     }, [timer]);
     const getProfileTable = async (uuid:string) => {
-        // console.log('timer', timer);
         await $http.get('/catalog/profile/table/records', {
             uuid,
             startTime: timer && timer[0] ? dayjs(timer[0]).format('YYYY-MM-DD') : undefined,
@@ -467,7 +434,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     const [chooesColList, setChooesColList] = useState([]);
     const [chooesColModalOpen, setChooesColModalOpen] = useState(false);
     const [colCheckList, setColCheckList] = useState<string[]>([]);
-    // const [defaultSelectedRowKeys, setDefaultSelectedRowKeys] = useState([]);
     const chooseColumns = [{
         title: intl.formatMessage({ id: 'job_column_Name' }),
         dataIndex: 'name',
@@ -489,7 +455,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         render: (_: any, data: any) => (
             <a
                 onClick={() => {
-                    // console.log('id', id);
                     showLoggerModal(data);
                 }}
                 className="text-underline"
@@ -500,7 +465,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     }];
     const runProfileGetCol = async () => {
         const res = await $http.get(`/catalog/list/column-with-detail/${selectDatabases[currentIndex]?.uuid}`);
-        // console.log('res', res);
         setChooesColList(res);
         const resCheck = await $http.get(`/catalog/profile/selected-columns/${selectDatabases[currentIndex]?.uuid}?uuid=${selectDatabases[currentIndex]?.uuid}`);
         setColCheckList(resCheck);
@@ -557,13 +521,16 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 break;
         }
         const res = await $http.get(`${url}${uuid}`);
-        // console.log('detail', res);
         setDetailData(res || {});
     };
     // eslint-disable-next-line no-unused-expressions
     afterClose && afterClose(() => {
         // eslint-disable-next-line no-unused-expressions
         tableItems[+activeTableKey].name === 'Metrics' && getMetric(selectDatabases[currentIndex].uuid);
+    });
+
+    const onSearch = usePersistFn(() => {
+        setPageInfo({ ...pageInfo, pageNumber: 1 });
     });
 
     const onFieldClick = (index?:number, name?:string, uuid?:string) => {
@@ -592,27 +559,33 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 },
             });
             onShowModal({
-                parameter: JSON.stringify($record.parameterItem),
+                parameter: [$record.parameterItem],
                 parameterItem: $record.parameterItem,
             });
         }
     };
     const createTag = async (data: {tagUUID:string}) => {
-        await $http.post(`catalog/tag/entity-tag?tagUUID=${data.tagUUID}&entityUUID=${selectDatabases[currentIndex]?.uuid}`, {
-            ...data,
-            entityUUID: selectDatabases[currentIndex]?.uuid,
-        });
-        message.success(intl.formatMessage({ id: 'common_success' }));
-        getCurrentTagList(selectDatabases[currentIndex].uuid);
-        handleCancel();
-        getDetail(selectDatabases[currentIndex].uuid);
+        try {
+            await $http.post(`catalog/tag/entity-tag?tagUUID=${data.tagUUID}&entityUUID=${selectDatabases[currentIndex]?.uuid}`, {
+                ...data,
+                entityUUID: selectDatabases[currentIndex]?.uuid,
+            });
+            message.success(intl.formatMessage({ id: 'common_success' }));
+            getCurrentTagList(selectDatabases[currentIndex].uuid);
+            handleCancel();
+            getDetail(selectDatabases[currentIndex].uuid);
+        } catch (error) {
+        }
     };
     const onClose = async (e: React.MouseEvent<HTMLElement, MouseEvent>, data:{uuid:string}) => {
-        e.preventDefault();
-        await $http.delete(`catalog/tag/entity-tag?tagUUID=${data.uuid}&entityUUID=${selectDatabases[currentIndex]?.uuid}`);
-        message.success(intl.formatMessage({ id: 'common_success' }));
-        getCurrentTagList(selectDatabases[currentIndex].uuid);
-        getDetail(selectDatabases[currentIndex].uuid);
+        try {
+            e.preventDefault();
+            await $http.delete(`catalog/tag/entity-tag?tagUUID=${data.uuid}&entityUUID=${selectDatabases[currentIndex]?.uuid}`);
+            message.success(intl.formatMessage({ id: 'common_success' }));
+            getCurrentTagList(selectDatabases[currentIndex].uuid);
+            getDetail(selectDatabases[currentIndex].uuid);
+        } catch (error) {
+        }
     };
     const [metricsId, setMetricid] = useState('');
     const [metricsName, setMetricName] = useState('');
@@ -693,7 +666,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     const [historytotal, setHistorytotal] = useState(0);
     const [historyLoading, setHistoryLoading] = useState(false);
     const onPageChange = (page:number, pageSize:number) => {
-        // console.log('page', page, pageSize);
         OpenDrawer(page, pageSize);
     };
     const OpenDrawer = async (page:number, pageSize:number) => {
@@ -708,7 +680,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         setHistoryLoading(false);
         setHistorytotal(res.total || 0);
         setHistoryList(res.records || []);
-        // catalog/profile/execute/history
     };
     const onDrawerClose = () => {
         setOpenDrawer(false);
@@ -779,7 +750,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                                 setisScheduleOpen(true);
                                             } else {
                                                 OpenDrawer(1, 10);
-                                                // data.key === '1'
                                             }
                                         },
                                     }}
@@ -789,10 +759,6 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                     {intl.formatMessage({ id: 'jobs_run_profile' })}
 
                                 </Dropdown.Button>
-
-                                {/* <Button onClick={() => runProfile()} style={{ marginLeft: '10px' }}>
-                                    Run Profile
-                                </Button> */}
                             </IF>
                         </div>
 
@@ -875,6 +841,15 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
 
                                     ) : ''
                                 }
+                                <React.Fragment key={tableItems[+activeTableKey]?.name}>
+                                    <IF visible={['Tables', 'Column'].includes(tableItems[+activeTableKey]?.name)}>
+                                        <SearchForm
+                                            form={searchForm}
+                                            onSearch={onSearch}
+                                            placeholder={intl.formatMessage({ id: tableItems[+activeTableKey]?.name === 'Column' ? 'editor_dv_search_column' : 'editor_dv_search_table' })}
+                                        />
+                                    </IF>
+                                </React.Fragment>
                                 <Table
                                     size="small"
                                     scroll={{ y: 'calc(100vh - 454px)' }}

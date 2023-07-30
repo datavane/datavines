@@ -69,12 +69,13 @@ const Index: React.FC<IndexProps> = ({
                                 <Menu
                                     items={[
                                         {
-                                            label: <div style={{ width: '100%', height: '100%' }} onClick={() => (onEdit(item))}>
-                                                <EditOutlined style={{ marginRight: '4px' }} />
-                                                {intl.formatMessage({ id: 'common_edit' })}
-                                            </div>,
+                                            label: (
+                                                <div style={{ width: '100%', height: '100%' }} onClick={() => (onEdit(item))}>
+                                                    <EditOutlined style={{ marginRight: '4px' }} />
+                                                    {intl.formatMessage({ id: 'common_edit' })}
+                                                </div>
+                                            ),
                                             key: 'edit',
-                                            // icon: ,
                                         },
                                         {
                                             label: (
@@ -90,9 +91,7 @@ const Index: React.FC<IndexProps> = ({
                                                     </a>
                                                 </Popconfirm>
                                             ),
-                                            // icon: <DeleteOutlined style={{ color: '#f81d22' }} />,
                                             key: 'delete',
-                                            // style:{{color: '#f81d22' }
                                         },
                                         {
                                             label: (
@@ -107,9 +106,7 @@ const Index: React.FC<IndexProps> = ({
                                                 </a>
 
                                             ),
-                                            // icon: <DeleteOutlined style={{ color: '#f81d22' }} />,
                                             key: 'push',
-                                            // style:{{color: '#f81d22' }
                                         },
                                     ]}
                                 />

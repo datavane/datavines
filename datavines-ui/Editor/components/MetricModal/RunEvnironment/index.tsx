@@ -29,8 +29,6 @@ const Index = ({ form, id, detail }: InnerProps) => {
     const [tenantCodeList, setTenantCodeList] = useState([]);
     const [envList, setEnvList] = useState([]);
     const requiredRule = useRequiredRule();
-    console.log('form', detail);
-    // form.setFieldValue("tenantCode",)
     const { Render: RenderTenantModal, show: showTenant } = useTenantModal({
         title: intl.formatMessage({ id: 'dv_metric_linux_user' }),
         afterClose() {
@@ -46,7 +44,6 @@ const Index = ({ form, id, detail }: InnerProps) => {
     const getTenantList = async () => {
         try {
             const tenantListOptions = await $http.get(`tenant/listOptions/${context.workspaceId}`);
-            console.log('tenantListOptions', tenantListOptions);
             setTenantCodeList(tenantListOptions || []);
         } catch (error) {
         }

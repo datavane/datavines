@@ -8,15 +8,13 @@ import {
     Input, InputNumber, Form, Radio, DatePicker, Col, Row, Button, FormInstance, message, Spin,
 } from 'antd';
 import useRequiredRule from '@Editor/hooks/useRequiredRule';
+import dayjs from 'dayjs';
 import { CustomSelect, useMount, useLoading } from '@/common';
 import PageContainer from '../../useAddEditJobsModal/PageContainer';
 import { pickProps } from '@/utils';
 import { $http } from '@/http';
-import dayjs from "dayjs";
 
-const get100Years = () => {
-    return dayjs().add(100, "year");
-};
+const get100Years = () => dayjs().add(100, 'year');
 type TParam = {
     cycle: string,
     crontab: null | string,
@@ -286,7 +284,7 @@ const Schedule: React.FC<ScheduleProps> = ({ formRef, detail }) => {
                                                 }}
                                             >
                                                 <label className="ant-form-item-required">
-                                                    {`${intl.formatMessage({ id: 'jobs_schedule_time' })}`}
+                                                    {intl.formatMessage({ id: 'jobs_schedule_time' })}
                                                     <span style={{
                                                         marginBlock: '0',
                                                         marginInlineStart: '2px',
@@ -425,7 +423,6 @@ const ScheduleContainer = ({
                     endTime: res?.endTime ? dayjs(res?.endTime) : get100Years(),
                     startTime: res?.startTime ? dayjs(res?.startTime) : dayjs(),
                     crontab: res?.param?.crontab,
-                    // '': '',
                     cycle: res?.param?.cycle,
                 });
                 setDetail(res);
@@ -437,10 +434,7 @@ const ScheduleContainer = ({
                     nhour: '',
                     day: '',
                     hour: '',
-                    // endTime: '',
-                    // startTime: '',
                     crontab: '',
-                    // '': '',
                     cycle: '',
                     wday: '',
 
@@ -492,9 +486,6 @@ const ScheduleContainer = ({
         });
     };
 
-    // useMount(async () => {
-    //     getData();
-    // });
     if (loading) {
         return <Spin spinning={loading} />;
     }

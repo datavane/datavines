@@ -2,6 +2,7 @@ import React, {
     useState, useRef, useEffect, forwardRef, useImperativeHandle,
 } from 'react';
 import { Tabs } from 'antd';
+import { useIntl } from 'react-intl';
 import './index.less';
 import useRequest from '@Editor/hooks/useRequest';
 import DashBoard from './dashBoard';
@@ -10,6 +11,7 @@ import { Inner } from '../../../../src/view/Main/HomeDetail/Jobs/useAddEditJobsM
 
 const Index = (props: any, ref:any) => {
     const { id, selectDatabases, changeTabKey } = props;
+    const intl = useIntl();
     useImperativeHandle(ref, () => ({ runsRef }));
     const innerRef = useRef();
     const { $http } = useRequest();
@@ -65,9 +67,9 @@ const Index = (props: any, ref:any) => {
 
     const runsRef = useRef(null);
     const initialTableItems = [
-        { label: 'DashBoard', children: <DashBoard option={option} id={id} />, key: '1' },
+        { label: intl.formatMessage({ id: 'editor_dv_DashBoard' }), children: <DashBoard option={option} id={id} />, key: '1' },
         {
-            label: 'Configuration',
+            label: intl.formatMessage({ id: 'editor_dv_Configuation' }),
             children: <Inner
                 styleChildren={{
                     height: 'calc(100vh - 324px)',
@@ -80,7 +82,7 @@ const Index = (props: any, ref:any) => {
             />,
             key: '2',
         },
-        { label: 'Runs', children: <Runs id={id} ref={runsRef} />, key: '3' },
+        { label: intl.formatMessage({ id: 'editor_dv_Runs' }), children: <Runs id={id} ref={runsRef} />, key: '3' },
     ];
     const [activeTableKey, setActiveKey] = useState(initialTableItems[0].key);
     return (

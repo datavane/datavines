@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Table } from 'antd';
 import { ColumnsType } from 'antd/lib/table';
+import dayjs from 'dayjs';
 import { defaultRender } from '@/utils/helper';
 import { IDvSqlTable, IDvSqlTableResultItem } from '../../type';
-import dayjs from "dayjs";
 
 type SqlTableProps = {
     style?: React.CSSProperties,
@@ -49,7 +49,7 @@ const SqlTable = ({ style, tableData }: SqlTableProps) => {
                     className="dv-table-small"
                     scroll={{
                         x: '100%',
-                        y: tableData.resultList? (tableData.resultList.length > 0 ? 280 : undefined) : undefined,
+                        y: (tableData.resultList || []).length > 0 ? 280 : undefined,
                     }}
                     sticky
                     pagination={{

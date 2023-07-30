@@ -55,7 +55,6 @@ const Index = ({
                     metricParameter2: detail?.parameterItem?.metricParameter2,
                     mappingColumns: detail?.parameterItem?.mappingColumns,
                 });
-                // console.log('detail', detail)
                 setMetricTypeParent(detail?.metricType);
                 setMetricType(detail?.metricType);
                 getDatabases(detail?.dataSourceId2, 2, true);
@@ -74,7 +73,6 @@ const Index = ({
                 pageNumber: 1,
                 pageSize: 9999,
             });
-            // console.log('执行');
             setDataSoucre($dataSoucrce.records || []);
         } catch (error) {
             console.log('erro', error);
@@ -122,12 +120,10 @@ const Index = ({
     const getCloumn = async (table: string | undefined, id: string | undefined, database: string | undefined, index: number, isInit: boolean | undefined) => {
         if (!table || !id || !database) return;
         const $column = await $http.get(`datasource/${id}/${database}/${table}/columns`);
-        // console.log('$column', $column);
         // eslint-disable-next-line no-unused-expressions
         index === 1 ? setCloumn1($column || []) : setCloumn2($column || []);
     };
     const seeColList = (index:number) => {
-        // console.log('upstreamUuid', upstreamUuid);
         // eslint-disable-next-line no-unused-expressions
         show({
             list: index === 1 ? column1 : column2,
@@ -140,7 +136,7 @@ const Index = ({
                     <Col span={12}>
                         <Form.Item
                             {...layoutItem}
-                            label={`${intl.formatMessage({ id: 'dev_metric_rule' })}`}
+                            label={intl.formatMessage({ id: 'dev_metric_rule' })}
                             name="metricType"
                             rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_rule' }) }]}
                         >
@@ -396,7 +392,7 @@ const Index = ({
                         </Col>
                     </Row>
                 </IF>
-                <RenderColModal/>
+                <RenderColModal />
             </div>
         </Title>
     );

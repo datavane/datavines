@@ -79,7 +79,6 @@ const useEditor = (props: TUseEditor) => {
             theme: 'vs',
             cursorStyle: 'line',
             fontSize: 14,
-            // glyphMargin: true,
             automaticLayout: true,
             overviewRulerBorder: false,
             foldingStrategy: 'indentation',
@@ -108,12 +107,6 @@ const useEditor = (props: TUseEditor) => {
                     startColumn: 1,
                     endColumn: position.column,
                 });
-                // const positionAfterText = model.getValueInRange({
-                //     ...lineNumber,
-                //     startColumn: position.column,
-                //     endColumn: 1999,
-                // });
-                // console.log('内容', positionBeforeText, '-', positionAfterText);
                 const range = {
                     ...lineNumber,
                     startColumn: position.column,
@@ -121,9 +114,7 @@ const useEditor = (props: TUseEditor) => {
                 };
                 const defaultSuggestions = getDefaultSuggestions(positionBeforeText, range);
                 const tableSuggestions = getTableSuggestions(positionBeforeText, range);
-                // console.log('lineContent', tableSuggestions, defaultSuggestions);
                 return {
-                    // suggestions: defaultSuggestions || [],
                     suggestions: [...tableSuggestions, ...defaultSuggestions] || [],
                 };
             },

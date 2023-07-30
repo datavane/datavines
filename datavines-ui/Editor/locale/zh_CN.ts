@@ -62,4 +62,10 @@ export default {
     editor_dv_metric_input_actual_value_execution: '请输入实际值执行语句!',
     editor_dv_metric_input_expected_value_execution: '请输入期望值执行语句!',
     editor_dv_metric_select_rule: '请选择规则',
+    editor_dv_DashBoard: '趋势图',
+    editor_dv_Configuation: '作业配置',
+    editor_dv_Runs: '执行记录',
+    editor_dv_search_table: '请输入表名',
+    editor_dv_search_column: '请输入列名',
+    editor_dv_metric_name: '名称',
 };

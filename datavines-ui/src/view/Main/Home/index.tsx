@@ -34,7 +34,6 @@ function App() {
         pageSize: 20,
     });
     const getData = usePersistFn(async (values = {}) => {
-        console.log('pageParams', pageParams, values);
         try {
             const res = (await $http.get('/datasource/page', {
                 workSpaceId: workspaceId,
@@ -52,13 +51,6 @@ function App() {
         getData();
     }, { immediate: true });
     const goDetail = usePersistFn((record: IDataSourceListItem) => {
-        // const fns = useEditorActions({ setEditorFn });
-        // fns.setEditorFn({
-        //     selectDatabases: [{
-        //         id: record.id,
-        //         name: record.name,
-        //     }],
-        // });
         history.push(`/main/detail/${record.id}/editor?name=${record.name}`);
     });
     const onSearch = usePersistFn((values) => {

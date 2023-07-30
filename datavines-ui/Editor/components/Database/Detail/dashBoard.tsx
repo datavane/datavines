@@ -52,7 +52,6 @@ const Index = ({ id, option, style = {} }:{id:string, option:any, style?:any}) =
         } else {
             myChart.setOption(option, true);
         }
-        console.log('option', option);
     }, [option]);
 
     return (

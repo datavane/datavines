@@ -66,7 +66,7 @@ const Index = (props: IDvEditorProps) => {
 
     const onRun = async () => {
         const val = monacoRef.current.getValue();
-        if (!val) {
+        if (!val || val === '\n') {
             return;
         }
         try {

@@ -105,13 +105,6 @@ const Index: React.FC<IndexProps> = () => {
             width: 160,
             render: (text: string) => <div>{text}</div>,
         },
-        // {
-        //     title: 'env',
-        //     dataIndex: 'env',
-        //     key: 'env',
-        //     width: 160,
-        //     render: (text: string) => <div>{text}</div>,
-        // },
         {
             title: 'createTime',
             dataIndex: 'createTime',

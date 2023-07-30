@@ -65,9 +65,6 @@ const Inner = ({ innerRef }: InnerProps) => {
 
 export const useLogger = (options: ModalProps) => {
     const intl = useIntl();
-    // const [className, setClassName] = useState('dv-modal-fullscreen');
-    // const classNameRef = useRef(className);
-    // classNameRef.current = className;
     const innerRef = useRef<any>();
     const recordRef = useRef<any>();
     const onOk = usePersistFn(() => {
@@ -102,15 +99,6 @@ export const useLogger = (options: ModalProps) => {
                         <DownloadOutlined style={{ marginRight: 5 }} />
                         {intl.formatMessage({ id: 'job_log_download' })}
                     </a>
-                    {/* <IF visible={!classNameRef.current}>
-                        <a onClick={() => {
-                            setClassName('dv-modal-fullscreen');
-                        }}
-                        >
-                            <FullscreenExitOutlined style={{ marginRight: 5 }} />
-                            {intl.formatMessage({ id: 'job_log_fullScreen' })}
-                        </a>
-                    </IF> */}
 
                 </div>
             </div>
@@ -120,7 +108,6 @@ export const useLogger = (options: ModalProps) => {
         width: '90%',
         ...(options || {}),
         afterClose() {
-            // setClassName('');
             recordRef.current = null;
         },
         onOk,

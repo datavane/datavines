@@ -9,13 +9,6 @@ import { $http } from '@/http';
 import { useSelector } from '@/store';
 
 const Index = () => {
-    // const data = [
-    //     'Racing ',
-    //     'Japanese ',
-    //     'Australian ',
-    //     'Man charged ',
-    //     'Los Angeles',
-    // ];
     const intl = useIntl();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [form] = Form.useForm();
@@ -45,8 +38,6 @@ const Index = () => {
     };
     // 删除标签分类
     const deleteCategory = async (categoryUUID:string) => {
-        // event.preventDefault();
-        // event.stopPropagation();
         await $http.delete(`catalog/tag/category/${categoryUUID}`);
         getList();
         message.success('删除成功');
@@ -64,13 +55,10 @@ const Index = () => {
     const getTagList = async (categoryUUID:string) => {
         setTagList([]);
         const res = await $http.get(`catalog/tag/list-in-category/${categoryUUID}`);
-        console.log('res', res);
         setTagList(res);
-        // catalog/tag/list-in-category/{categoryUUID}
     };
     const handleOk = async () => {
         form.validateFields().then(async (value) => {
-            console.log('value', value);
             if (type === 'category') {
                 await $http.post('/catalog/tag/category', {
                     ...value,
@@ -86,11 +74,6 @@ const Index = () => {
                 message.success(intl.formatMessage({ id: 'common_success' }));
                 getTagList(tagCategoryList[currentIndex].uuid);
             }
-            // createTag(value);
-            // console.log("12312")
-
-            // console.log('res', res);
-            // // catalog/tag/category
             setIsModalOpen(false);
             form.resetFields();
         }).catch(() => {
@@ -133,9 +116,6 @@ const Index = () => {
                                 >
                                     <Button type="text" icon={<DeleteOutlined />} danger />
                                 </Popconfirm>
-
-                                {/* <Button type="text" icon={<EditOutlined />} /> */}
-
                             </div>
 
                         </div>
@@ -176,8 +156,6 @@ const Index = () => {
                                     >
                                         <Button type="link" icon={<DeleteOutlined />} danger />
                                     </Popconfirm>
-                                    {/* <Button type="link" icon={<EditOutlined />} /> */}
-
                                 </div>
                             </div>
                         </List.Item>

@@ -1,6 +1,4 @@
-// import React from 'react';
-import { message, notification } from 'antd';
-// import { FormattedMessage } from 'react-intl';
+import { notification } from 'antd';
 import { create } from './create';
 import { IRequestConfig } from './type';
 

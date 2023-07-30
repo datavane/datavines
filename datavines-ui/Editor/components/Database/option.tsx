@@ -2,7 +2,6 @@ import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import DashBoard from './Detail/dashBoard';
 
-// const intl = useIntl();
 export type Tab = {
     label:any;
     children:null;
@@ -34,11 +33,6 @@ export const dataBaseCol:Col[][] = [[{
     dataIndex: 'name',
     key: 'name',
     render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
-    // onCell: (record) => ({
-    //     onClick: (event) => {
-    //         console.log('record', record, event);
-    //     },
-    // }),
 },
 {
     title: <FormattedMessage id="job_last_refresh_time" />,
@@ -101,7 +95,6 @@ export const tableCol:Col[][] = [[{
     title: <FormattedMessage id="job_column" />,
     dataIndex: 'name',
     key: 'name',
-    // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 }, {
     title: <FormattedMessage id="warn_sLAs_type" />,
     dataIndex: 'type',
@@ -168,11 +161,6 @@ export const tableCol:Col[][] = [[{
         dataIndex: 'name',
         key: 'name',
         render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
-        // onCell: (record) => ({
-        //     onClick: (event) => {
-        //         console.log('record', record, event);
-        //     },
-        // }),
     },
     {
         title: <FormattedMessage id="warn_sLAs_type" />,
@@ -258,7 +246,6 @@ export const tableCol:Col[][] = [[{
     dataIndex: 'action',
     key: 'action',
     width: '80px',
-    // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 }], [{
     title: <FormattedMessage id="warn_sLAs_type" />,
     dataIndex: 'changeType',
@@ -313,7 +300,6 @@ export const tableCol:Col[][] = [[{
     dataIndex: 'action',
     key: 'action',
     width: '80px',
-    // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 }]];
 export const colTabs:Tab[] = [
     {
@@ -389,7 +375,6 @@ export const colCol:Col[][] = [[{
     dataIndex: 'action',
     key: 'action',
     width: '80px',
-    // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 }], [{
     title: <FormattedMessage id="job_metrics" />,
     dataIndex: 'metricName',
@@ -416,7 +401,6 @@ export const colCol:Col[][] = [[{
     dataIndex: 'action',
     key: 'action',
     width: '80px',
-    // render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 }], [{
     title: <FormattedMessage id="warn_sLAs_type" />,
     dataIndex: 'changeType',

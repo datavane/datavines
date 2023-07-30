@@ -62,4 +62,10 @@ export default {
     editor_dv_metric_input_actual_value_execution: 'Please enter the actual value to execute the statement!',
     editor_dv_metric_input_expected_value_execution: 'Please enter the actual value to execute the statement!',
     editor_dv_metric_select_rule: 'Please select rule!',
+    editor_dv_DashBoard: 'DashBoard',
+    editor_dv_Configuation: 'Configuation',
+    editor_dv_Runs: 'Runs',
+    editor_dv_search_table: 'please enter table',
+    editor_dv_search_column: 'please enter column',
+    editor_dv_metric_name: 'name',
 };

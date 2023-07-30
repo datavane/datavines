@@ -75,4 +75,6 @@ export type TDetail = null | {
     createTime?: Date;
     updateBy?: number | string;
     updateTime?: Date;
+    uuid?: string;
+    [key: string]: any;
 }

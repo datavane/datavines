@@ -17,8 +17,6 @@ const Index = () => {
     const [activeKey, setActiveKey] = useState(initialItems[0].key);
     const [activeTableKey] = useState(initialTableItems[0].key);
     const [items, setItems] = useState(initialItems);
-    // const newTabIndex = useRef(0);
-
     const onChange = (newActiveKey: string) => {
         setActiveKey(newActiveKey);
     };
@@ -45,7 +43,6 @@ const Index = () => {
 
     const onEdit = (targetKey: any, action: 'add' | 'remove') => {
         if (action === 'add') {
-            // add();
             setIsModalOpen(true);
         } else {
             remove(targetKey);
