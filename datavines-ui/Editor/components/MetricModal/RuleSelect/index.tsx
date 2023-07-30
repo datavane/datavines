@@ -14,6 +14,7 @@ import {
 } from '../../../common';
 import store, { RootReducer } from '@/store';
 import { useColModal } from '../useColModal';
+import Title from '../Title';
 
 type InnerProps = {
     form: FormInstance,
@@ -133,132 +134,101 @@ const Index = ({
         });
     };
     return (
-        <div style={{ padding: '0 10px' }}>
-            <Row gutter={30}>
-                <Col span={12}>
-                    <Form.Item
-                        {...layoutItem}
-                        label={`${intl.formatMessage({ id: 'dev_metric_rule' })}`}
-                        name="metricType"
-                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_rule' }) }]}
-                    >
-                        <CustomSelect
-                            source={metricList}
-                            sourceValueMap="key"
-                            onChange={changeRule}
-                        />
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row gutter={30}>
-                <Col span={12}>
-                    <Form.Item
-                        {...layoutItem}
-                        label={`${intl.formatMessage({ id: 'dev_metric_datasource' })}1`}
-                        name="dataSourceId"
-                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_datasource' }) }]}
-                    >
-                        <CustomSelect
-                            source={dataSoucre}
-                            sourceLabelMap="name"
-                            sourceValueMap="id"
-                            disabled
-                        />
-                    </Form.Item>
-                </Col>
-                <Col span={12}>
-                    <Form.Item
-                        {...layoutItem}
-                        label={`${intl.formatMessage({ id: 'dev_metric_datasource' })}2`}
-                        name="dataSourceId2"
-                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_datasource' }) }]}
-                    >
-                        <CustomSelect
-                            source={dataSoucre}
-                            sourceLabelMap="name"
-                            sourceValueMap="id"
-                            onChange={(e) => getDatabases(e, 2, false)}
-                        />
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row gutter={30}>
-                <Col span={12}>
-                    <Form.Item
-                        {...layoutItem}
-                        label={`${intl.formatMessage({ id: 'dv_metric_database' })}1`}
-                        name={['metricParameter', 'database']}
-                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
-                    >
-                        <CustomSelect
-                            source={databases1}
-                            sourceValueMap="name"
-                            onChange={(e) => getTable(e, form.getFieldValue('dataSourceId'), 1, false)}
-                        />
-                    </Form.Item>
-                </Col>
-                <Col span={12}>
-                    <Form.Item
-                        {...layoutItem}
-                        label={`${intl.formatMessage({ id: 'dv_metric_database' })}2`}
-                        name={['metricParameter2', 'database2']}
-                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
-                    >
-                        <CustomSelect
-                            source={databases2}
-                            sourceValueMap="name"
-                            onChange={(e) => getTable(e, form.getFieldValue('dataSourceId2'), 2, false)}
-                        />
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row gutter={30}>
-                <Col span={12}>
-                    <Form.Item
-                        {...layoutItem}
-                        label={`${intl.formatMessage({ id: 'dv_metric_table' })}1`}
-                        name={['metricParameter', 'table']}
-                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
-                    >
-                        <CustomSelect
-                            source={table1}
-                            sourceValueMap="name"
-                            onChange={(e) => getCloumn(e, form.getFieldValue('dataSourceId'), form.getFieldValue(['metricParameter', 'database']), 1, false)}
-                        />
-                    </Form.Item>
-                    {form.getFieldValue('metricType') === 'multi_table_value_comparison' ? (
-                        <Button
-                            style={{
-                                position: 'absolute',
-                                right: '-4px',
-                                transform: 'translateX(100%)',
-                                zIndex: 1,
-                                top: 0,
-                            }}
-                            disabled={!form.getFieldValue(['metricParameter', 'table'])}
-                            onClick={() => seeColList(1)}
+        <Title title={intl.formatMessage({ id: 'dv_metric_config' })}>
+            <div>
+                <Row gutter={30}>
+                    <Col span={12}>
+                        <Form.Item
+                            {...layoutItem}
+                            label={`${intl.formatMessage({ id: 'dev_metric_rule' })}`}
+                            name="metricType"
+                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_rule' }) }]}
                         >
-                            {intl.formatMessage({ id: 'dv_metric_column' })}
-
-                        </Button>
-                    ) : ''}
-
-                </Col>
-                <Col span={12}>
-                    <Form.Item
-                        {...layoutItem}
-                        label={`${intl.formatMessage({ id: 'dv_metric_table' })}2`}
-                        name={['metricParameter2', 'table2']}
-                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
-                    >
-                        <CustomSelect
-                            source={table2}
-                            sourceValueMap="name"
-                            onChange={(e) => getCloumn(e, form.getFieldValue('dataSourceId2'), form.getFieldValue(['metricParameter2', 'database2']), 2, false)}
-                        />
-                    </Form.Item>
-                    {
-                        form.getFieldValue('metricType') === 'multi_table_value_comparison' ? (
+                            <CustomSelect
+                                source={metricList}
+                                sourceValueMap="key"
+                                onChange={changeRule}
+                            />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row gutter={30}>
+                    <Col span={12}>
+                        <Form.Item
+                            {...layoutItem}
+                            label={`${intl.formatMessage({ id: 'dev_metric_datasource' })}1`}
+                            name="dataSourceId"
+                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_datasource' }) }]}
+                        >
+                            <CustomSelect
+                                source={dataSoucre}
+                                sourceLabelMap="name"
+                                sourceValueMap="id"
+                                disabled
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item
+                            {...layoutItem}
+                            label={`${intl.formatMessage({ id: 'dev_metric_datasource' })}2`}
+                            name="dataSourceId2"
+                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_datasource' }) }]}
+                        >
+                            <CustomSelect
+                                source={dataSoucre}
+                                sourceLabelMap="name"
+                                sourceValueMap="id"
+                                onChange={(e) => getDatabases(e, 2, false)}
+                            />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row gutter={30}>
+                    <Col span={12}>
+                        <Form.Item
+                            {...layoutItem}
+                            label={`${intl.formatMessage({ id: 'dv_metric_database' })}1`}
+                            name={['metricParameter', 'database']}
+                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
+                        >
+                            <CustomSelect
+                                source={databases1}
+                                sourceValueMap="name"
+                                onChange={(e) => getTable(e, form.getFieldValue('dataSourceId'), 1, false)}
+                            />
+                        </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                        <Form.Item
+                            {...layoutItem}
+                            label={`${intl.formatMessage({ id: 'dv_metric_database' })}2`}
+                            name={['metricParameter2', 'database2']}
+                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_databases' }) }]}
+                        >
+                            <CustomSelect
+                                source={databases2}
+                                sourceValueMap="name"
+                                onChange={(e) => getTable(e, form.getFieldValue('dataSourceId2'), 2, false)}
+                            />
+                        </Form.Item>
+                    </Col>
+                </Row>
+                <Row gutter={30}>
+                    <Col span={12}>
+                        <Form.Item
+                            {...layoutItem}
+                            label={`${intl.formatMessage({ id: 'dv_metric_table' })}1`}
+                            name={['metricParameter', 'table']}
+                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
+                        >
+                            <CustomSelect
+                                source={table1}
+                                sourceValueMap="name"
+                                onChange={(e) => getCloumn(e, form.getFieldValue('dataSourceId'), form.getFieldValue(['metricParameter', 'database']), 1, false)}
+                            />
+                        </Form.Item>
+                        {form.getFieldValue('metricType') === 'multi_table_value_comparison' ? (
                             <Button
                                 style={{
                                     position: 'absolute',
@@ -267,137 +237,168 @@ const Index = ({
                                     zIndex: 1,
                                     top: 0,
                                 }}
-                                disabled={!form.getFieldValue(['metricParameter2', 'table2'])}
-                                onClick={() => seeColList(2)}
+                                disabled={!form.getFieldValue(['metricParameter', 'table'])}
+                                onClick={() => seeColList(1)}
                             >
                                 {intl.formatMessage({ id: 'dv_metric_column' })}
+
                             </Button>
-                        ) : null
-                    }
+                        ) : ''}
 
-                </Col>
-            </Row>
-            <IF visible={metricType === 'multi_table_accuracy'}>
-                <Row gutter={30}>
-                    <Col span={12}>
-                        <Form.Item
-                            {...layoutItem}
-                            label={`${intl.formatMessage({ id: 'dv_metric_condition' })}1`}
-                            name={['metricParameter', 'filter']}
-                        >
-                            <TextArea />
-                        </Form.Item>
                     </Col>
                     <Col span={12}>
                         <Form.Item
                             {...layoutItem}
-                            label={`${intl.formatMessage({ id: 'dv_metric_condition' })}2`}
-                            name={['metricParameter2', 'filter2']}
+                            label={`${intl.formatMessage({ id: 'dv_metric_table' })}2`}
+                            name={['metricParameter2', 'table2']}
+                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_table' }) }]}
                         >
-                            <TextArea />
+                            <CustomSelect
+                                source={table2}
+                                sourceValueMap="name"
+                                onChange={(e) => getCloumn(e, form.getFieldValue('dataSourceId2'), form.getFieldValue(['metricParameter2', 'database2']), 2, false)}
+                            />
                         </Form.Item>
-                    </Col>
-                </Row>
-                <Form.List name="mappingColumns">
-                    {(fields, { add, remove }, { }) => (
-                        <>
-                            <Row gutter={30}>
-                                <Col span={21} push={3} className="dv-editor-title_flex">
-                                    <span>
-                                        {intl.formatMessage({ id: 'dv_metric_check_column' })}
-                                        {' '}
-                                    </span>
-                                    <span style={{ cursor: 'pointer' }} onClick={() => add()}>
-                                        {intl.formatMessage({ id: 'dv_metric_add' })}
-                                        {' '}
-                                    </span>
-                                </Col>
-                            </Row>
-                            {
-                                fields.map((field) => (
-                                    <Form.Item
-                                        required={false}
-                                        key={field.key}
-                                        style={{ marginBottom: 0 }}
-                                    >
-                                        <Row gutter={30}>
-                                            <Col span={9} push={3}>
-                                                <Form.Item
-                                                    {...layoutNoneItem}
-                                                    {...field}
-                                                    label=""
-                                                    name={[field.name, 'column']}
-                                                    rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_column' }) }]}
-                                                >
-                                                    <CustomSelect
-                                                        source={column1}
-                                                        sourceValueMap="name"
-                                                    />
-                                                </Form.Item>
-                                            </Col>
-                                            <Col span={3} push={3} style={{ textAlign: 'center' }}>=</Col>
-                                            <Col span={9} push={3}>
-
-                                                <Form.Item
-                                                    {...layoutNoneItem}
-                                                    {...field}
-                                                    name={[field.name, 'column2']}
-                                                    label=""
-                                                    rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_column' }) }]}
-                                                >
-                                                    <CustomSelect
-                                                        source={column2}
-                                                        sourceValueMap="name"
-                                                    />
-                                                </Form.Item>
-                                                <IF visible={fields.length > 1}>
-
-                                                    <MinusCircleOutlined
-                                                        className="dv-delete-button"
-                                                        onClick={() => remove(field.name)}
-                                                    />
-                                                </IF>
-                                            </Col>
-                                            {/* <Col span={2}>
-                                                <IF visible={fields.length > 1}>
-                                                    <MinusCircleOutlined onClick={() => remove(field.name)} />
-                                                </IF>
-                                            </Col> */}
-                                        </Row>
-                                    </Form.Item>
-                                ))
-                            }
-                        </>
-                    )}
-
-                </Form.List>
-            </IF>
-            <IF visible={metricType === 'multi_table_value_comparison'}>
-                <Row gutter={30}>
-                    <Col span={12}>
-                        <Form.Item
-                            {...layoutItem}
-                            label={intl.formatMessage({ id: 'dev_metric_actual_value_execution' })}
-                            name={['metricParameter', 'actual_execute_sql']}
-                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_input_actual_value_execution' }) }]}
-                        >
-                            <TextArea />
-                        </Form.Item>
-                    </Col>
-                    <Col span={12}>
-                        <Form.Item
-                            {...layoutItem}
-                            label={intl.formatMessage({ id: 'dev_metric_expected_value_execution' })}
-                            name={['metricParameter2', 'expected_execute_sql']}
-                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_input_expected_value_execution' }) }]}
-                        >
-                            <TextArea />
-                        </Form.Item>
+                        {
+                            form.getFieldValue('metricType') === 'multi_table_value_comparison' ? (
+                                <Button
+                                    style={{
+                                        position: 'absolute',
+                                        right: '-4px',
+                                        transform: 'translateX(100%)',
+                                        zIndex: 1,
+                                        top: 0,
+                                    }}
+                                    disabled={!form.getFieldValue(['metricParameter2', 'table2'])}
+                                    onClick={() => seeColList(2)}
+                                >
+                                    {intl.formatMessage({ id: 'dv_metric_column' })}
+                                </Button>
+                            ) : null
+                        }
                     </Col>
                 </Row>
-            </IF>
-            <RenderColModal />
-        </div>
+                <IF visible={metricType === 'multi_table_accuracy'}>
+                    <Row gutter={30}>
+                        <Col span={12}>
+                            <Form.Item
+                                {...layoutItem}
+                                label={`${intl.formatMessage({ id: 'dv_metric_condition' })}1`}
+                                name={['metricParameter', 'filter']}
+                            >
+                                <TextArea />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item
+                                {...layoutItem}
+                                label={`${intl.formatMessage({ id: 'dv_metric_condition' })}2`}
+                                name={['metricParameter2', 'filter2']}
+                            >
+                                <TextArea />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Form.List name="mappingColumns">
+                        {(fields, { add, remove }, { }) => (
+                            <>
+                                <Row gutter={30}>
+                                    <Col span={21} push={3} className="dv-editor-title_flex">
+                                        <span>
+                                            {intl.formatMessage({ id: 'dv_metric_check_column' })}
+                                            {' '}
+                                        </span>
+                                        <span style={{ cursor: 'pointer' }} onClick={() => add()}>
+                                            {intl.formatMessage({ id: 'dv_metric_add' })}
+                                            {' '}
+                                        </span>
+                                    </Col>
+                                </Row>
+                                {
+                                    fields.map((field) => (
+                                        <Form.Item
+                                            required={false}
+                                            key={field.key}
+                                            style={{ marginBottom: 0 }}
+                                        >
+                                            <Row gutter={30}>
+                                                <Col span={9} push={3}>
+                                                    <Form.Item
+                                                        {...layoutNoneItem}
+                                                        {...field}
+                                                        label=""
+                                                        name={[field.name, 'column']}
+                                                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_column' }) }]}
+                                                    >
+                                                        <CustomSelect
+                                                            source={column1}
+                                                            sourceValueMap="name"
+                                                        />
+                                                    </Form.Item>
+                                                </Col>
+                                                <Col span={3} push={3} style={{ textAlign: 'center' }}>=</Col>
+                                                <Col span={9} push={3}>
+                                                    <Form.Item
+                                                        {...layoutNoneItem}
+                                                        {...field}
+                                                        name={[field.name, 'column2']}
+                                                        label=""
+                                                        rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_column' }) }]}
+                                                    >
+                                                        <CustomSelect
+                                                            source={column2}
+                                                            sourceValueMap="name"
+                                                        />
+                                                    </Form.Item>
+                                                    <IF visible={fields.length > 1}>
+
+                                                        <MinusCircleOutlined
+                                                            className="dv-delete-button"
+                                                            onClick={() => remove(field.name)}
+                                                        />
+                                                    </IF>
+                                                </Col>
+                                                {/* <Col span={2}>
+                                                    <IF visible={fields.length > 1}>
+                                                        <MinusCircleOutlined onClick={() => remove(field.name)} />
+                                                    </IF>
+                                                </Col> */}
+                                            </Row>
+                                        </Form.Item>
+                                    ))
+                                }
+                            </>
+                        )}
+
+                    </Form.List>
+                </IF>
+                <IF visible={metricType === 'multi_table_value_comparison'}>
+                    <Row gutter={30}>
+                        <Col span={12}>
+                            <Form.Item
+                                {...layoutItem}
+                                label={intl.formatMessage({ id: 'dev_metric_actual_value_execution' })}
+                                name={['metricParameter', 'actual_execute_sql']}
+                                rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_input_actual_value_execution' }) }]}
+                            >
+                                <TextArea />
+                            </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                            <Form.Item
+                                {...layoutItem}
+                                label={intl.formatMessage({ id: 'dev_metric_expected_value_execution' })}
+                                name={['metricParameter2', 'expected_execute_sql']}
+                                rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_input_expected_value_execution' }) }]}
+                            >
+                                <TextArea />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                </IF>
+                <RenderColModal/>
+            </div>
+        </Title>
     );
 };
 

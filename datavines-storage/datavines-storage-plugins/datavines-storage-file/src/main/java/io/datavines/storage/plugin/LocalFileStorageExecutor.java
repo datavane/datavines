@@ -143,7 +143,7 @@ public class LocalFileStorageExecutor implements StorageExecutor {
                     String[] rowDataList = row.split(columnSeparator);
                     Map<String, Object> rowMap = new LinkedHashMap<>();
                     for (int i=0; i<rowDataList.length; i++) {
-                        rowMap.put(keyMap.get(i).trim(),rowDataList[i].trim());
+                        rowMap.put(keyMap.get(i),rowDataList[i]);
                     }
                     resultList.add(rowMap);
                 }

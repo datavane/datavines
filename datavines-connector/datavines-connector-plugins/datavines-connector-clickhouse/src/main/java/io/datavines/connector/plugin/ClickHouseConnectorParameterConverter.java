@@ -30,6 +30,7 @@ public class ClickHouseConnectorParameterConverter implements ConnectorParameter
         config.put("table", parameter.get("table"));
         config.put("user", parameter.get("user"));
         config.put("password", parameter.get("password"));
+        config.put("database", parameter.get("database"));
         config.put("url", String.format("jdbc:clickhouse://%s:%s/%s",
                 parameter.get("host"),
                 parameter.get("port"),

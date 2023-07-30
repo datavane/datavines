@@ -101,7 +101,7 @@ public class SparkBatchExecution implements Execution<SparkBatchSource, BaseSpar
         }
 
         if (config.has(TMP_TABLE)) {
-            if(resultDs == null) {
+            if (resultDs == null) {
                 resultDs = ds;
             }
             String tableName = config.getString(TMP_TABLE);

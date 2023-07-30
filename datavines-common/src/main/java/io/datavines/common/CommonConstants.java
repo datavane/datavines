@@ -178,6 +178,8 @@ public class CommonConstants {
 
     public static final String TABLE2 = "table2";
 
+    public static final String DATABASE2 = "database2";
+
     /**
      * month_begin
      */

@@ -34,8 +34,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static io.datavines.common.ConfigConstants.SRC_CONNECTOR_TYPE;
-import static io.datavines.common.ConfigConstants.TABLE;
+import static io.datavines.common.ConfigConstants.*;
 
 public class BaseJdbcSource implements LocalSource {
 
@@ -96,6 +95,7 @@ public class BaseJdbcSource implements LocalSource {
             ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class)
                     .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE));
             JdbcOptions jdbcOptions = new JdbcOptions();
+            jdbcOptions.setDatabaseName(config.getString(DATABASE));
             jdbcOptions.setTableName(config.getString(TABLE));
             jdbcOptions.setQueryTimeout(10000);
             try {

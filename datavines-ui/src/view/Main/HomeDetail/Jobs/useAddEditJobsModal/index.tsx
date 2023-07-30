@@ -34,7 +34,6 @@ export const Inner = ({
     const setLoading = useLoading();
     const intl = useIntl();
     const { data } = baseData || useContextModal();
-    // console.log('data', data);
     const [jobId, setJobId] = useState(data.record?.id);
     const [metricDetail, setMetricDetail] = useState(data.record?.parameterItem ? data.record : {});
     const metricConfigRef = useRef<any>();
@@ -155,6 +154,7 @@ export const Inner = ({
     return (
         <div style={style}>
             <Tabs
+                tabPosition="left"
                 activeKey={activeKey}
                 onChange={(key) => {
                     if (!jobId) {
