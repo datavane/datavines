@@ -179,6 +179,11 @@ const MetricTabs = (props: TmetricTabsProps) => {
     };
 
     const remove = (targetKey: TargetKey) => {
+        if (items.length === 1) {
+            message.error(intl.formatMessage({ id: 'dv_metric_job_error_message' }));
+            return;
+        }
+
         let newActiveKey = activeKey;
         let lastIndex = -1;
         items.forEach((item: any, i) => {
@@ -214,6 +219,7 @@ const MetricTabs = (props: TmetricTabsProps) => {
             <Tabs
                 type="editable-card"
                 onEdit={onEdit}
+                size="small"
                 activeKey={activeKey}
                 onChange={(key) => (setActiveKey(key))}
             >

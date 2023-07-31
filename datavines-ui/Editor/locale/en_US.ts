@@ -52,6 +52,7 @@ export default {
     dv_metric_other_config_second: 'S',
     dv_metric_error_store_config: 'Error Data Storage Configuration',
     dv_metric_error_store_engine: 'Error Data Storage Engine',
+    dv_metric_job_error_message: 'Keep at least one metric',
     dev_metric_datasource: 'DataSource',
     dev_metric_rule: 'Rule',
     dev_metric_actual_value_execution: 'Actual value execution statement',
