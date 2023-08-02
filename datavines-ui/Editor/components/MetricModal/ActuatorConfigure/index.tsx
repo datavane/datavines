@@ -29,15 +29,16 @@ const Index = ({ form, detail }: InnerProps) => {
         try {
             const $engineList = await $http.get('metric/engine/list');
             setEngineList($engineList || []);
-            const paramter = detail?.engineParameter || {} as TEngineParameter;
+            const engineParameter : any = detail?.engineParameter
+            const parameter = JSON.parse(engineParameter)  || {} as TEngineParameter;
             form.setFieldsValue({
-                deployMode: paramter.deployMode ?? 'cluster',
-                driverCores: paramter.driverCores ?? 1,
-                driverMemory: paramter.driverMemory ?? '512M',
-                numExecutors: paramter.numExecutors ?? 2,
-                executorMemory: paramter.executorMemory ?? '2G',
-                executorCores: paramter.executorCores ?? 2,
-                others: paramter.others ?? '--conf spark.yarn.maxAppAttempts=1',
+                deployMode: parameter.deployMode ?? 'cluster',
+                driverCores: parameter.driverCores ?? 1,
+                driverMemory: parameter.driverMemory ?? '512M',
+                numExecutors: parameter.numExecutors ?? 2,
+                executorMemory: parameter.executorMemory ?? '2G',
+                executorCores: parameter.executorCores ?? 2,
+                others: parameter.others ?? '--conf spark.yarn.maxAppAttempts=1',
                 tenantCode: detail?.tenantCode ? detail.tenantCode.toString() : '',
                 env: detail?.env ? detail.env.toString() : '',
                 engineType: detail?.engineType ? detail.engineType.toString() : 'local',
