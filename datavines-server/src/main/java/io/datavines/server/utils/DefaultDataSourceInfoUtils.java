@@ -19,39 +19,52 @@ package io.datavines.server.utils;
 import com.zaxxer.hikari.HikariDataSource;
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.utils.JdbcUrlParser;
+import io.datavines.common.utils.SensitiveLogUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.lang.BooleanUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static io.datavines.common.ConfigConstants.*;
 
 public class DefaultDataSourceInfoUtils {
 
-    public static ConnectionInfo getDefaultConnectionInfo(){
-        javax.sql.DataSource defaultDataSource =
-                SpringApplicationContext.getBean(javax.sql.DataSource.class);
-        HikariDataSource hikariDataSource = (HikariDataSource)defaultDataSource;
+  public static ConnectionInfo getDefaultConnectionInfo() {
+    javax.sql.DataSource defaultDataSource =
+        SpringApplicationContext.getBean(javax.sql.DataSource.class);
+    HikariDataSource hikariDataSource = (HikariDataSource) defaultDataSource;
 
-        ConnectionInfo connectionInfo = JdbcUrlParser.getConnectionInfo(hikariDataSource.getJdbcUrl(),
-                hikariDataSource.getUsername(),hikariDataSource.getPassword());
+    ConnectionInfo connectionInfo =
+        JdbcUrlParser.getConnectionInfo(
+            hikariDataSource.getJdbcUrl(),
+            hikariDataSource.getUsername(),
+            hikariDataSource.getPassword());
 
-        if (connectionInfo != null) {
-            connectionInfo.setDriverName(hikariDataSource.getDriverClassName());
-        }
-
-        return connectionInfo;
+    if (connectionInfo != null) {
+      connectionInfo.setDriverName(hikariDataSource.getDriverClassName());
     }
 
-    public static Map<String, Object> getDefaultDataSourceConfigMap() {
+    return connectionInfo;
+  }
 
-        ConnectionInfo connectionInfo = getDefaultConnectionInfo();
+  public static Map<String, Object> getDefaultDataSourceConfigMap(
+      Boolean... passwordDesensitization) {
 
-        Map<String,Object> configMap = new HashMap<>();
-        configMap.put(URL, connectionInfo.getUrl());
-        configMap.put(USER, connectionInfo.getUser());
-        configMap.put(PASSWORD, connectionInfo.getPassword());
-        configMap.put(DRIVER, connectionInfo.getDriverName());
+    ConnectionInfo connectionInfo = getDefaultConnectionInfo();
 
-        return configMap;
+    Map<String, Object> configMap = new HashMap<>();
+    configMap.put(URL, connectionInfo.getUrl());
+    configMap.put(USER, connectionInfo.getUser());
+    if ((!ArrayUtils.isEmpty(passwordDesensitization))
+        && Stream.of(passwordDesensitization).allMatch(BooleanUtils::isTrue)) {
+      configMap.put(PASSWORD, SensitiveLogUtils.maskDataSourcePwd(connectionInfo.getPassword()));
+    } else {
+      configMap.put(PASSWORD, connectionInfo.getPassword());
     }
+    configMap.put(DRIVER, connectionInfo.getDriverName());
+
+    return configMap;
+  }
 }
