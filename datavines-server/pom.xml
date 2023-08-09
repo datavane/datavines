@@ -300,7 +300,7 @@
             <artifactId>datavines-engine-executor</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-spark-executor</artifactId>
@@ -420,6 +420,14 @@
             <artifactId>datavines-registry-zookeeper</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+
+        <!--整合oracle-->
+        <dependency>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc8</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

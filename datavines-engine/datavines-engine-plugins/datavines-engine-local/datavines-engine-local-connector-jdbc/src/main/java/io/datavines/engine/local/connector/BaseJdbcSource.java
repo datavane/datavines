@@ -16,6 +16,7 @@
  */
 package io.datavines.engine.local.connector;
 
+import com.baomidou.mybatisplus.annotation.DbType;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
 import io.datavines.connector.api.ConnectorFactory;
@@ -95,7 +96,11 @@ public class BaseJdbcSource implements LocalSource {
             ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class)
                     .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE));
             JdbcOptions jdbcOptions = new JdbcOptions();
-            jdbcOptions.setDatabaseName(config.getString(DATABASE));
+            if(DbType.ORACLE.getDb().equalsIgnoreCase(config.getString(SRC_CONNECTOR_TYPE))){
+                jdbcOptions.setDatabaseName(config.getString(SCHEMA));
+            } else {
+                jdbcOptions.setDatabaseName(config.getString(DATABASE));
+            }
             jdbcOptions.setTableName(config.getString(TABLE));
             jdbcOptions.setQueryTimeout(10000);
             try {

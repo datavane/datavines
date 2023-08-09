@@ -110,6 +110,7 @@
         <commons.email.version>1.5</commons.email.version>
         <poi.version>4.1.2</poi.version>
         <javax.mail.version>1.6.2</javax.mail.version>
+        <oracle.version>12.2.0.1.0</oracle.version>
 
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
@@ -118,6 +119,7 @@
         <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
+        <maven-dependency-plugin.version>3.4.0</maven-dependency-plugin.version>
 
     </properties>
 
@@ -642,6 +644,14 @@
                 <artifactId>cron-utils</artifactId>
                 <version> ${cron-utils.version}</version>
             </dependency>
+
+            <!--整合oracle-->
+            <dependency>
+                <groupId>com.oracle</groupId>
+                <artifactId>ojdbc8</artifactId>
+                <version>${oracle.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 
