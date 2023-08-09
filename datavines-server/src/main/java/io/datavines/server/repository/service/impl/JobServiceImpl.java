@@ -17,6 +17,8 @@
 
 package io.datavines.server.repository.service.impl;
 
+//import com.baomidou.mybatisplus.annotation.DbType;
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -596,6 +598,11 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         Map<String, Object> srcSourceConfigMap = JSONUtils.toMap(dataSource.getParam(), String.class, Object.class);
         ConnectionInfo srcConnectionInfo = new ConnectionInfo();
         srcConnectionInfo.setType(dataSource.getType());
+
+        if(DbType.ORACLE.getDb().equalsIgnoreCase(srcConnectionInfo.getType())) {
+            srcSourceConfigMap.put("schema", job.getSchemaName());
+        }
+
         srcConnectionInfo.setConfig(srcSourceConfigMap);
 
         ConnectionInfo targetConnectionInfo = new ConnectionInfo();

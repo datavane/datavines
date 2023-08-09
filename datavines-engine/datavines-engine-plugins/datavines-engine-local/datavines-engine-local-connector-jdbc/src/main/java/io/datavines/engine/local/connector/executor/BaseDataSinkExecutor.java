@@ -61,6 +61,11 @@ public abstract class BaseDataSinkExecutor implements ISinkExecutor {
         }
 
         String sql = config.getString(SQL);
+
+        if (env.getSourceConnection().getConnection().getMetaData().getDatabaseProductName().equalsIgnoreCase("oracle")) {
+            sql = sql.replaceAll("\\$\\{actual_value_\\S+\\}","\\${actual_value}");
+        }
+
         sql = ParameterUtils.convertParameterPlaceholders(sql, inputParameter);
         log.info("execute " + config.getString(PLUGIN_TYPE) + " output sql : {}", sql);
         if (StringUtils.isNotEmpty(sql) && !sql.contains("${")) {

@@ -16,6 +16,7 @@
  */
 package io.datavines.engine.local.transform.sql;
 
+import com.baomidou.mybatisplus.annotation.DbType;
 import io.datavines.common.config.Config;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.SqlUtils;
@@ -36,6 +37,12 @@ public class ActualValueExecutor implements ITransformExecutor {
 
         String sql = config.getString(SQL);
 
+        //TODO oracle会有超长的情况
+        if(connection.getMetaData().getDatabaseProductName().equalsIgnoreCase(DbType.ORACLE.getDb())) {
+            // sql 替换正则actual_value_xxxxxxxxxxx 为 actual_value
+            sql = sql.replaceAll("as actual_value_\\w+", "as actual_value");
+        }
+
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery(sql);
         ResultList resultList = SqlUtils.getListFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
@@ -54,7 +61,7 @@ public class ActualValueExecutor implements ITransformExecutor {
             newDataList.add(dataMap);
             resultList.setResultList(newDataList);
         }
-        
+
         statement.close();
         resultSet.close();
         return resultList;

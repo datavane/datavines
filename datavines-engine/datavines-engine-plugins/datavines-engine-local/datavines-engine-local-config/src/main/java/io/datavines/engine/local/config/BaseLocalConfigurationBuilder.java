@@ -75,6 +75,12 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
+                    //TODO oracle 需要写shema
+                    if ("oracle".equalsIgnoreCase(connectorParameter.getType())) {
+                        metricInputParameter.put(SCHEMA, metricInputParameter.get(SCHEMA));
+                        connectorParameterMap.put(SCHEMA, metricInputParameter.get(SCHEMA));
+                    }
+
                     invalidateItemCanOutput &= Boolean.parseBoolean(connectorFactory.getDialect().invalidateItemCanOutput());
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 
@@ -148,7 +154,12 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
-                metricInputParameter.put(TABLE, metricInputParameter.get(METRIC_DATABASE)+"."+metricInputParameter.get(TABLE));
+
+                if("oracle".equalsIgnoreCase(metricInputParameter.get(SRC_CONNECTOR_TYPE))){
+                    metricInputParameter.put(TABLE, metricInputParameter.get(SCHEMA) + "." + metricInputParameter.get(TABLE));
+                } else {
+                    metricInputParameter.put(TABLE, metricInputParameter.get(METRIC_DATABASE)+"."+metricInputParameter.get(TABLE));
+                }
                 metricInputParameter.put(TABLE2, metricInputParameter.get(DATABASE2)+"."+metricInputParameter.get(TABLE2));
                 String metricType = parameter.getMetricType();
                 SqlMetric sqlMetric = PluginLoader

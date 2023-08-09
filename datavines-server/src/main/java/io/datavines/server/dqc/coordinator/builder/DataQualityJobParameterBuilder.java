@@ -16,6 +16,10 @@
  */
 package io.datavines.server.dqc.coordinator.builder;
 
+//import com.baomidou.mybatisplus.annotation.DbType;
+//import io.datavines.common.ConfigConstants;
+import com.baomidou.mybatisplus.annotation.DbType;
+import io.datavines.common.ConfigConstants;
 import io.datavines.common.entity.ConnectionInfo;
 import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.JobExecutionParameter;
@@ -39,7 +43,15 @@ public class DataQualityJobParameterBuilder implements ParameterBuilder {
             String database = "";
             for (BaseJobParameter metricJobParameter : jobParameters) {
                 Map<String,Object> metricParameters = metricJobParameter.getMetricParameter();
-                database = (String)metricParameters.get("database");
+
+                // TODO 如果类型是oracle,database取srcConnectionInfo.database
+                if(DbType.ORACLE.getDb().equalsIgnoreCase(srcConnectionInfo.getType())) {
+                    database = srcConnectionInfo.getDatabase();
+                    metricParameters.put(ConfigConstants.SCHEMA,metricParameters.get(ConfigConstants.DATABASE));
+                } else {
+                    database = (String)metricParameters.get(ConfigConstants.DATABASE);
+
+                }
                 metricParameters.remove("database");
                 metricParameters.put("metric_database",database);
                 metricJobParameter.setMetricParameter(metricParameters);
@@ -51,6 +63,11 @@ public class DataQualityJobParameterBuilder implements ParameterBuilder {
             srcConnectorParameter.setType(srcConnectionInfo.getType());
             Map<String,Object> srcConnectorParameterMap = srcConnectionInfo.configMap();
             srcConnectorParameterMap.put("database", database);
+            if(DbType.ORACLE.getDb().equalsIgnoreCase(srcConnectionInfo.getType())) {
+                srcConnectorParameterMap.put("schema", jobParameters.get(0).getMetricParameter().get(ConfigConstants.SCHEMA));
+            }
+
+
             srcConnectorParameter.setParameters(srcConnectorParameterMap);
             jobExecutionParameter.setConnectorParameter(srcConnectorParameter);
 
