@@ -35,9 +35,7 @@ public class DataReconciliationJobParameterBuilder implements ParameterBuilder {
             JobExecutionParameter jobExecutionParameter = new JobExecutionParameter();
             DataReconciliationJobParameter dataReconciliationJobParameter = jobParameters.get(0);
             Map<String,Object> metricParameters = dataReconciliationJobParameter.getMetricParameter();
-            String database = (String)metricParameters.get("database");
-            metricParameters.remove("database");
-            metricParameters.put("metric_database", database);
+
             metricParameters.putAll(dataReconciliationJobParameter.getMetricParameter2());
             metricParameters.put("mappingColumns", JSONUtils.toJsonString(dataReconciliationJobParameter.getMappingColumns()));
             dataReconciliationJobParameter.setMetricParameter(metricParameters);
@@ -46,7 +44,6 @@ public class DataReconciliationJobParameterBuilder implements ParameterBuilder {
             ConnectorParameter connectorParameter = new ConnectorParameter();
             connectorParameter.setType(connectionInfo.getType());
             Map<String,Object> connectorParameterMap = connectionInfo.configMap();
-            connectorParameterMap.put("database", database);
             connectorParameter.setParameters(connectorParameterMap);
             jobExecutionParameter.setConnectorParameter(connectorParameter);
 

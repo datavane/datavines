@@ -66,11 +66,11 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
                             .getNewPlugin(connectorParameter.getType());
-                    connectorParameterMap.put(DATABASE, metricInputParameter.get(METRIC_DATABASE));
+                    connectorParameterMap.put(DATABASE, metricInputParameter.get(DATABASE));
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 
-                    String outputTable = metricInputParameter.get(METRIC_DATABASE) + "_" + metricInputParameter.get(TABLE);
+                    String outputTable = metricInputParameter.get(DATABASE) + "_" + metricInputParameter.get(TABLE);
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
 

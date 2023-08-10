@@ -125,7 +125,7 @@ public class MetricParserUtils {
 
         Map<String,String> newInputParameterValue = new HashMap<>();
         newInputParameterValue.put(METRIC_NAME, inputParameterValue.get(METRIC_NAME));
-        newInputParameterValue.put(METRIC_DATABASE, inputParameterValue.get(METRIC_DATABASE));
+        newInputParameterValue.put(DATABASE, inputParameterValue.get(DATABASE));
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(StringUtils.removeSingeQuotes(inputParameterValue.get(METRIC_NAME)));
         Map<String, ConfigItem> configMap = sqlMetric.getConfigMap();
         if (MapUtils.isNotEmpty(configMap)) {

@@ -265,7 +265,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
     protected String getMetricUniqueKey(BaseJobParameter parameter) {
         return DigestUtils.md5Hex(String.format("%s_%s_%s_%s_%s",
                 parameter.getMetricType(),
-                parameter.getMetricParameter().get("metric_database"),
+                parameter.getMetricParameter().get("database"),
                 parameter.getMetricParameter().get("table"),
                 parameter.getMetricParameter().get("column"),
                 jobExecutionInfo.getId()));

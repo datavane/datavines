@@ -33,7 +33,7 @@ public class MetricConstants {
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_type",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_name",false));
         RESULT_COLUMN_LIST.add(new ColumnInfo("metric_dimension",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("database_name",true,"metric_database"));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("database_name",true,"database"));
         RESULT_COLUMN_LIST.add(new ColumnInfo("table_name",true,"table"));
         RESULT_COLUMN_LIST.add(new ColumnInfo("column_name",true,"column"));
         RESULT_COLUMN_LIST.add(new ColumnInfo("actual_value",false));
