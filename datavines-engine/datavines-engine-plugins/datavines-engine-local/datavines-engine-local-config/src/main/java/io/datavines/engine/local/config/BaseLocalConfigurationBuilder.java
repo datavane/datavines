@@ -69,7 +69,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 
                     String outputTable = metricInputParameter.get(TABLE);
-                    connectorParameterMap.put(DATABASE, metricInputParameter.get(METRIC_DATABASE));
+                    connectorParameterMap.put(DATABASE, metricInputParameter.get(DATABASE));
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
@@ -148,7 +148,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
-                metricInputParameter.put(TABLE, metricInputParameter.get(METRIC_DATABASE)+"."+metricInputParameter.get(TABLE));
+                metricInputParameter.put(TABLE, metricInputParameter.get(DATABASE)+"."+metricInputParameter.get(TABLE));
                 metricInputParameter.put(TABLE2, metricInputParameter.get(DATABASE2)+"."+metricInputParameter.get(TABLE2));
                 String metricType = parameter.getMetricType();
                 SqlMetric sqlMetric = PluginLoader

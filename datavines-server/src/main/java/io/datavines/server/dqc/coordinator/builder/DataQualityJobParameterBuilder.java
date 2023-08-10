@@ -36,12 +36,8 @@ public class DataQualityJobParameterBuilder implements ParameterBuilder {
         if (CollectionUtils.isNotEmpty(jobParameters)) {
             jobParameters = JobParameterUtils.regenerateJobParameterList(jobParameters);
             JobExecutionParameter jobExecutionParameter = new JobExecutionParameter();
-            String database = "";
             for (BaseJobParameter metricJobParameter : jobParameters) {
                 Map<String,Object> metricParameters = metricJobParameter.getMetricParameter();
-                database = (String)metricParameters.get("database");
-                metricParameters.remove("database");
-                metricParameters.put("metric_database",database);
                 metricJobParameter.setMetricParameter(metricParameters);
             }
 
@@ -50,7 +46,6 @@ public class DataQualityJobParameterBuilder implements ParameterBuilder {
             ConnectorParameter srcConnectorParameter = new ConnectorParameter();
             srcConnectorParameter.setType(srcConnectionInfo.getType());
             Map<String,Object> srcConnectorParameterMap = srcConnectionInfo.configMap();
-            srcConnectorParameterMap.put("database", database);
             srcConnectorParameter.setParameters(srcConnectorParameterMap);
             jobExecutionParameter.setConnectorParameter(srcConnectorParameter);
 
