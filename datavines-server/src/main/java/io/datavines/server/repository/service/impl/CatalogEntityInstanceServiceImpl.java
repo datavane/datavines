@@ -239,6 +239,7 @@ public class CatalogEntityInstanceServiceImpl
                         column.setType(columnInfo.getType());
                     }
                 }
+                column.setMetrics(getEntityMetricCount(item.getUuid()));
                 return column;
             }
         );
