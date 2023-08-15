@@ -35,6 +35,8 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.spark.api.SparkRuntimeEnvironment;
 import io.datavines.engine.spark.api.batch.SparkBatchSink;
 
+import static io.datavines.common.ConfigConstants.*;
+
 public class JdbcSink implements SparkBatchSink {
 
     private Config config = new Config();
@@ -53,7 +55,7 @@ public class JdbcSink implements SparkBatchSink {
 
     @Override
     public CheckResult checkConfig() {
-        List<String> requiredOptions = Arrays.asList("url", "table", "user", "password");
+        List<String> requiredOptions = Arrays.asList(URL, TABLE, USER, PASSWORD);
 
         List<String> nonExistsOptions = new ArrayList<>();
         requiredOptions.forEach(x->{
@@ -82,17 +84,17 @@ public class JdbcSink implements SparkBatchSink {
 
     @Override
     public Void output(Dataset<Row> data, SparkRuntimeEnvironment environment) {
-        if (!Strings.isNullOrEmpty(config.getString("sql"))) {
-            data = environment.sparkSession().sql(config.getString("sql"));
+        if (!Strings.isNullOrEmpty(config.getString(SQL))) {
+            data = environment.sparkSession().sql(config.getString(SQL));
         }
 
         String saveMode = config.getString("save_mode");
 
         Properties prop = new Properties();
-        prop.setProperty("driver", config.getString("driver"));
-        prop.setProperty("user", config.getString("user"));
-        prop.setProperty("password", config.getString("password"));
-        data.write().mode(saveMode).jdbc(config.getString("url"), config.getString("table"), prop);
+        prop.setProperty(DRIVER, config.getString(DRIVER));
+        prop.setProperty(USER, config.getString(USER));
+        prop.setProperty(PASSWORD, config.getString(PASSWORD));
+        data.write().mode(saveMode).jdbc(config.getString(URL), config.getString(TABLE), prop);
 
         return null;
     }

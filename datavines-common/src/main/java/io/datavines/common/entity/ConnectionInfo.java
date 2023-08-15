@@ -21,6 +21,8 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.*;
+
 /**
  * ConnectionInfo
  */
@@ -63,23 +65,23 @@ public class ConnectionInfo {
 
     public Map<String, Object> configMap() {
         Map<String, Object> configMap = new HashMap<>();
-        configMap.put("database",database);
-        configMap.put("password",password);
-        configMap.put("host",host);
-        configMap.put("port",port);
-        configMap.put("user",user);
-        configMap.put("properties",properties);
-        configMap.put("catalog", catalog);
+        configMap.put(DATABASE, database);
+        configMap.put(PASSWORD, password);
+        configMap.put(HOST, host);
+        configMap.put(PORT, port);
+        configMap.put(USER, user);
+        configMap.put(PROPERTIES, properties);
+        configMap.put(CATALOG, catalog);
         return configMap;
     }
 
     public void setConfig(Map<String, Object> configMap) {
-        this.database = (String)configMap.get("database");
-        this.password = (String)configMap.get("password");
-        this.host = (String)configMap.get("host");
-        this.port = (String)configMap.get("port");
-        this.user = (String)configMap.get("user");
-        this.properties = (String)configMap.get("properties");
-        this.catalog = (String)configMap.get("catalog");
+        this.database = (String)configMap.get(DATABASE);
+        this.password = (String)configMap.get(PASSWORD);
+        this.host = (String)configMap.get(HOST);
+        this.port = (String)configMap.get(PORT);
+        this.user = (String)configMap.get(USER);
+        this.properties = (String)configMap.get(PROPERTIES);
+        this.catalog = (String)configMap.get(CATALOG);
     }
 }

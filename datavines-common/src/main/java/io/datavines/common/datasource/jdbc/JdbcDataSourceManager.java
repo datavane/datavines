@@ -16,7 +16,7 @@
  */
 package io.datavines.common.datasource.jdbc;
 
-import com.alibaba.druid.pool.DruidDataSource;
+import com.zaxxer.hikari.HikariDataSource;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.Md5Utils;
 import io.datavines.common.utils.StringUtils;
@@ -25,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import javax.sql.DataSource;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static io.datavines.common.ConfigConstants.*;
 
 @Slf4j
 public class JdbcDataSourceManager {
@@ -47,15 +49,16 @@ public class JdbcDataSourceManager {
         DataSource dataSource = dataSourceMap.get(baseJdbcDataSourceInfo.getUniqueKey());
 
         if (dataSource == null) {
-            DruidDataSource druidDataSource = new DruidDataSource();
-            druidDataSource.setUrl(baseJdbcDataSourceInfo.getJdbcUrl());
-            druidDataSource.setUsername(baseJdbcDataSourceInfo.getUser());
-            druidDataSource.setPassword(StringUtils.isEmpty(baseJdbcDataSourceInfo.getPassword()) ? null : baseJdbcDataSourceInfo.getPassword());
-            druidDataSource.setDriverClassName(baseJdbcDataSourceInfo.getDriverClass());
-            druidDataSource.setBreakAfterAcquireFailure(true);
-            druidDataSource.setValidationQuery(baseJdbcDataSourceInfo.getValidationQuery());
-            dataSourceMap.put(baseJdbcDataSourceInfo.getUniqueKey(), druidDataSource);
-            return druidDataSource;
+            HikariDataSource hikariDataSource = new HikariDataSource();
+            hikariDataSource.setDriverClassName(baseJdbcDataSourceInfo.getDriverClass());
+            hikariDataSource.setJdbcUrl(baseJdbcDataSourceInfo.getJdbcUrl());
+            hikariDataSource.setUsername(baseJdbcDataSourceInfo.getUser());
+            hikariDataSource.setPassword(StringUtils.isEmptyOrNullStr(baseJdbcDataSourceInfo.getPassword()) ? null : baseJdbcDataSourceInfo.getPassword());
+            hikariDataSource.setMinimumIdle(5);
+            hikariDataSource.setMaximumPoolSize(50);
+            hikariDataSource.setConnectionTestQuery(baseJdbcDataSourceInfo.getValidationQuery());
+            dataSourceMap.put(baseJdbcDataSourceInfo.getUniqueKey(), hikariDataSource);
+            return hikariDataSource;
         }
 
         return dataSource;
@@ -66,18 +69,19 @@ public class JdbcDataSourceManager {
         DataSource dataSource = dataSourceMap.get(getUniqueKey(configMap));
 
         if (dataSource == null) {
-            String driver = String.valueOf(configMap.get("driver"));
-            String url = String.valueOf(configMap.get("url"));
-            String username = String.valueOf(configMap.get("user"));
-            String password = String.valueOf(configMap.get("password"));
-            DruidDataSource druidDataSource = new DruidDataSource();
-            druidDataSource.setUrl(url);
-            druidDataSource.setUsername(username);
-            druidDataSource.setPassword(StringUtils.isEmpty(password) ? null : password);
-            druidDataSource.setDriverClassName(driver);
-            druidDataSource.setBreakAfterAcquireFailure(true);
-            dataSourceMap.put(uniqueKey, druidDataSource);
-            return druidDataSource;
+            String driver = String.valueOf(configMap.get(DRIVER));
+            String url = String.valueOf(configMap.get(URL));
+            String username = String.valueOf(configMap.get(USER));
+            String password = String.valueOf(configMap.get(PASSWORD));
+            HikariDataSource hikariDataSource = new HikariDataSource();
+            hikariDataSource.setDriverClassName(driver);
+            hikariDataSource.setJdbcUrl(url);
+            hikariDataSource.setUsername(username);
+            hikariDataSource.setPassword(StringUtils.isEmptyOrNullStr(password) ? null : password);
+            hikariDataSource.setMinimumIdle(5);
+            hikariDataSource.setMaximumPoolSize(50);
+            dataSourceMap.put(uniqueKey, hikariDataSource);
+            return hikariDataSource;
         }
 
         return dataSource;

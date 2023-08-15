@@ -21,29 +21,28 @@ import java.util.Map;
 
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorParameterConverter;
-import org.apache.commons.codec.cli.Digest;
-import org.apache.commons.codec.digest.DigestUtils;
+import static io.datavines.common.ConfigConstants.*;
 
 public class JdbcConnectorParameterConverter implements ConnectorParameterConverter {
 
     @Override
     public Map<String, Object> converter(Map<String, Object> parameter) {
         Map<String,Object> config = new HashMap<>();
-        config.put("table",parameter.get("table"));
-        config.put("user",parameter.get("user"));
-        config.put("password", parameter.get("password"));
-        config.put("url", getUrl(parameter));
-        config.put("database", parameter.get("database"));
+        config.put(TABLE,parameter.get(TABLE));
+        config.put(USER,parameter.get(USER));
+        config.put(PASSWORD, parameter.get(PASSWORD));
+        config.put(URL, getUrl(parameter));
+        config.put(DATABASE, parameter.get(DATABASE));
         return config;
     }
 
     protected String getUrl(Map<String, Object> parameter) {
         String url = String.format("jdbc:%s://%s:%s/%s",
-                parameter.get("type"),
-                parameter.get("host"),
-                parameter.get("port"),
-                parameter.get("database"));
-        String properties = (String)parameter.get("properties");
+                parameter.get(TYPE),
+                parameter.get(HOST),
+                parameter.get(PORT),
+                parameter.get(DATABASE));
+        String properties = (String)parameter.get(PROPERTIES);
         if (StringUtils.isNotEmpty(properties)) {
             url += "?" + properties;
         }

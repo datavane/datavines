@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.datavines.common.ConfigConstants.*;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
 public abstract class BaseJdbcSink implements LocalSink {
@@ -55,7 +56,7 @@ public abstract class BaseJdbcSink implements LocalSink {
 
     @Override
     public CheckResult checkConfig() {
-        List<String> requiredOptions = Arrays.asList("url", "user", "password");
+        List<String> requiredOptions = Arrays.asList(URL, USER, PASSWORD);
 
         List<String> nonExistsOptions = new ArrayList<>();
         requiredOptions.forEach(x->{

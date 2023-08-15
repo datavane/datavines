@@ -30,6 +30,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.*;
+
 public class MysqlStorageExecutor implements StorageExecutor, IJdbcDataSourceInfo {
 
     private final JdbcExecutorClientManager jdbcExecutorClientManager = JdbcExecutorClientManager.getInstance();
@@ -66,7 +68,7 @@ public class MysqlStorageExecutor implements StorageExecutor, IJdbcDataSourceInf
         String dataSourceParam = param.getDataSourceParam();
 
         Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam, String.class, String.class);
-        ConnectionInfo connectionInfo = JdbcUrlParser.getConnectionInfo(paramMap.get("url"), paramMap.get("user"), paramMap.get("password"));
+        ConnectionInfo connectionInfo = JdbcUrlParser.getConnectionInfo(paramMap.get(URL), paramMap.get(USER), paramMap.get(PASSWORD));
         JdbcConnectionInfo jdbcConnectionInfo = new JdbcConnectionInfo();
         assert connectionInfo != null;
         BeanUtils.copyProperties(connectionInfo, jdbcConnectionInfo);
