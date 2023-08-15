@@ -24,7 +24,6 @@ import io.datavines.common.datasource.jdbc.*;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.DatabaseInfo;
 import io.datavines.common.datasource.jdbc.entity.TableInfo;
-import io.datavines.common.entity.QueryColumn;
 import io.datavines.common.datasource.jdbc.entity.TableColumnInfo;
 import io.datavines.common.param.*;
 import io.datavines.common.param.form.PluginParams;
@@ -43,6 +42,9 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static io.datavines.common.ConfigConstants.HOST;
+import static io.datavines.common.ConfigConstants.PORT;
 
 public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
@@ -267,9 +269,8 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
     @Override
     public List<String> keyProperties() {
-        return Arrays.asList("host","port","database");
+        return Arrays.asList(HOST, PORT, DATABASE);
     }
-
 
     protected ResultSet getMetadataDatabases(Connection connection) throws SQLException {
         java.sql.Statement stmt = connection.createStatement();

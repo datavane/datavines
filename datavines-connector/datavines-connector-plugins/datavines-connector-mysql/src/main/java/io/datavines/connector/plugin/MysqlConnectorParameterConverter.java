@@ -19,16 +19,17 @@ package io.datavines.connector.plugin;
 import java.util.Map;
 
 import io.datavines.common.utils.StringUtils;
+import static io.datavines.common.ConfigConstants.*;
 
 public class MysqlConnectorParameterConverter extends JdbcConnectorParameterConverter {
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
         String url = String.format("jdbc:mysql://%s:%s/%s",
-                parameter.get("host"),
-                parameter.get("port"),
-                parameter.get("database"));
-        String properties = (String)parameter.get("properties");
+                parameter.get(HOST),
+                parameter.get(PORT),
+                parameter.get(DATABASE));
+        String properties = (String)parameter.get(PROPERTIES);
         if (StringUtils.isNotEmpty(properties)) {
             url += "?" + properties;
         }

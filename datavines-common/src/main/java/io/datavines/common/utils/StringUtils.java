@@ -175,4 +175,8 @@ public class StringUtils {
 
         return str.replaceAll("'","");
     }
+
+    public static boolean isEmptyOrNullStr(String str) {
+        return isEmpty(str) || "null".equalsIgnoreCase(str);
+    }
 }
