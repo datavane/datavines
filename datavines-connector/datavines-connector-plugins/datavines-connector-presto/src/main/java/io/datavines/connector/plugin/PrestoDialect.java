@@ -22,4 +22,9 @@ public class PrestoDialect extends JdbcDialect {
     public String getDriver() {
         return "com.facebook.presto.jdbc.PrestoDriver";
     }
+
+    @Override
+    public String invalidateItemCanOutput() {
+        return "false";
+    }
 }
