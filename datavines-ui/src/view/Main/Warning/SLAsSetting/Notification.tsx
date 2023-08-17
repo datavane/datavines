@@ -10,6 +10,7 @@ import { useMount } from '@/common';
 import { useSelector } from '@/store';
 import { $http } from '@/http';
 import { useNotificationFormModal } from './useNotificationFormModal';
+import querystring from "querystring";
 
 const Index = () => {
     const intl = useIntl();
@@ -22,6 +23,7 @@ const Index = () => {
             getData();
         },
     });
+    const [qs] = useState<any>(querystring.parse(window.location.href.split('?')[1] || ''));
     const [pageParams, setPageParams] = useState({
         pageNumber: 1,
         pageSize: 10,
@@ -37,6 +39,7 @@ const Index = () => {
             setLoading(true);
             const res = (await $http.get('/sla/notification/page', {
                 workspaceId,
+                slaId: qs.slaId,
                 ...pageParams,
                 ...(values || form.getFieldsValue()),
             })) || [];
