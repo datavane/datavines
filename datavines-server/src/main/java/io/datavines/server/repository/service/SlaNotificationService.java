@@ -39,9 +39,9 @@ public interface SlaNotificationService extends IService<SlaNotification>{
 
     SlaNotification updateNotification(SlaNotificationUpdate update);
 
-    IPage<SlaNotification> pageListNotification(Long workspaceId,  String searchVal, Integer pageNumber, Integer pageSize);
+    IPage<SlaNotification> pageListNotification(Long workspaceId, Long slaId, String searchVal, Integer pageNumber, Integer pageSize);
 
     Set<SlaConfigMessage> listReceiverMessageBySlaId(Long id);
 
-    IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, String searchVal);
+    IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, Long slaId, String searchVal);
 }

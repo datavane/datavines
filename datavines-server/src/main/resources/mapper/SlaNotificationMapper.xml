@@ -23,7 +23,7 @@
     <sql id="workspaceData">
         SELECT *
         FROM dv_sla_notification
-        WHERE workspace_id = #{workspaceId}
+        WHERE workspace_id = #{workspaceId} and sla_id = #{slaId}
     </sql>
 
     <select id="pageListNotification" resultType="io.datavines.server.api.dto.vo.SlaNotificationVO" >
