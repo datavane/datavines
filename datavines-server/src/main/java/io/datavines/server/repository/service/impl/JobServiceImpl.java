@@ -27,6 +27,7 @@ import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.entity.job.NotificationParameter;
 import io.datavines.common.entity.job.SubmitJob;
+import io.datavines.common.utils.PasswordFilterUtils;
 import io.datavines.server.dqc.coordinator.builder.JobExecutionParameterBuilderFactory;
 import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.ExecutionStatus;
@@ -72,6 +73,7 @@ import java.util.Map;
 
 import static io.datavines.common.CommonConstants.LOCAL;
 import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
 
 @Slf4j
 @Service("jobService")
@@ -566,7 +568,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             });
             submitJob.setNotificationParameters(notificationParameterList);
         }
-        return JSONUtils.toJsonString(submitJob);
+        return PasswordFilterUtils.convertPassword(PWD_PATTERN_1,JSONUtils.toJsonString(submitJob));
     }
 
     private String getErrorDataFileName(String parameter) {
