@@ -207,9 +207,10 @@ public class SlaController {
     @ApiOperation(value = "page list notification")
     @GetMapping("/notification/page")
     public Object pageListNotification(@RequestParam("workspaceId") Long workspaceId,
+                                   @RequestParam("slaId") Long slaId,
                                    @RequestParam(value = "searchVal", required = false) String searchVal,
                                    @RequestParam("pageNumber") Integer pageNumber,
                                    @RequestParam("pageSize") Integer pageSize) {
-        return slaNotificationService.pageListNotification(workspaceId, searchVal, pageNumber, pageSize);
+        return slaNotificationService.pageListNotification(workspaceId, slaId, searchVal, pageNumber, pageSize);
     }
 }

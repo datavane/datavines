@@ -114,8 +114,8 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
     }
 
     @Override
-    public IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, String searchVal) {
-        return baseMapper.pageListNotification(page, workspaceId, searchVal);
+    public IPage<SlaNotification> pageListNotification(IPage<SlaNotification> page, Long workspaceId, Long slaId, String searchVal) {
+        return baseMapper.pageListNotification(page, workspaceId, slaId, searchVal);
     }
 
     @Override
@@ -149,11 +149,11 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
     }
 
     @Override
-    public IPage<SlaNotification> pageListNotification(Long workspaceId, String searchVal, Integer pageNumber, Integer pageSize) {
+    public IPage<SlaNotification> pageListNotification(Long workspaceId, Long slaId, String searchVal, Integer pageNumber, Integer pageSize) {
         LambdaQueryWrapper<SlaNotification> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SlaNotification::getWorkspaceId, workspaceId);
         Page<SlaNotification> page = new Page<>(pageNumber, pageSize);
-        IPage<SlaNotification> result = pageListNotification(page, workspaceId, searchVal);
+        IPage<SlaNotification> result = pageListNotification(page, workspaceId, slaId, searchVal);
         return result;
     }
 }
