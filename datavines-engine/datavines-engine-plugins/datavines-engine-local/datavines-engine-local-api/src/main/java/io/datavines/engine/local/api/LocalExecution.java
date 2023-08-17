@@ -20,16 +20,21 @@ import io.datavines.common.config.enums.SinkType;
 import io.datavines.common.config.enums.SourceType;
 import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.api.env.Execution;
 import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.engine.local.api.utils.SqlUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static io.datavines.common.ConfigConstants.INVALIDATE_ITEMS_TABLE;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
+@Slf4j
 public class LocalExecution implements Execution<LocalSource, LocalTransform, LocalSink> {
 
     private final LocalRuntimeEnvironment localRuntimeEnvironment;
@@ -49,69 +54,88 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
             return;
         }
 
-        sources.forEach(localSource -> {
-            switch (SourceType.of(localSource.getConfig().getString(PLUGIN_TYPE))){
-                case SOURCE:
-                    localRuntimeEnvironment.setSourceConnection(localSource.getConnectionItem(localRuntimeEnvironment));
-                    if (!localSource.checkTableExist()) {
-                        throw new DataVinesException("source table is not exist");
-                    }
-                    break;
-                case TARGET:
-                    localRuntimeEnvironment.setTargetConnection(localSource.getConnectionItem(localRuntimeEnvironment));
-                    if (!localSource.checkTableExist()) {
-                        throw new DataVinesException("target table is not exist");
-                    }
-                    break;
-                case METADATA:
-                    localRuntimeEnvironment.setMetadataConnection(localSource.getConnectionItem(localRuntimeEnvironment));
-                    break;
-                default:
-                    break;
-            }
-        });
+        List<String> invalidItemTableSet = new ArrayList<>();
 
-        List<ResultList> taskResult = new ArrayList<>();
-        List<ResultList> actualValue = new ArrayList<>();
-        transforms.forEach(localTransform -> {
-            switch (TransformType.of(localTransform.getConfig().getString(PLUGIN_TYPE))){
-                case INVALIDATE_ITEMS:
-                    localTransform.process(localRuntimeEnvironment);
-                    break;
-                case ACTUAL_VALUE:
-                    ResultList actualValueResult = localTransform.process(localRuntimeEnvironment);
-                    actualValue.add(actualValueResult);
-                    taskResult.add(actualValueResult);
-                    break;
-                case EXPECTED_VALUE_FROM_METADATA_SOURCE:
-                case EXPECTED_VALUE_FROM_SOURCE:
-                case EXPECTED_VALUE_FROM_TARGET_SOURCE:
-                    ResultList expectedResult = localTransform.process(localRuntimeEnvironment);
-                    taskResult.add(expectedResult);
-                    break;
-                default:
-                    break;
-            }
-        });
+        try {
+            sources.forEach(localSource -> {
+                switch (SourceType.of(localSource.getConfig().getString(PLUGIN_TYPE))){
+                    case SOURCE:
+                        localRuntimeEnvironment.setSourceConnection(localSource.getConnectionItem(localRuntimeEnvironment));
+                        if (!localSource.checkTableExist()) {
+                            throw new DataVinesException("source table is not exist");
+                        }
+                        break;
+                    case TARGET:
+                        localRuntimeEnvironment.setTargetConnection(localSource.getConnectionItem(localRuntimeEnvironment));
+                        if (!localSource.checkTableExist()) {
+                            throw new DataVinesException("target table is not exist");
+                        }
+                        break;
+                    case METADATA:
+                        localRuntimeEnvironment.setMetadataConnection(localSource.getConnectionItem(localRuntimeEnvironment));
+                        break;
+                    default:
+                        break;
+                }
+            });
 
-        for(LocalSink localSink : sinks) {
-            switch (SinkType.of(localSink.getConfig().getString(PLUGIN_TYPE))){
-                case ERROR_DATA:
-                    localSink.output(null, localRuntimeEnvironment);
-                    break;
-                case ACTUAL_VALUE:
-                    localSink.output(actualValue, localRuntimeEnvironment);
-                    break;
-                case VALIDATE_RESULT:
-                    localSink.output(taskResult, localRuntimeEnvironment);
-                    break;
-                case PROFILE_VALUE:
-                    localSink.output(actualValue, localRuntimeEnvironment);
-                    break;
-                default:
-                    break;
+            List<ResultList> taskResult = new ArrayList<>();
+            List<ResultList> actualValue = new ArrayList<>();
+            transforms.forEach(localTransform -> {
+                switch (TransformType.of(localTransform.getConfig().getString(PLUGIN_TYPE))){
+                    case INVALIDATE_ITEMS:
+                        if (StringUtils.isNotEmpty(localTransform.getConfig().getString(INVALIDATE_ITEMS_TABLE))) {
+                            invalidItemTableSet.add(localTransform.getConfig().getString(INVALIDATE_ITEMS_TABLE));
+                        }
+                        localTransform.process(localRuntimeEnvironment);
+                        break;
+                    case ACTUAL_VALUE:
+                        ResultList actualValueResult = localTransform.process(localRuntimeEnvironment);
+                        actualValue.add(actualValueResult);
+                        taskResult.add(actualValueResult);
+                        break;
+                    case EXPECTED_VALUE_FROM_METADATA_SOURCE:
+                    case EXPECTED_VALUE_FROM_SOURCE:
+                    case EXPECTED_VALUE_FROM_TARGET_SOURCE:
+                        ResultList expectedResult = localTransform.process(localRuntimeEnvironment);
+                        taskResult.add(expectedResult);
+                        break;
+                    default:
+                        break;
+                }
+            });
+
+            for (LocalSink localSink : sinks) {
+                switch (SinkType.of(localSink.getConfig().getString(PLUGIN_TYPE))){
+                    case ERROR_DATA:
+                        localSink.output(null, localRuntimeEnvironment);
+                        break;
+                    case ACTUAL_VALUE:
+                        localSink.output(actualValue, localRuntimeEnvironment);
+                        break;
+                    case VALIDATE_RESULT:
+                        localSink.output(taskResult, localRuntimeEnvironment);
+                        break;
+                    case PROFILE_VALUE:
+                        localSink.output(actualValue, localRuntimeEnvironment);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        } catch (Exception e) {
+            log.error("execute error", e);
+            throw e;
+        } finally {
+            for (String invalidItemTable : invalidItemTableSet) {
+                try {
+                    SqlUtils.dropView(invalidItemTable, localRuntimeEnvironment.getSourceConnection().getConnection());
+                } catch (SQLException sqlException) {
+                    log.error("drop view error: ", sqlException);
+                }
             }
         }
+
         localRuntimeEnvironment.close();
     }
 

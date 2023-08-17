@@ -26,12 +26,12 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -102,11 +102,11 @@ public class VerificationUtil {
             }
         }
         String imageByte64;
-        BASE64Encoder encoder = new BASE64Encoder();
+        Base64.Encoder encoder = Base64.getEncoder();
         if (null == imageInByte) {
             throw new DataVinesServerException(Status.CREATE_VERIFICATION_IMAGE_ERROR);
         }
-        imageByte64 = encoder.encodeBuffer(imageInByte).replaceAll("\n", "").replaceAll("\r", "");
+        imageByte64 = encoder.encodeToString(imageInByte).replaceAll("\n", "").replaceAll("\r", "");
         return "data:image/jpg;base64,".concat(imageByte64);
     }
 
