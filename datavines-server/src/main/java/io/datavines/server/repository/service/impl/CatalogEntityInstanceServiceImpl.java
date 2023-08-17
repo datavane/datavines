@@ -259,6 +259,7 @@ public class CatalogEntityInstanceServiceImpl
                 table.setUpdateTime(item.getUpdateTime());
                 List<CatalogEntityInstance> columnList = getCatalogEntityInstances(item.getUuid());
                 table.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
+                table.setMetrics(getEntityMetricCount(item.getUuid()));
                 return table;
             }
         );
