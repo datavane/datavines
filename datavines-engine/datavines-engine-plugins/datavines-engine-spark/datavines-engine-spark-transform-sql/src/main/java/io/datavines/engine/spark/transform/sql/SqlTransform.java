@@ -25,6 +25,8 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.spark.api.BaseSparkTransform;
 import io.datavines.engine.spark.api.SparkRuntimeEnvironment;
 
+import static io.datavines.common.ConfigConstants.SQL;
+
 public class SqlTransform implements BaseSparkTransform {
 
     private Config config = new Config();
@@ -43,7 +45,7 @@ public class SqlTransform implements BaseSparkTransform {
 
     @Override
     public CheckResult checkConfig() {
-        if (config.has("sql")) {
+        if (config.has(SQL)) {
             return new CheckResult(true, "");
         } else {
             return new CheckResult(false, "please specify [sql]");
@@ -57,6 +59,6 @@ public class SqlTransform implements BaseSparkTransform {
 
     @Override
     public Dataset<Row> process(Dataset<Row> data, SparkRuntimeEnvironment env) {
-        return env.sparkSession().sql(config.getString("sql"));
+        return env.sparkSession().sql(config.getString(SQL));
     }
 }

@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
+import static io.datavines.common.ConfigConstants.PASSWORD;
+import static io.datavines.common.ConfigConstants.USER;
+
 public class LocalFileSource implements LocalSource {
 
     private Logger log = LoggerFactory.getLogger(LocalFileSource.class);
@@ -105,8 +108,8 @@ public class LocalFileSource implements LocalSource {
 
     private Connection getConnection() throws Exception {
         Properties properties = new Properties();
-        properties.setProperty("user", "test");
-        properties.setProperty("password", "123456");
+        properties.setProperty(USER, "test");
+        properties.setProperty(PASSWORD, "123456");
         properties.setProperty("rowId", "false");
         DriverManager.registerDriver(new org.h2.Driver());
         Class.forName("org.h2.Driver", false, this.getClass().getClassLoader());

@@ -31,6 +31,8 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.spark.api.SparkRuntimeEnvironment;
 import io.datavines.engine.spark.api.batch.SparkBatchSource;
 
+import static io.datavines.common.ConfigConstants.*;
+
 public class JdbcSource implements SparkBatchSource {
 
     private Config config = new Config();
@@ -49,7 +51,7 @@ public class JdbcSource implements SparkBatchSource {
 
     @Override
     public CheckResult checkConfig() {
-        List<String> requiredOptions = Arrays.asList("url", "table", "user");
+        List<String> requiredOptions = Arrays.asList(URL, TABLE, USER);
 
         List<String> nonExistsOptions = new ArrayList<>();
         requiredOptions.forEach(x->{
@@ -76,10 +78,11 @@ public class JdbcSource implements SparkBatchSource {
     @Override
     public Dataset<Row> getData(SparkRuntimeEnvironment env) {
         Properties properties = new Properties();
-        properties.setProperty("user", config.getString("user"));
-        properties.setProperty("driver", config.getString("driver"));
-        if (StringUtils.isNotEmpty(config.getString("password")) && !"null".equalsIgnoreCase(config.getString("password"))) {
-            properties.put("password", config.getString("password"));
+        properties.setProperty(USER, config.getString(USER));
+        properties.setProperty(DRIVER, config.getString(DRIVER));
+        String password = config.getString(PASSWORD);
+        if (!StringUtils.isEmptyOrNullStr(password)) {
+            properties.put(PASSWORD, password);
         }
 
         Config jdbcConfig = TypesafeConfigUtils.extractSubConfigThrowable(config, "jdbc.", false);
@@ -91,6 +94,6 @@ public class JdbcSource implements SparkBatchSource {
         }
 
         DataFrameReader reader = new DataFrameReader(env.sparkSession());
-        return reader.jdbc(config.getString("url"), config.getString("table"),properties);
+        return reader.jdbc(config.getString(URL), config.getString(TABLE),properties);
     }
 }

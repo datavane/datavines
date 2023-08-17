@@ -28,7 +28,6 @@ import io.datavines.common.param.form.PropsType;
 import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.props.InputParamsProps;
 import io.datavines.common.param.form.type.InputParam;
-import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.storage.api.StorageConnector;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.*;
 import static io.datavines.common.datasource.jdbc.JdbcDataSourceInfoManager.getDatasourceInfo;
 
 @Slf4j
@@ -132,20 +132,20 @@ public class MysqlStorageConnector implements StorageConnector {
     @Override
     public Map<String, Object> getParamMap(Map<String, Object> parameter) {
         Map<String,Object> config = new HashMap<>();
-        config.put("table",parameter.get("table"));
-        config.put("user",parameter.get("user"));
-        config.put("password", parameter.get("password"));
-        config.put("url", parameter.get("url") == null ? getUrl(parameter) : parameter.get("url"));
-        config.put("driver","com.mysql.cj.jdbc.Driver");
+        config.put(TABLE,parameter.get(TABLE));
+        config.put(USER,parameter.get(USER));
+        config.put(PASSWORD, parameter.get(PASSWORD));
+        config.put(URL, parameter.get(URL) == null ? getUrl(parameter) : parameter.get(URL));
+        config.put(DRIVER,"com.mysql.cj.jdbc.Driver");
         return config;
     }
 
     private String getUrl(Map<String, Object> parameter) {
         String url = String.format("jdbc:mysql://%s:%s/%s",
-                parameter.get("host"),
-                parameter.get("port"),
-                parameter.get("database"));
-        String properties = (String)parameter.get("properties");
+                parameter.get(HOST),
+                parameter.get(PORT),
+                parameter.get(DATABASE));
+        String properties = (String)parameter.get(PROPERTIES);
         if (StringUtils.isNotEmpty(properties)) {
             url += "?" + properties;
         }

@@ -18,33 +18,34 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorParameterConverter;
-import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static io.datavines.common.ConfigConstants.*;
 
 public class PrestoConnectorParameterConverter implements ConnectorParameterConverter {
 
     @Override
     public Map<String, Object> converter(Map<String, Object> parameter) {
         Map<String,Object> config = new HashMap<>();
-        config.put("table", parameter.get("table"));
-        config.put("user", parameter.get("user"));
-        config.put("password", parameter.get("password"));
-        config.put("database", parameter.get("database"));
-        config.put("catalog", parameter.get("catalog"));
-        String database = (String)parameter.get("database");
+        config.put(TABLE, parameter.get(TABLE));
+        config.put(USER, parameter.get(USER));
+        config.put(PASSWORD, parameter.get(PASSWORD));
+        config.put(DATABASE, parameter.get(DATABASE));
+        config.put(CATALOG, parameter.get(CATALOG));
+        String database = (String)parameter.get(DATABASE);
         if (StringUtils.isNotEmpty(database)) {
-            config.put("url", String.format("jdbc:presto://%s:%s/%s/%s",
-                    parameter.get("host"),
-                    parameter.get("port"),
-                    parameter.get("catalog"),
-                    parameter.get("database")));
+            config.put(URL, String.format("jdbc:presto://%s:%s/%s/%s",
+                    parameter.get(HOST),
+                    parameter.get(PORT),
+                    parameter.get(CATALOG),
+                    parameter.get(DATABASE)));
         } else {
-            config.put("url", String.format("jdbc:presto://%s:%s/%s",
-                    parameter.get("host"),
-                    parameter.get("port"),
-                    parameter.get("catalog")));
+            config.put(URL, String.format("jdbc:presto://%s:%s/%s",
+                    parameter.get(HOST),
+                    parameter.get(PORT),
+                    parameter.get(CATALOG)));
         }
 
         return config;

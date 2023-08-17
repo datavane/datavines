@@ -65,9 +65,9 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
 
         this.inputParameter.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
 
-        if ("file".equalsIgnoreCase(jobExecutionInfo.getErrorDataStorageType())) {
+        if (FILE.equalsIgnoreCase(jobExecutionInfo.getErrorDataStorageType())) {
             Map<String,String> errorDataParameterMap = JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, String.class);
-            this.inputParameter.put(ERROR_DATA_DIR, errorDataParameterMap.get("data_dir"));
+            this.inputParameter.put(ERROR_DATA_DIR, errorDataParameterMap.get(DATA_DIR));
             this.inputParameter.put(COLUMN_SEPARATOR,
                     errorDataParameterMap.get(CommonPropertyUtils.COLUMN_SEPARATOR) == null ?
                             CommonPropertyUtils.COLUMN_SEPARATOR_DEFAULT : errorDataParameterMap.get(CommonPropertyUtils.COLUMN_SEPARATOR));
@@ -80,9 +80,9 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
             this.inputParameter.put(LINE_SEPERATOR, CommonPropertyUtils.getString(CommonPropertyUtils.LINE_SEPARATOR, CommonPropertyUtils.LINE_SEPARATOR_DEFAULT));
         }
 
-        if ("file".equalsIgnoreCase(jobExecutionInfo.getValidateResultDataStorageType())) {
+        if (FILE.equalsIgnoreCase(jobExecutionInfo.getValidateResultDataStorageType())) {
             Map<String,String> validateResultDataParameterMap = JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(),String.class, String.class);
-            this.inputParameter.put(VALIDATE_RESULT_DATA_DIR, validateResultDataParameterMap.get("data_dir"));
+            this.inputParameter.put(VALIDATE_RESULT_DATA_DIR, validateResultDataParameterMap.get(DATA_DIR));
         } else {
             this.inputParameter.put(VALIDATE_RESULT_DATA_DIR, CommonPropertyUtils.getString(CommonPropertyUtils.VALIDATE_RESULT_DATA_DIR, CommonPropertyUtils.VALIDATE_RESULT_DATA_DIR_DEFAULT));
         }
@@ -265,9 +265,9 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
     protected String getMetricUniqueKey(BaseJobParameter parameter) {
         return DigestUtils.md5Hex(String.format("%s_%s_%s_%s_%s",
                 parameter.getMetricType(),
-                parameter.getMetricParameter().get("database"),
-                parameter.getMetricParameter().get("table"),
-                parameter.getMetricParameter().get("column"),
+                parameter.getMetricParameter().get(DATABASE),
+                parameter.getMetricParameter().get(TABLE),
+                parameter.getMetricParameter().get(COLUMN),
                 jobExecutionInfo.getId()));
     }
 }
