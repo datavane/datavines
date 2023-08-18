@@ -73,6 +73,9 @@ export const MetricConfig = (props: InnerProps) => {
                             ...pickProps(values, ['deployMode', 'driverCores', 'driverMemory', 'numExecutors', 'executorMemory', 'executorCores', 'others']),
                         });
                     }
+                    if (datasourceReducer.modeType === 'comparison') {
+                        params.dataSourceId2 = parameterArray[0].dataSourceId2
+                    }
                     params.parameter = JSON.stringify(parameterArray);
                     resolve(params);
                 }).catch((error) => {
