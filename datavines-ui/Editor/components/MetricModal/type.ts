@@ -38,6 +38,8 @@ export type TParameterItem = {
     metricParameter: TMetricParameter;
     metricParameter2?: TMetricParameter2;
     mappingColumns?: TMappingColumns;
+    dataSourceId?:string;
+    dataSourceId2?:string;
 }
 
 export type TEngineParameter = {
@@ -58,7 +60,7 @@ export type TDetail = null | {
     name?: string;
     type?: string;
     errorDataStorageId?: any;
-    dataSourceId?: number;
+    dataSourceId?: any;
     executePlatformType?: string;
     executePlatformParameter?: string;
     engineType?: string;

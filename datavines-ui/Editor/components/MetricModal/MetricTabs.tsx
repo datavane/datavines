@@ -36,6 +36,7 @@ const MetricItem = (props: TMetricItem) => {
     const validSave = async () => {
         try {
             const values = await form.validateFields();
+            console.log(values);
             const parameter: any = {
                 ...(pickProps(values, ['metricType', 'expectedType', 'resultFormula', 'operator', 'threshold'])),
                 metricParameter: {
@@ -48,6 +49,7 @@ const MetricItem = (props: TMetricItem) => {
                 };
             }
             if (datasourceReducer.modeType === 'comparison') {
+                parameter.dataSourceId = values.dataSourceId;
                 parameter.dataSourceId2 = values.dataSourceId2;
                 Object.assign(parameter, pickProps(values, ['metricParameter', 'metricParameter2']));
                 if (values.metricType === 'multi_table_accuracy') {
@@ -104,6 +106,7 @@ const MetricTabs = (props: TmetricTabsProps) => {
     const formActionsRef = useRef<Record<string, FormInstance >>({});
     const { Render, show } = useMetricName({});
     const intl = useIntl();
+    const { datasourceReducer } = store.getState() as RootReducer;
     const {
         id, detail, metricRef,
     } = props;
@@ -207,10 +210,14 @@ const MetricTabs = (props: TmetricTabsProps) => {
         targetKey: TargetKey,
         action: 'add' | 'remove',
     ) => {
-        if (action === 'add') {
-            add();
+        if (datasourceReducer.modeType === 'comparison') {
+            message.info(intl.formatMessage({ id: 'dv_metric_job_comparison_support_one_metric_message' }));
         } else {
-            remove(targetKey);
+            if (action === 'add') {
+                add();
+            } else {
+                remove(targetKey);
+            }
         }
     };
 

@@ -30,13 +30,13 @@ const Index = ({
     const { $http } = useRequest();
     const [metricList, setMetricList] = useState([]);
     const [metricType, setMetricType] = useState('');
-    const [dataSoucre, setDataSoucre] = useState([]);
+    const [dataSource, setDataSource] = useState([]);
     const [databases1, setDatabases1] = useState([]);
     const [databases2, setDatabases2] = useState([]);
     const [table1, setTable1] = useState([]);
     const [table2, setTable2] = useState([]);
-    const [column1, setCloumn1] = useState([]);
-    const [column2, setCloumn2] = useState([]);
+    const [column1, setColumn1] = useState([]);
+    const [column2, setColumn2] = useState([]);
     const { Render: RenderColModal, show } = useColModal({});
     useMount(async () => {
         try {
@@ -48,8 +48,8 @@ const Index = ({
                 });
             } else {
                 form.setFieldsValue({
-                    dataSourceId: detail.dataSourceId,
-                    dataSourceId2: detail?.dataSourceId2,
+                    dataSourceId: detail?.dataSourceId,
+                    dataSourceId2: detail?.parameterItem?.dataSourceId2,
                     metricType: detail?.metricType,
                     metricParameter: detail?.parameterItem?.metricParameter,
                     metricParameter2: detail?.parameterItem?.metricParameter2,
@@ -57,25 +57,25 @@ const Index = ({
                 });
                 setMetricTypeParent(detail?.metricType);
                 setMetricType(detail?.metricType);
-                getDatabases(detail?.dataSourceId2, 2, true);
-                getTable(detail?.parameterItem?.metricParameter?.database, detail?.dataSourceId2, 1, true);
-                getTable(detail?.parameterItem?.metricParameter2?.database2, detail?.dataSourceId2, 2, true);
-                getCloumn(detail?.parameterItem?.metricParameter?.table, id, detail?.parameterItem?.metricParameter?.database, 1, false);
-                getCloumn(detail?.parameterItem?.metricParameter2?.table2, detail?.dataSourceId2, detail?.parameterItem?.metricParameter2?.database2, 2, false);
+                getDatabases(detail?.parameterItem?.dataSourceId2, 2, true);
+                getTable(detail?.parameterItem?.metricParameter?.database, detail?.dataSourceId, 1, true);
+                getTable(detail?.parameterItem?.metricParameter2?.database2, detail?.parameterItem?.dataSourceId2, 2, true);
+                getColumn(detail?.parameterItem?.metricParameter?.table, id, detail?.parameterItem?.metricParameter?.database, 1, false);
+                getColumn(detail?.parameterItem?.metricParameter2?.table2, detail?.dataSourceId2, detail?.parameterItem?.metricParameter2?.database2, 2, false);
             }
 
             const $metricList = await $http.get('metric/list/DATA_RECONCILIATION');
             setMetricList($metricList || []);
             const state: RootReducer = store.getState();
             const { workspaceId } = state.workSpaceReducer;
-            const $dataSoucrce = await $http.get('/datasource/page', {
+            const $dataSource = await $http.get('/datasource/page', {
                 workSpaceId: workspaceId,
                 pageNumber: 1,
                 pageSize: 9999,
             });
-            setDataSoucre($dataSoucrce.records || []);
+            setDataSource($dataSource.records || []);
         } catch (error) {
-            console.log('erro', error);
+            console.log('error', error);
         }
     });
     const changeRule = (val: string) => {
@@ -90,12 +90,12 @@ const Index = ({
             setDatabases1($databases);
             if (isInit) return;
             setTable1([]);
-            setCloumn1([]);
+            setColumn1([]);
         } else {
             setDatabases2($databases);
             if (isInit) return;
             setTable2([]);
-            setCloumn2([]);
+            setColumn2([]);
         }
     };
     // eslint-disable-next-line no-shadow
@@ -107,21 +107,21 @@ const Index = ({
             !isInit && form.setFieldValue(['metricParameter', 'table'], '');
             setTable1($table);
             // eslint-disable-next-line no-unused-expressions
-            !isInit && setCloumn1([]);
+            !isInit && setColumn1([]);
         } else {
             // eslint-disable-next-line no-unused-expressions
             !isInit && form.setFieldValue(['metricParameter', 'table2'], '');
             setTable2($table);
             // eslint-disable-next-line no-unused-expressions
-            !isInit && setCloumn2([]);
+            !isInit && setColumn2([]);
         }
     };
     // eslint-disable-next-line no-shadow
-    const getCloumn = async (table: string | undefined, id: string | undefined, database: string | undefined, index: number, isInit: boolean | undefined) => {
+    const getColumn = async (table: string | undefined, id: string | undefined, database: string | undefined, index: number, isInit: boolean | undefined) => {
         if (!table || !id || !database) return;
         const $column = await $http.get(`datasource/${id}/${database}/${table}/columns`);
         // eslint-disable-next-line no-unused-expressions
-        index === 1 ? setCloumn1($column || []) : setCloumn2($column || []);
+        index === 1 ? setColumn1($column || []) : setColumn2($column || []);
     };
     const seeColList = (index:number) => {
         // eslint-disable-next-line no-unused-expressions
@@ -157,7 +157,7 @@ const Index = ({
                             rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_datasource' }) }]}
                         >
                             <CustomSelect
-                                source={dataSoucre}
+                                source={dataSource}
                                 sourceLabelMap="name"
                                 sourceValueMap="id"
                                 disabled
@@ -172,7 +172,7 @@ const Index = ({
                             rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_select_datasource' }) }]}
                         >
                             <CustomSelect
-                                source={dataSoucre}
+                                source={dataSource}
                                 sourceLabelMap="name"
                                 sourceValueMap="id"
                                 onChange={(e) => getDatabases(e, 2, false)}
@@ -221,7 +221,7 @@ const Index = ({
                             <CustomSelect
                                 source={table1}
                                 sourceValueMap="name"
-                                onChange={(e) => getCloumn(e, form.getFieldValue('dataSourceId'), form.getFieldValue(['metricParameter', 'database']), 1, false)}
+                                onChange={(e) => getColumn(e, form.getFieldValue('dataSourceId'), form.getFieldValue(['metricParameter', 'database']), 1, false)}
                             />
                         </Form.Item>
                         {form.getFieldValue('metricType') === 'multi_table_value_comparison' ? (
@@ -252,7 +252,7 @@ const Index = ({
                             <CustomSelect
                                 source={table2}
                                 sourceValueMap="name"
-                                onChange={(e) => getCloumn(e, form.getFieldValue('dataSourceId2'), form.getFieldValue(['metricParameter2', 'database2']), 2, false)}
+                                onChange={(e) => getColumn(e, form.getFieldValue('dataSourceId2'), form.getFieldValue(['metricParameter2', 'database2']), 2, false)}
                             />
                         </Form.Item>
                         {
