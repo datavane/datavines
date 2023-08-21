@@ -24,24 +24,21 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import io.datavines.common.entity.JobExecutionParameter;
-import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.ExecuteRequestParam;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
+import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
-import io.datavines.server.repository.service.ActualValuesService;
-import io.datavines.server.repository.service.CommandService;
-import io.datavines.server.repository.service.JobExecutionResultService;
+import io.datavines.server.repository.service.*;
 import io.datavines.server.repository.entity.Command;
 import io.datavines.server.repository.mapper.JobExecutionMapper;
-import io.datavines.server.repository.service.JobExecutionService;
 import io.datavines.spi.PluginLoader;
-import io.datavines.storage.api.StorageFactory;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -56,6 +53,7 @@ import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import org.springframework.transaction.annotation.Transactional;
 
+import static io.datavines.common.ConfigConstants.ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE;
 import static io.datavines.core.constant.DataVinesConstants.SPARK;
 
 @Service("jobExecutionService")
@@ -69,6 +67,9 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 
     @Autowired
     private ActualValuesService actualValuesService;
+
+    @Autowired
+    private DataSourceService dataSourceService;
 
     @Override
     public long create(JobExecution jobExecution) {
@@ -258,22 +259,30 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
             return null;
         }
 
-        StorageFactory storageFactory =
-                PluginLoader.getPluginLoader(StorageFactory.class).getOrCreatePlugin(errorDataStorageType);
+        ConnectorFactory connectorFactory =
+                PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorageType);
 
         ExecuteRequestParam param = new ExecuteRequestParam();
         param.setType(errorDataStorageType);
         param.setDataSourceParam(errorDataStorageParameter);
 
+        Map<String,String> errorDataStorageParamMap = JSONUtils.toMap(errorDataStorageParameter);
         Map<String,String> scriptConfigMap = new HashMap<>();
+        if (StringUtils.isNotEmpty(errorDataStorageParamMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE))) {
+            scriptConfigMap.put(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE,errorDataStorageParamMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE));
+            DataSource dataSource = dataSourceService.getDataSourceById(jobExecution.getDataSourceId());
+            param.setDataSourceParam(dataSource.getParam());
+        }
+
         scriptConfigMap.put("error_data_file_name", errorDataFileName);
-        param.setScript(storageFactory.getErrorDataScript(scriptConfigMap));
+
+        param.setScript(connectorFactory.getDialect().getErrorDataScript(scriptConfigMap));
         param.setPageNumber(pageNumber);
         param.setPageSize(pageSize);
 
         Object result = null;
         try {
-            result = storageFactory.getStorageExecutor().queryForPage(param).getResult();
+            result = connectorFactory.getExecutor().queryForPage(param).getResult();
         } catch (Exception exception) {
             log.error("read error-data error: ", exception);
         }

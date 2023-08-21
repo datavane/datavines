@@ -58,4 +58,55 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
     protected ListWithQueryColumn query(JdbcTemplate jdbcTemplate, String sql, int limit) {
         return SqlUtils.query(jdbcTemplate, sql, limit);
     }
+
+    @Override
+    public ConnectorResponse queryForPage(ExecuteRequestParam param) {
+        ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
+        String dataSourceParam = param.getDataSourceParam();
+
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+
+        JdbcExecutorClient executorClient = jdbcExecutorClientManager
+                .getExecutorClient(
+                        JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam,
+                                getDatasourceInfo(jdbcConnectionInfo)));
+
+        JdbcTemplate jdbcTemplate = executorClient.getJdbcTemplate();
+
+        String sql = param.getScript();
+        if (StringUtils.isEmpty(sql)) {
+            builder.status(ConnectorResponse.Status.ERROR);
+            builder.errorMsg("execute script must not null");
+        }
+
+        builder.result(SqlUtils.queryForPage(jdbcTemplate, sql, param.getLimit(),
+                param.getPageNumber(), param.getPageSize()));
+
+        return builder.build();
+    }
+
+    @Override
+    public ConnectorResponse queryForOne(ExecuteRequestParam param) {
+        ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
+        String dataSourceParam = param.getDataSourceParam();
+
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+        JdbcExecutorClient executorClient = jdbcExecutorClientManager
+                .getExecutorClient(
+                        JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam,
+                                getDatasourceInfo(jdbcConnectionInfo)));
+
+        JdbcTemplate jdbcTemplate = executorClient.getJdbcTemplate();
+
+        String sql = param.getScript() + " limit 1";
+        if (StringUtils.isEmpty(sql)) {
+            builder.status(ConnectorResponse.Status.ERROR);
+            builder.errorMsg("execute script must not null");
+        }
+
+        builder.result(SqlUtils.queryForPage(jdbcTemplate, sql, param.getLimit(),
+                param.getPageNumber(), param.getPageSize()));
+
+        return builder.build();
+    }
 }

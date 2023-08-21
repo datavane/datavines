@@ -69,7 +69,7 @@ public class ConfigConstants {
     public static final String ERROR_DATA_FILE_NAME = "error_data_file_name";
     public static final String VALIDATE_RESULT_DATA_DIR = "validate_result_data_dir";
     public static final String INVALIDATE_ITEM_CAN_OUTPUT = "invalidate_item_can_output";
-
+    public static final String ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE = "error_data_output_to_datasource_database";
     public static final String DATABASE = "database";
     public static final String USER = "user";
     public static final String PASSWORD = "password";
@@ -77,12 +77,10 @@ public class ConfigConstants {
     public static final String URL = "url";
     public static final String HOST = "host";
     public static final String PORT = "port";
-
     public static final String CATALOG = "catalog";
     public static final String PROPERTIES = "properties";
     public static final String TYPE = "type";
     public static final String DRIVER = "driver";
-
     public static final String SQL = "sql";
     public static final String INPUT_TABLE = "input_table";
     public static final String OUTPUT_TABLE = "output_table";
@@ -92,6 +90,7 @@ public class ConfigConstants {
     public static final String DATA_DIR = "data_dir";
 
     public static final String FILE = "file";
+
     public static final String METRIC_DATABASE = "metric_database";
 
     public static final String METRIC_UNIQUE_KEY = "metric_unique_key";

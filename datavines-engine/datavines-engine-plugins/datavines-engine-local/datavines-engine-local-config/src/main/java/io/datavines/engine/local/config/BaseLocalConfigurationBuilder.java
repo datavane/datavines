@@ -95,6 +95,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter2.getParameters());
                     connectorParameterMap.putAll(metricInputParameter);
                     connectorParameterMap.put(TABLE,metricInputParameter.get(TABLE2));
+                    connectorParameterMap.put(DATABASE,metricInputParameter.get(DATABASE2));
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
                             .getNewPlugin(connectorParameter2.getType());

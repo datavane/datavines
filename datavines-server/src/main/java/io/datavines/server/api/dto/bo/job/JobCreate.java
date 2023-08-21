@@ -61,6 +61,8 @@ public class JobCreate {
 
     private Long errorDataStorageId;
 
+    private String errorDataOutputToDataSourceDatabase;
+
     /**
      * 1:running now, 0:don't run
      */

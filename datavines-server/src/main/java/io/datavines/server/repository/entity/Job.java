@@ -76,6 +76,9 @@ public class Job implements Serializable {
     @TableField(value = "error_data_storage_id",updateStrategy = FieldStrategy.IGNORED)
     private Long errorDataStorageId;
 
+    @TableField(value = "error_data_output_to_datasource_database")
+    private String errorDataOutputToDataSourceDatabase;
+
     @TableField(value = "parameter")
     private String parameter;
 

@@ -23,8 +23,8 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.TypeConverter;
-import io.datavines.connector.plugin.entity.JdbcOptions;
-import io.datavines.connector.plugin.entity.StructField;
+import io.datavines.connector.api.entity.JdbcOptions;
+import io.datavines.connector.api.entity.StructField;
 import io.datavines.connector.plugin.utils.JdbcUtils;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.entity.ConnectionItem;
@@ -54,8 +54,13 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
     }
 
     private ConnectionItem getConnectionItem() {
+
         if (connectionItem == null) {
-            connectionItem = new ConnectionItem(config);
+            if (StringUtils.isNotEmpty(config.getString(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE))) {
+                connectionItem = env.getSourceConnection();
+            } else {
+                connectionItem = new ConnectionItem(config);
+            }
         }
 
         return connectionItem;
@@ -64,12 +69,56 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
     @Override
     public void execute(Map<String, String> inputParameter) throws DataVinesException {
         try {
-            sinkErrorData();
+//            sinkErrorDataToDataSource();
         } catch (Exception e) {
             log.error("sink error data error : ", e);
             throw new DataVinesException(e);
         } finally {
-            after(env, config);
+//            after(env, config);
+        }
+
+
+    }
+
+    private void sinkErrorDataToDataSource() {
+        if (FALSE.equals(config.getString(INVALIDATE_ITEM_CAN_OUTPUT))) {
+            return;
+        }
+
+        String sourceTable = config.getString(INVALIDATE_ITEMS_TABLE);
+        String targetDatabase = config.getString(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE);
+        String targetTable = config.getString(ERROR_DATA_FILE_NAME);
+
+        Statement sourceConnectionStatement = null;
+        ResultSet countResultSet = null;
+        try {
+            sourceConnectionStatement = env.getSourceConnection().getConnection().createStatement();
+            int count = 0;
+            //执行统计行数语句
+            countResultSet = sourceConnectionStatement.executeQuery("SELECT COUNT(1) FROM " + sourceTable);
+            if (countResultSet.next()) {
+                count = countResultSet.getInt(1);
+            }
+
+            if (count <= 0) {
+                return;
+            }
+
+            String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
+            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
+            Dialect dialect = connectorFactory.getDialect();
+            if (!checkTableExist(getConnectionItem().getConnection(),
+                    dialect.quoteIdentifier(targetDatabase)+"."+dialect.quoteIdentifier(targetTable), dialect)) {
+                sourceConnectionStatement.execute(dialect.getCreateTableAsSelectStatement(sourceTable, targetDatabase, targetTable));
+            }
+
+            sourceConnectionStatement.execute(dialect.getInsertAsSelectStatement(sourceTable, targetDatabase, targetTable));
+
+        } catch (Exception e) {
+            log.error("output error data error: ", e);
+        } finally {
+            SqlUtils.closeResultSet(countResultSet);
+            SqlUtils.closeStatement(sourceConnectionStatement);
         }
     }
 
@@ -93,6 +142,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                 }
 
                 if (count > 0) {
+                    count = Math.min(count, 10000);
                     String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
                     ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
                     TypeConverter typeConverter = connectorFactory.getTypeConverter();
@@ -104,7 +154,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                     }
                     //根据行数进行分页查询。分批写到文件里面
                     int pageSize = 1000;
-                    int totalPage = count/pageSize + count%pageSize>0 ? 1:0;
+                    int totalPage = count/pageSize + (count%pageSize>0 ? 1:0);
 
                     errorDataResultSet = sourceConnectionStatement.executeQuery("SELECT * FROM " + sourceTable);
                     errorDataStorageConnection = getConnectionItem().getConnection();
@@ -227,7 +277,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
         }
     }
 
-    private boolean checkTableExist(Connection connection, String tableName, Dialect dialect) throws SQLException{
+    private boolean checkTableExist(Connection connection, String tableName, Dialect dialect) throws SQLException {
         //定义一个变量标示
         boolean flag = false ;
         //一个查询该表所有的语句。

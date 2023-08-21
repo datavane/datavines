@@ -106,7 +106,7 @@ public abstract class BaseDataSinkExecutor implements ISinkExecutor {
         try {
             SqlUtils.dropView(config.getString(INVALIDATE_ITEMS_TABLE), env.getSourceConnection().getConnection());
         } catch (SQLException e) {
-            log.error("create connection error: ", e);
+            log.error("drop view error: ", e);
         }
     }
 }

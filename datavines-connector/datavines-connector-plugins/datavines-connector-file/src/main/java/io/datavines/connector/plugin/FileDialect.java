@@ -16,9 +16,11 @@
  */
 package io.datavines.connector.plugin;
 
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.Dialect;
 
 import java.util.List;
+import java.util.Map;
 
 public class FileDialect implements Dialect {
 
@@ -39,6 +41,24 @@ public class FileDialect implements Dialect {
 
     @Override
     public List<String> getExcludeDatabases() {
+        return null;
+    }
+
+    @Override
+    public String getErrorDataScript(Map<String, String> configMap) {
+        String errorDataFileName = configMap.get("error_data_file_name");
+        if (StringUtils.isNotEmpty(errorDataFileName)) {
+            return errorDataFileName + ".csv";
+        }
+        return null;
+    }
+
+    @Override
+    public String getValidateResultDataScript(Map<String, String> configMap) {
+        String executionId = configMap.get("execution_id");
+        if (StringUtils.isNotEmpty(executionId)) {
+            return executionId + "/validate_result.csv";
+        }
         return null;
     }
 }

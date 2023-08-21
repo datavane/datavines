@@ -18,6 +18,7 @@ package io.datavines.engine.spark.config;
 
 import io.datavines.common.config.*;
 import io.datavines.common.config.enums.SinkType;
+import io.datavines.common.config.enums.SourceType;
 import io.datavines.common.entity.*;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.exception.DataVinesException;
@@ -31,6 +32,7 @@ import io.datavines.storage.api.StorageFactory;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static io.datavines.common.CommonConstants.DATABASE2;
 import static io.datavines.common.CommonConstants.TABLE2;
@@ -85,6 +87,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
 
                     sourceConfig.setPlugin(connectorFactory.getCategory());
                     sourceConfig.setConfig(connectorParameterMap);
+                    sourceConfig.setType(SourceType.SOURCE.getDescription());
                     sourceConfigs.add(sourceConfig);
                     sourceConnectorSet.add(connectorUUID);
                 }
@@ -115,6 +118,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
 
                     sourceConfig.setPlugin(connectorFactory.getCategory());
                     sourceConfig.setConfig(connectorParameterMap);
+                    sourceConfig.setType(SourceType.TARGET.getDescription());
                     sourceConfigs.add(sourceConfig);
                     targetConnectorSet.add(connectorUUID);
                 }
@@ -148,18 +152,35 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
 
             Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, Object.class));
             connectorParameterMap.putAll(inputParameter);
-            StorageFactory storageFactory = PluginLoader
-                    .getPluginLoader(StorageFactory.class)
+            ConnectorFactory connectorFactory = PluginLoader
+                    .getPluginLoader(ConnectorFactory.class)
                     .getNewPlugin(jobExecutionInfo.getErrorDataStorageType());
 
-            if (storageFactory != null) {
-                connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
-                errorDataSinkConfig.setPlugin(storageFactory.getCategory());
-                connectorParameterMap.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
-                connectorParameterMap.put(TABLE, jobExecutionInfo.getErrorDataFileName());
-                connectorParameterMap.put(SQL, "SELECT * FROM "+ inputParameter.get(INVALIDATE_ITEMS_TABLE));
-                errorDataSinkConfig.setConfig(connectorParameterMap);
+            if (connectorFactory == null) {
+                return null;
             }
+
+            String errorDataOutputToDataSourceDatabase = String.valueOf(connectorParameterMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE));
+
+            if (StringUtils.isEmpty(errorDataOutputToDataSourceDatabase)) {
+                connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
+            } else {
+                List<SourceConfig> sourceConfigs = getSourceConfigs()
+                        .stream().filter(x->SourceType.SOURCE.getDescription().equalsIgnoreCase(x.getType())).collect(Collectors.toList());
+                if (CollectionUtils.isEmpty(sourceConfigs)) {
+                    return null;
+                }
+
+                connectorParameterMap = sourceConfigs.get(0).getConfig();
+                connectorParameterMap.put(DATABASE, errorDataOutputToDataSourceDatabase);
+            }
+
+            errorDataSinkConfig.setPlugin(connectorFactory.getCategory());
+            connectorParameterMap.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
+            connectorParameterMap.put(TABLE, jobExecutionInfo.getErrorDataFileName());
+            connectorParameterMap.put(SQL, "SELECT * FROM "+ inputParameter.get(INVALIDATE_ITEMS_TABLE));
+            errorDataSinkConfig.setConfig(connectorParameterMap);
+
         }
 
         return errorDataSinkConfig;

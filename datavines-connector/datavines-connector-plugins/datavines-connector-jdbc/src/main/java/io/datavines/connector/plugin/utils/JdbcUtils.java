@@ -19,8 +19,8 @@ package io.datavines.connector.plugin.utils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.TypeConverter;
-import io.datavines.connector.plugin.entity.JdbcOptions;
-import io.datavines.connector.plugin.entity.StructField;
+import io.datavines.connector.api.entity.JdbcOptions;
+import io.datavines.connector.api.entity.StructField;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 

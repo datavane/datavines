@@ -14,19 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.plugin.entity;
+package io.datavines.connector.api.entity;
 
-import io.datavines.common.enums.DataType;
 import lombok.Data;
 
 @Data
-public class StructField {
+public class JdbcOptions {
 
-    private String name;
+    private String url;
 
-    private DataType dataType;
+    private String databaseName;
 
-    private boolean nullable;
+    private String tableName;
 
-    private String comment;
+    private String query;
+
+    private String partitionColumn;
+
+    private int queryTimeout;
+
+    private int fetchSize;
+
+    private int batchSize;
 }

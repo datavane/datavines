@@ -52,6 +52,8 @@ export default {
     dv_metric_other_config_second: '秒',
     dv_metric_error_store_config: '错误数据存储配置',
     dv_metric_error_store_engine: '错误数据存储引擎',
+    dv_metric_error_output_to_datasource: '是否输出至源数据源',
+    dv_metric_error_output_to_datasource_database: '错误数据存储数据库',
     dv_metric_job_error_message: '至少保留一个规则',
     dv_metric_job_comparison_support_one_metric_message: '数据比对作业只支持一个规则',
     dev_metric_datasource: '数据源',

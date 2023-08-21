@@ -41,7 +41,7 @@ public class ValidateResultDataSinkExecutor extends BaseDataSinkExecutor {
         try {
             innerExecute(inputParameter);
         } catch (Exception e) {
-            log.error("sink validate result data error : {}", e);
+            log.error("sink validate result data error : ", e);
             after(env, config);
             throw new DataVinesException("sink validate result data error", e);
         }

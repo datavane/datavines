@@ -74,6 +74,7 @@ import java.util.Map;
 import static io.datavines.common.CommonConstants.LOCAL;
 import static io.datavines.common.ConfigConstants.*;
 import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
+import static io.datavines.core.constant.DataVinesConstants.JDBC;
 
 @Slf4j
 @Service("jobService")
@@ -120,7 +121,6 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         Job job = new Job();
         BeanUtils.copyProperties(jobCreate, job);
-
         List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
         jobParameters = JobParameterUtils.regenerateJobParameterList(jobParameters);
 
@@ -464,14 +464,20 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             errorDataStorageType = errorDataStorage.getType();
             errorDataStorageParameter  = errorDataStorage.getParam();
         } else {
-            if ("local".equalsIgnoreCase(job.getEngineType())) {
-                errorDataStorageType = "file";
-                Map<String,String> errorDataStorageParameterMap = new HashMap<>();
-                errorDataStorageParameterMap.put(DATA_DIR, CommonPropertyUtils.getString(CommonPropertyUtils.ERROR_DATA_DIR, CommonPropertyUtils.ERROR_DATA_DIR_DEFAULT));
-                errorDataStorageParameterMap.put(COLUMN_SEPARATOR, CommonPropertyUtils.getString(CommonPropertyUtils.COLUMN_SEPARATOR, CommonPropertyUtils.COLUMN_SEPARATOR_DEFAULT));
-                errorDataStorageParameterMap.put(LINE_SEPERATOR, CommonPropertyUtils.getString(CommonPropertyUtils.LINE_SEPARATOR, CommonPropertyUtils.LINE_SEPARATOR_DEFAULT));
-
-                errorDataStorageParameter  = JSONUtils.toJsonString(errorDataStorageParameterMap);
+            if (LOCAL.equalsIgnoreCase(job.getEngineType())) {
+                if (StringUtils.isNotEmpty(job.getErrorDataOutputToDataSourceDatabase())) {
+                    errorDataStorageType = "mysql";
+                    Map<String,String> errorDataStorageParameterMap = new HashMap<>();
+                    errorDataStorageParameterMap.put(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE, job.getErrorDataOutputToDataSourceDatabase());
+                    errorDataStorageParameter  = JSONUtils.toJsonString(errorDataStorageParameterMap);
+                } else {
+                    errorDataStorageType = FILE;
+                    Map<String,String> errorDataStorageParameterMap = new HashMap<>();
+                    errorDataStorageParameterMap.put(DATA_DIR, CommonPropertyUtils.getString(CommonPropertyUtils.ERROR_DATA_DIR, CommonPropertyUtils.ERROR_DATA_DIR_DEFAULT));
+                    errorDataStorageParameterMap.put(COLUMN_SEPARATOR, CommonPropertyUtils.getString(CommonPropertyUtils.COLUMN_SEPARATOR, CommonPropertyUtils.COLUMN_SEPARATOR_DEFAULT));
+                    errorDataStorageParameterMap.put(LINE_SEPERATOR, CommonPropertyUtils.getString(CommonPropertyUtils.LINE_SEPARATOR, CommonPropertyUtils.LINE_SEPARATOR_DEFAULT));
+                    errorDataStorageParameter  = JSONUtils.toJsonString(errorDataStorageParameterMap);
+                }
             }
         }
 

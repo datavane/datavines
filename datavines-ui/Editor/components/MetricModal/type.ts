@@ -79,4 +79,5 @@ export type TDetail = null | {
     updateTime?: Date;
     uuid?: string;
     [key: string]: any;
+    errorDataOutputToDataSourceDatabase?: string;
 }
