@@ -86,7 +86,7 @@ public enum Status {
     SCHEDULE_PARAMETER_IS_NULL_ERROR(14020006, "Schedule {0} Parameter is Null Error", "定时器参数 {0} 为空错误"),
     SCHEDULE_TYPE_NOT_VALIDATE_ERROR(14020007, "Schedule type {0} is not Validate Error", "定时器类型参数 {0} 错误"),
     SCHEDULE_CYCLE_NOT_VALIDATE_ERROR(14020008, "Schedule Param Cycle {0} is not Validate Error", "定时器周期参数 {0} 错误"),
-    SCHEDULE_CRON_IS_INVALID_ERROR(14020008, "Schedule cron {0} is not Validate Error", "定时器 Crontab 表达式 {0} 错误"),
+    SCHEDULE_CRON_IS_INVALID_ERROR(14020009, "Schedule cron {0} is not Validate Error", "定时器 Crontab 表达式 {0} 错误"),
 
     CREATE_TENANT_ERROR(15010001, "Create Tenant {0} Error", "创建 Linux 用户 {0} 错误"),
     TENANT_NOT_EXIST_ERROR(15010002, "Tenant {0} Not Exist Error", "Linux 用户 {0} 不存在错误"),
@@ -102,6 +102,8 @@ public enum Status {
     ERROR_DATA_STORAGE_NOT_EXIST_ERROR(17010002, "Error Data Storage {0} Not Exist Error", "错误数据存储 {0} 不存在"),
     ERROR_DATA_STORAGE_EXIST_ERROR(17010003, "Error Data Storage {0} is Exist error", "错误数据存储 {0} 已存在"),
     UPDATE_ERROR_DATA_STORAGE_ERROR(17010004, "Update Error Data Storage {0} Error", "更新 错误数据存储 {0} 错误"),
+
+    DATASOURCE_NOT_SUPPORT_ERROR_DATA_OUTPUT_TO_SELF_ERROR(14020010, "DataSource type {0} not Support Error Data Output To Self Error", "{0} 类型数据源不支持错误输出写入"),
 
     SLA_ALREADY_EXIST_ERROR(18010001, "SLA {0} Already exist", "SLA {0} 已经存在"),
     SLA_SENDER_ALREADY_EXIST_ERROR(18020001, "SLA Sender {0}  Already exist", "SLA 发送器 {0} 已经存在"),

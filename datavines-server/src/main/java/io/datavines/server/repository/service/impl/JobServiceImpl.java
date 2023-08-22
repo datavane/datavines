@@ -27,14 +27,13 @@ import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.entity.job.NotificationParameter;
 import io.datavines.common.entity.job.SubmitJob;
-import io.datavines.common.utils.PasswordFilterUtils;
-import io.datavines.server.dqc.coordinator.builder.JobExecutionParameterBuilderFactory;
 import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.JobType;
-import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.JSONUtils;
+import io.datavines.common.utils.PasswordFilterUtils;
 import io.datavines.common.utils.StringUtils;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.core.utils.LanguageUtils;
@@ -46,12 +45,13 @@ import io.datavines.server.api.dto.bo.job.JobUpdate;
 import io.datavines.server.api.dto.vo.JobVO;
 import io.datavines.server.api.dto.vo.SlaConfigVO;
 import io.datavines.server.api.dto.vo.SlaVO;
+import io.datavines.server.dqc.coordinator.builder.JobExecutionParameterBuilderFactory;
 import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import io.datavines.server.repository.entity.*;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
-import io.datavines.server.repository.mapper.*;
+import io.datavines.server.repository.mapper.JobMapper;
 import io.datavines.server.repository.service.*;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.server.utils.DefaultDataSourceInfoUtils;
@@ -72,9 +72,9 @@ import java.util.List;
 import java.util.Map;
 
 import static io.datavines.common.CommonConstants.LOCAL;
-import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE;
+import static io.datavines.common.ConfigConstants.FALSE;
 import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
-import static io.datavines.core.constant.DataVinesConstants.JDBC;
 
 @Slf4j
 @Service("jobService")
@@ -117,6 +117,17 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         String parameter = jobCreate.getParameter();
         if (StringUtils.isEmpty(parameter)) {
             throw new DataVinesServerException(Status.JOB_PARAMETER_IS_NULL_ERROR);
+        }
+
+        if (jobCreate.getIsErrorDataOutputToDataSource()) {
+            DataSource dataSource = dataSourceService.getDataSourceById(jobCreate.getDataSourceId());
+            if (dataSource != null) {
+                String errorDataStorageType = dataSource.getType();
+                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorageType);
+                if (connectorFactory == null || FALSE.equalsIgnoreCase(connectorFactory.getDialect().invalidateItemCanOutputToSelf())) {
+                    throw new DataVinesServerException(Status.DATASOURCE_NOT_SUPPORT_ERROR_DATA_OUTPUT_TO_SELF_ERROR, errorDataStorageType);
+                }
+            }
         }
 
         Job job = new Job();
@@ -173,6 +184,17 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobUpdate.getId());
         }
 
+        if (jobUpdate.getIsErrorDataOutputToDataSource()) {
+            DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
+            if (dataSource != null) {
+                String errorDataStorageType = dataSource.getType();
+                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorageType);
+                if (connectorFactory == null || FALSE.equalsIgnoreCase(connectorFactory.getDialect().invalidateItemCanOutputToSelf())) {
+                    throw new DataVinesServerException(Status.DATASOURCE_NOT_SUPPORT_ERROR_DATA_OUTPUT_TO_SELF_ERROR, errorDataStorageType);
+                }
+            }
+        }
+
         BeanUtils.copyProperties(jobUpdate, job);
         List<BaseJobParameter> jobParameters = JSONUtils.toList(jobUpdate.getParameter(), BaseJobParameter.class);
         isMetricSuitable(jobUpdate.getDataSourceId(), jobUpdate.getDataSourceId2(), jobUpdate.getEngineType(), jobParameters);
@@ -199,7 +221,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
                 .eq("metric_job_id", job.getId())
                 .eq("metric_job_type", "DATA_QUALITY"));
-        if (listRel.size() >= 1) {
+        if (!listRel.isEmpty()) {
             catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>()
                     .eq("metric_job_id", job.getId())
                     .eq("metric_job_type", "DATA_QUALITY"));
@@ -274,48 +296,50 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     private void isMetricSuitable(long datasourceId, long datasourceId2, String engine, List<BaseJobParameter> jobParameters) {
-        if (CollectionUtils.isNotEmpty(jobParameters)) {
-            for (BaseJobParameter jobParameter : jobParameters) {
+        if (CollectionUtils.isEmpty(jobParameters)) {
+            return;
+        }
 
-                if (datasourceId2 !=0 && LOCAL.equalsIgnoreCase(engine) && "multi_table_accuracy".equalsIgnoreCase(jobParameter.getMetricType())) {
-                    throw new DataVinesServerException(Status.MULTI_TABLE_ACCURACY_NOT_SUPPORT_LOCAL_ENGINE);
-                }
+        for (BaseJobParameter jobParameter : jobParameters) {
 
-                if (StringUtils.isEmpty(getFQN(jobParameter))) {
-                    throw new DataVinesServerException(Status.METRIC_JOB_RELATED_ENTITY_NOT_EXIST);
-                }
+            if (datasourceId2 !=0 && LOCAL.equalsIgnoreCase(engine) && "multi_table_accuracy".equalsIgnoreCase(jobParameter.getMetricType())) {
+                throw new DataVinesServerException(Status.MULTI_TABLE_ACCURACY_NOT_SUPPORT_LOCAL_ENGINE);
+            }
 
-                if (!isColumn(jobParameter)) {
-                    return;
-                }
+            if (StringUtils.isEmpty(getFQN(jobParameter))) {
+                throw new DataVinesServerException(Status.METRIC_JOB_RELATED_ENTITY_NOT_EXIST);
+            }
 
-                CatalogEntityInstance columnEntity =
-                        catalogEntityInstanceService.getByDataSourceAndFQN(datasourceId, getFQN(jobParameter));
-                if (columnEntity == null) {
-                    return;
-                }
+            if (!isColumn(jobParameter)) {
+                return;
+            }
 
-                if (StringUtils.isEmpty(columnEntity.getProperties())) {
+            CatalogEntityInstance columnEntity =
+                    catalogEntityInstanceService.getByDataSourceAndFQN(datasourceId, getFQN(jobParameter));
+            if (columnEntity == null) {
+                return;
+            }
+
+            if (StringUtils.isEmpty(columnEntity.getProperties())) {
+                throw new DataVinesServerException(Status.ENTITY_TYPE_NOT_EXIST);
+            }
+
+            ColumnInfo columnInfo = JSONUtils.parseObject(columnEntity.getProperties(), ColumnInfo.class);
+            if (columnInfo != null) {
+                String columnType = columnInfo.getType();
+                DataVinesDataType dataVinesDataType = DataVinesDataType.getType(columnType);
+                if (dataVinesDataType == null) {
                     throw new DataVinesServerException(Status.ENTITY_TYPE_NOT_EXIST);
                 }
 
-                ColumnInfo columnInfo = JSONUtils.parseObject(columnEntity.getProperties(), ColumnInfo.class);
-                if (columnInfo != null) {
-                    String columnType = columnInfo.getType();
-                    DataVinesDataType dataVinesDataType = DataVinesDataType.getType(columnType);
-                    if (dataVinesDataType == null) {
-                        throw new DataVinesServerException(Status.ENTITY_TYPE_NOT_EXIST);
-                    }
+                SqlMetric metric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobParameter.getMetricType());
+                if (metric == null) {
+                    throw new DataVinesServerException(Status.METRIC_JOB_RELATED_ENTITY_NOT_EXIST, jobParameter.getMetricType().toUpperCase());
+                }
 
-                    SqlMetric metric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobParameter.getMetricType());
-                    if (metric == null) {
-                        throw new DataVinesServerException(Status.METRIC_JOB_RELATED_ENTITY_NOT_EXIST, jobParameter.getMetricType().toUpperCase());
-                    }
-
-                    List<DataVinesDataType> suitableTypeList = metric.suitableType();
-                    if (!suitableTypeList.contains(dataVinesDataType)) {
-                        throw new DataVinesServerException(Status.METRIC_NOT_SUITABLE_ENTITY_TYPE, metric.getNameByLanguage(!LanguageUtils.isZhContext()), dataVinesDataType.getName().toUpperCase());
-                    }
+                List<DataVinesDataType> suitableTypeList = metric.suitableType();
+                if (!suitableTypeList.contains(dataVinesDataType)) {
+                    throw new DataVinesServerException(Status.METRIC_NOT_SUITABLE_ENTITY_TYPE, metric.getNameByLanguage(!LanguageUtils.isZhContext()), dataVinesDataType.getName().toUpperCase());
                 }
             }
         }
@@ -457,27 +481,22 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             tenantStr = tenant.getTenant();
         }
 
-        ErrorDataStorage errorDataStorage = errorDataStorageService.getById(job.getErrorDataStorageId());
         String errorDataStorageType = "";
         String errorDataStorageParameter = "";
-        if (errorDataStorage != null) {
-            errorDataStorageType = errorDataStorage.getType();
-            errorDataStorageParameter  = errorDataStorage.getParam();
+
+        if (job.getIsErrorDataOutputToDataSource()) {
+            DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
+            if (dataSource != null) {
+                errorDataStorageType = dataSource.getType();
+                Map<String,String> errorDataStorageParameterMap = new HashMap<>();
+                errorDataStorageParameterMap.put(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE, job.getErrorDataOutputToDataSourceDatabase());
+                errorDataStorageParameter  = JSONUtils.toJsonString(errorDataStorageParameterMap);
+            }
         } else {
-            if (LOCAL.equalsIgnoreCase(job.getEngineType())) {
-                if (StringUtils.isNotEmpty(job.getErrorDataOutputToDataSourceDatabase())) {
-                    errorDataStorageType = "mysql";
-                    Map<String,String> errorDataStorageParameterMap = new HashMap<>();
-                    errorDataStorageParameterMap.put(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE, job.getErrorDataOutputToDataSourceDatabase());
-                    errorDataStorageParameter  = JSONUtils.toJsonString(errorDataStorageParameterMap);
-                } else {
-                    errorDataStorageType = FILE;
-                    Map<String,String> errorDataStorageParameterMap = new HashMap<>();
-                    errorDataStorageParameterMap.put(DATA_DIR, CommonPropertyUtils.getString(CommonPropertyUtils.ERROR_DATA_DIR, CommonPropertyUtils.ERROR_DATA_DIR_DEFAULT));
-                    errorDataStorageParameterMap.put(COLUMN_SEPARATOR, CommonPropertyUtils.getString(CommonPropertyUtils.COLUMN_SEPARATOR, CommonPropertyUtils.COLUMN_SEPARATOR_DEFAULT));
-                    errorDataStorageParameterMap.put(LINE_SEPERATOR, CommonPropertyUtils.getString(CommonPropertyUtils.LINE_SEPARATOR, CommonPropertyUtils.LINE_SEPARATOR_DEFAULT));
-                    errorDataStorageParameter  = JSONUtils.toJsonString(errorDataStorageParameterMap);
-                }
+            ErrorDataStorage errorDataStorage = errorDataStorageService.getById(job.getErrorDataStorageId());
+            if (errorDataStorage != null) {
+                errorDataStorageType = errorDataStorage.getType();
+                errorDataStorageParameter  = errorDataStorage.getParam();
             }
         }
 

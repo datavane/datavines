@@ -80,4 +80,5 @@ export type TDetail = null | {
     uuid?: string;
     [key: string]: any;
     errorDataOutputToDataSourceDatabase?: string;
+    isErrorDataOutputToDataSource?: boolean;
 }

@@ -73,7 +73,6 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
                     errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
 
                     Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, Object.class));
-                    connectorParameterMap.putAll(metricInputParameter);
                     ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
@@ -83,8 +82,10 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
                         return;
                     }
 
-                    if (StringUtils.isEmpty(String.valueOf(connectorParameterMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE)))) {
+                    if (connectorParameterMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE) == null) {
                         connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
+                    } else {
+                        connectorParameterMap.put(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE, connectorParameterMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE));
                     }
                     
                     errorDataSinkConfig.setPlugin(connectorFactory.getCategory());
@@ -96,6 +97,7 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
                     // use to get source type converter in sink
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, metricInputParameter.get(SRC_CONNECTOR_TYPE));
                     connectorParameterMap.put(JOB_EXECUTION_ID, metricInputParameter.get(JOB_EXECUTION_ID));
+                    connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     errorDataSinkConfig.setConfig(connectorParameterMap);
 
                     sinkConfigs.add(errorDataSinkConfig);

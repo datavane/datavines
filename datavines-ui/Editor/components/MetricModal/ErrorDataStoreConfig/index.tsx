@@ -25,6 +25,7 @@ const Index = ({ form, detail }: InnerProps) => {
     const [context] = useEditorContextState();
     const [errorList, setErrorList] = useState([]);
     const requiredRules = useRequiredRule();
+    const [isErrorDataOutputDataSource, setErrorDataOutputDataSource] = useState(false);
     useMount(async () => {
         try {
             const res = await $http.get(`/errorDataStorage/list/${context.workspaceId}`);
@@ -32,7 +33,7 @@ const Index = ({ form, detail }: InnerProps) => {
             if (detail && detail.id) {
                 form.setFieldsValue({
                     errorDataStorageId: detail?.errorDataStorageId || undefined,
-                    isErrorDataOutputDataSource: !!detail?.errorDataOutputToDataSourceDatabase,
+                    isErrorDataOutputToDataSource: detail?.isErrorDataOutputToDataSource || false,
                     errorDataOutputToDataSourceDatabase: detail?.errorDataOutputToDataSourceDatabase || undefined,
                 });
             }
@@ -47,16 +48,17 @@ const Index = ({ form, detail }: InnerProps) => {
                     <Form.Item
                         {...layoutItem}
                         label={intl.formatMessage({ id: 'dv_metric_error_output_to_datasource' })}
-                        name="isErrorDataOutputDataSource"
+                        name="isErrorDataOutputToDataSource"
                     >
-                        <Switch/>
+                        <Switch checked={isErrorDataOutputDataSource}/>
                     </Form.Item>
                 </Col>
                 <Col span={12}>
-                    <Form.Item noStyle dependencies={['isErrorDataOutputDataSource']}>
+                    <Form.Item noStyle dependencies={['isErrorDataOutputToDataSource']}>
                         {() => {
-                            const value = form.getFieldValue('isErrorDataOutputDataSource');
+                            const value = form.getFieldValue('isErrorDataOutputToDataSource');
                             if (value) {
+                                setErrorDataOutputDataSource(true);
                                 return (
                                     <Form.Item
                                         {...layoutItem}
@@ -68,6 +70,7 @@ const Index = ({ form, detail }: InnerProps) => {
                                     </Form.Item>
                                 );
                             } else {
+                                setErrorDataOutputDataSource(false);
                                 return (
                                     <Form.Item
                                         {...layoutItem}
@@ -78,7 +81,6 @@ const Index = ({ form, detail }: InnerProps) => {
                                     </Form.Item>
                                 )
                             }
-
                         }}
                     </Form.Item>
 

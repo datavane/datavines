@@ -18,8 +18,8 @@ package io.datavines.server.repository.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.datavines.common.enums.TimeoutStrategy;
 import io.datavines.common.enums.JobType;
+import io.datavines.common.enums.TimeoutStrategy;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -78,6 +78,9 @@ public class Job implements Serializable {
 
     @TableField(value = "error_data_output_to_datasource_database")
     private String errorDataOutputToDataSourceDatabase;
+
+    @TableField(value = "is_error_data_output_to_datasource")
+    private Boolean isErrorDataOutputToDataSource;
 
     @TableField(value = "parameter")
     private String parameter;

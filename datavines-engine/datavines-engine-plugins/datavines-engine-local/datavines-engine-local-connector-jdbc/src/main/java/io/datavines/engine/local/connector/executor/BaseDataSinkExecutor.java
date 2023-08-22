@@ -81,17 +81,11 @@ public abstract class BaseDataSinkExecutor implements ISinkExecutor {
         boolean flag = false ;
         //一个查询该表所有的语句。
         String sql = "SELECT COUNT(*) FROM "+ tableName ;
-        Statement statement = null;
-        try {
-            statement =  env.getMetadataConnection().getConnection().createStatement();
+        try (Statement statement = env.getMetadataConnection().getConnection().createStatement()) {
             statement.executeQuery(sql);
-            flag =  true;
-        } catch(Exception e) {
+            flag = true;
+        } catch (Exception e) {
             log.warn("table {} is not exist", tableName);
-        } finally {
-            if (statement != null) {
-                statement.close();
-            }
         }
         return flag;
     }

@@ -155,7 +155,7 @@ export const useAddDataSource = (options: ModalProps) => {
                     message.success('Success!');
                     setIsSuccessTest(true);
                 } else {
-                    message.success(intl.formatMessage({ id: 'test_link_fail' }));
+                    message.error(intl.formatMessage({ id: 'test_link_fail' }));
                 }
             } catch (error: any) {
             } finally {

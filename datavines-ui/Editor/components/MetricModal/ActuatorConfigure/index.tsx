@@ -30,7 +30,10 @@ const Index = ({ form, detail }: InnerProps) => {
             const $engineList = await $http.get('metric/engine/list');
             setEngineList($engineList || []);
             const engineParameter : any = detail?.engineParameter
-            const parameter = JSON.parse(engineParameter)  || {} as TEngineParameter;
+            let parameter = {} as TEngineParameter;
+            if (engineParameter) {
+                parameter = JSON.parse(engineParameter);
+            }
             form.setFieldsValue({
                 deployMode: parameter.deployMode ?? 'cluster',
                 driverCores: parameter.driverCores ?? 1,

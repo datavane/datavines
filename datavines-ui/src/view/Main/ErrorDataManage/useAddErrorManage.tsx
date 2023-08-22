@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import {
-    Input, ModalProps, Form, FormInstance, message,
+    Input, ModalProps, Form, FormInstance, message, Button,
 } from 'antd';
 import { useIntl } from 'react-intl';
 import {
@@ -108,6 +108,9 @@ export const useAddErrorManage = (options: ModalProps) => {
     const setLoading = useLoading();
     const recordRef = useRef<any>(null);
     const { workspaceId } = useSelector((r) => r.workSpaceReducer);
+    const [isSuccessTest, setIsSuccessTest] = useState(false);
+    const isSuccessTestRef = useRef(isSuccessTest);
+    isSuccessTestRef.current = isSuccessTest;
     const onOk = usePersistFn(async () => {
         form.validateFields().then(async (values) => {
             try {
@@ -134,13 +137,47 @@ export const useAddErrorManage = (options: ModalProps) => {
             console.log(err);
         });
     });
+    const onTestLink = usePersistFn(() => {
+        form.validateFields().then(async (values) => {
+            try {
+                setLoading(true);
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { name, type, ...rest } = values;
+                const res = await $http.post('/errorDataStorage/test', {
+                    type,
+                    dataSourceParam: JSON.stringify(rest),
+                });
+                if (res) {
+                    message.success('Success!');
+                    setIsSuccessTest(true);
+                } else {
+                    message.error(intl.formatMessage({ id: 'test_link_fail' }));
+                }
+            } catch (error: any) {
+            } finally {
+                setLoading(false);
+            }
+        }).catch(() => {});
+    });
     const {
         Render, hide, show, ...rest
     } = useModal<any>({
-        title: intl.formatMessage({ id: 'error_create_btn' }),
-        onOk,
-        width: 600,
+        title: '',
+        width: 640,
         ...(options || {}),
+        footer: (
+            <div style={{ textAlign: 'center' }}>
+                <Button style={{ width: 120 }} onClick={onTestLink}>{intl.formatMessage({ id: 'test_link' })}</Button>
+                <Button
+                    disabled={!isSuccessTestRef.current}
+                    style={{ width: 120 }}
+                    type="primary"
+                    onClick={onOk}
+                >
+                    {intl.formatMessage({ id: 'confirm_text' })}
+                </Button>
+            </div>
+        ),
     });
     return {
         Render: useImmutable(() => (<Render><Inner form={form} /></Render>)),

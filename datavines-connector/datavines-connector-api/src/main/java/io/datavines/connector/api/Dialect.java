@@ -19,7 +19,6 @@ package io.datavines.connector.api;
 import io.datavines.common.enums.DataType;
 import io.datavines.connector.api.entity.StructField;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -66,6 +65,14 @@ public interface Dialect {
 
     default String getSchemaQuery(String table) {
         return String.format("SELECT * FROM %s WHERE 1=0", table);
+    }
+
+    default String getCountQuery(String table) {
+        return String.format("SELECT COUNT(1) FROM %s", table);
+    }
+
+    default String getSelectQuery(String table) {
+        return String.format("SELECT * FROM %s", table);
     }
 
     default String getCreateTableAsSelectStatement(String srcTable, String targetDatabase, String targetTable) {

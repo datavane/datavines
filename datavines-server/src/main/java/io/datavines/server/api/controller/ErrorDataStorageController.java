@@ -16,15 +16,15 @@
  */
 package io.datavines.server.api.controller;
 
+import io.datavines.common.param.TestConnectionRequestParam;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
-
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageCreate;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageUpdate;
 import io.datavines.server.api.dto.vo.Item;
 import io.datavines.server.repository.service.ErrorDataStorageService;
 import io.datavines.spi.PluginLoader;
-import io.datavines.storage.api.StorageFactory;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static io.datavines.common.ConfigConstants.TRUE;
+
 @Api(value = "errorDataStorage", tags = "errorDataStorage", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
 @RequestMapping(value = DataVinesConstants.BASE_API_PATH + "/errorDataStorage", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -44,7 +46,13 @@ public class ErrorDataStorageController {
 
     @Autowired
     private ErrorDataStorageService errorDataStorageService;
-    
+
+    @ApiOperation(value = "test error data storage")
+    @PostMapping(value = "/test", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Object testConnection(@Valid @RequestBody TestConnectionRequestParam param)  {
+        return errorDataStorageService.testConnect(param);
+    }
+
     @ApiOperation(value = "create error data storage")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object createErrorDataStorage(@Valid @RequestBody ErrorDataStorageCreate errorDataStorageCreate)  {
@@ -78,12 +86,19 @@ public class ErrorDataStorageController {
     @ApiOperation(value = "get error data storage type list")
     @GetMapping(value = "/type/list")
     public Object getErrorDataStorageTypeList() {
-        Set<String> errorDataStorageList = PluginLoader.getPluginLoader(StorageFactory.class).getSupportedPlugins();
+        Set<String> errorDataStorageList = PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
-        errorDataStorageList.forEach(it -> {
-            Item item = new Item(it,it);
-            items.add(item);
-        });
+        for (String errorDataStorage : errorDataStorageList) {
+            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorage);
+            if (connectorFactory  == null) {
+                continue;
+            }
+
+            if (TRUE.equalsIgnoreCase(connectorFactory.getDialect().invalidateItemCanOutputToSelf())) {
+                Item item = new Item(errorDataStorage,errorDataStorage);
+                items.add(item);
+            }
+        }
 
         return items;
     }
