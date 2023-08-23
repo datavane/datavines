@@ -17,11 +17,13 @@
 package io.datavines.connector.api;
 
 import io.datavines.common.enums.DataType;
-import org.apache.commons.collections4.MapUtils;
+import io.datavines.connector.api.entity.StructField;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public interface Dialect {
 
@@ -39,6 +41,14 @@ public interface Dialect {
 
     default String invalidateItemCanOutput(){
         return "true";
+    }
+
+    default String invalidateItemCanOutputToSelf(){
+        return "false";
+    }
+
+    default boolean supportToBeErrorDataStorage(){
+        return false;
     }
 
     default String getJDBCType(DataType dataType){
@@ -60,4 +70,36 @@ public interface Dialect {
     default String getSchemaQuery(String table) {
         return String.format("SELECT * FROM %s WHERE 1=0", table);
     }
+
+    default String getCountQuery(String table) {
+        return String.format("SELECT COUNT(1) FROM %s", table);
+    }
+
+    default String getSelectQuery(String table) {
+        return String.format("SELECT * FROM %s", table);
+    }
+
+    default String getCreateTableAsSelectStatement(String srcTable, String targetDatabase, String targetTable) {
+        return String.format("CREATE TABLE %s.%s AS SELECT * FROM %s", quoteIdentifier(targetDatabase), quoteIdentifier(targetTable), quoteIdentifier(srcTable));
+    }
+
+    default String getCreateTableStatement(String table, List<StructField> fields, TypeConverter typeConverter) {
+        if (CollectionUtils.isNotEmpty(fields)) {
+            String columns = fields.stream().map(field -> {
+                return quoteIdentifier(field.getName()) + " " + typeConverter.convertToOriginType(field.getDataType());
+            }).collect(Collectors.joining(","));
+
+            return String.format("CREATE TABLE IF NOT EXISTS %s (%s)", table, columns);
+        }
+
+        return "";
+    }
+
+    default String getInsertAsSelectStatement(String srcTable, String targetDatabase, String targetTable) {
+        return String.format("INSERT INTO %s.%s SELECT * FROM %s", quoteIdentifier(targetDatabase), quoteIdentifier(targetTable), quoteIdentifier(srcTable));
+    }
+
+    String getErrorDataScript(Map<String, String> configMap);
+
+    String getValidateResultDataScript(Map<String, String> configMap);
 }

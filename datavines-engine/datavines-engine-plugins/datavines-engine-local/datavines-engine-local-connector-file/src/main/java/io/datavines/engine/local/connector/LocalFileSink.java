@@ -132,9 +132,10 @@ public class LocalFileSink implements LocalSink {
             String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
             TypeConverter typeConverter = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType).getTypeConverter();
             if (count > 0) {
+                count = Math.min(count, 10000);
                 //根据行数进行分页查询。分批写到文件里面
                 int pageSize = 1000;
-                int totalPage = (count/pageSize) + (count%pageSize>0 ? 1:0);
+                int totalPage = count/pageSize + (count%pageSize>0 ? 1:0);
 
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM " + outputTable);
 

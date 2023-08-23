@@ -18,21 +18,20 @@ package io.datavines.server.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-
+import io.datavines.common.param.ConnectorResponse;
+import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.common.utils.PasswordFilterUtils;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
-
 import io.datavines.core.utils.LanguageUtils;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageCreate;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageUpdate;
 import io.datavines.server.repository.entity.ErrorDataStorage;
-
 import io.datavines.server.repository.mapper.ErrorDataStorageMapper;
 import io.datavines.server.repository.service.ErrorDataStorageService;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
-import io.datavines.storage.api.StorageFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -46,6 +45,13 @@ import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
 @Slf4j
 @Service("errorDataStorageService")
 public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMapper, ErrorDataStorage> implements ErrorDataStorageService {
+
+    @Override
+    public boolean testConnect(TestConnectionRequestParam param) {
+        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
+        ConnectorResponse response = connectorFactory.getConnector().testConnect(param);
+        return (boolean)response.getResult();
+    }
 
     @Override
     public long create(ErrorDataStorageCreate errorDataStorageCreate) throws DataVinesServerException {
@@ -97,7 +103,7 @@ public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMap
         List<ErrorDataStorage> list = baseMapper.selectList(new QueryWrapper<ErrorDataStorage>().eq("workspace_id", workspaceId));
         if (CollectionUtils.isNotEmpty(list)) {
             list.forEach(errorDataStorage -> {
-                errorDataStorage.setParam(PasswordFilterUtils.convertPassword(PWD_PATTERN_1, errorDataStorage.getParam()));
+                errorDataStorage.setParam(PasswordFilterUtils.convertPasswordToNULL(PWD_PATTERN_1, errorDataStorage.getParam()));
             });
         }
 
@@ -111,7 +117,7 @@ public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMap
 
     @Override
     public String getConfigJson(String type) {
-        return PluginLoader.getPluginLoader(StorageFactory.class).getOrCreatePlugin(type).getStorageConnector().getConfigJson(!LanguageUtils.isZhContext());
+        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConnector().getConfigJson(!LanguageUtils.isZhContext());
     }
 
     private boolean isErrorDataStorageExist(String name) {

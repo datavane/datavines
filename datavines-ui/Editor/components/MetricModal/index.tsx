@@ -7,10 +7,6 @@ import {
     useModal, useImmutable, usePersistFn, useLoading, IF,
 } from '@/common';
 import useRequest from '../../hooks/useRequest';
-import RuleSelect from './RuleSelect';
-import MetricSelect from './MetricSelect';
-import ExpectedValue from './ExpectedValue';
-import VerifyConfigure from './VerifyConfigure';
 import ActuatorConfigure from './ActuatorConfigure';
 import RunEvnironment from './RunEvnironment';
 import OtherConfig from './OtherConfig';
@@ -39,6 +35,8 @@ const keys = [
     'tenantCode',
     'env',
     'errorDataStorageId',
+    'errorDataOutputToDataSourceDatabase',
+    'isErrorDataOutputToDataSource'
 ];
 export const MetricConfig = (props: InnerProps) => {
     const { innerRef, detail } = props;

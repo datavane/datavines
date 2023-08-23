@@ -27,10 +27,11 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.ParameterUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
-import io.datavines.storage.api.StorageFactory;
+
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -213,8 +214,8 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
     protected SourceConfig getValidateResultDataSourceConfig() throws DataVinesException {
 
         SourceConfig actualValueSourceConfig = new SourceConfig();
-        StorageFactory storageFactory =
-                PluginLoader.getPluginLoader(StorageFactory.class)
+        ConnectorFactory storageFactory =
+                PluginLoader.getPluginLoader(ConnectorFactory.class)
                         .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
 
         actualValueSourceConfig.setPlugin(storageFactory.getCategory());
@@ -244,12 +245,13 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
 
     private Map<String,Object> getValidateResultSourceConfigMap(String sql, String dbTable) {
         Map<String, Object> configMap = new HashMap<>();
-        StorageFactory storageFactory =
-                PluginLoader.getPluginLoader(StorageFactory.class)
+        ConnectorFactory storageFactory =
+                PluginLoader.getPluginLoader(ConnectorFactory.class)
                         .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
         if (storageFactory != null) {
             if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {
-                configMap = storageFactory.getStorageConnector().getParamMap(JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class));
+                configMap = storageFactory.getConnectorParameterConverter().converter(JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class));
+                configMap.put(DRIVER, storageFactory.getDialect().getDriver());
             }
         }
 

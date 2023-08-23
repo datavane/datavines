@@ -19,6 +19,7 @@ package io.datavines.engine.local.connector;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
 import io.datavines.common.config.enums.SinkType;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSink;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 import static io.datavines.common.ConfigConstants.*;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
-public abstract class BaseJdbcSink implements LocalSink {
+public class BaseJdbcSink implements LocalSink {
 
     private Logger log = LoggerFactory.getLogger(BaseJdbcSink.class);
 
@@ -56,6 +57,10 @@ public abstract class BaseJdbcSink implements LocalSink {
 
     @Override
     public CheckResult checkConfig() {
+        if (StringUtils.isNotEmpty(config.getString(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE))) {
+            return new CheckResult(true, "");
+        }
+
         List<String> requiredOptions = Arrays.asList(URL, USER, PASSWORD);
 
         List<String> nonExistsOptions = new ArrayList<>();
@@ -115,10 +120,16 @@ public abstract class BaseJdbcSink implements LocalSink {
         }
     }
 
-    protected abstract String getExecutionResultTableSql();
+    protected String getExecutionResultTableSql() {
+        return "";
+    }
 
-    protected abstract String getActualValueTableSql();
+    protected String getActualValueTableSql() {
+        return "";
+    }
 
-    protected abstract String getProfileValueTableSql();
+    protected String getProfileValueTableSql() {
+        return "";
+    }
 
 }

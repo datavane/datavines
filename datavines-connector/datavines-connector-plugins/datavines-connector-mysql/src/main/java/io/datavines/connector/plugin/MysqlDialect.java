@@ -33,4 +33,14 @@ public class MysqlDialect extends JdbcDialect {
     public String getDriver() {
         return "com.mysql.cj.jdbc.Driver";
     }
+
+    @Override
+    public String invalidateItemCanOutputToSelf() {
+        return "true";
+    }
+
+    @Override
+    public boolean supportToBeErrorDataStorage() {
+        return true;
+    }
 }

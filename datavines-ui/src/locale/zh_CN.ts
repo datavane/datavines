@@ -89,7 +89,7 @@ export default {
     jobs_updater: '更新人',
     jobs_update_time: '更新时间',
     jobs_run: '运行',
-    jobs_view: '查看',
+    jobs_view: '查看执行记录',
     jobs_task_title: '执行记录列表',
     jobs_task_name: '执行记录名称',
     jobs_task_type: '执行记录类型',

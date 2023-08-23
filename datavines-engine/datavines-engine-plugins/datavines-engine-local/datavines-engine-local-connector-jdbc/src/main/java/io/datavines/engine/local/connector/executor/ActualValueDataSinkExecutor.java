@@ -42,7 +42,7 @@ public class ActualValueDataSinkExecutor extends BaseDataSinkExecutor {
         try {
             innerExecute(inputParameter);
         } catch (Exception e) {
-            log.error("sink actual value data error : {}", e);
+            log.error("sink actual value data error : ", e);
             after(env, config);
             throw new DataVinesException("sink actual value data error", e);
         }

@@ -18,13 +18,14 @@ package io.datavines.engine.local.config;
 
 import io.datavines.common.config.SinkConfig;
 import io.datavines.common.config.enums.SinkType;
+import io.datavines.common.entity.ConnectorParameter;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.spi.PluginLoader;
-import io.datavines.storage.api.StorageFactory;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -72,26 +73,34 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
                     errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
 
                     Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, Object.class));
-                    connectorParameterMap.putAll(metricInputParameter);
-                    StorageFactory storageFactory = PluginLoader
-                            .getPluginLoader(StorageFactory.class)
-                            .getNewPlugin(jobExecutionInfo.getErrorDataStorageType());
+                    ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
+                    ConnectorFactory connectorFactory = PluginLoader
+                            .getPluginLoader(ConnectorFactory.class)
+                            .getNewPlugin(connectorParameter.getType());
 
-                    if (storageFactory != null) {
-                        connectorParameterMap = storageFactory.getStorageConnector().getParamMap(connectorParameterMap);
-                        errorDataSinkConfig.setPlugin(jobExecutionInfo.getErrorDataStorageType());
-                        connectorParameterMap.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
-                        connectorParameterMap.put(ERROR_DATA_DIR, metricInputParameter.get(ERROR_DATA_DIR));
-                        connectorParameterMap.put(METRIC_NAME, metricInputParameter.get(METRIC_NAME));
-                        connectorParameterMap.put(INVALIDATE_ITEMS_TABLE, metricInputParameter.get(INVALIDATE_ITEMS_TABLE));
-                        connectorParameterMap.put(INVALIDATE_ITEM_CAN_OUTPUT, metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
-                        // use to get source type converter in sink
-                        connectorParameterMap.put(SRC_CONNECTOR_TYPE, metricInputParameter.get(SRC_CONNECTOR_TYPE));
-                        connectorParameterMap.put(JOB_EXECUTION_ID, metricInputParameter.get(JOB_EXECUTION_ID));
-                        errorDataSinkConfig.setConfig(connectorParameterMap);
-
-                        sinkConfigs.add(errorDataSinkConfig);
+                    if (connectorFactory == null) {
+                        return;
                     }
+
+                    if (connectorParameterMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE) == null) {
+                        connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
+                    } else {
+                        connectorParameterMap.put(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE, connectorParameterMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE));
+                    }
+                    
+                    errorDataSinkConfig.setPlugin(connectorFactory.getCategory());
+                    connectorParameterMap.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
+                    connectorParameterMap.put(ERROR_DATA_DIR, metricInputParameter.get(ERROR_DATA_DIR));
+                    connectorParameterMap.put(METRIC_NAME, metricInputParameter.get(METRIC_NAME));
+                    connectorParameterMap.put(INVALIDATE_ITEMS_TABLE, metricInputParameter.get(INVALIDATE_ITEMS_TABLE));
+                    connectorParameterMap.put(INVALIDATE_ITEM_CAN_OUTPUT, metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
+                    // use to get source type converter in sink
+                    connectorParameterMap.put(SRC_CONNECTOR_TYPE, metricInputParameter.get(SRC_CONNECTOR_TYPE));
+                    connectorParameterMap.put(JOB_EXECUTION_ID, metricInputParameter.get(JOB_EXECUTION_ID));
+                    connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
+                    errorDataSinkConfig.setConfig(connectorParameterMap);
+
+                    sinkConfigs.add(errorDataSinkConfig);
                 }
             }
         }

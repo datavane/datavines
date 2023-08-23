@@ -14,22 +14,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.storage.api;
+package io.datavines.connector.api.entity;
 
-import io.datavines.spi.SPI;
+import lombok.Data;
 
-import java.util.Map;
+@Data
+public class JdbcOptions {
 
-@SPI
-public interface StorageFactory {
+    private String url;
 
-    StorageConnector getStorageConnector();
+    private String databaseName;
 
-    String getCategory();
+    private String tableName;
 
-    StorageExecutor getStorageExecutor();
+    private String query;
 
-    String getErrorDataScript(Map<String, String> configMap);
+    private String partitionColumn;
 
-    String getValidateResultDataScript(Map<String, String> configMap);
+    private int queryTimeout;
+
+    private int fetchSize;
+
+    private int batchSize;
 }
