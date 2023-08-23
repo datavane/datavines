@@ -94,7 +94,7 @@ public class ErrorDataStorageController {
                 continue;
             }
 
-            if (TRUE.equalsIgnoreCase(connectorFactory.getDialect().invalidateItemCanOutputToSelf())) {
+            if (connectorFactory.getDialect().supportToBeErrorDataStorage()) {
                 Item item = new Item(errorDataStorage,errorDataStorage);
                 items.add(item);
             }

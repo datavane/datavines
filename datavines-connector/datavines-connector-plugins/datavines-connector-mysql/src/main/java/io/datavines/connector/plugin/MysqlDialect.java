@@ -38,4 +38,9 @@ public class MysqlDialect extends JdbcDialect {
     public String invalidateItemCanOutputToSelf() {
         return "true";
     }
+
+    @Override
+    public boolean supportToBeErrorDataStorage() {
+        return true;
+    }
 }

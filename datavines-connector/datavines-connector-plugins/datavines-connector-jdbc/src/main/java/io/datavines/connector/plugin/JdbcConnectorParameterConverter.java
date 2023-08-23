@@ -31,7 +31,7 @@ public class JdbcConnectorParameterConverter implements ConnectorParameterConver
         config.put(TABLE,parameter.get(TABLE));
         config.put(USER,parameter.get(USER));
         config.put(PASSWORD, parameter.get(PASSWORD));
-        config.put(URL, getUrl(parameter));
+        config.put(URL, parameter.get(URL) == null ? getUrl(parameter) : parameter.get(URL));
         config.put(DATABASE, parameter.get(DATABASE));
         return config;
     }

@@ -47,6 +47,10 @@ public interface Dialect {
         return "false";
     }
 
+    default boolean supportToBeErrorDataStorage(){
+        return false;
+    }
+
     default String getJDBCType(DataType dataType){
         return dataType.toString();
     }

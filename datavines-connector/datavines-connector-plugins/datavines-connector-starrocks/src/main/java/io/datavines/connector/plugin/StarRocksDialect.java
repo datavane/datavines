@@ -18,4 +18,8 @@ package io.datavines.connector.plugin;
 
 public class StarRocksDialect extends MysqlDialect {
 
+    @Override
+    public boolean supportToBeErrorDataStorage() {
+        return false;
+    }
 }

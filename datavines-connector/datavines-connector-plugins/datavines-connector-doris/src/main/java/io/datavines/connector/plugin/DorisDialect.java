@@ -17,5 +17,8 @@
 package io.datavines.connector.plugin;
 
 public class DorisDialect extends MysqlDialect {
-
+    @Override
+    public boolean supportToBeErrorDataStorage() {
+        return false;
+    }
 }

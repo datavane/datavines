@@ -484,7 +484,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         String errorDataStorageType = "";
         String errorDataStorageParameter = "";
 
-        if (job.getIsErrorDataOutputToDataSource()) {
+        if (job.getIsErrorDataOutputToDataSource()!= null && job.getIsErrorDataOutputToDataSource()) {
             DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
             if (dataSource != null) {
                 errorDataStorageType = dataSource.getType();
