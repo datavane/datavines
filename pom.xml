@@ -41,7 +41,6 @@
         <module>datavines-server</module>
         <module>datavines-registry</module>
         <module>datavines-core</module>
-        <module>datavines-storage</module>
         <module>datavines-runner</module>
     </modules>
 

@@ -30,6 +30,7 @@ import io.datavines.common.utils.LoggerUtils;
 import io.datavines.common.utils.ParameterUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.common.ConfigConstants;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.api.engine.EngineExecutor;
 import io.datavines.metric.api.*;
 import io.datavines.notification.api.entity.SlaConfigMessage;
@@ -37,7 +38,6 @@ import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.NotificationManager;
 import io.datavines.spi.PluginLoader;
-import io.datavines.storage.api.StorageFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -85,8 +85,8 @@ public class JobRunner {
             } else {
                 Long jobExecutionId = jobExecutionRequest.getJobExecutionId();
                 String validateResultStorageType = jobExecutionRequest.getValidateResultDataStorageType();
-                StorageFactory validateResultStorageFactory =
-                        PluginLoader.getPluginLoader(StorageFactory.class).getOrCreatePlugin(validateResultStorageType);
+                ConnectorFactory validateResultStorageFactory =
+                        PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(validateResultStorageType);
                 if (validateResultStorageFactory == null) {
                     log.error("validate result storage type {} is not supported", validateResultStorageType);
                     return;
@@ -98,8 +98,8 @@ public class JobRunner {
 
                 Map<String,String> scriptConfigMap = new HashMap<>();
                 scriptConfigMap.put("execution_id", String.valueOf(jobExecutionId));
-                executeRequestParam.setScript(validateResultStorageFactory.getValidateResultDataScript(scriptConfigMap));
-                ConnectorResponse response = validateResultStorageFactory.getStorageExecutor().queryForOne(executeRequestParam);
+                executeRequestParam.setScript(validateResultStorageFactory.getDialect().getValidateResultDataScript(scriptConfigMap));
+                ConnectorResponse response = validateResultStorageFactory.getExecutor().queryForOne(executeRequestParam);
                 if (response != null && response.getResult()!= null) {
                     ListWithQueryColumn validateResultDataList = (ListWithQueryColumn)response.getResult();
                     Map<String, Object> validateResultData = validateResultDataList.getResultList().get(0);
