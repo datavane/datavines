@@ -387,18 +387,6 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-storage-mysql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-storage-file</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
             <artifactId>datavines-registry-api</artifactId>
             <version>${project.version}</version>
         </dependency>

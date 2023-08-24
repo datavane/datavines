@@ -100,18 +100,6 @@
         </dependency>
 
         <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-storage-file</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-storage-mysql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
         </dependency>

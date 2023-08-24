@@ -45,12 +45,6 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-storage-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-api</artifactId>
             <version>${project.version}</version>
         </dependency>
