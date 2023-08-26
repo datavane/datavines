@@ -46,7 +46,7 @@ import java.util.*;
 import static io.datavines.common.ConfigConstants.FIX_VALUE;
 
 @Component
-public class DataQualityResultOperator {
+public class JobResultValidator {
 
     @Autowired
     private JobExternalService jobExternalService;

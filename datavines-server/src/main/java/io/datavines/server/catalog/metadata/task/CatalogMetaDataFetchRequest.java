@@ -16,17 +16,18 @@
  */
 package io.datavines.server.catalog.metadata.task;
 
+import io.datavines.server.enums.FetchType;
+import io.datavines.server.repository.entity.DataSource;
 import lombok.Data;
 
 @Data
-public class CatalogTaskContext {
+public class CatalogMetaDataFetchRequest {
 
-    private CatalogMetaDataFetchRequest catalogMetaDataFetchRequest;
+    private DataSource dataSource;
 
-    private Long catalogTaskId;
+    private FetchType fetchType;
 
-    public CatalogTaskContext(CatalogMetaDataFetchRequest catalogMetaDataFetchRequest, Long catalogTaskId) {
-        this.catalogMetaDataFetchRequest = catalogMetaDataFetchRequest;
-        this.catalogTaskId = catalogTaskId;
-    }
+    private String database;
+
+    private String table;
 }

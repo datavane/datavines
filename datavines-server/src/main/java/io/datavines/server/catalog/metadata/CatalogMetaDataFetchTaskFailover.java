@@ -27,13 +27,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.List;
 
 @Slf4j
-public class MetaDataFetchTaskFailover {
+public class CatalogMetaDataFetchTaskFailover {
 
     private final CatalogMetaDataFetchTaskService metaDataFetchTaskService;
 
     private final CatalogMetaDataFetchTaskManager metaDataFetchTaskManager;
 
-    public MetaDataFetchTaskFailover(CatalogMetaDataFetchTaskManager metaDataFetchTaskManager) {
+    public CatalogMetaDataFetchTaskFailover(CatalogMetaDataFetchTaskManager metaDataFetchTaskManager) {
         this.metaDataFetchTaskService = SpringApplicationContext.getBean(CatalogMetaDataFetchTaskService.class);
         this.metaDataFetchTaskManager = metaDataFetchTaskManager;
     }

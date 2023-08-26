@@ -24,7 +24,7 @@ import io.datavines.registry.api.Event;
 import io.datavines.registry.api.Registry;
 import io.datavines.registry.api.ServerInfo;
 import io.datavines.registry.api.SubscribeListener;
-import io.datavines.server.catalog.metadata.MetaDataFetchTaskFailover;
+import io.datavines.server.catalog.metadata.CatalogMetaDataFetchTaskFailover;
 import io.datavines.server.dqc.coordinator.failover.JobExecutionFailover;
 
 import java.sql.SQLException;
@@ -37,15 +37,15 @@ public class Register {
 
     private final JobExecutionFailover jobExecutionFailover;
 
-    private final MetaDataFetchTaskFailover metaDataFetchTaskFailover;
+    private final CatalogMetaDataFetchTaskFailover catalogMetaDataFetchTaskFailover;
 
     private final String FAILOVER_KEY =
             CommonPropertyUtils.getString(CommonPropertyUtils.FAILOVER_KEY, CommonPropertyUtils.FAILOVER_KEY_DEFAULT);
 
-    public Register(Registry registry, JobExecutionFailover jobExecutionFailover, MetaDataFetchTaskFailover metaDataFetchTaskFailover) {
+    public Register(Registry registry, JobExecutionFailover jobExecutionFailover, CatalogMetaDataFetchTaskFailover catalogMetaDataFetchTaskFailover) {
         this.registry = registry;
         this.jobExecutionFailover = jobExecutionFailover;
-        this.metaDataFetchTaskFailover = metaDataFetchTaskFailover;
+        this.catalogMetaDataFetchTaskFailover = catalogMetaDataFetchTaskFailover;
     }
 
     public void start() {
@@ -54,7 +54,7 @@ public class Register {
                 try {
                     blockUtilAcquireLock(FAILOVER_KEY);
                     jobExecutionFailover.handleJobExecutionFailover(event.key());
-                    metaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(event.key());
+                    catalogMetaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(event.key());
                 } finally {
                     registry.release(FAILOVER_KEY);
                 }
@@ -67,7 +67,7 @@ public class Register {
             String host = NetUtils.getAddr(CommonPropertyUtils.getInt(
                     CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT));
             jobExecutionFailover.handleJobExecutionFailover(host);
-            metaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(host);
+            catalogMetaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(host);
 
             List<ServerInfo> activeServerInfoList = registry.getActiveServerList();
             //Get the current active server, and then get all running tasks of the server other than the active server list
@@ -77,7 +77,7 @@ public class Register {
                     .collect(Collectors.toList());
 
             jobExecutionFailover.handleJobExecutionFailover(activeServerList);
-            metaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(activeServerList);
+            catalogMetaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(activeServerList);
 
         } finally {
             registry.release(FAILOVER_KEY);

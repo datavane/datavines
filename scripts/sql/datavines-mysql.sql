@@ -630,6 +630,18 @@ CREATE TABLE `dv_server` (
   UNIQUE KEY `server_un` (`host`,`port`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='集群节点信息';
 
+DROP TABLE IF EXISTS `dv_registry_lock`;
+CREATE TABLE `dv_registry_lock`
+(
+    `id`               bigint(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
+    `lock_key`         varchar(256) NOT NULL COMMENT 'lock path',
+    `lock_owner`       varchar(256) NOT NULL COMMENT 'the lock owner, ip_port',
+    `update_time`      datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    `create_time`      datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    PRIMARY KEY (`id`),
+    unique (`lock_key`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+
 -- ----------------------------
 -- Table structure for dv_sla
 -- ----------------------------

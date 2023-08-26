@@ -38,7 +38,7 @@ public class CatalogMetaDataFetchTaskRunner implements Runnable {
 
     @Override
     public void run() {
-        CatalogMetaDataFetchExecutorImpl fetchTask = new CatalogMetaDataFetchExecutorImpl(taskContext.getMetaDataFetchRequest());
+        CatalogMetaDataFetchExecutorImpl fetchTask = new CatalogMetaDataFetchExecutorImpl(taskContext.getCatalogMetaDataFetchRequest());
         try {
             fetchTask.execute();
             log.info("fetch metadata finished");

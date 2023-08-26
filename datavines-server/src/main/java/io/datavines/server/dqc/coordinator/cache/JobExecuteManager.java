@@ -37,6 +37,7 @@ import io.datavines.server.dqc.command.CommandCode;
 import io.datavines.server.dqc.command.JobExecuteAckCommand;
 import io.datavines.server.dqc.command.JobExecuteResponseCommand;
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.server.dqc.coordinator.operator.JobResultValidator;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobExecution;
@@ -44,7 +45,6 @@ import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.server.repository.service.JobService;
 import io.datavines.server.repository.service.SlaNotificationService;
 import io.datavines.server.repository.service.impl.JobExternalService;
-import io.datavines.server.dqc.coordinator.operator.DataQualityResultOperator;
 import io.datavines.server.dqc.executor.cache.JobExecutionCache;
 import io.datavines.server.dqc.executor.cache.JobExecutionContext;
 import io.datavines.server.dqc.executor.runner.JobRunner;
@@ -90,7 +90,7 @@ public class JobExecuteManager {
 
     private final Configurations configurations;
 
-    private final DataQualityResultOperator dataQualityResultOperator;
+    private final JobResultValidator jobResultValidator;
 
     private final NotificationClient notificationClient;
 
@@ -107,7 +107,7 @@ public class JobExecuteManager {
         this.jobExternalService = SpringApplicationContext.getBean(JobExternalService.class);
         this.jobExecutionCache = JobExecutionCache.getInstance();
         this.configurations = new Configurations(CommonPropertyUtils.getProperties());
-        this.dataQualityResultOperator = SpringApplicationContext.getBean(DataQualityResultOperator.class);
+        this.jobResultValidator = SpringApplicationContext.getBean(JobResultValidator.class);
         this.notificationClient =  SpringApplicationContext.getBean(NotificationClient.class);
         this.dataSourceService =  SpringApplicationContext.getBean(DataSourceService.class);
         this.slaNotificationService = SpringApplicationContext.getBean(SlaNotificationService.class);
@@ -298,7 +298,7 @@ public class JobExecuteManager {
                                 jobExecution.setEndTime(jobExecutionRequest.getEndTime());
                                 jobExecution.setStatus(ExecutionStatus.of(jobExecutionRequest.getStatus()));
                                 jobExternalService.updateJobExecution(jobExecution);
-                                dataQualityResultOperator.operateDqExecuteResult(jobExecutionRequest);
+                                jobResultValidator.operateDqExecuteResult(jobExecutionRequest);
                             } else if (ExecutionStatus.of(jobExecutionRequest.getStatus()).typeIsFailure()) {
                                 int retryNum = jobExecution.getRetryTimes();
                                 if (jobExecution.getRetryTimes() > 0) {
