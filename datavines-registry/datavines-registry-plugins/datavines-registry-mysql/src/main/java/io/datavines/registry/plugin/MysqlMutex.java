@@ -16,70 +16,189 @@
  */
 package io.datavines.registry.plugin;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Properties;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.datavines.common.utils.NetUtils;
+import io.datavines.common.utils.ThreadUtils;
+import io.datavines.registry.api.ServerInfo;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+import java.sql.*;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+@Slf4j
 public class MysqlMutex {
 
+    public static final long LOCK_ACQUIRE_INTERVAL = 1000;
+
+    private final long expireTimeWindow = 5000;
+
     private Connection connection;
+
     private final Properties properties;
+
+    private final ServerInfo serverInfo;
+
+    private final Map<String, RegistryLock> lockHoldMap;
 
     public MysqlMutex(Connection connection, Properties properties) throws SQLException {
         this.connection = connection;
         this.properties = properties;
+        this.serverInfo = new ServerInfo(NetUtils.getHost(), Integer.valueOf((String) properties.get("server.port")));
+        this.lockHoldMap = new HashMap<>();
+        ScheduledExecutorService lockTermUpdateThreadPool = Executors.newSingleThreadScheduledExecutor(
+                new ThreadFactoryBuilder().setNameFormat("RegistryLockRefreshThread").setDaemon(true).build());
+
+        lockTermUpdateThreadPool.scheduleWithFixedDelay(
+                new LockTermRefreshTask(lockHoldMap),
+                2,
+                2,
+                TimeUnit.MILLISECONDS);
     }
 
-    public boolean acquire(String key, long time) throws SQLException {
-        String sql = String.format("select get_lock(%s,%d)", key ,time);
-        return executeSql(sql);
+    public boolean acquire(String lockKey, long time) {
+        // 尝试插入，如果抛出异常，说明锁被占用，会休眠一段时间再去获取锁，直到获取到锁
+        RegistryLock lock = lockHoldMap.computeIfAbsent(lockKey, key -> {
+            RegistryLock registryLock = null;
+            int count = 1;
+            if (time > 0) {
+                count  = Math.max(1, (int) (time * 1000 / LOCK_ACQUIRE_INTERVAL));
+            }
+            while (count > 0) {
+                try {
+                    registryLock = executeInsert(key);
+                    count = 0;
+                } catch (SQLException e) {
+                    log.error("Acquire the lock error, {}, try again!", e.getLocalizedMessage());
+                    ThreadUtils.sleep(LOCK_ACQUIRE_INTERVAL);
+                    count--;
+                }
+            }
+
+            return registryLock;
+        });
+
+        return lock != null;
     }
 
-    public boolean release(String key) throws SQLException {
-        String sql = String.format("select release_lock(%s)", key);
-        return executeSql(sql);
-    }
-
-    private boolean executeSql(String sql) throws SQLException {
-
-        if (connection == null || connection.isClosed() || !connection.isValid(10)) {
-            connection = ConnectionUtils.getConnection(properties);
+    public boolean release(String lockKey) throws SQLException {
+        RegistryLock registryLock = lockHoldMap.get(lockKey);
+        if (registryLock != null) {
+            try {
+                executeDelete(lockKey);
+                lockHoldMap.remove(lockKey);
+            } catch (SQLException e) {
+                log.error(String.format("Release lock: %s error", lockKey), e);
+                return false;
+            }
         }
 
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(sql);
-
-        if (resultSet == null) {
-            return false;
-        }
-
-        if (resultSet.first()) {
-            int result = resultSet.getInt(1);
-            resultSet.close();
-            statement.close();
-            return result >= 1;
-        } else {
-            resultSet.close();
-            statement.close();
-            return false;
-        }
-    }
-
-    public boolean isUsedLock(String key) throws SQLException {
-        String sql = String.format("select is_used_lock(%s)", key);
-        return executeSql(sql);
-    }
-
-    public boolean isFreeLock(String key) throws SQLException {
-        String sql = String.format("select is_free_lock(%s)", key);
-        return executeSql(sql);
+        return true;
     }
 
     public void close() throws SQLException {
         if (connection != null) {
             connection.close();
+        }
+    }
+
+    private RegistryLock executeInsert(String key) throws SQLException {
+        checkConnection();
+        Timestamp updateTime = new Timestamp(System.currentTimeMillis());
+        PreparedStatement preparedStatement = connection.prepareStatement("insert into dv_registry_lock (lock_key,lock_owner,update_time) values (?,?,?)");
+        preparedStatement.setString(1, key);
+        preparedStatement.setString(2, this.serverInfo.toString());
+        preparedStatement.setTimestamp(3, updateTime);
+        preparedStatement.executeUpdate();
+        return new RegistryLock(key, this.serverInfo.toString(), updateTime);
+    }
+
+    private RegistryLock executeUpdate(String key) throws SQLException {
+        checkConnection();
+        Timestamp updateTime = new Timestamp(System.currentTimeMillis());
+        PreparedStatement preparedStatement = connection.prepareStatement("update dv_registry_lock set update_time = ? where lock_key = ?");
+        preparedStatement.setTimestamp(1, updateTime);
+        preparedStatement.setString(2, key);
+        preparedStatement.executeUpdate();
+        return new RegistryLock(key, this.serverInfo.toString(), updateTime);
+    }
+
+
+    private void executeDelete(String key) throws SQLException {
+        checkConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("delete from dv_registry_lock where lock_key = ?");
+        preparedStatement.setString(1, key);
+        preparedStatement.executeUpdate();
+        lockHoldMap.remove(key);
+    }
+
+    private boolean isExists(String key, ServerInfo serverInfo) throws SQLException {
+        checkConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("select * from dv_registry_lock where lock_key=?");
+        preparedStatement.setString(1, key);
+        ResultSet resultSet = preparedStatement.executeQuery();
+
+        if (resultSet == null) {
+            return false;
+        }
+        boolean result = resultSet.first();
+        resultSet.close();
+        return result;
+    }
+
+    private void clearExpireLock() throws SQLException {
+        checkConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement("delete from dv_registry_lock where update_time < ?");
+        preparedStatement.setTimestamp(1, new Timestamp(System.currentTimeMillis()- expireTimeWindow));
+        preparedStatement.executeUpdate();
+
+        // 将超时的lockKey移除掉
+        lockHoldMap.values().removeIf((v -> {
+           return v.getUpdateTime().getTime() < (System.currentTimeMillis()- expireTimeWindow);
+        }));
+    }
+
+    private void checkConnection() throws SQLException {
+        if(connection == null || connection.isClosed()) {
+            connection = ConnectionUtils.getConnection(properties);
+        }
+    }
+
+    @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+    class LockTermRefreshTask implements Runnable {
+
+        private final Map<String, RegistryLock> lockHoldMap;
+
+        @Override
+        public void run() {
+            try {
+                if (lockHoldMap.isEmpty()) {
+                    return;
+                }
+
+                List<String> lockKeys = new ArrayList<>();
+                for (RegistryLock lock : lockHoldMap.values()) {
+                    if (lock != null) {
+                        lockKeys.add(lock.getLockKey());
+                    }
+                }
+                lockKeys.forEach(lockKey -> {
+                    try {
+                        RegistryLock registryLock = executeUpdate(lockKey);
+                        lockHoldMap.put(lockKey, registryLock);
+                    } catch (SQLException e) {
+                        log.warn("Update the lock: {} term failed.", lockKey);
+                    }
+                });
+
+                clearExpireLock();
+            } catch (Exception e) {
+                log.error("Update lock term error", e);
+            }
         }
     }
 }

@@ -118,7 +118,7 @@ public class MysqlServerStateManager {
                 .collect(Collectors.toSet());
 
         onlineServer.forEach(x -> {
-            if (liveServerMap.size() == 0) {
+            if (liveServerMap.isEmpty()) {
                 return;
             }
             if (liveServerMap.get(x) == null && !x.equals(serverInfo.toString())) {
@@ -243,13 +243,13 @@ public class MysqlServerStateManager {
     }
 
     private void checkConnection() throws SQLException {
-        if(connection == null || connection.isClosed()) {
+        if (connection == null || connection.isClosed()) {
             connection = ConnectionUtils.getConnection(properties);
         }
     }
 
     public void close() throws SQLException {
-        if(connection != null && !connection.isClosed()) {
+        if (connection != null && !connection.isClosed()) {
             connection.close();
         }
     }

@@ -33,7 +33,6 @@
     <modules>
         <module>datavines-registry-mysql</module>
         <module>datavines-registry-zookeeper</module>
-        <module>datavines-registry-postgresql</module>
     </modules>
 
     <dependencies>

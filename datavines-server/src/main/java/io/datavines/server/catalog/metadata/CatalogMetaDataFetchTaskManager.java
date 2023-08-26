@@ -21,7 +21,7 @@ import io.datavines.server.enums.FetchType;
 import io.datavines.server.catalog.metadata.task.CatalogTaskContext;
 import io.datavines.server.catalog.metadata.task.CatalogTaskResponse;
 import io.datavines.server.catalog.metadata.task.CatalogTaskResponseQueue;
-import io.datavines.server.catalog.metadata.task.MetaDataFetchRequest;
+import io.datavines.server.catalog.metadata.task.CatalogMetaDataFetchRequest;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTask;
 import io.datavines.server.repository.service.CatalogMetaDataFetchTaskService;
@@ -122,9 +122,9 @@ public class CatalogMetaDataFetchTaskManager {
             return;
         }
 
-        MetaDataFetchRequest metaDataFetchRequest = new MetaDataFetchRequest();
-        metaDataFetchRequest.setDataSource(dataSource);
-        metaDataFetchRequest.setFetchType(FetchType.DATASOURCE);
+        CatalogMetaDataFetchRequest catalogMetaDataFetchRequest = new CatalogMetaDataFetchRequest();
+        catalogMetaDataFetchRequest.setDataSource(dataSource);
+        catalogMetaDataFetchRequest.setFetchType(FetchType.DATASOURCE);
 
         String parameter = catalogMetaDataFetchTask.getParameter();
         if (StringUtils.isNotEmpty(parameter)) {
@@ -132,19 +132,19 @@ public class CatalogMetaDataFetchTaskManager {
             if (parameterMap != null) {
                 String database = parameterMap.get("database");
                 if (StringUtils.isNotEmpty(database)) {
-                    metaDataFetchRequest.setDatabase(database);
-                    metaDataFetchRequest.setFetchType(FetchType.DATABASE);
+                    catalogMetaDataFetchRequest.setDatabase(database);
+                    catalogMetaDataFetchRequest.setFetchType(FetchType.DATABASE);
                 }
 
                 String table = parameterMap.get("table");
                 if (StringUtils.isNotEmpty(table)) {
-                    metaDataFetchRequest.setTable(table);
-                    metaDataFetchRequest.setFetchType(FetchType.TABLE);
+                    catalogMetaDataFetchRequest.setTable(table);
+                    catalogMetaDataFetchRequest.setFetchType(FetchType.TABLE);
                 }
             }
         }
 
-        CatalogTaskContext catalogTaskContext = new CatalogTaskContext(metaDataFetchRequest, catalogMetaDataFetchTask.getId());
+        CatalogTaskContext catalogTaskContext = new CatalogTaskContext(catalogMetaDataFetchRequest, catalogMetaDataFetchTask.getId());
         taskQueue.put(catalogTaskContext);
     }
 }

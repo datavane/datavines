@@ -14,20 +14,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.catalog.metadata.task;
+package io.datavines.registry.plugin;
 
-import io.datavines.server.enums.FetchType;
-import io.datavines.server.repository.entity.DataSource;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.sql.Timestamp;
 
 @Data
-public class MetaDataFetchRequest {
+@AllArgsConstructor
+@NoArgsConstructor
+public class RegistryLock {
 
-    private DataSource dataSource;
+    private String lockKey;
 
-    private FetchType fetchType;
+    private String lockOwner;
 
-    private String database;
-
-    private String table;
+    private Timestamp updateTime;;
 }

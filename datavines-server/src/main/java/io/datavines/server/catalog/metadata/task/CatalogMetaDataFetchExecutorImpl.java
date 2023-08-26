@@ -54,7 +54,7 @@ import static io.datavines.core.enums.Status.CATALOG_FETCH_DATASOURCE_NULL_ERROR
 @Slf4j
 public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExecutor {
 
-    private final MetaDataFetchRequest request;
+    private final CatalogMetaDataFetchRequest request;
 
     private final ConnectorFactory connectorFactory;
 
@@ -66,7 +66,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
 
     private final DataSource dataSource;
 
-    public CatalogMetaDataFetchExecutorImpl(MetaDataFetchRequest request) {
+    public CatalogMetaDataFetchExecutorImpl(CatalogMetaDataFetchRequest request) {
         this.request = request;
 
         if (request.getDataSource() == null) {
