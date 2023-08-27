@@ -20,9 +20,9 @@ spring:
   application:
     name: datavines-server
   datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://127.0.0.1:5432/datavines
-    username: postgres
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/datavines?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai
+    username: root
     password: 123456
     hikari:
       connection-test-query: select 1
@@ -56,6 +56,8 @@ spring:
       org.quartz.jobStore.driverDelegateClass: org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
       org.quartz.jobStore.clusterCheckinInterval: 5000
 
+logging:
+  config: classpath:server-logback.xml
 mybatis-plus:
   type-enums-package: io.datavines.*.enums
 
