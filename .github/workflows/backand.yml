@@ -96,7 +96,7 @@ jobs:
             echo "Skip Build!"
             exit 0
           fi
-          if [[ ${{ needs.build.result }} != 'success']]; then
+          if [[ ${{ needs.build.result }} != 'success' ]]; then
             echo "Build Failed!"
             exit -1
           fi
