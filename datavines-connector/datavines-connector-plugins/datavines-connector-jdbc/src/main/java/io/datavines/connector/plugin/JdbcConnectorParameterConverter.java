@@ -23,7 +23,7 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorParameterConverter;
 import static io.datavines.common.ConfigConstants.*;
 
-public class JdbcConnectorParameterConverter implements ConnectorParameterConverter {
+public abstract class JdbcConnectorParameterConverter implements ConnectorParameterConverter {
 
     @Override
     public Map<String, Object> converter(Map<String, Object> parameter) {
@@ -31,22 +31,11 @@ public class JdbcConnectorParameterConverter implements ConnectorParameterConver
         config.put(TABLE,parameter.get(TABLE));
         config.put(USER,parameter.get(USER));
         config.put(PASSWORD, parameter.get(PASSWORD));
-        config.put(URL, parameter.get(URL) == null ? getUrl(parameter) : parameter.get(URL));
         config.put(DATABASE, parameter.get(DATABASE));
+        config.put(CATALOG, parameter.get(CATALOG));
+        config.put(URL, parameter.get(URL) == null ? getUrl(parameter) : parameter.get(URL));
         return config;
     }
 
-    protected String getUrl(Map<String, Object> parameter) {
-        String url = String.format("jdbc:%s://%s:%s/%s",
-                parameter.get(TYPE),
-                parameter.get(HOST),
-                parameter.get(PORT),
-                parameter.get(DATABASE));
-        String properties = (String)parameter.get(PROPERTIES);
-        if (StringUtils.isNotEmpty(properties)) {
-            url += "?" + properties;
-        }
-
-        return url;
-    }
+    protected abstract String getUrl(Map<String, Object> parameter);
 }

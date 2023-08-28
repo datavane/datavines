@@ -16,10 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.connector.api.Connector;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Dialect;
-import io.datavines.connector.api.Executor;
+import io.datavines.connector.api.*;
 
 public class StarRocksConnectorFactory extends AbstractJdbcConnectorFactory {
 
@@ -41,5 +38,10 @@ public class StarRocksConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public Executor getExecutor() {
         return new StarRocksExecutor();
+    }
+
+    @Override
+    public ConfigBuilder getConfigBuilder() {
+        return new MysqlConfigBuilder();
     }
 }

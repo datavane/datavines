@@ -157,13 +157,11 @@ public class MysqlMutex {
         preparedStatement.executeUpdate();
 
         // 将超时的lockKey移除掉
-        lockHoldMap.values().removeIf((v -> {
-           return v.getUpdateTime().getTime() < (System.currentTimeMillis()- expireTimeWindow);
-        }));
+        lockHoldMap.values().removeIf((v -> v.getUpdateTime().getTime() < (System.currentTimeMillis()- expireTimeWindow)));
     }
 
     private void checkConnection() throws SQLException {
-        if(connection == null || connection.isClosed()) {
+        if (connection == null || connection.isClosed()) {
             connection = ConnectionUtils.getConnection(properties);
         }
     }

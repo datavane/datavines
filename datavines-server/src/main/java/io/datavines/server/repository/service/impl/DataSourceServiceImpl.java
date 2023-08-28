@@ -320,9 +320,9 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         Object result = null;
         ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
         try {
-            ConnectorResponse response = connectorFactory.getExecutor().executeSyncQuery(param);
+            ConnectorResponse response = connectorFactory.getExecutor().queryForList(param);
             result = response.getResult();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             log.error(MessageFormat.format(Status.EXECUTE_SCRIPT_ERROR.getMsg(), request.getScript()), e);
             throw new DataVinesServerException(Status.GET_TABLE_LIST_ERROR, request.getScript());
         }
@@ -332,6 +332,6 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
     @Override
     public String getConfigJson(String type) {
-        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConnector().getConfigJson(!LanguageUtils.isZhContext());
+        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConfigBuilder().build(!LanguageUtils.isZhContext());
     }
 }

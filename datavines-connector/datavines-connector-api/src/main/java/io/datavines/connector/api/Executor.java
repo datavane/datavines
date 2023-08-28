@@ -23,15 +23,6 @@ import java.sql.SQLException;
 
 public interface Executor {
 
-    /**
-     * execute script
-     * @param param param
-     * @return Map<String,Object>
-     */
-    default ConnectorResponse executeSyncQuery(ExecuteRequestParam param) throws SQLException {
-        return null;
-    }
-
     default ConnectorResponse queryForPage(ExecuteRequestParam param) throws Exception {
         return null;
     }

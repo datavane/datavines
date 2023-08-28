@@ -119,7 +119,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             throw new DataVinesServerException(Status.JOB_PARAMETER_IS_NULL_ERROR);
         }
 
-        if (jobCreate.getIsErrorDataOutputToDataSource()) {
+        if (jobCreate.getIsErrorDataOutputToDataSource()!= null && jobCreate.getIsErrorDataOutputToDataSource()) {
             DataSource dataSource = dataSourceService.getDataSourceById(jobCreate.getDataSourceId());
             if (dataSource != null) {
                 String errorDataStorageType = dataSource.getType();
@@ -184,7 +184,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobUpdate.getId());
         }
 
-        if (jobUpdate.getIsErrorDataOutputToDataSource()) {
+        if (jobUpdate.getIsErrorDataOutputToDataSource()!= null && jobUpdate.getIsErrorDataOutputToDataSource()) {
             DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
             if (dataSource != null) {
                 String errorDataStorageType = dataSource.getType();

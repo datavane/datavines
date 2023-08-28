@@ -31,7 +31,7 @@ public class FileConnectorFactory implements ConnectorFactory {
     }
 
     @Override
-    public ResponseConverter getResponseConvert() {
+    public ResponseConverter getResponseConverter() {
         return new FileResponseConverter();
     }
 
@@ -53,5 +53,10 @@ public class FileConnectorFactory implements ConnectorFactory {
     @Override
     public TypeConverter getTypeConverter() {
         return new FileTypeConverter();
+    }
+
+    @Override
+    public ConfigBuilder getConfigBuilder() {
+        return null;
     }
 }
