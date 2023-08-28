@@ -25,7 +25,7 @@ public interface ConnectorFactory {
 
     Connector getConnector();
 
-    ResponseConverter getResponseConvert();
+    ResponseConverter getResponseConverter();
 
     Dialect getDialect();
 
@@ -34,4 +34,6 @@ public interface ConnectorFactory {
     Executor getExecutor();
 
     TypeConverter getTypeConverter();
+
+    ConfigBuilder getConfigBuilder();
 }

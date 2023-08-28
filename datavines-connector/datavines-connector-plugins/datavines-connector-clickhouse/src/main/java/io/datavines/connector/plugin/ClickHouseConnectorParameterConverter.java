@@ -16,26 +16,17 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.connector.api.ConnectorParameterConverter;
-
-import java.util.HashMap;
 import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
 
-public class ClickHouseConnectorParameterConverter implements ConnectorParameterConverter {
+public class ClickHouseConnectorParameterConverter extends JdbcConnectorParameterConverter {
 
     @Override
-    public Map<String, Object> converter(Map<String, Object> parameter) {
-        Map<String,Object> config = new HashMap<>();
-        config.put(TABLE, parameter.get(TABLE));
-        config.put(USER, parameter.get(USER));
-        config.put(PASSWORD, parameter.get(PASSWORD));
-        config.put(DATABASE, parameter.get(DATABASE));
-        config.put(URL, String.format("jdbc:clickhouse://%s:%s/%s",
+    protected String getUrl(Map<String, Object> parameter) {
+         return String.format("jdbc:clickhouse://%s:%s/%s",
                 parameter.get(HOST),
                 parameter.get(PORT),
-                parameter.get(DATABASE)));
-        return config;
+                parameter.get(DATABASE));
     }
 }

@@ -24,30 +24,24 @@ import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
 
-public class PrestoConnectorParameterConverter implements ConnectorParameterConverter {
+public class PrestoConnectorParameterConverter extends JdbcConnectorParameterConverter {
 
     @Override
-    public Map<String, Object> converter(Map<String, Object> parameter) {
-        Map<String,Object> config = new HashMap<>();
-        config.put(TABLE, parameter.get(TABLE));
-        config.put(USER, parameter.get(USER));
-        config.put(PASSWORD, parameter.get(PASSWORD));
-        config.put(DATABASE, parameter.get(DATABASE));
-        config.put(CATALOG, parameter.get(CATALOG));
+    protected String getUrl(Map<String, Object> parameter) {
         String database = (String)parameter.get(DATABASE);
+        String url = "";
         if (StringUtils.isNotEmpty(database)) {
-            config.put(URL, String.format("jdbc:presto://%s:%s/%s/%s",
+            url = String.format("jdbc:presto://%s:%s/%s/%s",
                     parameter.get(HOST),
                     parameter.get(PORT),
                     parameter.get(CATALOG),
-                    parameter.get(DATABASE)));
+                    parameter.get(DATABASE));
         } else {
-            config.put(URL, String.format("jdbc:presto://%s:%s/%s",
+            url = String.format("jdbc:presto://%s:%s/%s",
                     parameter.get(HOST),
                     parameter.get(PORT),
-                    parameter.get(CATALOG)));
+                    parameter.get(CATALOG));
         }
-
-        return config;
+        return url;
     }
 }

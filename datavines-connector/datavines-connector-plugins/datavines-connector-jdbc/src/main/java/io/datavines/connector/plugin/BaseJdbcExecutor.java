@@ -32,29 +32,6 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
 
     private final JdbcExecutorClientManager jdbcExecutorClientManager = JdbcExecutorClientManager.getInstance();
 
-    @Override
-    public ConnectorResponse executeSyncQuery(ExecuteRequestParam param) throws SQLException {
-        ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
-        String dataSourceParam = param.getDataSourceParam();
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-
-        JdbcExecutorClient executorClient = jdbcExecutorClientManager
-                .getExecutorClient(
-                        JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam,
-                                getDatasourceInfo(jdbcConnectionInfo)));
-        JdbcTemplate jdbcTemplate = executorClient.getJdbcTemplate();
-
-        String sql = param.getScript();
-        if (StringUtils.isEmpty(sql)) {
-            builder.status(ConnectorResponse.Status.ERROR);
-            builder.errorMsg("execute script must not null");
-        }
-
-        builder.result(query(jdbcTemplate, sql, 0));
-
-        return builder.build();
-    }
-
     protected ListWithQueryColumn query(JdbcTemplate jdbcTemplate, String sql, int limit) {
         return SqlUtils.query(jdbcTemplate, sql, limit);
     }
@@ -106,6 +83,29 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
 
         builder.result(SqlUtils.queryForPage(jdbcTemplate, sql, param.getLimit(),
                 param.getPageNumber(), param.getPageSize()));
+
+        return builder.build();
+    }
+
+    @Override
+    public ConnectorResponse queryForList(ExecuteRequestParam param) throws Exception {
+        ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
+        String dataSourceParam = param.getDataSourceParam();
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+
+        JdbcExecutorClient executorClient = jdbcExecutorClientManager
+                .getExecutorClient(
+                        JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam,
+                                getDatasourceInfo(jdbcConnectionInfo)));
+        JdbcTemplate jdbcTemplate = executorClient.getJdbcTemplate();
+
+        String sql = param.getScript();
+        if (StringUtils.isEmpty(sql)) {
+            builder.status(ConnectorResponse.Status.ERROR);
+            builder.errorMsg("execute script must not null");
+        }
+
+        builder.result(query(jdbcTemplate, sql, 0));
 
         return builder.build();
     }

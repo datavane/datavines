@@ -26,17 +26,17 @@ public abstract class AbstractJdbcConnectorFactory implements ConnectorFactory {
     }
 
     @Override
-    public ResponseConverter getResponseConvert() {
+    public ResponseConverter getResponseConverter() {
         return new JdbcResponseConverter();
-    }
-
-    @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new JdbcConnectorParameterConverter();
     }
 
     @Override
     public TypeConverter getTypeConverter() {
         return new JdbcTypeConverter();
+    }
+
+    @Override
+    public ConfigBuilder getConfigBuilder() {
+        return new JdbcConfigBuilder();
     }
 }

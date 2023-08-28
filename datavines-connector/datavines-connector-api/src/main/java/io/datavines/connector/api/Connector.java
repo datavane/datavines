@@ -60,28 +60,11 @@ public interface Connector {
     }
 
     /**
-     * get frontend config json
-     * @return String
-     */
-    default String getConfigJson(boolean isEn) {
-        return null;
-    }
-
-    /**
      * test connect
      * @param param TestConnectionRequestParam
      * @return
      */
     default ConnectorResponse testConnect(TestConnectionRequestParam param) {
-        return null;
-    }
-
-    /**
-     * test connect
-     * @param param TestConnectionRequestParam
-     * @return
-     */
-    default ConnectorResponse executeQuery(TestConnectionRequestParam param) {
         return null;
     }
 
