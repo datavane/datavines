@@ -58,8 +58,8 @@ spring:
 
 mybatis-plus:
   type-enums-package: io.datavines.*.enums
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl # 打印日志到控制台
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 server:
   port: 5600
