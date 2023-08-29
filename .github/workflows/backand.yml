@@ -34,7 +34,6 @@ on:
       - 'datavines-runner/**'
       - 'datavines-server/**'
       - 'datavines-spi/**'
-      - 'datavines-storage/**'
       - 'pom.xml'
   pull_request:
 
