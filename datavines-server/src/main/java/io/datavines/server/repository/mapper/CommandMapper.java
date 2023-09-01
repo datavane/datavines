@@ -29,6 +29,6 @@ public interface CommandMapper extends BaseMapper<Command> {
      * SELECT BY ID
      * @return
      */
-    @Select("SELECT * from dv_command where type in (0,1) order by update_time limit 1 ")
-    Command getOne();
+    @Select("SELECT * from dv_command where type in (0,1) and id % #{totalSlot} = #{currentSlot} order by update_time limit 1 ")
+    Command getOne(@Param("totalSlot") int totalSlot, @Param("currentSlot") int currentSlot);
 }

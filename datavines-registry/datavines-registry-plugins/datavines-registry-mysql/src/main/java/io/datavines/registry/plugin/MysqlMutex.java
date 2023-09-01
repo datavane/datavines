@@ -58,6 +58,8 @@ public class MysqlMutex {
                 2,
                 2,
                 TimeUnit.MILLISECONDS);
+
+        clearExpireLock();
     }
 
     public boolean acquire(String lockKey, long time) {
@@ -71,6 +73,7 @@ public class MysqlMutex {
             while (count > 0) {
                 try {
                     registryLock = executeInsert(key);
+                    log.debug("Acquire the lock success, {}", key);
                     count = 0;
                 } catch (SQLException e) {
                     log.error("Acquire the lock error, {}, try again!", e.getLocalizedMessage());
@@ -111,10 +114,10 @@ public class MysqlMutex {
         Timestamp updateTime = new Timestamp(System.currentTimeMillis());
         PreparedStatement preparedStatement = connection.prepareStatement("insert into dv_registry_lock (lock_key,lock_owner,update_time) values (?,?,?)");
         preparedStatement.setString(1, key);
-        preparedStatement.setString(2, this.serverInfo.toString());
+        preparedStatement.setString(2, this.serverInfo.getAddr());
         preparedStatement.setTimestamp(3, updateTime);
         preparedStatement.executeUpdate();
-        return new RegistryLock(key, this.serverInfo.toString(), updateTime);
+        return new RegistryLock(key, this.serverInfo.getAddr(), updateTime);
     }
 
     private RegistryLock executeUpdate(String key) throws SQLException {
@@ -124,7 +127,7 @@ public class MysqlMutex {
         preparedStatement.setTimestamp(1, updateTime);
         preparedStatement.setString(2, key);
         preparedStatement.executeUpdate();
-        return new RegistryLock(key, this.serverInfo.toString(), updateTime);
+        return new RegistryLock(key, this.serverInfo.getAddr(), updateTime);
     }
 
 
@@ -153,7 +156,7 @@ public class MysqlMutex {
     private void clearExpireLock() throws SQLException {
         checkConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("delete from dv_registry_lock where update_time < ?");
-        preparedStatement.setTimestamp(1, new Timestamp(System.currentTimeMillis()- expireTimeWindow));
+        preparedStatement.setTimestamp(1, new Timestamp(System.currentTimeMillis() - expireTimeWindow));
         preparedStatement.executeUpdate();
 
         // 将超时的lockKey移除掉

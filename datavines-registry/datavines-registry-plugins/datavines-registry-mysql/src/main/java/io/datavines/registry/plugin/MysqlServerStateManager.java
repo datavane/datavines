@@ -21,17 +21,19 @@ import io.datavines.common.utils.Stopper;
 import io.datavines.registry.api.Event;
 import io.datavines.registry.api.ServerInfo;
 import io.datavines.registry.api.SubscribeListener;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class MysqlServerStateManager {
 
     private Connection connection;
 
-    private ConcurrentHashMap<String, Timestamp> liveServerMap = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, ServerInfo> liveServerMap = new ConcurrentHashMap<>();
 
     private Set<String> deadServers = new HashSet<>();
 
@@ -44,10 +46,10 @@ public class MysqlServerStateManager {
     public MysqlServerStateManager(Connection connection, Properties properties) throws SQLException {
         this.connection = connection;
         this.properties = properties;
-        serverInfo = new ServerInfo(NetUtils.getHost(), Integer.valueOf((String) properties.get("server.port")));
+        serverInfo = new ServerInfo(NetUtils.getHost(), Integer.valueOf((String) properties.get("server.port")), new Timestamp(System.currentTimeMillis()),new Timestamp(System.currentTimeMillis()));
         ScheduledExecutorService executorService = Executors.newScheduledThreadPool(2);
-        executorService.scheduleAtFixedRate(new HeartBeater(),2,4, TimeUnit.SECONDS);
-        executorService.scheduleAtFixedRate(new ServerChecker(),5,20, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(new HeartBeater(),2,2, TimeUnit.SECONDS);
+        executorService.scheduleAtFixedRate(new ServerChecker(),5,10, TimeUnit.SECONDS);
     }
 
     public void registry(SubscribeListener subscribeListener) throws SQLException {
@@ -60,7 +62,6 @@ public class MysqlServerStateManager {
 
         liveServerMap.putAll(fetchServers());
         this.subscribeListener = subscribeListener;
-
         refreshServer();
     }
 
@@ -69,16 +70,15 @@ public class MysqlServerStateManager {
     }
 
     public void refreshServer() throws SQLException {
-        ConcurrentHashMap<String,Timestamp> newServers = fetchServers();
+        ConcurrentHashMap<String,ServerInfo> newServers = fetchServers();
         Set<String> offlineServer = new HashSet<>();
         if (newServers == null) {
             //do nothing
             return;
         }
-
         Set<String> onlineServer = new HashSet<>();
         newServers.forEach((k, v) ->{
-            long updateTime = v.getTime();
+            long updateTime = v.getUpdateTime().getTime();
             long now = System.currentTimeMillis();
             if (now - updateTime > 20000) {
                 offlineServer.add(k);
@@ -88,8 +88,7 @@ public class MysqlServerStateManager {
         });
 
         liveServerMap.forEach((k, v) -> {
-
-            if(newServers.get(k) == null) {
+            if (newServers.get(k) == null) {
                 offlineServer.add(k);
             }
         });
@@ -97,14 +96,15 @@ public class MysqlServerStateManager {
         //Get the latest list of servers, compare it with the existing cache,
         //get the list of lost heartbeat, and notify other servers to make fault tolerance
         offlineServer.forEach(x -> {
-            if (!deadServers.contains(x)&& !x.equals(serverInfo.toString())) {
-                subscribeListener.notify(Event.builder().key(x).type(Event.Type.REMOVE).build());
+            if (!deadServers.contains(x) && !x.equals(serverInfo.getAddr())) {
                 String[] values = x.split(":");
                 try {
                     executeDelete(new ServerInfo(values[0],Integer.valueOf(values[1])));
+                    liveServerMap.remove(x);
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("delete server info error", e);
                 }
+                subscribeListener.notify(Event.builder().key(x).type(Event.Type.REMOVE).build());
             }
         });
 
@@ -114,25 +114,18 @@ public class MysqlServerStateManager {
         //and if so, remove them from the dead server
         deadServers = deadServers
                 .stream()
-                .filter(onlineServer::contains)
+                .filter(x -> !onlineServer.contains(x))
                 .collect(Collectors.toSet());
 
         onlineServer.forEach(x -> {
             if (liveServerMap.isEmpty()) {
                 return;
             }
-            if (liveServerMap.get(x) == null && !x.equals(serverInfo.toString())) {
+            if (liveServerMap.get(x) == null && !x.equals(serverInfo.getAddr())) {
+                liveServerMap.put(x, newServers.get(x));
                 subscribeListener.notify(Event.builder().key(x).type(Event.Type.ADD).build());
-                String[] values = x.split(":");
-                try {
-                    executeDelete(new ServerInfo(values[0],Integer.valueOf(values[1])));
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
             }
         });
-
-        liveServerMap = newServers;
     }
 
     private void executeInsert(ServerInfo serverInfo) throws SQLException {
@@ -175,7 +168,7 @@ public class MysqlServerStateManager {
         return result;
     }
 
-    private ConcurrentHashMap<String, Timestamp> fetchServers() throws SQLException {
+    private ConcurrentHashMap<String, ServerInfo> fetchServers() throws SQLException {
         checkConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("select * from dv_server");
         ResultSet resultSet = preparedStatement.executeQuery();
@@ -184,12 +177,13 @@ public class MysqlServerStateManager {
             return null;
         }
 
-        ConcurrentHashMap<String, Timestamp> map = new ConcurrentHashMap<>();
+        ConcurrentHashMap<String, ServerInfo> map = new ConcurrentHashMap<>();
         while (resultSet.next()){
             String host = resultSet.getString("host");
             int port = resultSet.getInt("port");
             Timestamp updateTime = resultSet.getTimestamp("update_time");
-            map.put(host + ":" + port,updateTime);
+            Timestamp createTime = resultSet.getTimestamp("create_time");
+            map.put(host + ":" + port, new ServerInfo(host, port, createTime, updateTime));
         }
         return map;
     }
@@ -198,13 +192,12 @@ public class MysqlServerStateManager {
         List<ServerInfo> activeServerList = new ArrayList<>();
         liveServerMap.forEach((k,v)-> {
             String[] values = k.split(":");
-            if(values.length == 2){
-                ServerInfo serverInfo = new ServerInfo(values[0],Integer.parseInt(values[1]));
-                activeServerList.add(serverInfo);
+            if (values.length == 2) {
+                activeServerList.add(v);
             }
 
         });
-        return  activeServerList;
+        return activeServerList;
     }
 
     class HeartBeater implements Runnable {
@@ -212,7 +205,6 @@ public class MysqlServerStateManager {
         @Override
         public void run() {
             if (Stopper.isRunning()) {
-
                 try {
                     if (isExists(serverInfo)) {
                         executeUpdate(serverInfo);
@@ -220,7 +212,7 @@ public class MysqlServerStateManager {
                         executeInsert(serverInfo);
                     }
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("heartbeat error", e);
                 }
             }
         }
@@ -236,7 +228,7 @@ public class MysqlServerStateManager {
                 try {
                     refreshServer();
                 } catch (SQLException e) {
-                    e.printStackTrace();
+                    log.error("server check error", e);
                 }
             }
         }

@@ -45,8 +45,8 @@ public class CatalogMetaDataFetchCommandServiceImpl
     }
 
     @Override
-    public CatalogMetaDataFetchCommand getOne() {
-        return baseMapper.getOne();
+    public CatalogMetaDataFetchCommand getOne(int totalSlot,  int currentSlot) {
+        return baseMapper.getOne(totalSlot, currentSlot);
     }
 
     @Override

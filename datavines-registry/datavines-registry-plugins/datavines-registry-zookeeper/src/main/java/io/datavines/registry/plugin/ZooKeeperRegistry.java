@@ -35,7 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -62,7 +62,9 @@ public class ZooKeeperRegistry implements Registry {
                     CommonPropertyUtils.REGISTRY_ZOOKEEPER_SERVER_LIST_DEFAULT));
             zooKeeperClient = ZooKeeperClient.getInstance().buildClient(zooKeeperConfig);
             client = zooKeeperClient.getClient();
-            ServerInfo serverInfo = new ServerInfo(NetUtils.getHost(), Integer.valueOf((String) properties.get("server.port")));
+            ServerInfo serverInfo = new ServerInfo(NetUtils.getHost(),
+                    Integer.valueOf((String) properties.get("server.port")),
+                    new Timestamp(System.currentTimeMillis()), new Timestamp(System.currentTimeMillis()));
             String serverKey = properties.getProperty(CommonPropertyUtils.SERVERS_KEY, CommonPropertyUtils.SERVERS_KEY_DEFAULT);
             put(serverKey, serverInfo.toString(), true);
             treeCacheMap.put(serverKey, new TreeCache(client, serverKey));
@@ -233,7 +235,6 @@ public class ZooKeeperRegistry implements Registry {
             } else {
                 key(get(key));
             }
-
         }
     }
 }

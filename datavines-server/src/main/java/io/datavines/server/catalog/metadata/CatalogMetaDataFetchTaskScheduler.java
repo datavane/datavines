@@ -64,9 +64,7 @@ public class CatalogMetaDataFetchTaskScheduler extends Thread {
                     continue;
                 }
 
-                register.blockUtilAcquireLock(CATALOG_METADATA_TASK_LOCK_KEY);
-
-                command = jobExternalService.getCatalogCommand();
+                command = jobExternalService.getCatalogCommand(register.getTotalSlot(), register.getSlot());
 
                 if (command != null) {
                     CatalogMetaDataFetchTask task = jobExternalService.executeCatalogCommand(command);
@@ -78,10 +76,8 @@ public class CatalogMetaDataFetchTaskScheduler extends Thread {
                         log.warn("catalog metadata fetch task {} is null", command.getTaskId());
                     }
                     jobExternalService.deleteCatalogCommandById(command.getId());
-                    register.release(CATALOG_METADATA_TASK_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                 } else {
-                    register.release(CATALOG_METADATA_TASK_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS * 2);
                 }
 
@@ -91,8 +87,6 @@ public class CatalogMetaDataFetchTaskScheduler extends Thread {
 
                 log.error("schedule catalog metadata fetch task error ", e);
                 ThreadUtils.sleep(SLEEP_TIME_MILLIS * RETRY_BACKOFF [retryNum % RETRY_BACKOFF.length]);
-            } finally {
-                register.release(CATALOG_METADATA_TASK_LOCK_KEY);
             }
         }
     }

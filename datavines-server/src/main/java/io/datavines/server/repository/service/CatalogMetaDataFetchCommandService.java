@@ -27,7 +27,7 @@ public interface CatalogMetaDataFetchCommandService extends IService<CatalogMeta
 
     CatalogMetaDataFetchCommand getById(long id);
 
-    CatalogMetaDataFetchCommand getOne();
+    CatalogMetaDataFetchCommand getOne(int totalSlot,  int currentSlot);
 
     int deleteById(long id);
 }

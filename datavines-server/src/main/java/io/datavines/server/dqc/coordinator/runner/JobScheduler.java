@@ -69,10 +69,7 @@ public class JobScheduler extends Thread {
                     continue;
                 }
 
-                register.blockUtilAcquireLock(JOB_EXECUTION_LOCK_KEY);
-
-                command = jobExternalService.getCommand();
-
+                command = jobExternalService.getCommand(register.getTotalSlot(), register.getSlot());
                 if (command != null) {
 
                     if (CommandType.START == command.getType()) {
@@ -89,10 +86,8 @@ public class JobScheduler extends Thread {
                         logger.info(String.format("kill task : %s", command.getJobExecutionId()) );
                     }
                     jobExternalService.deleteCommandById(command.getId());
-                    register.release(JOB_EXECUTION_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                 } else {
-                    register.release(JOB_EXECUTION_LOCK_KEY);
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS * 2);
                 }
 
@@ -106,8 +101,6 @@ public class JobScheduler extends Thread {
 
                 logger.error("schedule job error ", e);
                 ThreadUtils.sleep(SLEEP_TIME_MILLIS * RETRY_BACKOFF[retryNum % RETRY_BACKOFF.length]);
-            } finally {
-                register.release(JOB_EXECUTION_LOCK_KEY);
             }
         }
     }

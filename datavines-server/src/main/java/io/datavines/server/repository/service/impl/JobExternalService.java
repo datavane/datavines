@@ -74,12 +74,12 @@ public class JobExternalService {
         return jobExecutionService.getById(id);
     }
 
-    public Command getCommand(){
-        return commandService.getOne();
+    public Command getCommand(int totalSlot, int currentSlot){
+        return commandService.getOne(totalSlot, currentSlot);
     }
 
-    public CatalogMetaDataFetchCommand getCatalogCommand(){
-        return catalogMetaDataFetchCommandService.getOne();
+    public CatalogMetaDataFetchCommand getCatalogCommand(int totalSlot,  int currentSlot){
+        return catalogMetaDataFetchCommandService.getOne(totalSlot, currentSlot);
     }
 
     public int deleteCommandById(long id){
