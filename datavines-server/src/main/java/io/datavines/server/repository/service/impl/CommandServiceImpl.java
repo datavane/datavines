@@ -43,8 +43,8 @@ public class CommandServiceImpl extends ServiceImpl<CommandMapper, Command> impl
     }
 
     @Override
-    public Command getOne() {
-        return baseMapper.getOne();
+    public Command getOne(int totalSlot, int currentSlot) {
+        return baseMapper.getOne(totalSlot, currentSlot);
     }
 
     @Override

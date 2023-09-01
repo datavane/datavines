@@ -19,11 +19,12 @@ package io.datavines.server.repository.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchCommand;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface CatalogMetaDataFetchCommandMapper extends BaseMapper<CatalogMetaDataFetchCommand> {
 
-    @Select("SELECT * from dv_catalog_metadata_fetch_command order by update_time limit 1 ")
-    CatalogMetaDataFetchCommand getOne();
+    @Select("SELECT * from dv_catalog_metadata_fetch_command where id % #{totalSlot} = #{currentSlot} order by update_time limit 1 ")
+    CatalogMetaDataFetchCommand getOne(@Param("totalSlot") int totalSlot, @Param("currentSlot") int currentSlot);
 }

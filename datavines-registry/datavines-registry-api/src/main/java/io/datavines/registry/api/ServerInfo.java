@@ -16,37 +16,33 @@
  */
 package io.datavines.registry.api;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import java.sql.Timestamp;
+
+@Data
+@ToString
+@NoArgsConstructor
+@AllArgsConstructor
 public class ServerInfo {
 
     private String host;
+
     private Integer serverPort;
 
-    public ServerInfo() {
-    }
+    private Timestamp createTime;
+
+    private Timestamp updateTime;
 
     public ServerInfo(String host, Integer serverPort) {
         this.host = host;
         this.serverPort = serverPort;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public Integer getServerPort() {
-        return serverPort;
-    }
-
-    public void setServerPort(Integer serverPort) {
-        this.serverPort = serverPort;
-    }
-
-    @Override
-    public String toString() {
+    public String getAddr() {
         return host + ":" + serverPort;
     }
 }

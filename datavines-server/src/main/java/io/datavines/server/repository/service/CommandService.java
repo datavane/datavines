@@ -27,7 +27,7 @@ public interface CommandService extends IService<Command> {
 
     Command getById(long id);
 
-    Command getOne();
+    Command getOne(int totalSlot, int currentSlot);
 
     int deleteById(long id);
 }

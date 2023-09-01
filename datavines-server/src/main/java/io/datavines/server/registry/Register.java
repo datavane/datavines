@@ -20,17 +20,22 @@ import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.NetUtils;
 import io.datavines.common.utils.Stopper;
 import io.datavines.common.utils.ThreadUtils;
-import io.datavines.registry.api.Event;
 import io.datavines.registry.api.Registry;
 import io.datavines.registry.api.ServerInfo;
 import io.datavines.registry.api.SubscribeListener;
 import io.datavines.server.catalog.metadata.CatalogMetaDataFetchTaskFailover;
 import io.datavines.server.dqc.coordinator.failover.JobExecutionFailover;
+import lombok.extern.slf4j.Slf4j;
 
 import java.sql.SQLException;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.PriorityBlockingQueue;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class Register {
 
     private final Registry registry;
@@ -38,6 +43,18 @@ public class Register {
     private final JobExecutionFailover jobExecutionFailover;
 
     private final CatalogMetaDataFetchTaskFailover catalogMetaDataFetchTaskFailover;
+
+    private volatile int currentSlot = 0;
+
+    private volatile int totalSlot = 0;
+
+    private static final Integer QUEUE_MAX_SIZE = 20;
+
+    private final String serverKey = NetUtils.getHost() + ":" + CommonPropertyUtils.getString(CommonPropertyUtils.SERVER_PORT);
+
+    private final PriorityBlockingQueue<ServerInfo> queue = new PriorityBlockingQueue<>(QUEUE_MAX_SIZE, new ServerComparator());
+
+    private final HashMap<String, Integer> hostIndexMap = new HashMap<>();
 
     private final String FAILOVER_KEY =
             CommonPropertyUtils.getString(CommonPropertyUtils.FAILOVER_KEY, CommonPropertyUtils.FAILOVER_KEY_DEFAULT);
@@ -49,16 +66,27 @@ public class Register {
     }
 
     public void start() {
+        ThreadUtils.sleep(3000);
         registry.subscribe("", event -> {
-            if (Event.Type.REMOVE == event.type()) {
-                try {
-                    blockUtilAcquireLock(FAILOVER_KEY);
-                    jobExecutionFailover.handleJobExecutionFailover(event.key());
-                    catalogMetaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(event.key());
-                } finally {
-                    registry.release(FAILOVER_KEY);
-                }
+            log.info("receive event: {}", event);
+            switch (event.type()) {
+                case ADD:
+                    // TODO
+                    break;
+                case REMOVE:
+                    try {
+                        blockUtilAcquireLock(FAILOVER_KEY);
+                        jobExecutionFailover.handleJobExecutionFailover(event.key());
+                        catalogMetaDataFetchTaskFailover.handleMetaDataFetchTaskFailover(event.key());
+                    } finally {
+                        registry.release(FAILOVER_KEY);
+                    }
+                    break;
+                default:
+                    break;
             }
+
+            updateServerListInfo();
         });
 
         try {
@@ -82,6 +110,8 @@ public class Register {
         } finally {
             registry.release(FAILOVER_KEY);
         }
+
+        updateServerListInfo();
     }
 
     public void blockUtilAcquireLock(String key) {
@@ -108,5 +138,48 @@ public class Register {
 
     public void close() throws SQLException {
         registry.close();
+    }
+
+    public int getSlot() {
+        return currentSlot;
+    }
+
+    public int getTotalSlot() {
+        return totalSlot;
+    }
+
+    public void updateServerListInfo() {
+        log.info("active server list:{}", registry.getActiveServerList());
+        queue.clear();
+        queue.addAll(registry.getActiveServerList());
+        hostIndexMap.clear();
+        Iterator<ServerInfo> iterator = queue.iterator();
+        int index = 0;
+        while (iterator.hasNext()) {
+            ServerInfo server = iterator.next();
+            String addr = NetUtils.getAddr(server.getHost(), server.getServerPort());
+            hostIndexMap.put(addr, index++);
+        }
+
+        if (!hostIndexMap.containsKey(serverKey)) {
+            currentSlot = -1;
+        } else {
+            currentSlot = hostIndexMap.get(serverKey);
+            if (currentSlot >= 0) {
+                totalSlot = registry.getActiveServerList().size();
+            } else {
+                log.warn("Current master is not in active master list");
+            }
+        }
+
+        log.info("Current slot is " + currentSlot + " total slot is " + totalSlot);
+    }
+
+    private static class ServerComparator implements Comparator<ServerInfo> {
+
+        @Override
+        public int compare(ServerInfo o1, ServerInfo o2) {
+            return o2.getCreateTime().compareTo(o1.getCreateTime());
+        }
     }
 }
