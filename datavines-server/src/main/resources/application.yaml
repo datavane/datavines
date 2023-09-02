@@ -46,7 +46,7 @@ spring:
       org.quartz.scheduler.instanceId: AUTO
       org.quartz.jobStore.tablePrefix: QRTZ_
       org.quartz.jobStore.acquireTriggersWithinLock: true
-      org.quartz.scheduler.instanceName: DolphinScheduler
+      org.quartz.scheduler.instanceName: datavines
       org.quartz.threadPool.class: org.quartz.simpl.SimpleThreadPool
       org.quartz.jobStore.useProperties: false
       org.quartz.threadPool.makeThreadsDaemons: true
