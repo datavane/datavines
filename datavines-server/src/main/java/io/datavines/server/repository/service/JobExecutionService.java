@@ -50,8 +50,6 @@ public interface JobExecutionService extends IService<JobExecution> {
 
     List<JobExecution> listJobExecutionNotInServerList(List<String> hostList);
 
-    Object readErrorDataPage(Long jobExecutionId, Integer pageNumber, Integer pageSize);
-
     String getJobExecutionHost(Long jobExecutionId);
 
     List<MetricExecutionDashBoard> getMetricExecutionDashBoard(Long jobId, String startTime, String endTime);

@@ -68,9 +68,6 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
     @Autowired
     private ActualValuesService actualValuesService;
 
-    @Autowired
-    private DataSourceService dataSourceService;
-
     @Override
     public long create(JobExecution jobExecution) {
         baseMapper.insert(jobExecution);
@@ -241,54 +238,7 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 //        }
     }
 
-    @Override
-    public Object readErrorDataPage(Long jobExecutionId, Integer pageNumber, Integer pageSize)  {
 
-        JobExecution jobExecution = getById(jobExecutionId);
-        if (jobExecution == null) {
-            throw new DataVinesServerException(Status.TASK_NOT_EXIST_ERROR, jobExecutionId);
-        }
-
-        String errorDataStorageType = jobExecution.getErrorDataStorageType();
-        String errorDataStorageParameter = jobExecution.getErrorDataStorageParameter();
-        String errorDataFileName = jobExecution.getErrorDataFileName();
-
-        if (StringUtils.isEmpty(errorDataStorageType) ||
-                StringUtils.isEmpty(errorDataStorageParameter) ||
-                StringUtils.isEmpty(errorDataFileName)) {
-            return null;
-        }
-
-        ConnectorFactory connectorFactory =
-                PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorageType);
-
-        ExecuteRequestParam param = new ExecuteRequestParam();
-        param.setType(errorDataStorageType);
-        param.setDataSourceParam(errorDataStorageParameter);
-
-        Map<String,String> errorDataStorageParamMap = JSONUtils.toMap(errorDataStorageParameter);
-        Map<String,String> scriptConfigMap = new HashMap<>();
-        if (StringUtils.isNotEmpty(errorDataStorageParamMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE))) {
-            scriptConfigMap.put(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE,errorDataStorageParamMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE));
-            DataSource dataSource = dataSourceService.getDataSourceById(jobExecution.getDataSourceId());
-            param.setDataSourceParam(dataSource.getParam());
-        }
-
-        scriptConfigMap.put("error_data_file_name", errorDataFileName);
-
-        param.setScript(connectorFactory.getDialect().getErrorDataScript(scriptConfigMap));
-        param.setPageNumber(pageNumber);
-        param.setPageSize(pageSize);
-
-        Object result = null;
-        try {
-            result = connectorFactory.getExecutor().queryForPage(param).getResult();
-        } catch (Exception exception) {
-            log.error("read error-data error: ", exception);
-        }
-
-        return result;
-    }
 
     /**
      * get task host from jobExecutionId

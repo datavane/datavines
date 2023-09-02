@@ -28,8 +28,8 @@ import io.datavines.server.api.dto.vo.JobExecutionResultVO;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
-import io.datavines.server.repository.service.JobService;
-import io.datavines.server.repository.service.JobExecutionService;
+import io.datavines.server.repository.mapper.JobExecutionMapper;
+import io.datavines.server.repository.mapper.JobMapper;
 import io.datavines.server.enums.DqJobExecutionState;
 import io.datavines.common.enums.OperatorType;
 import io.datavines.server.repository.mapper.JobExecutionResultMapper;
@@ -47,10 +47,10 @@ import java.util.*;
 public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResultMapper, JobExecutionResult>  implements JobExecutionResultService {
 
     @Autowired
-    private JobExecutionService jobExecutionService;
+    private JobExecutionMapper jobExecutionMapper;
 
     @Autowired
-    private JobService jobService;
+    private JobMapper jobMapper;
 
     @Override
     public long insert(JobExecutionResult jobExecutionResult) {
@@ -108,9 +108,9 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
         parameters.put("threshold", String.valueOf(jobExecutionResult.getThreshold()));
         parameters.put("operator",OperatorType.of(jobExecutionResult.getOperator()).getSymbol());
 
-        JobExecution jobExecution = jobExecutionService.getById(jobExecutionId);
+        JobExecution jobExecution = jobExecutionMapper.selectById(jobExecutionId);
         if (!Objects.isNull(jobExecution)) {
-            Job job = jobService.getById(jobExecution.getJobId());
+            Job job = jobMapper.selectById(jobExecution.getJobId());
             List<BaseJobParameter> jobParameterList = JSONUtils.toList(job.getParameter(),BaseJobParameter.class);
             for (BaseJobParameter jobParameter : jobParameterList) {
                 if (jobParameter != null) {

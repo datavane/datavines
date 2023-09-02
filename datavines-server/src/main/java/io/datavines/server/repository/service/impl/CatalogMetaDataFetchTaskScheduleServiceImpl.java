@@ -32,12 +32,10 @@ import io.datavines.server.dqc.coordinator.quartz.cron.FunCron;
 import io.datavines.server.enums.JobScheduleType;
 import io.datavines.server.enums.ScheduleJobType;
 import io.datavines.server.repository.entity.DataSource;
-import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTask;
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTaskSchedule;
 import io.datavines.server.repository.mapper.CatalogMetaDataFetchTaskScheduleMapper;
+import io.datavines.server.repository.mapper.DataSourceMapper;
 import io.datavines.server.repository.service.CatalogMetaDataFetchTaskScheduleService;
-import io.datavines.server.repository.service.CatalogMetaDataFetchTaskService;
-import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -58,10 +56,7 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
     private QuartzExecutors quartzExecutor;
 
     @Autowired
-    private DataSourceService dataSourceService;
-
-    @Autowired
-    private CatalogMetaDataFetchTaskService catalogMetaDataFetchTaskService;
+    private DataSourceMapper dataSourceMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -90,7 +85,7 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
         catalogMetaDataFetchTaskSchedule.setStatus(true);
 
         updateCatalogTaskScheduleParam(catalogMetaDataFetchTaskSchedule, scheduleCreateOrUpdate.getType(), scheduleCreateOrUpdate.getParam());
-        DataSource dataSource = dataSourceService.getById(dataSourceId);
+        DataSource dataSource = dataSourceMapper.selectById(dataSourceId);
         if (dataSource == null) {
             throw new DataVinesServerException(Status.DATASOURCE_NOT_EXIST_ERROR, dataSourceId);
         } else {
@@ -183,7 +178,7 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
             return false;
         }
 
-        Boolean deleteJob = quartzExecutor.deleteJob(getScheduleJobInfo(catalogMetaDataFetchTaskSchedule));
+        boolean deleteJob = quartzExecutor.deleteJob(getScheduleJobInfo(catalogMetaDataFetchTaskSchedule));
         if (!deleteJob ) {
             return false;
         }

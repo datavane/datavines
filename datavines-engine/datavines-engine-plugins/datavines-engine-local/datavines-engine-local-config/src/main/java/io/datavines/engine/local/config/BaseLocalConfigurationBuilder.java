@@ -29,6 +29,7 @@ import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.spi.PluginLoader;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
@@ -38,6 +39,7 @@ import static io.datavines.common.CommonConstants.TABLE2;
 import static io.datavines.common.ConfigConstants.*;
 import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
+@Slf4j
 public abstract class BaseLocalConfigurationBuilder extends BaseJobConfigurationBuilder {
 
     @Override
@@ -75,7 +77,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
-                    invalidateItemCanOutput &= Boolean.parseBoolean(connectorFactory.getDialect().invalidateItemCanOutput());
+                    invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 
                     if (sourceConnectorSet.contains(connectorUUID)) {
@@ -109,7 +111,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
-                    invalidateItemCanOutput &= Boolean.parseBoolean(connectorFactory.getDialect().invalidateItemCanOutput());
+                    invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
                     if (targetConnectorSet.contains(connectorUUID)) {
                         continue;

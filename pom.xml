@@ -75,7 +75,7 @@
         <logback.version>1.2.3</logback.version>
         <httpclient.version>4.4.1</httpclient.version>
         <httpcore.version>4.4.1</httpcore.version>
-        <quartz.version>2.2.3</quartz.version>
+        <quartz.version>2.3.2</quartz.version>
         <commons.lang.version>2.3</commons.lang.version>
         <commons.lang3.version>3.5</commons.lang3.version>
         <commons.codec.version>1.15</commons.codec.version>
@@ -85,9 +85,9 @@
         <jcommander.version>1.81</jcommander.version>
         <commons-validator.version>1.6</commons-validator.version>
         <javax-inject.version>1</javax-inject.version>
-        <spring.boot.version>2.5.6</spring.boot.version>
+        <spring.boot.version>2.6.1</spring.boot.version>
         <mybatis-plus.version>3.5.0</mybatis-plus.version>
-        <swagger.version>2.9.2</swagger.version>
+        <swagger.version>3.0.0</swagger.version>
         <lombok.version>1.18.22</lombok.version>
         <postgresql.version>42.2.6</postgresql.version>
         <javax-validation.version>2.0.1.Final</javax-validation.version>
@@ -179,20 +179,14 @@
 
             <dependency>
                 <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger2</artifactId>
-                <version>${swagger.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>guava</artifactId>
-                        <groupId>com.google.guava</groupId>
-                    </exclusion>
-                </exclusions>
+                <artifactId>springfox-boot-starter</artifactId>
+                <version>3.0.0</version>
             </dependency>
 
             <dependency>
-                <groupId>io.springfox</groupId>
-                <artifactId>springfox-swagger-ui</artifactId>
-                <version>${swagger.version}</version>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.25</version>
             </dependency>
 
             <dependency>
