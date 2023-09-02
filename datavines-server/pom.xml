@@ -162,19 +162,20 @@
             <groupId>com.cronutils</groupId>
             <artifactId>cron-utils</artifactId>
         </dependency>
+
         <dependency>
             <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
+            <artifactId>springfox-boot-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
         </dependency>
 
         <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
         </dependency>
 
         <dependency>
@@ -339,6 +340,48 @@
             <groupId>io.datavines</groupId>
             <artifactId>datavines-connector-all</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsp-api</artifactId>
+                    <groupId>javax.servlet</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jsp-api</artifactId>
+                    <groupId>javax.servlet.jsp</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jetty</artifactId>
+                    <groupId>org.mortbay.jetty</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jetty-all</artifactId>
+                    <groupId>org.eclipse.jetty.aggregate</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jetty-sslengine</artifactId>
+                    <groupId>org.mortbay.jetty</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jetty-util</artifactId>
+                    <groupId>org.mortbay.jetty</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jsp-2.1</artifactId>
+                    <groupId>org.mortbay.jetty</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jsp-api-2.1</artifactId>
+                    <groupId>org.mortbay.jetty</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jasper-compiler</artifactId>
+                    <groupId>tomcat</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jasper-runtime</artifactId>
+                    <groupId>tomcat</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>

@@ -39,12 +39,12 @@ public interface Dialect {
 
     List<String> getExcludeDatabases();
 
-    default String invalidateItemCanOutput(){
-        return "true";
+    default boolean invalidateItemCanOutput(){
+        return true;
     }
 
-    default String invalidateItemCanOutputToSelf(){
-        return "false";
+    default boolean invalidateItemCanOutputToSelf(){
+        return false;
     }
 
     default boolean supportToBeErrorDataStorage(){

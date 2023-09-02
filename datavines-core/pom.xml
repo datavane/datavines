@@ -128,18 +128,13 @@
         </dependency>
 
         <dependency>
-            <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger2</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
         </dependency>
 
         <dependency>
             <groupId>io.springfox</groupId>
-            <artifactId>springfox-swagger-ui</artifactId>
+            <artifactId>springfox-boot-starter</artifactId>
         </dependency>
 
         <dependency>

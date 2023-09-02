@@ -14,17 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.plugin;
+package io.datavines.server.repository.service;
 
-public class PrestoDialect extends JdbcDialect {
 
-    @Override
-    public String getDriver() {
-        return "com.facebook.presto.jdbc.PrestoDriver";
-    }
-
-    @Override
-    public boolean invalidateItemCanOutput() {
-        return false;
-    }
+public interface JobExecutionErrorDataService {
+    Object readErrorDataPage(Long jobExecutionId, Integer pageNumber, Integer pageSize);
 }

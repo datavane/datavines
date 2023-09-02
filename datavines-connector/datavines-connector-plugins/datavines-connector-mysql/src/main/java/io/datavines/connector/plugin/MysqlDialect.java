@@ -35,8 +35,8 @@ public class MysqlDialect extends JdbcDialect {
     }
 
     @Override
-    public String invalidateItemCanOutputToSelf() {
-        return "true";
+    public boolean invalidateItemCanOutputToSelf() {
+        return true;
     }
 
     @Override

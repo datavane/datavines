@@ -635,9 +635,9 @@ CREATE TABLE `dv_registry_lock`
 (
     `id`               bigint(11) NOT NULL AUTO_INCREMENT COMMENT 'primary key',
     `lock_key`         varchar(256) NOT NULL COMMENT 'lock path',
-    `lock_owner`       varchar(256) NOT NULL COMMENT 'the lock owner, ip_port',
-    `update_time`      datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
+    `lock_owner`       varchar(256) NOT NULL COMMENT 'lock owner, ip:port',
     `create_time`      datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
+    `update_time`      datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
     PRIMARY KEY (`id`),
     unique (`lock_key`)
 ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;

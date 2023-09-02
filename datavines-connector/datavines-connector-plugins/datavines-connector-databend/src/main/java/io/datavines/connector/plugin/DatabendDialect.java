@@ -23,19 +23,4 @@ public class DatabendDialect extends JdbcDialect {
         return "com.databend.jdbc.DatabendDriver";
     }
 
-    @Override
-    public String invalidateItemCanOutput() {
-        return "true";
-    }
-
-    @Override
-    public String invalidateItemCanOutputToSelf() {
-        return "false";
-    }
-
-    @Override
-    public boolean supportToBeErrorDataStorage() {
-        return false;
-    }
-
 }
