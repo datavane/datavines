@@ -802,8 +802,8 @@ INSERT INTO `dv_config` VALUES ('8', '-1', 'reserved.memory', '0.3f', '1', '1', 
 INSERT INTO `dv_config` VALUES ('9', '-1', 'file.max.length', '10000000', '1', '1', '2023-09-03 14:57:33', '1', '2023-09-03 14:57:33');
 INSERT INTO `dv_config` VALUES ('10', '-1', 'error.data.dir', '/tmp/datavines/error-data', '1', '1', '2023-09-03 14:58:01', '1', '2023-09-03 14:58:01');
 INSERT INTO `dv_config` VALUES ('11', '-1', 'validate.result.data.dir', '/tmp/datavines/validate-result-data', '1', '1', '2023-09-03 14:58:29', '1', '2023-09-03 14:58:29');
-INSERT INTO `dv_config` VALUES ('12', '-1', 'local.execution.threshold', '100', '0', '1', '2023-09-03 15:02:38', '1', '2023-09-03 15:02:38');
-INSERT INTO `dv_config` VALUES ('13', '-1', 'spark.execution.threshold', '100', '0', '1', '2023-09-03 15:02:38', '1', '2023-09-03 15:02:38');
+INSERT INTO `dv_config` VALUES ('12', '-1', 'local.execution.threshold', '100', '1', '1', '2023-09-03 15:02:38', '1', '2023-09-03 15:02:38');
+INSERT INTO `dv_config` VALUES ('13', '-1', 'spark.execution.threshold', '100', '1', '1', '2023-09-03 15:02:38', '1', '2023-09-03 15:02:38');
 
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0');
 INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `update_by`) VALUES ('1', "admin\'s default", '1', '1');
