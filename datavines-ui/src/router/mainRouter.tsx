@@ -1,6 +1,6 @@
 import React, { lazy } from 'react';
 import {
-    DatabaseOutlined, WarningOutlined, UsergroupAddOutlined, CloseCircleOutlined, TagOutlined,
+    DatabaseOutlined, WarningOutlined, UsergroupAddOutlined, CloseCircleOutlined, TagOutlined,FormOutlined
 } from '@ant-design/icons';
 import { TRouter } from './type';
 
@@ -43,6 +43,12 @@ const router: TRouter = {
         key: '/main/label',
         icon: <TagOutlined />,
         component: lazy(() => import(/* webpackChunkName: 'view-label' */ '@/view/Main/Label')),
+    },
+    'dv-config': {
+        path: '/main/config',
+        key: '/main/config',
+        icon: <FormOutlined />,
+        component: lazy(() => import(/* webpackChunkName: 'view-label' */ '@/view/Main/Config')),
     },
 };
 

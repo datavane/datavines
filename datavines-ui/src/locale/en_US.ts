@@ -29,6 +29,7 @@ export default {
     common_back: 'Back',
     common_Logout: 'Exit the system',
     common_error_tips: 'User not logged in',
+    common_update_time: 'Update Time',
 
     '/main/home': 'DataSource',
     '/main/warning': 'Warning',
@@ -39,6 +40,7 @@ export default {
     '/main/detail/:id/tasks': 'Results',
     '/main/detail/:id': 'Detail',
     '/main/label': 'Label',
+    '/main/config': 'Config',
 
     confirm_text: 'OK',
     test_link: 'Test Connect',
@@ -273,4 +275,9 @@ export default {
     label_add_category: 'Add Tag Category',
     label_add: 'Add Tag',
     label_name: 'Tag Name',
+
+    config_title: 'Config Management',
+    config_var_key: 'Config Key',
+    config_var_value: 'Config Value',
+    create_config: 'Create Config'
 };

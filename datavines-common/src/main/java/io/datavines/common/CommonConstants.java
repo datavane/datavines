@@ -290,4 +290,6 @@ public class CommonConstants {
     public static final String LOCAL = "local";
 
     public static final String SPARK = "spark";
+
+    public static final String ENGINE = "engine";
 }

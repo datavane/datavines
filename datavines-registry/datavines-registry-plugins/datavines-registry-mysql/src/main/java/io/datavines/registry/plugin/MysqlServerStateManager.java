@@ -33,7 +33,7 @@ public class MysqlServerStateManager {
 
     private Connection connection;
 
-    private ConcurrentHashMap<String, ServerInfo> liveServerMap = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ServerInfo> liveServerMap = new ConcurrentHashMap<>();
 
     private Set<String> deadServers = new HashSet<>();
 

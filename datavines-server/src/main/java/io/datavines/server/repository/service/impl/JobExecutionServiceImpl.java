@@ -153,9 +153,13 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
     public Long executeJob(JobExecution jobExecution) throws DataVinesServerException {
         Long jobExecutionId = create(jobExecution);
 
+        Map<String,String> parameter = new HashMap<>();
+        parameter.put("engine",jobExecution.getEngineType());
+        // add a command
         Command command = new Command();
         command.setType(CommandType.START);
         command.setPriority(Priority.MEDIUM);
+        command.setParameter(JSONUtils.toJsonString(parameter));
         command.setJobExecutionId(jobExecutionId);
         commandService.insert(command);
 
@@ -164,9 +168,18 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 
     @Override
     public Long killJob(Long jobExecutionId) {
+        JobExecution jobExecution = getById(jobExecutionId);
+        if (jobExecution == null) {
+            return jobExecutionId;
+        }
+
         Command command = new Command();
+        Map<String,String> parameter = new HashMap<>();
+        parameter.put("engine",jobExecution.getEngineType());
+
         command.setType(CommandType.STOP);
         command.setPriority(Priority.MEDIUM);
+        command.setParameter(JSONUtils.toJsonString(parameter));
         command.setJobExecutionId(jobExecutionId);
         commandService.insert(command);
 

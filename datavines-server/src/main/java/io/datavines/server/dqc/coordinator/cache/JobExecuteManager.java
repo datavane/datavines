@@ -54,6 +54,7 @@ import io.datavines.server.utils.SpringApplicationContext;
 import io.netty.util.HashedWheelTimer;
 import io.netty.util.Timeout;
 import io.netty.util.TimerTask;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,6 +98,8 @@ public class JobExecuteManager {
     private final DataSourceService dataSourceService;
 
     private final SlaNotificationService slaNotificationService;
+
+    private final ConcurrentHashMap<String,Set<Long>> engine2Execution = new ConcurrentHashMap<>();
 
     public JobExecuteManager(){
 
@@ -299,6 +302,7 @@ public class JobExecuteManager {
                                 jobExecution.setStatus(ExecutionStatus.of(jobExecutionRequest.getStatus()));
                                 jobExternalService.updateJobExecution(jobExecution);
                                 jobResultValidator.operateDqExecuteResult(jobExecutionRequest);
+                                minusEngine2ExecutionMap(jobExecution.getEngineType(), jobExecution.getId());
                             } else if (ExecutionStatus.of(jobExecutionRequest.getStatus()).typeIsFailure()) {
                                 int retryNum = jobExecution.getRetryTimes();
                                 if (jobExecution.getRetryTimes() > 0) {
@@ -314,9 +318,11 @@ public class JobExecuteManager {
                                 } else {
                                     sendErrorEmail(jobExecution);
                                     updateJobExecutionAndRemoveCache(jobExecutionRequest, jobExecution);
+                                    minusEngine2ExecutionMap(jobExecution.getEngineType(), jobExecution.getId());
                                 }
                             } else if(ExecutionStatus.of(jobExecutionRequest.getStatus()).typeIsCancel()) {
                                 updateJobExecutionAndRemoveCache(jobExecutionRequest, jobExecution);
+                                minusEngine2ExecutionMap(jobExecution.getEngineType(), jobExecution.getId());
                             } else if(ExecutionStatus.of(jobExecutionRequest.getStatus()).typeIsRunning()) {
                                 // do nothing
                             }
@@ -486,6 +492,35 @@ public class JobExecuteManager {
         return jobExecutionRequest;
     }
 
+    public void addEngine2ExecutionMap(String engine, Long executionId) {
+        Set<Long> executionSet = engine2Execution.get(engine);
+        if (executionSet == null) {
+            executionSet = new HashSet<>();
+        }
+
+        executionSet.add(executionId);
+        engine2Execution.put(engine, executionSet);
+    }
+
+    public void minusEngine2ExecutionMap(String engine, Long executionId) {
+        Set<Long> executionSet = engine2Execution.get(engine);
+        if (executionSet == null) {
+            executionSet = new HashSet<>();
+        }
+
+        executionSet.remove(executionId);
+        engine2Execution.put(engine, executionSet);
+    }
+
+    public int getExecutionCountByEngine(String engine) {
+        Set<Long> executionSet = engine2Execution.get(engine);
+        if (CollectionUtils.isEmpty(executionSet)) {
+            return 0;
+        }
+
+        return executionSet.size();
+    }
+
     public void addExecuteCommand(JobExecution jobExecution){
         JobExecutionRequest jobExecutionRequest = getJobExecutionRequest(jobExecution);
 
@@ -496,6 +531,7 @@ public class JobExecuteManager {
         commandContext.setJobExecutionId(jobExecutionRequest.getJobExecutionId());
         commandContext.setJobExecutionRequest(jobExecutionRequest);
         jobExecutionQueue.offer(commandContext);
+        addEngine2ExecutionMap(jobExecution.getEngineType(), jobExecution.getId());
     }
 
     public static JobExecutionRequest buildJobExecutionRequest(JobExecution jobExecution) throws DataVinesException {

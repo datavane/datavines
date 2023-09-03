@@ -124,7 +124,7 @@ const Index = () => {
             fixed: 'right',
             key: 'right',
             dataIndex: 'right',
-            width: 100,
+            width: 150,
             render: (text: string, record: TWarnSLATableItem) => (
                 <>
                     <a onClick={() => { onEdit(record); }}>{intl.formatMessage({ id: 'common_edit' })}</a>

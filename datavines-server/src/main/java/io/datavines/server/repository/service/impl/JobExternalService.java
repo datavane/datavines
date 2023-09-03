@@ -32,6 +32,7 @@ import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchCommand
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTask;
 import io.datavines.server.repository.service.*;
 import io.datavines.server.utils.DefaultDataSourceInfoUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Component
 public class JobExternalService {
     
@@ -65,6 +67,9 @@ public class JobExternalService {
 
     @Autowired
     private DataSourceService dataSourceService;
+
+    @Autowired
+    private ConfigService configService;
 
     public Job getJobById(Long id) {
         return jobService.getById(id);
@@ -203,5 +208,13 @@ public class JobExternalService {
 
     public JobExecutionResultService getJobExecutionResultService() {
         return jobExecutionResultService;
+    }
+
+    public void refreshCommonProperties() {
+        try {
+            this.configService.refreshCommonProperties();
+        } catch (Exception e) {
+            log.warn("refresh common properties error", e);
+        }
     }
 }

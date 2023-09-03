@@ -25,7 +25,11 @@ import io.datavines.registry.api.ServerInfo;
 import io.datavines.registry.api.SubscribeListener;
 import io.datavines.server.catalog.metadata.CatalogMetaDataFetchTaskFailover;
 import io.datavines.server.dqc.coordinator.failover.JobExecutionFailover;
+import io.datavines.server.repository.entity.Config;
+import io.datavines.server.repository.service.ConfigService;
+import io.datavines.server.utils.SpringApplicationContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 
 import java.sql.SQLException;
 import java.util.Comparator;
@@ -43,6 +47,8 @@ public class Register {
     private final JobExecutionFailover jobExecutionFailover;
 
     private final CatalogMetaDataFetchTaskFailover catalogMetaDataFetchTaskFailover;
+
+    private final ConfigService configService;
 
     private volatile int currentSlot = 0;
 
@@ -63,6 +69,18 @@ public class Register {
         this.registry = registry;
         this.jobExecutionFailover = jobExecutionFailover;
         this.catalogMetaDataFetchTaskFailover = catalogMetaDataFetchTaskFailover;
+        this.configService = SpringApplicationContext.getBean(ConfigService.class);
+        updateCommonProperties();
+    }
+
+    private void updateCommonProperties() {
+        List<Config> configList = configService.listConfig();
+        if (CollectionUtils.isNotEmpty(configList)) {
+            configList.forEach(config -> {
+                CommonPropertyUtils.setValue(config.getVarKey(), config.getVarValue());
+            });
+        }
+        log.info("common properties: {}", CommonPropertyUtils.getProperties());
     }
 
     public void start() {
