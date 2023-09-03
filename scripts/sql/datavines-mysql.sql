@@ -779,16 +779,16 @@ CREATE TABLE `dv_workspace` (
 -- ----------------------------
 DROP TABLE IF EXISTS `dv_config`;
 CREATE TABLE `dv_config` (
-                             `id` bigint(20) NOT NULL AUTO_INCREMENT,
-                             `workspace_id` bigint(20) NOT NULL COMMENT '工作空间ID',
-                             `var_key` varchar(255) NOT NULL COMMENT '参数名',
-                             `var_value` varchar(255) NOT NULL COMMENT '参数值',
-                             `is_default` tinyint(1) NOT NULL COMMENT '是否为默认参数',
-                             `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
-                             `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-                             `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
-                             `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-                             PRIMARY KEY (`id`)
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `workspace_id` bigint(20) NOT NULL COMMENT '工作空间ID',
+    `var_key` varchar(255) NOT NULL COMMENT '参数名',
+    `var_value` varchar(255) NOT NULL COMMENT '参数值',
+    `is_default` tinyint(1) NOT NULL COMMENT '是否为默认参数',
+    `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COMMENT='告警管理';
 
 INSERT INTO `dv_config` VALUES ('1', '-1', 'data.quality.jar.name', '/libs/datavines-engine-spark-core-1.0.0-SNAPSHOT.jar', '1', '1', '2023-09-02 16:52:56', '1', '2023-09-03 09:56:12');
