@@ -1,7 +1,6 @@
 
 
 const targetMap = {
-    test: '',
     prod: 'http://127.0.0.1:5600/',
 }
 

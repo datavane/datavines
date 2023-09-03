@@ -313,6 +313,9 @@ public class CommonPropertyUtils {
         PROPERTIES.setProperty(key, value);
     }
 
+    public static void remove(String key) {
+        PROPERTIES.remove(key);
+    }
     public static Map<String, String> getPropertiesByPrefix(String prefix) {
         if (StringUtils.isEmpty(prefix)) {
             return null;

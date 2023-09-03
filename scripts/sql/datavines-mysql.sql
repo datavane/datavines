@@ -774,6 +774,37 @@ CREATE TABLE `dv_workspace` (
   UNIQUE KEY `workspace_un` (`name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='工作空间';
 
+-- ----------------------------
+-- Table structure for dv_config
+-- ----------------------------
+DROP TABLE IF EXISTS `dv_config`;
+CREATE TABLE `dv_config` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `workspace_id` bigint(20) NOT NULL COMMENT '工作空间ID',
+    `var_key` varchar(255) NOT NULL COMMENT '参数名',
+    `var_value` varchar(255) NOT NULL COMMENT '参数值',
+    `is_default` tinyint(1) NOT NULL COMMENT '是否为默认参数',
+    `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COMMENT='告警管理';
+
+INSERT INTO `dv_config` VALUES ('1', '-1', 'data.quality.jar.name', '/libs/datavines-engine-spark-core-1.0.0-SNAPSHOT.jar', '1', '1', '2023-09-02 16:52:56', '1', '2023-09-03 09:56:12');
+INSERT INTO `dv_config` VALUES ('2', '-1', 'yarn.mode', 'ha', '1', '1', '2023-09-02 18:28:59', '1', '2023-09-03 12:46:24');
+INSERT INTO `dv_config` VALUES ('3', '-1', 'yarn.application.status.address', 'http://%s:%s/ws/v1/cluster/apps/%s', '1', '1', '2023-09-03 09:57:01', '1', '2023-09-03 09:57:01');
+INSERT INTO `dv_config` VALUES ('4', '-1', 'yarn.resource.manager.http.address.port', '8088', '1', '1', '2023-09-03 09:57:34', '1', '2023-09-03 09:57:34');
+INSERT INTO `dv_config` VALUES ('5', '-1', 'yarn.resource.manager.ha.ids', '192.168.0.x,192.168.0.x', '1', '1', '2023-09-03 09:58:17', '1', '2023-09-03 09:58:17');
+INSERT INTO `dv_config` VALUES ('6', '-1', 'exec.threads', '100', '1', '1', '2023-09-03 09:58:43', '1', '2023-09-03 09:58:43');
+INSERT INTO `dv_config` VALUES ('7', '-1', 'max.cpu.load.avg', '10', '1', '1', '2023-09-03 09:59:06', '1', '2023-09-03 09:59:06');
+INSERT INTO `dv_config` VALUES ('8', '-1', 'reserved.memory', '0.3f', '1', '1', '2023-09-03 09:59:28', '1', '2023-09-03 09:59:28');
+INSERT INTO `dv_config` VALUES ('9', '-1', 'file.max.length', '10000000', '1', '1', '2023-09-03 14:57:33', '1', '2023-09-03 14:57:33');
+INSERT INTO `dv_config` VALUES ('10', '-1', 'error.data.dir', '/tmp/datavines/error-data', '1', '1', '2023-09-03 14:58:01', '1', '2023-09-03 14:58:01');
+INSERT INTO `dv_config` VALUES ('11', '-1', 'validate.result.data.dir', '/tmp/datavines/validate-result-data', '1', '1', '2023-09-03 14:58:29', '1', '2023-09-03 14:58:29');
+INSERT INTO `dv_config` VALUES ('12', '-1', 'local.execution.threshold', '100', '1', '1', '2023-09-03 15:02:38', '1', '2023-09-03 15:02:38');
+INSERT INTO `dv_config` VALUES ('13', '-1', 'spark.execution.threshold', '100', '1', '1', '2023-09-03 15:02:38', '1', '2023-09-03 15:02:38');
+
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0');
 INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `update_by`) VALUES ('1', "admin\'s default", '1', '1');
 INSERT INTO `dv_user_workspace` (`id`, `user_id`, `workspace_id`, `role_id`,`create_by`,`update_by`) VALUES ('1', '1', '1', '1','1', '1');

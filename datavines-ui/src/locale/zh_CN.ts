@@ -29,6 +29,7 @@ export default {
     common_back: '返回',
     common_Logout: '退出系统',
     common_error_tips: '用户未登录',
+    common_update_time: '更新时间',
 
     '/main/home': '数据源管理',
     '/main/warning': '告警管理',
@@ -39,6 +40,7 @@ export default {
     '/main/detail/:id/tasks': '结果管理',
     '/main/detail/:id': '详情',
     '/main/label': '标签管理',
+    '/main/config': '参数管理',
 
     confirm_text: '确认',
     test_link: '测试链接',
@@ -272,4 +274,8 @@ export default {
     label_add: '新增标签',
     label_name: '标签名',
 
+    config_title: '参数管理',
+    config_var_key: '参数名',
+    config_var_value: '参数值',
+    create_config: '创建参数'
 };

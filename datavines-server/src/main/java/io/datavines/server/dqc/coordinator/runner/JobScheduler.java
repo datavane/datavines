@@ -28,15 +28,14 @@ import io.datavines.server.repository.service.impl.JobExternalService;
 import io.datavines.server.utils.SpringApplicationContext;
 import io.datavines.server.repository.entity.Command;
 
-import static io.datavines.common.CommonConstants.SLEEP_TIME_MILLIS;
+import java.util.Map;
+
+import static io.datavines.common.CommonConstants.*;
 import static io.datavines.common.utils.CommonPropertyUtils.*;
 
 public class JobScheduler extends Thread {
 
     private static final Logger logger = LoggerFactory.getLogger(JobScheduler.class);
-
-    private final String JOB_EXECUTION_LOCK_KEY =
-            CommonPropertyUtils.getString(CommonPropertyUtils.JOB_EXECUTION_LOCK_KEY, CommonPropertyUtils.JOB_EXECUTION_LOCK_KEY_DEFAULT);
 
     private static final int[] RETRY_BACKOFF = {1, 2, 3, 5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
 
@@ -71,24 +70,38 @@ public class JobScheduler extends Thread {
 
                 command = jobExternalService.getCommand(register.getTotalSlot(), register.getSlot());
                 if (command != null) {
+                    String parameter = command.getParameter();
+                    String engineType = LOCAL;
+                    if (StringUtils.isNotEmpty(parameter)) {
+                        Map<String,String> parameterMap = JSONUtils.toMap(parameter);
+                        if (StringUtils.isNotEmpty(parameterMap.get(ENGINE))) {
+                            engineType = parameterMap.get(ENGINE);
+                        }
+                    }
 
                     if (CommandType.START == command.getType()) {
                         JobExecution jobExecution = jobExternalService.executeCommand(command);
-                        if (jobExecution != null) {
+                        if (jobExecution == null) {
+                            logger.warn(String.format("jobExecution not found , command : %s", JSONUtils.toJsonString(command)));
+                            jobExternalService.deleteCommandById(command.getId());
+                            continue;
+                        }
+
+                        if (!executionOutOfThreshold(engineType)) {
                             logger.info("start submit jobExecution : {} ", JSONUtils.toJsonString(jobExecution));
                             jobExecuteManager.addExecuteCommand(jobExecution);
                             logger.info(String.format("submit success, jobExecution : %s", jobExecution.getName()) );
-                        } else {
-                            logger.warn(String.format("jobExecution not found , command : %s", JSONUtils.toJsonString(command)));
+                            jobExternalService.deleteCommandById(command.getId());
                         }
                     } else if (CommandType.STOP == command.getType()) {
                         jobExecuteManager.addKillCommand(command.getJobExecutionId());
                         logger.info(String.format("kill task : %s", command.getJobExecutionId()) );
+                        jobExternalService.deleteCommandById(command.getId());
                     }
-                    jobExternalService.deleteCommandById(command.getId());
+
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                 } else {
-                    ThreadUtils.sleep(SLEEP_TIME_MILLIS * 2);
+                    ThreadUtils.sleep(SLEEP_TIME_MILLIS * 4);
                 }
 
                 retryNum = 0;
@@ -101,7 +114,27 @@ public class JobScheduler extends Thread {
 
                 logger.error("schedule job error ", e);
                 ThreadUtils.sleep(SLEEP_TIME_MILLIS * RETRY_BACKOFF[retryNum % RETRY_BACKOFF.length]);
+            } finally {
+                jobExternalService.refreshCommonProperties();
             }
         }
+    }
+
+    public boolean executionOutOfThreshold(String engineType) {
+        if (StringUtils.isEmpty(engineType)) {
+            return false;
+        }
+
+        String engineExecutionThresholdKey = String.format("%s.execution.threshold", engineType);
+        int engineExecutionThreshold = CommonPropertyUtils.getInt(engineExecutionThresholdKey, Integer.MAX_VALUE);
+        int engineExecutionCount = jobExecuteManager.getExecutionCountByEngine(engineType) * register.getTotalSlot();
+
+        boolean result = engineExecutionCount >= engineExecutionThreshold;
+
+        if (result) {
+            logger.info("engine is {}, engine.execution.threshold is : {} , engine.execution.count is {}", engineType, engineExecutionThreshold, engineExecutionCount);
+        }
+
+        return result;
     }
 }

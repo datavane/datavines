@@ -463,11 +463,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         JobExecution jobExecution = getJobExecution(job, scheduleTime);
 
         jobExecutionService.save(jobExecution);
-
+        Map<String,String> parameter = new HashMap<>();
+        parameter.put("engine",jobExecution.getEngineType());
         // add a command
         Command command = new Command();
         command.setType(CommandType.START);
         command.setPriority(Priority.MEDIUM);
+        command.setParameter(JSONUtils.toJsonString(parameter));
         command.setJobExecutionId(jobExecution.getId());
         commandService.insert(command);
     }

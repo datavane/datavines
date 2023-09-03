@@ -129,8 +129,15 @@ public enum Status {
     ISSUE_NOT_EXIST_ERROR(21010002, "Issue {0} Not Exist Error", "Issue {0} 不存在错误"),
     ISSUE_EXIST_ERROR(21010003, "Issue {0} is Exist error", "Issue {0} 已存在错误"),
     UPDATE_ISSUE_ERROR(21010004, "Update Issue {0} Error", "更新Issue {0} 错误"),
-    ;
 
+
+    CREATE_CONFIG_ERROR(22010001, "Create Config {0} Error", "创建参数 {0} 错误"),
+    CONFIG_NOT_EXIST_ERROR(22010002, "Config {0} Not Exist Error", "参数 {0} 不存在错误"),
+    CONFIG_EXIST_ERROR(22010003, "Config {0} is Exist error", "参数 {0} 已存在错误"),
+    UPDATE_CONFIG_ERROR(22010004, "Update Config {0} Error", "更新参数 {0} 错误"),
+
+    CAN_NOT_DELETE_DEFAULT_CONFIG_ERROR(22010005, "Can Not Delete Default Config {0} Error", "不能删除默认参数 {0} 错误"),
+    ;
     private final int code;
     private final String enMsg;
     private final String zhMsg;
