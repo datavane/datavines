@@ -50,6 +50,7 @@
         <slf4j.api.version>1.7.5</slf4j.api.version>
         <slf4j.log4j12.version>1.7.5</slf4j.log4j12.version>
         <jackson.version>2.12.5</jackson.version>
+        <odps.jdbc.version>3.4.3</odps.jdbc.version>
         <oshi.core.version>3.5.0</oshi.core.version>
         <commons.collections4.version>4.1</commons.collections4.version>
         <guava.version>20.0</guava.version>
@@ -304,7 +305,11 @@
                 <artifactId>jackson-databind</artifactId>
                 <version>${jackson.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.aliyun.odps</groupId>
+                <artifactId>odps-jdbc</artifactId>
+                <version>${odps.jdbc.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-core</artifactId>

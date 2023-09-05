@@ -1,0 +1,1 @@
+odps=io.datavines.connector.plugin.OdpsConnectorFactory
