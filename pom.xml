@@ -102,6 +102,7 @@
         <hive.version>2.1.0</hive.version>
         <hikari.version>4.0.3</hikari.version>
         <spring.version>5.3.12</spring.version>
+        <kerberos.version>1.0.1.RELEASE</kerberos.version>
         <jodd.version>3.5.2</jodd.version>
         <kaptcha.version>2.3.2</kaptcha.version>
         <hibernate-validator.version>6.0.21.Final</hibernate-validator.version>
@@ -565,6 +566,18 @@
                 <groupId>com.zaxxer</groupId>
                 <artifactId>HikariCP</artifactId>
                 <version>${hikari.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-web</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.security.kerberos</groupId>
+                <artifactId>spring-security-kerberos-client</artifactId>
+                <version>${kerberos.version}</version>
             </dependency>
 
             <dependency>

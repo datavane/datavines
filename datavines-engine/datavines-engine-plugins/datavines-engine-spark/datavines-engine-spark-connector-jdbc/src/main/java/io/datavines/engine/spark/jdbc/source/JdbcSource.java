@@ -30,6 +30,7 @@ import io.datavines.common.utils.TypesafeConfigUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.spark.api.SparkRuntimeEnvironment;
 import io.datavines.engine.spark.api.batch.SparkBatchSource;
+import org.apache.spark.sql.SparkSession;
 
 import static io.datavines.common.ConfigConstants.*;
 
@@ -77,6 +78,10 @@ public class JdbcSource implements SparkBatchSource {
 
     @Override
     public Dataset<Row> getData(SparkRuntimeEnvironment env) {
+        String driver = config.getString(DRIVER);
+        if (env.enableSparkHiveSupport() && "org.apache.hive.jdbc.HiveDriver".equals(driver)) {
+           return hiveSourceData(env);
+        }
         Properties properties = new Properties();
         properties.setProperty(USER, config.getString(USER));
         properties.setProperty(DRIVER, config.getString(DRIVER));
@@ -96,4 +101,15 @@ public class JdbcSource implements SparkBatchSource {
         DataFrameReader reader = new DataFrameReader(env.sparkSession());
         return reader.jdbc(config.getString(URL), config.getString(TABLE),properties);
     }
+
+    private Dataset<Row> hiveSourceData(SparkRuntimeEnvironment env) {
+        String dataBase = config.getString(DATABASE);
+        SparkSession sparkSession = env.sparkSession();
+        if (StringUtils.isNotEmpty(dataBase)) {
+            sparkSession.sql("USE " + dataBase);
+        }
+
+        return sparkSession.table(config.getString(TABLE));
+    }
+
 }

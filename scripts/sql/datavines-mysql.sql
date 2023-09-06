@@ -804,6 +804,13 @@ INSERT INTO `dv_config` VALUES ('10', '-1', 'error.data.dir', '/tmp/datavines/er
 INSERT INTO `dv_config` VALUES ('11', '-1', 'validate.result.data.dir', '/tmp/datavines/validate-result-data', '1', '1', '2023-09-03 14:58:29', '1', '2023-09-03 14:58:29');
 INSERT INTO `dv_config` VALUES ('12', '-1', 'local.execution.threshold', '100', '1', '1', '2023-09-03 15:02:38', '1', '2023-09-03 15:02:38');
 INSERT INTO `dv_config` VALUES ('13', '-1', 'spark.execution.threshold', '100', '1', '1', '2023-09-03 15:02:38', '1', '2023-09-03 15:02:38');
+INSERT INTO `dv_config` VALUES ('14', '-1', 'livy.uri', 'http://localhost:8998/batches', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('15', '-1', 'livy.task.appId.retry.count', '3', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('16', '-1', 'livy.need.kerberos', 'false', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('17', '-1', 'livy.server.auth.kerberos.principal', 'livy/kerberos.principal', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('18', '-1', 'livy.server.auth.kerberos.keytab', '/path/to/livy/keytab/file', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('19', '-1', 'livy.task.proxyUser', 'root', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('20', '-1', 'livy.task.jar.lib.path', 'hdfs:///datavines/lib', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
 
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0');
 INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `update_by`) VALUES ('1', "admin\'s default", '1', '1');

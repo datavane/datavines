@@ -123,7 +123,7 @@ const Index = ({ form, id, detail }: InnerProps) => {
         <Form.Item noStyle dependencies={['engineType']}>
             {() => {
                 const value = form.getFieldValue('engineType');
-                if (value !== 'spark') {
+                if (value !== 'spark' && value !== 'livy') {
                     return null;
                 }
                 return render();

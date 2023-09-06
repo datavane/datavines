@@ -89,6 +89,8 @@ public class ConfigConstants {
     public static final String LINE_SEPERATOR = "line_separator";
     public static final String DATA_DIR = "data_dir";
 
+    public static final String ENABLE_SPARK_HIVE_SUPPORT = "enable_spark_hive_support";
+
     public static final String FILE = "file";
 
     public static final String METRIC_DATABASE = "metric_database";

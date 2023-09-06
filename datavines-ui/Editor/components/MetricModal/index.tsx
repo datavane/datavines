@@ -65,7 +65,7 @@ export const MetricConfig = (props: InnerProps) => {
                         dataSourceId: id,
                         ...(pickProps(values, [...keys])),
                     };
-                    if (values.engineType === 'spark') {
+                    if (values.engineType === 'spark' || values.engineType === 'livy') {
                         params.engineParameter = JSON.stringify({
                             programType: 'JAVA',
                             ...pickProps(values, ['deployMode', 'driverCores', 'driverMemory', 'numExecutors', 'executorMemory', 'executorCores', 'others']),

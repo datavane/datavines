@@ -310,6 +310,12 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-livy-executor</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-spark-config</artifactId>
             <version>${project.version}</version>
         </dependency>
