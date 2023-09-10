@@ -20,11 +20,13 @@ import io.datavines.metric.api.ExpectedValue;
 
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
+
 public class SparkDailyAvg implements ExpectedValue {
 
     @Override
     public String getName() {
-        return "daily_range.daily_avg";
+        return "daily_avg";
     }
 
     @Override
@@ -33,18 +35,23 @@ public class SparkDailyAvg implements ExpectedValue {
     }
 
     @Override
-    public String getType() {
-        return "daily_avg";
+    public String getKey(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return String.format("daily_range_%s.expected_value_%s",uniqueKey,uniqueKey);
     }
 
     @Override
-    public String getExecuteSql() {
-        return "select round(avg(actual_value),2) as daily_avg from dv_actual_values where data_time >=date_format(${data_time}, 'yyyy-MM-dd') and data_time < date_add(date_format(${data_time}, 'yyyy-MM-dd'),1) and unique_code = ${unique_code}";
+    public String getExecuteSql(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return "select round(avg(actual_value),2) as expected_value_" + uniqueKey +
+                " from dv_actual_values where data_time >=date_format(${data_time}, 'yyyy-MM-dd')" +
+                " and data_time < date_add(date_format(${data_time}, 'yyyy-MM-dd'),1) and unique_code = ${unique_code}";
     }
 
     @Override
-    public String getOutputTable() {
-        return "daily_range";
+    public String getOutputTable(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return "daily_range_" + uniqueKey;
     }
 
     @Override

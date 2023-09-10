@@ -20,6 +20,8 @@ import io.datavines.metric.api.ExpectedValue;
 
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
+
 public class Last7DayAvg implements ExpectedValue {
 
     @Override
@@ -33,18 +35,23 @@ public class Last7DayAvg implements ExpectedValue {
     }
 
     @Override
-    public String getType() {
-        return "last_7d_avg";
+    public String getKey(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return "expected_value_" + uniqueKey;
     }
 
     @Override
-    public String getExecuteSql() {
-        return "select round(avg(actual_value),2) as last_7d_avg from dv_actual_values where data_time >= date_sub(date_format(${data_time},'%Y-%m-%d'),interval 7 DAY) and  data_time < date_add(date_format(${data_time},'%Y-%m-%d'),interval 1 DAY) and unique_code = ${unique_code}";
+    public String getExecuteSql(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return "select round(avg(actual_value),2) as expected_value_" + uniqueKey +
+                " from dv_actual_values where data_time >= date_sub(date_format(${data_time},'%Y-%m-%d'),interval 7 DAY)" +
+                " and data_time < date_add(date_format(${data_time},'%Y-%m-%d'),interval 1 DAY) and unique_code = ${unique_code}";
     }
 
     @Override
-    public String getOutputTable() {
-        return "last_7d";
+    public String getOutputTable(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return "last_7d_" + uniqueKey;
     }
 
     @Override

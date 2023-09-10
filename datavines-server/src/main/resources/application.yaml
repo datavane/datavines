@@ -17,6 +17,7 @@
 spring:
   main:
     banner-mode: off
+    allow-circular-references: true
   application:
     name: datavines-server
   datasource:

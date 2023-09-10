@@ -32,26 +32,26 @@ public interface ExpectedValue {
     String getZhName();
 
     default String getNameByLanguage(boolean isEn) {
-        return isEn ? getType() : getZhName();
+        return isEn ? getName() : getZhName();
     }
 
     /**
      * get value type
      * @return String
      */
-    String getType();
+    String getKey(Map<String,String> inputParameter);
 
     /**
      * get value execute sql
      * @return String
      */
-    String getExecuteSql();
+    String getExecuteSql(Map<String,String> inputParameter);
 
     /**
      * get output table name
      * @return String
      */
-    String getOutputTable();
+    String getOutputTable(Map<String,String> inputParameter);
 
     /**
      * need to read actual value from system database

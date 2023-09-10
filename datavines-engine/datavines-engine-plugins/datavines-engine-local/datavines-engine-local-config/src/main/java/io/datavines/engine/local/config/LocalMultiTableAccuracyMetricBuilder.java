@@ -19,11 +19,13 @@ package io.datavines.engine.local.config;
 import io.datavines.common.config.SinkConfig;
 import io.datavines.common.config.enums.SinkType;
 import io.datavines.common.entity.ConnectorParameter;
+import io.datavines.common.entity.MappingColumn;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.spi.PluginLoader;
 import org.apache.commons.collections4.CollectionUtils;
@@ -33,9 +35,39 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.common.CommonConstants.DATABASE2;
+import static io.datavines.common.CommonConstants.TABLE2;
 import static io.datavines.common.ConfigConstants.*;
 
-public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder {
+/**
+ * multi table accuracy metric just contain one metric parameter ,
+ * the parameter contain table1 and table2 properties
+ */
+public class LocalMultiTableAccuracyMetricBuilder extends BaseLocalConfigurationBuilder {
+
+    @Override
+    public void buildTransformConfigs() {
+
+        List<BaseJobParameter> metricJobParameterList = jobExecutionParameter.getMetricParameterList();
+        if (CollectionUtils.isNotEmpty(metricJobParameterList)) {
+            for (BaseJobParameter parameter : metricJobParameterList) {
+                String metricUniqueKey = getMetricUniqueKey(parameter);
+                Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
+                metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
+                metricInputParameter.put(TABLE_ALIAS, metricInputParameter.get(DATABASE)+"_"+metricInputParameter.get(TABLE) + "_1");
+                metricInputParameter.put(TABLE2_ALIAS, metricInputParameter.get(DATABASE2)+"_"+metricInputParameter.get(TABLE2) + "_2");
+                List<MappingColumn> mappingColumns = JSONUtils.toList(metricInputParameter.get(MAPPING_COLUMNS),MappingColumn.class);
+                metricInputParameter.put(TABLE_ALIAS_COLUMNS, MetricParserUtils.getTableAliasColumns(mappingColumns,metricInputParameter.get(TABLE_ALIAS),1));
+                metricInputParameter.put(TABLE2_ALIAS_COLUMNS, MetricParserUtils.getTableAliasColumns(mappingColumns,metricInputParameter.get(TABLE2_ALIAS),2));
+                metricInputParameter.put(ON_CLAUSE, MetricParserUtils.getOnClause(mappingColumns, metricInputParameter));
+                metricInputParameter.put(WHERE_CLAUSE, MetricParserUtils.getWhereClause(mappingColumns, metricInputParameter));
+
+                metric2InputParameter.put(metricUniqueKey, metricInputParameter);
+            }
+        }
+
+        super.buildTransformConfigs();
+    }
 
     @Override
     public void buildSinkConfigs() throws DataVinesException {
@@ -47,7 +79,7 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
-                metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
+
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
                 ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class)
                         .getNewPlugin(expectedType);
@@ -91,7 +123,7 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
                     } else {
                         connectorParameterMap.put(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE, connectorParameterMap.get(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE));
                     }
-                    
+
                     errorDataSinkConfig.setPlugin(connectorFactory.getCategory());
                     connectorParameterMap.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
                     connectorParameterMap.put(ERROR_DATA_DIR, metricInputParameter.get(ERROR_DATA_DIR));

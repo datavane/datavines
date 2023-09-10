@@ -92,7 +92,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     sourceConnectorSet.add(connectorUUID);
                 }
 
-                if (jobExecutionParameter.getConnectorParameter2() != null && jobExecutionParameter.getConnectorParameter2().getParameters() !=null) {
+                if (jobExecutionParameter.getConnectorParameter2() != null && jobExecutionParameter.getConnectorParameter2().getParameters() != null) {
                     ConnectorParameter connectorParameter2 = jobExecutionParameter.getConnectorParameter2();
                     Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter2.getParameters());
                     connectorParameterMap.putAll(metricInputParameter);
@@ -191,10 +191,10 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                 ExpectedValue expectedValue = PluginLoader
                         .getPluginLoader(ExpectedValue.class)
                         .getNewPlugin(expectedType);
+                expectedValue.prepare(metricInputParameter);
 
                 ExecuteSql expectedValueExecuteSql =
-                        new ExecuteSql(expectedValue.getExecuteSql(), expectedValue.getOutputTable());
-
+                        new ExecuteSql(expectedValue.getExecuteSql(metricInputParameter), expectedValue.getOutputTable(metricInputParameter));
                 if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
                     metricInputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
                 }

@@ -26,10 +26,10 @@ import io.datavines.server.repository.entity.User;
 import io.datavines.server.repository.entity.UserWorkSpace;
 import io.datavines.server.repository.entity.WorkSpace;
 import io.datavines.server.repository.mapper.UserMapper;
-import io.datavines.server.repository.mapper.UserWorkSpaceMapper;
-import io.datavines.server.repository.mapper.WorkSpaceMapper;
 import io.datavines.server.repository.service.UserService;
 import io.datavines.core.exception.DataVinesServerException;
+import io.datavines.server.repository.service.UserWorkSpaceService;
+import io.datavines.server.repository.service.WorkSpaceService;
 import jodd.util.BCrypt;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -44,10 +44,10 @@ import java.time.LocalDateTime;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
 
     @Autowired
-    private WorkSpaceMapper workSpaceMapper;
+    private WorkSpaceService workSpaceService;
 
     @Autowired
-    private UserWorkSpaceMapper userWorkSpaceMapper;
+    private UserWorkSpaceService userWorkSpaceService;
 
     @Override
     public User getByUsername(String username) {
@@ -104,7 +104,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             workSpace.setCreateTime(LocalDateTime.now());
             workSpace.setUpdateBy(user.getId());
             workSpace.setUpdateTime(LocalDateTime.now());
-            workSpaceMapper.insert(workSpace);
+            workSpaceService.save(workSpace);
 
             UserWorkSpace userWorkSpace = new UserWorkSpace();
             userWorkSpace.setUserId(user.getId());
@@ -114,7 +114,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             userWorkSpace.setCreateTime(LocalDateTime.now());
             userWorkSpace.setUpdateBy(user.getId());
             userWorkSpace.setUpdateTime(LocalDateTime.now());
-            userWorkSpaceMapper.insert(userWorkSpace);
+            userWorkSpaceService.save(userWorkSpace);
 
             return userBaseInfo;
         } else {

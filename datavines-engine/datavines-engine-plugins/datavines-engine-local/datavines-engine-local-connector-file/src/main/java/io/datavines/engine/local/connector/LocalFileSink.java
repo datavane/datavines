@@ -54,7 +54,7 @@ public class LocalFileSink implements LocalSink {
     public void output(List<ResultList> resultList, LocalRuntimeEnvironment env) throws Exception{
 
         Map<String,String> inputParameter = new HashMap<>();
-        setExceptedValue(config, resultList, inputParameter);
+        setExceptedValue(resultList, inputParameter);
 
         String validateResultDataDir = config.getString("data_dir") + File.separator + config.getString(JOB_EXECUTION_ID);
 

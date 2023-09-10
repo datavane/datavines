@@ -25,6 +25,7 @@ import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalTransform;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.LoggerFactory;
+import io.datavines.engine.local.api.utils.SqlUtils;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -112,21 +113,12 @@ public class SqlTransform implements LocalTransform {
             logger.error("transform execute error: ", e);
             String invalidateItemTable = config.getString(INVALIDATE_ITEMS_TABLE);
             Connection connection = null;
-            Statement statement = null;
+
             try {
                 connection = env.getSourceConnection().getConnection();
-                statement = connection.createStatement();
-                statement.execute("DROP VIEW IF EXISTS " + invalidateItemTable);
+                SqlUtils.dropView(invalidateItemTable, connection);
             } catch (Exception ex) {
                 logger.error("drop view error : ", e);
-            } finally {
-                if (statement != null) {
-                    try {
-                        statement.close();
-                    } catch (Exception ex) {
-                        logger.error("close statement error : ", e);
-                    }
-                }
             }
 
             throw new DataVinesException("transform execute error: ", e);

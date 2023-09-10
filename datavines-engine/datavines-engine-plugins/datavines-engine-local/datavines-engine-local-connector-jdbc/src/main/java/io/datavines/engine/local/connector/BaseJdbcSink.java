@@ -89,7 +89,7 @@ public class BaseJdbcSink implements LocalSink {
     public void output(List<ResultList> resultList, LocalRuntimeEnvironment env) {
 
         Map<String,String> inputParameter = new HashMap<>();
-        setExceptedValue(config, resultList, inputParameter);
+        setExceptedValue(resultList, inputParameter);
         ISinkExecutor sinkExecutor = null;
 
         switch (SinkType.of(config.getString(PLUGIN_TYPE))){

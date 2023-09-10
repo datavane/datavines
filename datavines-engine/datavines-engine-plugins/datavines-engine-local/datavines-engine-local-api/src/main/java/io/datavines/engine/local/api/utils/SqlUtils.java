@@ -251,12 +251,12 @@ public class SqlUtils {
     }
 
     public static void dropView(String viewName, Connection connection) {
-        try {
+        try (Statement statement = connection.createStatement()){
             if (StringUtils.isNotEmpty(viewName) && !"null".equals(viewName)) {
-                connection.createStatement().execute("DROP VIEW IF EXISTS " + viewName);
+                statement.execute("DROP VIEW " + viewName);
             }
-        } catch (SQLException e) {
-            log.error("drop view error : {}", e);
+        } catch (Exception e) {
+            log.error("drop view error : ", e);
         }
     }
 

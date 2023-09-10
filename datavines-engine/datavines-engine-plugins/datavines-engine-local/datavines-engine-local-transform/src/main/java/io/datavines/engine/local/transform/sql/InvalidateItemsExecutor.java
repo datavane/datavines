@@ -35,7 +35,7 @@ public class InvalidateItemsExecutor implements ITransformExecutor {
         String sql = config.getString(SQL);
 
         Statement statement = connection.createStatement();
-        statement.execute("DROP VIEW IF EXISTS " + outputTable);
+        statement.execute("DROP VIEW " + outputTable);
         statement.execute("CREATE VIEW " + outputTable + " AS " + sql);
         statement.close();
         return null;

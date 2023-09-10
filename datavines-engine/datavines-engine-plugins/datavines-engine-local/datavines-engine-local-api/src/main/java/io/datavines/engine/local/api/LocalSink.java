@@ -16,8 +16,6 @@
  */
 package io.datavines.engine.local.api;
 
-import io.datavines.common.config.Config;
-import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.api.component.Component;
 import io.datavines.engine.local.api.entity.ResultList;
 
@@ -28,33 +26,24 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.common.ConfigConstants.*;
-
 public interface LocalSink extends Component {
 
     Logger log = LoggerFactory.getLogger(LocalSink.class);
 
     void output(List<ResultList> resultList, LocalRuntimeEnvironment env) throws Exception;
 
-    default void setExceptedValue(Config config, List<ResultList> resultList, Map<String, String> inputParameter) {
-        if (CollectionUtils.isNotEmpty(resultList)) {
-            resultList.forEach(item -> {
-                if(item != null) {
-                    item.getResultList().forEach(x -> {
-                        x.forEach((k,v) -> {
-                            String expectedValue = config.getString(EXPECTED_VALUE);
-                            if (StringUtils.isNotEmpty(expectedValue)) {
-                                if (expectedValue.equals(k)) {
-                                    inputParameter.put(EXPECTED_VALUE, String.valueOf(v));
-                                }
-                            }
-
-                            inputParameter.put(k, String.valueOf(v));
-                        });
-                    });
-                }
-            });
+    default void setExceptedValue(List<ResultList> resultList, Map<String, String> inputParameter) {
+        if (CollectionUtils.isEmpty(resultList)) {
+            return;
         }
+
+        resultList.forEach(item -> {
+            if (item != null) {
+                item.getResultList().forEach(x -> {
+                    x.forEach((k,v) -> inputParameter.put(k, String.valueOf(v)));
+                });
+            }
+        });
     }
 
 }

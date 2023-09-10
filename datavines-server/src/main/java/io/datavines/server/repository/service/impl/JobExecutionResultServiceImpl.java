@@ -28,8 +28,8 @@ import io.datavines.server.api.dto.vo.JobExecutionResultVO;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
-import io.datavines.server.repository.mapper.JobExecutionMapper;
-import io.datavines.server.repository.mapper.JobMapper;
+import io.datavines.server.repository.service.JobService;
+import io.datavines.server.repository.service.JobExecutionService;
 import io.datavines.server.enums.DqJobExecutionState;
 import io.datavines.common.enums.OperatorType;
 import io.datavines.server.repository.mapper.JobExecutionResultMapper;
@@ -47,10 +47,10 @@ import java.util.*;
 public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResultMapper, JobExecutionResult>  implements JobExecutionResultService {
 
     @Autowired
-    private JobExecutionMapper jobExecutionMapper;
+    private JobExecutionService jobExecutionService;
 
     @Autowired
-    private JobMapper jobMapper;
+    private JobService jobService;
 
     @Override
     public long insert(JobExecutionResult jobExecutionResult) {
@@ -108,9 +108,9 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
         parameters.put("threshold", String.valueOf(jobExecutionResult.getThreshold()));
         parameters.put("operator",OperatorType.of(jobExecutionResult.getOperator()).getSymbol());
 
-        JobExecution jobExecution = jobExecutionMapper.selectById(jobExecutionId);
+        JobExecution jobExecution = jobExecutionService.getById(jobExecutionId);
         if (!Objects.isNull(jobExecution)) {
-            Job job = jobMapper.selectById(jobExecution.getJobId());
+            Job job = jobService.getById(jobExecution.getJobId());
             List<BaseJobParameter> jobParameterList = JSONUtils.toList(job.getParameter(),BaseJobParameter.class);
             for (BaseJobParameter jobParameter : jobParameterList) {
                 if (jobParameter != null) {
@@ -129,10 +129,10 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
 
                     if (uniqueName.equalsIgnoreCase(taskResultUniqueName)) {
                         configMap.entrySet().stream().filter(
-                                x-> !("column".equalsIgnoreCase(x.getKey()) || "table".equalsIgnoreCase(x.getKey()) || "filter".equalsIgnoreCase(x.getKey())))
+                                        x-> !("column".equalsIgnoreCase(x.getKey()) || "table".equalsIgnoreCase(x.getKey()) || "filter".equalsIgnoreCase(x.getKey())))
                                 .forEach(config -> {
-                            paramMap.put(config.getValue().getLabel(!LanguageUtils.isZhContext()), jobParameter.getMetricParameter().get(config.getKey()));
-                        });
+                                    paramMap.put(config.getValue().getLabel(!LanguageUtils.isZhContext()), jobParameter.getMetricParameter().get(config.getKey()));
+                                });
                         jobExecutionResultVO.setMetricParameter(paramMap);
                     }
                 }
