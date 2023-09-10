@@ -50,6 +50,8 @@ export default {
     dv_metric_other_timeout_strategy_retry: '重试',
     dv_metric_other_timeout_strategy_alert: '告警',
     dv_metric_other_config_second: '秒',
+    dv_metric_pre_sql: '前置脚本',
+    dv_metric_post_sql: '后置脚本',
     dv_metric_error_store_config: '错误数据存储配置',
     dv_metric_error_store_engine: '错误数据存储引擎',
     dv_metric_error_output_to_datasource: '是否输出至源数据源',

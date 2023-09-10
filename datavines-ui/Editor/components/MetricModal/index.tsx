@@ -36,7 +36,9 @@ const keys = [
     'env',
     'errorDataStorageId',
     'errorDataOutputToDataSourceDatabase',
-    'isErrorDataOutputToDataSource'
+    'isErrorDataOutputToDataSource',
+    'preSql',
+    'postSql'
 ];
 export const MetricConfig = (props: InnerProps) => {
     const { innerRef, detail } = props;

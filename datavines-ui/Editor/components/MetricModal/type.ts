@@ -71,6 +71,8 @@ export type TDetail = null | {
     retryInterval?: number;
     timeout?: number;
     timeoutStrategy?: string;
+    preSql?:string;
+    postSql?:string;
     tenantCode?: string;
     env?: string;
     createBy?: number | string;
