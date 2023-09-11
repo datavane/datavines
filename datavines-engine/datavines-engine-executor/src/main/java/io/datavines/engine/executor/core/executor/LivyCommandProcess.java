@@ -94,6 +94,7 @@ public class LivyCommandProcess extends BaseCommandProcess {
                     if (LivyStates.State.SUCCESS.equals(state)) {
                         Object appId = resultMap.get("appId");
                         processResult.setApplicationId(String.valueOf(appId));
+                        jobExecutionRequest.setApplicationId(String.valueOf(appId));
                         processResult.setExitStatusCode(ExecutionStatus.SUCCESS.getCode());
                         break;
                     }
@@ -102,6 +103,7 @@ public class LivyCommandProcess extends BaseCommandProcess {
                     || LivyStates.State.KILLED.equals(state) || LivyStates.State.UNKNOWN.equals(state)) {
                         Object appId = resultMap.get("appId");
                         processResult.setApplicationId(String.valueOf(appId));
+                        jobExecutionRequest.setApplicationId(String.valueOf(appId));
                         processResult.setExitStatusCode(ExecutionStatus.FAILURE.getCode());
                         return false;
                     }

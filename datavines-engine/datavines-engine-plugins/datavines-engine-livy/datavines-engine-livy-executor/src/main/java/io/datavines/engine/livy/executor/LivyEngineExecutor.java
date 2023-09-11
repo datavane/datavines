@@ -16,21 +16,18 @@
  */
 package io.datavines.engine.livy.executor;
 
-import java.io.File;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import io.datavines.common.config.EnvConfig;
 import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.enums.ExecutionStatus;
-import io.datavines.common.utils.FileUtils;
 import io.datavines.engine.executor.core.base.AbstractLivyEngineExecutor;
 import io.datavines.engine.executor.core.enums.LivyStates;
 import io.datavines.engine.executor.core.executor.LivyCommandProcess;
 import io.datavines.engine.livy.executor.parameter.LivySparkParameters;
 import io.datavines.engine.livy.executor.parameter.ProgramType;
 import io.datavines.engine.livy.executor.utils.StringUtils;
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 
 import io.datavines.common.config.Configurations;
@@ -45,7 +42,6 @@ import static io.datavines.engine.livy.executor.parameter.SparkConstants.*;
 public class LivyEngineExecutor extends AbstractLivyEngineExecutor {
 
     private Configurations configurations;
-
 
     @Override
     public void init(JobExecutionRequest jobExecutionRequest, Logger logger, Configurations configurations) throws Exception {
@@ -66,8 +62,9 @@ public class LivyEngineExecutor extends AbstractLivyEngineExecutor {
         Map<String, Object> resultMap = livyCommandProcess.post2LivyWithRetry(buildCommand());
         this.processResult = new ProcessResult();
 
-        Object id = resultMap.get("id");
+        Object id = resultMap.get(ID);
         processResult.setProcessId(Integer.valueOf(String.valueOf(id)));
+        jobExecutionRequest.setProcessId(Integer.parseInt(String.valueOf(id)));
         LivyStates.State state = LivyStates.toLivyState(resultMap);
 
         boolean healthy = LivyStates.isHealthy(state);
@@ -115,42 +112,28 @@ public class LivyEngineExecutor extends AbstractLivyEngineExecutor {
 
         String jarLibPath = configurations.getString("livy.task.jar.lib.path", "hdfs:///datavines/lib");
         String jarName = configurations.getString("data.quality.jar.name");
-        if (jarName.startsWith("/lib")) {
-            jarName = jarName.replace("/lib", "");
+        if (jarName.startsWith(SLASH_LIB)) {
+            jarName = jarName.replace(SLASH_LIB, "");
         }
         parameters.setFile(jarLibPath + jarName);
 
-        String basePath = System.getProperty("user.dir").replace(File.separator + "bin", File.separator + "libs");
+        String taskJars = configurations.getString("livy.task.jars");
 
-        String pluginDir = basePath.endsWith("libs") ?
-                basePath.replace("libs", "plugins") :
-                basePath + File.separator + "plugins";
-
-        logger.info("spark engine plugin dir : {}", pluginDir);
-
-        if (FileUtils.isExist(pluginDir)) {
-            List<String> filePathList = FileUtils.getFileList(pluginDir);
-
-            if (CollectionUtils.isNotEmpty(filePathList)) {
-                String jars = param.getJars();
-                if (jars.trim().contains("--jars")) {
-                    jars = jars.replace("--jars", "");
-                    List<String> jarList = Arrays.stream(jars.split(",")).collect(Collectors.toList());
-                    filePathList.addAll(jarList);
-                } else {
-                    filePathList.add(jars);
-
-                }
-            }
-            logger.info("spark engine jars : {}", JSONUtils.toJsonString(filePathList));
-            parameters.setJars(filePathList);
+        List<String> jarsList = new ArrayList<>();
+        if (StringUtils.isNotEmpty(taskJars)) {
+            List<String> jarList = splitToList(jarLibPath, taskJars);
+            jarsList.addAll(jarList);
         } else {
-
-            List<String> jarList = jars.stream()
-                    .map(jar -> jarLibPath + "/" + jar)
-                    .collect(Collectors.toList());
-            parameters.setJars(jarList);
+            String jars = param.getJars();
+            if (jars.trim().contains(BAR_JARS)) {
+                jars = jars.replace(BAR_JARS, "");
+                List<String> jarList = splitToList(jarLibPath, jars);
+                jarsList.addAll(jarList);
+            }
         }
+
+        logger.info("spark engine jars : {}", JSONUtils.toJsonString(jarsList));
+        parameters.setJars(jarsList);
 
         DataVinesJobConfig jobConfig = JSONUtils.parseObject(jobExecutionRequest.getApplicationParameter(), DataVinesJobConfig.class);
 
@@ -167,7 +150,7 @@ public class LivyEngineExecutor extends AbstractLivyEngineExecutor {
 
         String others = param.getOthers();
         if (StringUtils.isNotEmpty(others)) {
-            others = others.replace("--conf", "");
+            others = others.replace(BAR_CONF, "");
             Map<String, Object> parseConfMap = parseConfMap(others);
             parameters.setConf(parseConfMap);
         }
@@ -177,6 +160,12 @@ public class LivyEngineExecutor extends AbstractLivyEngineExecutor {
         logger.info("data quality task command: {}", sparkCommand);
 
         return sparkCommand;
+    }
+
+    private List<String> splitToList(String jarLibPath, String taskJars) {
+        return Arrays.stream(taskJars.split(","))
+                .map(jar -> jarLibPath + "/" + jar)
+                .collect(Collectors.toList());
     }
 
     private Map<String, Object> parseConfMap(String conf) {

@@ -782,14 +782,14 @@ CREATE TABLE `dv_config` (
     `id` bigint(20) NOT NULL AUTO_INCREMENT,
     `workspace_id` bigint(20) NOT NULL COMMENT '工作空间ID',
     `var_key` varchar(255) NOT NULL COMMENT '参数名',
-    `var_value` varchar(255) NOT NULL COMMENT '参数值',
+    `var_value` text NOT NULL COMMENT '参数值',
     `is_default` tinyint(1) NOT NULL COMMENT '是否为默认参数',
     `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
     `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
     `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
     `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COMMENT='告警管理';
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COMMENT='配置';
 
 INSERT INTO `dv_config` VALUES ('1', '-1', 'data.quality.jar.name', '/libs/datavines-engine-spark-core-1.0.0-SNAPSHOT.jar', '1', '1', '2023-09-02 16:52:56', '1', '2023-09-03 09:56:12');
 INSERT INTO `dv_config` VALUES ('2', '-1', 'yarn.mode', 'ha', '1', '1', '2023-09-02 18:28:59', '1', '2023-09-03 12:46:24');
@@ -811,6 +811,13 @@ INSERT INTO `dv_config` VALUES ('17', '-1', 'livy.server.auth.kerberos.principal
 INSERT INTO `dv_config` VALUES ('18', '-1', 'livy.server.auth.kerberos.keytab', '/path/to/livy/keytab/file', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
 INSERT INTO `dv_config` VALUES ('19', '-1', 'livy.task.proxyUser', 'root', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
 INSERT INTO `dv_config` VALUES ('20', '-1', 'livy.task.jar.lib.path', 'hdfs:///datavines/lib', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('21', '-1', 'livy.execution.threshold', '100', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('22', '-1', 'livy.task.jars', CONCAT('datavines-common-1.0.0-SNAPSHOT.jar,datavines-spi-1.0.0-SNAPSHOT.jar,'
+                                                                    'datavines-engine-spark-api-1.0.0-SNAPSHOT.jar,datavines-engine-spark-connector-jdbc-1.0.0-SNAPSHOT.jar,'
+                                                                    'datavines-engine-core-1.0.0-SNAPSHOT.jar,datavines-engine-spark-transform-sql-1.0.0-SNAPSHOT.jar,'
+                                                                    'datavines-engine-api-1.0.0-SNAPSHOT.jar,mysql-connector-java-8.0.16.jar,httpclient-4.4.1.jar,'
+                                                                    'httpcore-4.4.1.jar,postgresql-42.2.6.jar,presto-jdbc-0.283.jar,trino-jdbc-407.jar,clickhouse-jdbc-0.1.53.jar'),
+                                '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
 
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0');
 INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `update_by`) VALUES ('1', "admin\'s default", '1', '1');

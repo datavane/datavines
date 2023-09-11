@@ -17,9 +17,6 @@
 package io.datavines.engine.livy.executor.parameter;
 
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class SparkConstants {
 
@@ -29,22 +26,13 @@ public class SparkConstants {
 
     public static final String DEFAULT = "default";
 
-    public static final List<String> jars = Stream.of(
-            "datavines-common-1.0.0-SNAPSHOT.jar",
-            "datavines-spi-1.0.0-SNAPSHOT.jar",
-            "datavines-engine-spark-api-1.0.0-SNAPSHOT.jar",
-            "datavines-engine-spark-connector-jdbc-1.0.0-SNAPSHOT.jar",
-            "datavines-engine-core-1.0.0-SNAPSHOT.jar",
-            "datavines-engine-spark-transform-sql-1.0.0-SNAPSHOT.jar",
-            "datavines-engine-api-1.0.0-SNAPSHOT.jar",
-            "mysql-connector-java-8.0.16.jar",
-            "httpclient-4.4.1.jar",
-            "httpcore-4.4.1.jar",
-            "postgresql-42.2.6.jar",
-            "presto-jdbc-0.238.jar",
-            "trino-jdbc-407.jar",
-            "clickhouse-jdbc-0.1.53.jar"
-    ).collect(Collectors.toList());
+    public static final String ID = "id";
+
+    public static final String SLASH_LIB = "/lib";
+
+    public static final String BAR_JARS = "--jars";
+
+    public static final String BAR_CONF = "--conf";
 
 
 }
