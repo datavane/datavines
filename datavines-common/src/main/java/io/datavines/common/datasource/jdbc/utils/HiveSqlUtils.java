@@ -46,32 +46,27 @@ public class HiveSqlUtils {
             jdbcTemplate.setMaxRows(Math.min(limit, DEFAULT_LIMIT));
         }
 
+        List<QueryColumn> queryColumns = new ArrayList<>();
+        List<Map<String, Object>> resultList = new ArrayList<>();
         jdbcTemplate.query(sql, rs -> {
-
             ResultSetMetaData metaData = rs.getMetaData();
-            List<QueryColumn> queryColumns = new ArrayList<>();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                queryColumns.add(new QueryColumn(metaData.getColumnLabel(i), metaData.getColumnTypeName(i)));
-            }
-            listWithQueryColumn.setColumns(queryColumns);
-
-            List<Map<String, Object>> resultList = new ArrayList<>();
-
-            try {
-                while (rs.next()) {
-                    resultList.add(getResultObjectMap(rs, metaData));
+            if(CollectionUtils.isEmpty(queryColumns)){
+                for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                    queryColumns.add(new QueryColumn(metaData.getColumnLabel(i), metaData.getColumnTypeName(i)));
                 }
+            }
+            try {
+                resultList.add(getResultObjectMap(rs, metaData));
             } catch (Throwable e) {
                 logger.error("get data error", e);
             }
-
-            listWithQueryColumn.setResultList(resultList);
-
-            logger.info("query for {} ms, total count:{} sql:{}",
-                    System.currentTimeMillis() - before,
-                    listWithQueryColumn.getResultList().size(),
-                    formatSql(sql));
         });
+        listWithQueryColumn.setColumns(queryColumns);
+        listWithQueryColumn.setResultList(resultList);
+        logger.info("query for {} ms, total count:{} sql:{}",
+                System.currentTimeMillis() - before,
+                listWithQueryColumn.getResultList().size(),
+                formatSql(sql));
 
         return listWithQueryColumn;
     }
