@@ -155,7 +155,11 @@ public class MetricController {
         Set<String> expectedValueList = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
         Set<String> afterFilterSet = new HashSet<>();
         expectedValueList.forEach(it -> {
-            afterFilterSet.add(it.replace("local_", "").replace("spark_",""));
+            afterFilterSet.add(it
+                    .replace("local_", "")
+                    .replace("spark_","")
+                    .replace("livy_","")
+            );
         });
 
         List<Item> items = new ArrayList<>();

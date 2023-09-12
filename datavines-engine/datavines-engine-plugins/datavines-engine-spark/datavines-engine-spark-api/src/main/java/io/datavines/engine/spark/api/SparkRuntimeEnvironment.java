@@ -29,6 +29,8 @@ import io.datavines.engine.api.env.Execution;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.spark.api.batch.SparkBatchExecution;
 
+import static io.datavines.common.ConfigConstants.ENABLE_SPARK_HIVE_SUPPORT;
+
 public class SparkRuntimeEnvironment implements RuntimeEnvironment {
 
     private static final String TYPE = "type";
@@ -40,6 +42,8 @@ public class SparkRuntimeEnvironment implements RuntimeEnvironment {
     private StreamingContext streamingContext;
 
     private Config config = new Config();
+
+    public boolean enableSparkHiveSupport;
 
     @Override
     public void setConfig(Config config) {
@@ -60,7 +64,13 @@ public class SparkRuntimeEnvironment implements RuntimeEnvironment {
 
     @Override
     public void prepare() {
-        sparkSession = SparkSession.builder().config(createSparkConf()).getOrCreate();
+        SparkSession.Builder configBuilder = SparkSession.builder().config(createSparkConf());
+        Boolean enableHiveSupport = config.getBoolean(ENABLE_SPARK_HIVE_SUPPORT);
+        enableSparkHiveSupport = Boolean.TRUE.equals(enableHiveSupport);
+        if (enableSparkHiveSupport) {
+            configBuilder.enableHiveSupport();
+        }
+        sparkSession = configBuilder.getOrCreate();
         JdbcDialects.registerDialect(new HiveSqlDialect());
         this.createStreamingContext();
     }
@@ -90,6 +100,10 @@ public class SparkRuntimeEnvironment implements RuntimeEnvironment {
 
     public StreamingContext streamingContext() {
         return streamingContext;
+    }
+
+    public boolean enableSparkHiveSupport() {
+        return enableSparkHiveSupport;
     }
 
     @Override
