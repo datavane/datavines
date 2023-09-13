@@ -16,6 +16,7 @@
  */
 package io.datavines.engine.local.api;
 
+import io.datavines.common.config.Config;
 import io.datavines.engine.api.component.Component;
 import io.datavines.engine.local.api.entity.ResultList;
 
@@ -26,16 +27,24 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.EXPECTED_VALUE;
+
 public interface LocalSink extends Component {
 
     Logger log = LoggerFactory.getLogger(LocalSink.class);
 
     void output(List<ResultList> resultList, LocalRuntimeEnvironment env) throws Exception;
 
-    default void setExceptedValue(List<ResultList> resultList, Map<String, String> inputParameter) {
+    default void setExceptedValue(Config config, List<ResultList> resultList, Map<String, String> inputParameter) {
         if (CollectionUtils.isEmpty(resultList)) {
             return;
         }
+        config.configMap().forEach((k,v) -> {
+                if (k.startsWith(EXPECTED_VALUE)) {
+                    inputParameter.put(k, String.valueOf(v));
+                }
+            }
+        );
 
         resultList.forEach(item -> {
             if (item != null) {

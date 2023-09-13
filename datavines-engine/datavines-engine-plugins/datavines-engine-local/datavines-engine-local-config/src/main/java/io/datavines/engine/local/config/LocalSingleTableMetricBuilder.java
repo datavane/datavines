@@ -62,8 +62,7 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
                 sinkConfigs.add(taskResultSinkConfig);
 
                 String actualValueSinkSql = SinkSqlBuilder.getActualValueSql()
-                        .replace("${actual_value}", "${actual_value_" + metricUniqueKey + "}")
-                        .replace("${expected_value}", "${expected_value_" + metricUniqueKey + "}");
+                        .replace("${actual_value}", "${actual_value_" + metricUniqueKey + "}");
                 //get the actual value storage parameter
                 SinkConfig actualValueSinkConfig = getValidateResultDataSinkConfig(
                         expectedValue, actualValueSinkSql, "dv_actual_values", metricInputParameter);

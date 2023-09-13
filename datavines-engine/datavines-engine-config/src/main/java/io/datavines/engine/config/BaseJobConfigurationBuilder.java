@@ -237,7 +237,8 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                 ParameterUtils.convertParameterPlaceholders(sql, inputParameter),dbTable);
         configMap.put(JOB_EXECUTION_ID, jobExecutionInfo.getId());
         configMap.put(INVALIDATE_ITEMS_TABLE, inputParameter.get(INVALIDATE_ITEMS_TABLE));
-
+        String expectedValueName = String.format("%s_%s", EXPECTED_VALUE, inputParameter.get(METRIC_UNIQUE_KEY));
+        configMap.put(expectedValueName, inputParameter.get(expectedValueName));
         if (expectedValue != null && StringUtils.isNotEmpty(expectedValue.getOutputTable(inputParameter))) {
             inputParameter.put(EXPECTED_VALUE, expectedValue.getKey(inputParameter));
             configMap.put(EXPECTED_VALUE, expectedValue.getKey(inputParameter));

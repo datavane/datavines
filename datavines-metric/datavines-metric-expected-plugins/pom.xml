@@ -40,6 +40,7 @@
         <module>datavines-metric-expected-monthly-avg</module>
         <module>datavines-metric-expected-last7day-avg</module>
         <module>datavines-metric-expected-last30day-avg</module>
+        <module>datavines-metric-expected-none</module>
     </modules>
 
     <dependencies>

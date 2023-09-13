@@ -132,4 +132,8 @@ public class ConfigConstants {
     public static final String S001 = "\001";
 
     public static final String DOUBLE_AT = "@@";
+
+    public static final String PRE_SQL = "pre_sql";
+
+    public static final String POST_SQL = "post_sql";
 }

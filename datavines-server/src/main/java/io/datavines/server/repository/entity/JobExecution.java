@@ -93,6 +93,12 @@ public class JobExecution implements Serializable {
     @TableField(value = "timeout_strategy")
     private TimeoutStrategy timeoutStrategy = TimeoutStrategy.WARN;
 
+    @TableField(value = "pre_sql")
+    private String preSql;
+
+    @TableField(value = "post_sql")
+    private String postSql;
+
     @TableField(value = "tenant_code")
     private String tenantCode;
 

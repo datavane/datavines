@@ -75,6 +75,8 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
+                    connectorParameterMap.put(PRE_SQL, metricInputParameter.get(PRE_SQL));
+                    connectorParameterMap.put(POST_SQL, metricInputParameter.get(POST_SQL));
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                     invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();
@@ -109,6 +111,8 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
+                    connectorParameterMap.put(PRE_SQL, metricInputParameter.get(PRE_SQL));
+                    connectorParameterMap.put(POST_SQL, metricInputParameter.get(POST_SQL));
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
                     invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();

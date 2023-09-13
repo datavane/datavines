@@ -22,16 +22,16 @@ import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
 
-public class MonthlyAvg implements ExpectedValue {
+public class None implements ExpectedValue {
 
     @Override
     public String getName() {
-        return "monthly_avg";
+        return "none";
     }
 
     @Override
     public String getZhName() {
-        return "月均值";
+        return "无";
     }
 
     @Override
@@ -42,21 +42,17 @@ public class MonthlyAvg implements ExpectedValue {
 
     @Override
     public String getExecuteSql(Map<String,String> inputParameter) {
-        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
-        return "select round(avg(actual_value),2) as expected_value_" + uniqueKey +
-                " from dv_actual_values where data_time >= date_format(curdate(), '%Y-%m-01') and data_time < date_add(date_format(${data_time},'%Y-%m-%d'),interval 1 DAY)" +
-                " and unique_code = ${unique_code}";
+        return null;
     }
 
     @Override
     public String getOutputTable(Map<String,String> inputParameter) {
-        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
-        return "monthly_range_" + uniqueKey;
+        return null;
     }
 
     @Override
     public boolean isNeedDefaultDatasource() {
-        return true;
+        return false;
     }
 
     @Override

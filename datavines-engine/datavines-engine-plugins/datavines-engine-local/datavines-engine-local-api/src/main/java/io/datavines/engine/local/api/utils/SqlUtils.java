@@ -260,6 +260,16 @@ public class SqlUtils {
         }
     }
 
+    public static void dropView(String viewName, Statement statement) {
+        try {
+            if (StringUtils.isNotEmpty(viewName) && !"null".equals(viewName)) {
+                statement.execute("DROP VIEW " + viewName);
+            }
+        } catch (Exception e) {
+            log.error("drop view error : ", e);
+        }
+    }
+
     public static void closeResultSet(ResultSet resultSet) {
         if (resultSet != null) {
             try {

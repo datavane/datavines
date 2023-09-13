@@ -29,7 +29,6 @@ import io.datavines.engine.local.api.utils.SqlUtils;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
-import java.sql.Statement;
 import java.util.*;
 import java.util.stream.Collectors;
 
