@@ -504,6 +504,8 @@ CREATE TABLE `dv_job` (
     `retry_interval` int(11) DEFAULT NULL COMMENT '重试间隔',
     `timeout` int(11) DEFAULT NULL COMMENT '任务超时时间',
     `timeout_strategy` int(11) DEFAULT NULL COMMENT '超时策略',
+    `pre_sql` text DEFAULT NULL COMMENT '前置脚本',
+    `post_sql` text DEFAULT NULL COMMENT '后置脚本',
     `tenant_code` bigint(20) DEFAULT NULL COMMENT '代理用户',
     `env` bigint(20) DEFAULT NULL COMMENT '环境配置',
     `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
@@ -537,6 +539,8 @@ CREATE TABLE `dv_job_execution` (
   `retry_interval` int(11) DEFAULT NULL COMMENT '重试间隔',
   `timeout` int(11) DEFAULT NULL COMMENT '超时时间',
   `timeout_strategy` int(11) DEFAULT NULL COMMENT '超时处理策略',
+  `pre_sql` text DEFAULT NULL COMMENT '前置脚本',
+  `post_sql` text DEFAULT NULL COMMENT '后置脚本',
   `tenant_code` varchar(255) DEFAULT NULL COMMENT '代理用户',
   `execute_host` varchar(255) DEFAULT NULL COMMENT '执行任务的主机',
   `application_id` varchar(255) DEFAULT NULL COMMENT 'yarn application id',
@@ -792,7 +796,7 @@ CREATE TABLE `dv_config` (
 ) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COMMENT='配置';
 
 INSERT INTO `dv_config` VALUES ('1', '-1', 'data.quality.jar.name', '/libs/datavines-engine-spark-core-1.0.0-SNAPSHOT.jar', '1', '1', '2023-09-02 16:52:56', '1', '2023-09-03 09:56:12');
-INSERT INTO `dv_config` VALUES ('2', '-1', 'yarn.mode', 'ha', '1', '1', '2023-09-02 18:28:59', '1', '2023-09-03 12:46:24');
+INSERT INTO `dv_config` VALUES ('2', '-1', 'yarn.mode', 'standalone', '1', '1', '2023-09-02 18:28:59', '1', '2023-09-03 12:46:24');
 INSERT INTO `dv_config` VALUES ('3', '-1', 'yarn.application.status.address', 'http://%s:%s/ws/v1/cluster/apps/%s', '1', '1', '2023-09-03 09:57:01', '1', '2023-09-03 09:57:01');
 INSERT INTO `dv_config` VALUES ('4', '-1', 'yarn.resource.manager.http.address.port', '8088', '1', '1', '2023-09-03 09:57:34', '1', '2023-09-03 09:57:34');
 INSERT INTO `dv_config` VALUES ('5', '-1', 'yarn.resource.manager.ha.ids', '192.168.0.x,192.168.0.x', '1', '1', '2023-09-03 09:58:17', '1', '2023-09-03 09:58:17');

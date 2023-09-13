@@ -7,6 +7,7 @@ import { CustomSelect, useMount } from '../../../common';
 import Title from '../Title';
 import { layoutItem } from '../helper';
 import { TDetail } from '../type';
+import TextArea from 'antd/es/input/TextArea';
 
 type InnerProps = {
     form: FormInstance,
@@ -23,6 +24,8 @@ const Index = ({ form, detail }: InnerProps) => {
                 retryInterval: detail?.retryInterval || 1,
                 timeout: detail?.timeout || 36000,
                 timeoutStrategy: detail?.timeoutStrategy || 0,
+                preSql:detail?.preSql || "",
+                postSql:detail?.postSql || "",
             });
         }
     });
@@ -75,6 +78,24 @@ const Index = ({ form, detail }: InnerProps) => {
                                 { label: intl.formatMessage({ id: 'dv_metric_other_timeout_strategy_retry' }), value: 0 },
                                 { label: intl.formatMessage({ id: 'dv_metric_other_timeout_strategy_alert' }), value: 1 }]}
                         />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item
+                        {...layoutItem}
+                        label={intl.formatMessage({ id: 'dv_metric_pre_sql' })}
+                        name="preSql"
+                    >
+                        <TextArea  />
+                    </Form.Item>
+                </Col>
+                <Col span={12}>
+                    <Form.Item
+                        {...layoutItem}
+                        label={intl.formatMessage({ id: 'dv_metric_post_sql' })}
+                        name="postSql"
+                    >
+                        <TextArea />
                     </Form.Item>
                 </Col>
             </Row>

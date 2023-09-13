@@ -20,6 +20,8 @@ import io.datavines.metric.api.ExpectedValue;
 
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
+
 public class FixValue implements ExpectedValue {
 
     @Override
@@ -33,17 +35,18 @@ public class FixValue implements ExpectedValue {
     }
 
     @Override
-    public String getType() {
-        return "fix_value";
+    public String getKey(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return "expected_value_" + uniqueKey;
     }
 
     @Override
-    public String getExecuteSql() {
+    public String getExecuteSql(Map<String,String> inputParameter) {
         return null;
     }
 
     @Override
-    public String getOutputTable() {
+    public String getOutputTable(Map<String,String> inputParameter) {
         return null;
     }
 

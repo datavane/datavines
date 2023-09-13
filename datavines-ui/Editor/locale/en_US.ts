@@ -50,6 +50,8 @@ export default {
     dv_metric_other_timeout_strategy_retry: 'Retry',
     dv_metric_other_timeout_strategy_alert: 'Alert',
     dv_metric_other_config_second: 'S',
+    dv_metric_pre_sql: 'PreScript',
+    dv_metric_post_sql: 'PostScript',
     dv_metric_error_store_config: 'Error Data Storage Configuration',
     dv_metric_error_store_engine: 'Error Data Storage Engine',
     dv_metric_error_output_to_datasource: 'Error Data Output To Datasource',

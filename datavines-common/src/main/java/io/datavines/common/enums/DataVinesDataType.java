@@ -119,7 +119,7 @@ public enum DataVinesDataType {
         }
 
         type = type.toLowerCase();
-        if (type.contains("int") || "decimal".equalsIgnoreCase(type) || "float".equalsIgnoreCase(type) || "double".equalsIgnoreCase(type)) {
+        if (type.contains("int") || "decimal".equalsIgnoreCase(type) || "float".equalsIgnoreCase(type) || "double".equalsIgnoreCase(type) || type.contains("number")) {
             return NUMERIC_TYPE;
         } else if (type.contains("char") || "blob".equalsIgnoreCase(type) || type.contains("text")) {
             return STRING_TYPE;

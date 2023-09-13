@@ -97,6 +97,12 @@ public class Job implements Serializable {
     @TableField(value = "timeout_strategy")
     private TimeoutStrategy timeoutStrategy;
 
+    @TableField(value = "pre_sql")
+    private String preSql;
+
+    @TableField(value = "post_sql")
+    private String postSql;
+
     @TableField(value = "tenant_code",updateStrategy = FieldStrategy.IGNORED)
     private Long tenantCode;
 

@@ -78,6 +78,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
 
                     metricInputParameter.put(TABLE, outputTable);
+                    metricInputParameter.put(TABLE_ALIAS, outputTable + "_" + metricUniqueKey + "_1");
                     metricInputParameter.put(REGEX_KEY, "regexp(${column}, ${regex})");
                     metricInputParameter.put(NOT_REGEX_KEY, "!regexp(${column}, ${regex})");
                     metricInputParameter.put(STRING_TYPE, "string");
@@ -112,7 +113,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     metricInputParameter.put(TABLE2, outputTable);
-
+                    metricInputParameter.put(TABLE2_ALIAS, outputTable+ "_" + metricUniqueKey + "_2");
                     if (targetConnectorSet.contains(connectorUUID)) {
                         continue;
                     }

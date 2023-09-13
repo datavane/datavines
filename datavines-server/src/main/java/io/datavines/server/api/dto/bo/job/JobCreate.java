@@ -55,6 +55,10 @@ public class JobCreate {
 
     private Integer retryInterval = 1000;
 
+    private String preSql;
+
+    private String postSql;
+
     private Long tenantCode;
 
     private Long env;

@@ -34,8 +34,8 @@ import io.datavines.server.enums.ScheduleJobType;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTaskSchedule;
 import io.datavines.server.repository.mapper.CatalogMetaDataFetchTaskScheduleMapper;
-import io.datavines.server.repository.mapper.DataSourceMapper;
 import io.datavines.server.repository.service.CatalogMetaDataFetchTaskScheduleService;
+import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.server.utils.ContextHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -56,7 +56,7 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
     private QuartzExecutors quartzExecutor;
 
     @Autowired
-    private DataSourceMapper dataSourceMapper;
+    private DataSourceService dataSourceService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -85,7 +85,7 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
         catalogMetaDataFetchTaskSchedule.setStatus(true);
 
         updateCatalogTaskScheduleParam(catalogMetaDataFetchTaskSchedule, scheduleCreateOrUpdate.getType(), scheduleCreateOrUpdate.getParam());
-        DataSource dataSource = dataSourceMapper.selectById(dataSourceId);
+        DataSource dataSource = dataSourceService.getById(dataSourceId);
         if (dataSource == null) {
             throw new DataVinesServerException(Status.DATASOURCE_NOT_EXIST_ERROR, dataSourceId);
         } else {
@@ -178,7 +178,7 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
             return false;
         }
 
-        boolean deleteJob = quartzExecutor.deleteJob(getScheduleJobInfo(catalogMetaDataFetchTaskSchedule));
+        Boolean deleteJob = quartzExecutor.deleteJob(getScheduleJobInfo(catalogMetaDataFetchTaskSchedule));
         if (!deleteJob ) {
             return false;
         }

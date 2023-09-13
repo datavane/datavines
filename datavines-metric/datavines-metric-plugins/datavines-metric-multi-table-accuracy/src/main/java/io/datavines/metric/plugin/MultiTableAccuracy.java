@@ -34,7 +34,7 @@ public class MultiTableAccuracy implements SqlMetric {
 
     private final StringBuilder targetTableSql = new StringBuilder("SELECT * FROM ${table2}");
 
-    private final StringBuilder invalidateItemsSql = new StringBuilder("SELECT ${table}.* FROM ");
+    private final StringBuilder invalidateItemsSql = new StringBuilder("SELECT ${table_alias_columns}, ${table2_alias_columns} FROM ");
 
     @Override
     public String getName() {
@@ -87,9 +87,9 @@ public class MultiTableAccuracy implements SqlMetric {
         }
 
         invalidateItemsSql
-                .append("(").append(sourceTableSql).append(")").append(" ${table} ")
+                .append("(").append(sourceTableSql).append(")").append(" ${table_alias} ")
                 .append(" LEFT JOIN ")
-                .append("(").append(targetTableSql).append(")").append(" ${table2} ")
+                .append("(").append(targetTableSql).append(")").append(" ${table2_alias} ")
                 .append("ON ${on_clause} WHERE ${where_clause}");
     }
 

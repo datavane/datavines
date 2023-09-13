@@ -57,7 +57,7 @@ public class SparkSingleTableMetricBuilder extends BaseSparkConfigurationBuilder
                 sinkConfigs.add(actualValueSinkConfig);
 
                 String taskSinkSql = SparkSinkSqlBuilder.getDefaultSinkSql();
-                if (StringUtils.isEmpty(expectedValue.getOutputTable())) {
+                if (StringUtils.isEmpty(expectedValue.getOutputTable(metricInputParameter))) {
                     taskSinkSql = taskSinkSql.replaceAll("full join \\$\\{expected_table}","");
                 }
 

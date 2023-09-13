@@ -30,8 +30,9 @@ import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.JobType;
-import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.utils.*;
+import io.datavines.common.utils.JSONUtils;
+import io.datavines.common.utils.PasswordFilterUtils;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
@@ -50,9 +51,6 @@ import io.datavines.server.enums.Priority;
 import io.datavines.server.repository.entity.*;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 import io.datavines.server.repository.entity.catalog.CatalogEntityMetricJobRel;
-import io.datavines.server.repository.mapper.CatalogEntityInstanceMapper;
-import io.datavines.server.repository.mapper.CatalogEntityMetricJobRelMapper;
-import io.datavines.server.repository.mapper.DataSourceMapper;
 import io.datavines.server.repository.mapper.JobMapper;
 import io.datavines.server.repository.service.*;
 import io.datavines.server.utils.ContextHolder;
@@ -75,7 +73,6 @@ import java.util.Map;
 
 import static io.datavines.common.CommonConstants.LOCAL;
 import static io.datavines.common.ConfigConstants.ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE;
-import static io.datavines.common.ConfigConstants.FALSE;
 import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
 
 @Slf4j
@@ -89,7 +86,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     private CommandService commandService;
 
     @Autowired
-    private DataSourceMapper dataSourceMapper;
+    private DataSourceService dataSourceService;
 
     @Autowired
     private EnvService envService;
@@ -104,13 +101,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     private SlaService slaService;
 
     @Autowired
-    private CatalogEntityMetricJobRelMapper catalogEntityMetricJobRelMapper;
+    private CatalogEntityMetricJobRelService catalogEntityMetricJobRelService;
 
     @Autowired
     private IssueService issueService;
 
     @Autowired
-    private CatalogEntityInstanceMapper catalogEntityInstanceMapper;
+    private CatalogEntityInstanceService catalogEntityInstanceService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -122,7 +119,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         }
 
         if (jobCreate.getIsErrorDataOutputToDataSource()!= null && jobCreate.getIsErrorDataOutputToDataSource()) {
-            DataSource dataSource = getDataSourceById(jobCreate.getDataSourceId());
+            DataSource dataSource = dataSourceService.getDataSourceById(jobCreate.getDataSourceId());
             if (dataSource != null) {
                 String errorDataStorageType = dataSource.getType();
                 ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorageType);
@@ -167,15 +164,15 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     private boolean getByKeyAttribute(Job job) {
-         List<Job> list = baseMapper.selectList(new QueryWrapper<Job>()
+        List<Job> list = baseMapper.selectList(new QueryWrapper<Job>()
                 .eq("name",job.getName())
                 .eq("schema_name",job.getSchemaName())
                 .eq("table_name",job.getTableName())
                 .eq("datasource_id",job.getDataSourceId())
                 .eq(job.getDataSourceId2() != 0, "datasource_id_2", job.getDataSourceId2())
                 .eq(StringUtils.isNotEmpty(job.getColumnName()), "column_name",job.getColumnName())
-         );
-         return CollectionUtils.isNotEmpty(list);
+        );
+        return CollectionUtils.isNotEmpty(list);
     }
 
     @Override
@@ -187,7 +184,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         }
 
         if (jobUpdate.getIsErrorDataOutputToDataSource()!= null && jobUpdate.getIsErrorDataOutputToDataSource()) {
-            DataSource dataSource = getDataSourceById(job.getDataSourceId());
+            DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
             if (dataSource != null) {
                 String errorDataStorageType = dataSource.getType();
                 ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorageType);
@@ -220,18 +217,19 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     private void saveOrUpdateMetricJobEntityRel(Job job, List<String> fqnList) {
-        List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelMapper.selectList(new QueryWrapper<CatalogEntityMetricJobRel>()
+        List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
                 .eq("metric_job_id", job.getId())
                 .eq("metric_job_type", "DATA_QUALITY"));
         if (!listRel.isEmpty()) {
-            catalogEntityMetricJobRelMapper.delete(new QueryWrapper<CatalogEntityMetricJobRel>()
+            catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>()
                     .eq("metric_job_id", job.getId())
                     .eq("metric_job_type", "DATA_QUALITY"));
         }
 
         if (CollectionUtils.isNotEmpty(fqnList)) {
             for (String fqn : fqnList) {
-                CatalogEntityInstance instance = getCatalogEntityInstance(job.getDataSourceId(), fqn);
+                CatalogEntityInstance instance =
+                        catalogEntityInstanceService.getByDataSourceAndFQN(job.getDataSourceId(), fqn);
                 if (instance == null) {
                     continue;
                 }
@@ -244,16 +242,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
                 entityMetricJobRel.setCreateTime(LocalDateTime.now());
                 entityMetricJobRel.setUpdateBy(ContextHolder.getUserId());
                 entityMetricJobRel.setUpdateTime(LocalDateTime.now());
-                catalogEntityMetricJobRelMapper.insert(entityMetricJobRel);
+                catalogEntityMetricJobRelService.save(entityMetricJobRel);
             }
         }
-    }
-
-    private CatalogEntityInstance getCatalogEntityInstance(Long dataSourceId, String fqn) {
-        return catalogEntityInstanceMapper.selectOne(new QueryWrapper<CatalogEntityInstance>()
-                .eq("datasource_id", dataSourceId)
-                .eq("fully_qualified_name", fqn)
-                .eq("status", "active"));
     }
 
     @Override
@@ -310,8 +301,10 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         for (BaseJobParameter jobParameter : jobParameters) {
 
-            if (datasourceId2 !=0 && LOCAL.equalsIgnoreCase(engine) && "multi_table_accuracy".equalsIgnoreCase(jobParameter.getMetricType())) {
-                throw new DataVinesServerException(Status.MULTI_TABLE_ACCURACY_NOT_SUPPORT_LOCAL_ENGINE);
+            if (datasourceId2 !=0 && LOCAL.equalsIgnoreCase(engine) ) {
+                if ("multi_table_accuracy".equalsIgnoreCase(jobParameter.getMetricType()) && datasourceId != datasourceId2)  {
+                    throw new DataVinesServerException(Status.MULTI_TABLE_ACCURACY_NOT_SUPPORT_LOCAL_ENGINE);
+                }
             }
 
             if (StringUtils.isEmpty(getFQN(jobParameter))) {
@@ -322,7 +315,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
                 return;
             }
 
-            CatalogEntityInstance columnEntity = getCatalogEntityInstance(datasourceId, getFQN(jobParameter));
+            CatalogEntityInstance columnEntity =
+                    catalogEntityInstanceService.getByDataSourceAndFQN(datasourceId, getFQN(jobParameter));
             if (columnEntity == null) {
                 return;
             }
@@ -407,7 +401,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     @Transactional(rollbackFor = Exception.class)
     public int deleteById(long id) {
         if (baseMapper.deleteById(id) > 0) {
-            catalogEntityMetricJobRelMapper.delete(new QueryWrapper<CatalogEntityMetricJobRel>().eq("metric_job_id", id));
+            catalogEntityMetricJobRelService.deleteByJobId(id);
             jobExecutionService.deleteByJobId(id);
             issueService.deleteByJobId(id);
             return 1;
@@ -463,13 +457,11 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         JobExecution jobExecution = getJobExecution(job, scheduleTime);
 
         jobExecutionService.save(jobExecution);
-        Map<String,String> parameter = new HashMap<>();
-        parameter.put("engine",jobExecution.getEngineType());
+
         // add a command
         Command command = new Command();
         command.setType(CommandType.START);
         command.setPriority(Priority.MEDIUM);
-        command.setParameter(JSONUtils.toJsonString(parameter));
         command.setJobExecutionId(jobExecution.getId());
         commandService.insert(command);
     }
@@ -494,7 +486,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         String errorDataStorageParameter = "";
 
         if (job.getIsErrorDataOutputToDataSource()!= null && job.getIsErrorDataOutputToDataSource()) {
-            DataSource dataSource = getDataSourceById(job.getDataSourceId());
+            DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
             if (dataSource != null) {
                 errorDataStorageType = dataSource.getType();
                 Map<String,String> errorDataStorageParameterMap = new HashMap<>();
@@ -628,14 +620,14 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     private String buildJobExecutionParameter(Job job) {
-        DataSource dataSource = getDataSourceById(job.getDataSourceId());
+        DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
         Map<String, Object> srcSourceConfigMap = JSONUtils.toMap(dataSource.getParam(), String.class, Object.class);
         ConnectionInfo srcConnectionInfo = new ConnectionInfo();
         srcConnectionInfo.setType(dataSource.getType());
         srcConnectionInfo.setConfig(srcSourceConfigMap);
 
         ConnectionInfo targetConnectionInfo = new ConnectionInfo();
-        DataSource dataSource2 = getDataSourceById(job.getDataSourceId2());
+        DataSource dataSource2 = dataSourceService.getDataSourceById(job.getDataSourceId2());
         if (dataSource2 != null) {
             Map<String, Object> targetSourceConfigMap = JSONUtils.toMap(dataSource2.getParam(), String.class, Object.class);
             targetConnectionInfo.setType(dataSource2.getType());
@@ -644,25 +636,5 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         return JobExecutionParameterBuilderFactory.builder(job.getType())
                 .buildJobExecutionParameter(job.getParameter(), srcConnectionInfo, targetConnectionInfo);
-    }
-
-    private DataSource getDataSourceById(Long dataSourceId) {
-        DataSource dataSource = dataSourceMapper.selectById(dataSourceId);
-        if (dataSource == null) {
-            return null;
-        }
-
-        String param = dataSource.getParam();
-
-        try {
-            param = CryptionUtils.decryptByAES(param
-                    , CommonPropertyUtils.getString(CommonPropertyUtils.AES_KEY, CommonPropertyUtils.AES_KEY_DEFAULT));
-        } catch (Exception e) {
-            throw new DataVinesException("encrypt datasource param error : ", e);
-        }
-
-        dataSource.setParam(param);
-
-        return dataSource;
     }
 }

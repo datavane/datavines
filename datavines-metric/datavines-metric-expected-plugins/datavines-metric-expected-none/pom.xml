@@ -22,33 +22,12 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>datavines-metric</artifactId>
+        <artifactId>datavines-metric-expected-plugins</artifactId>
         <groupId>io.datavines</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>datavines-metric-expected-plugins</artifactId>
-    <packaging>pom</packaging>
-    <modules>
-        <module>datavines-metric-expected-all</module>
-        <module>datavines-metric-expected-fix</module>
-        <module>datavines-metric-expected-daily-avg</module>
-        <module>datavines-metric-expected-table-rows</module>
-        <module>datavines-metric-expected-target-table-rows</module>
-        <module>datavines-metric-expected-weekly-avg</module>
-        <module>datavines-metric-expected-monthly-avg</module>
-        <module>datavines-metric-expected-last7day-avg</module>
-        <module>datavines-metric-expected-last30day-avg</module>
-        <module>datavines-metric-expected-none</module>
-    </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-metric-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
+    <artifactId>datavines-metric-expected-none</artifactId>
 
 </project>

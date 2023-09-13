@@ -28,7 +28,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.EXPECTED_VALUE;
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
 
 public interface LocalSink extends Component {
 
@@ -37,24 +38,24 @@ public interface LocalSink extends Component {
     void output(List<ResultList> resultList, LocalRuntimeEnvironment env) throws Exception;
 
     default void setExceptedValue(Config config, List<ResultList> resultList, Map<String, String> inputParameter) {
-        if (CollectionUtils.isNotEmpty(resultList)) {
-            resultList.forEach(item -> {
-                if(item != null) {
-                    item.getResultList().forEach(x -> {
-                        x.forEach((k,v) -> {
-                            String expectedValue = config.getString(EXPECTED_VALUE);
-                            if (StringUtils.isNotEmpty(expectedValue)) {
-                                if (expectedValue.equals(k)) {
-                                    inputParameter.put(EXPECTED_VALUE, String.valueOf(v));
-                                }
-                            }
-
-                            inputParameter.put(k, String.valueOf(v));
-                        });
-                    });
-                }
-            });
+        if (CollectionUtils.isEmpty(resultList)) {
+            return;
         }
+        String metricUniqueKey = config.getString(METRIC_UNIQUE_KEY);
+        String expectedValueKey = String.format("%s_%s", EXPECTED_VALUE, metricUniqueKey);
+        if (!StringUtils.isEmptyOrNullStr(config.getString(expectedValueKey))) {
+            inputParameter.put(expectedValueKey, config.getString(expectedValueKey));
+        } else {
+            inputParameter.put(expectedValueKey, "0");
+        }
+
+        resultList.forEach(item -> {
+            if (item != null) {
+                item.getResultList().forEach(x -> {
+                    x.forEach((k,v) -> inputParameter.put(k, String.valueOf(v)));
+                });
+            }
+        });
     }
 
 }

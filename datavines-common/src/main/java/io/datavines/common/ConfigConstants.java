@@ -21,6 +21,10 @@ public class ConfigConstants {
     public static final String CONNECTOR_TYPE = "connector_type";
     public static final String DATASOURCE_ID = "datasource_id";
     public static final String TABLE = "table";
+    public static final String TABLE_ALIAS = "table_alias";
+    public static final String TABLE2_ALIAS = "table2_alias";
+    public static final String TABLE_ALIAS_COLUMNS = "table_alias_columns";
+    public static final String TABLE2_ALIAS_COLUMNS = "table2_alias_columns";
     public static final String FILTER = "filter";
     public static final String COLUMN = "column";
     public static final String SRC_CONNECTOR_TYPE = "src_connector_type";
@@ -38,7 +42,7 @@ public class ConfigConstants {
     public static final String EXPECTED_VALUE = "expected_value";
     public static final String EXPECTED_VALUE_DEFAULT = "expected_value_default";
     public static final String EXPECTED_EXECUTE_SQL = "expected_execute_sql";
-    public static final String MAPPING_COLUMNS = "mapping_columns";
+    public static final String MAPPING_COLUMNS = "mappingColumns";
     public static final String ON_CLAUSE = "on_clause";
     public static final String WHERE_CLAUSE = "where_clause";
     public static final String RESULT_FORMULA = "result_formula";
@@ -128,4 +132,8 @@ public class ConfigConstants {
     public static final String S001 = "\001";
 
     public static final String DOUBLE_AT = "@@";
+
+    public static final String PRE_SQL = "pre_sql";
+
+    public static final String POST_SQL = "post_sql";
 }

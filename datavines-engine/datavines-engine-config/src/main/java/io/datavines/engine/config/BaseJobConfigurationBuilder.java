@@ -94,6 +94,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = new HashMap<>(this.inputParameter);
                 metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
+                metricInputParameter.put(String.format("%s_%s", EXPECTED_VALUE, metricUniqueKey), null);
                 if (parameter.getMetricParameter() != null) {
                     parameter.getMetricParameter().forEach((k, v) -> {
                         metricInputParameter.put(k, String.valueOf(v));
@@ -102,6 +103,10 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
 
                 if (parameter.getExpectedParameter() != null) {
                     parameter.getExpectedParameter().forEach((k, v) -> {
+                        if (EXPECTED_VALUE.equals(k) &&  v != null) {
+                            metricInputParameter.put(String.format("%s_%s", EXPECTED_VALUE, metricUniqueKey), String.valueOf(v));
+                            metricInputParameter.remove(EXPECTED_VALUE);
+                        }
                         metricInputParameter.put(k, String.valueOf(v));
                     });
                 }
@@ -180,7 +185,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                         .getNewPlugin(expectedType);
 
                 ExecuteSql expectedValueExecuteSql =
-                        new ExecuteSql(expectedValue.getExecuteSql(), expectedValue.getOutputTable());
+                        new ExecuteSql(expectedValue.getExecuteSql(metricInputParameter), expectedValue.getOutputTable(metricInputParameter));
 
                 if (StringUtils.isNotEmpty(expectedValueExecuteSql.getResultTable())) {
                     metricInputParameter.put(EXPECTED_TABLE, expectedValueExecuteSql.getResultTable());
@@ -232,10 +237,10 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                 ParameterUtils.convertParameterPlaceholders(sql, inputParameter),dbTable);
         configMap.put(JOB_EXECUTION_ID, jobExecutionInfo.getId());
         configMap.put(INVALIDATE_ITEMS_TABLE, inputParameter.get(INVALIDATE_ITEMS_TABLE));
-
-        if (expectedValue != null && StringUtils.isNotEmpty(expectedValue.getOutputTable())) {
-            inputParameter.put(EXPECTED_VALUE, expectedValue.getName());
-            configMap.put(EXPECTED_VALUE, expectedValue.getName());
+        configMap.put(METRIC_UNIQUE_KEY, inputParameter.get(METRIC_UNIQUE_KEY));
+        if (expectedValue != null && StringUtils.isNotEmpty(expectedValue.getOutputTable(inputParameter))) {
+            inputParameter.put(EXPECTED_VALUE, expectedValue.getKey(inputParameter));
+            configMap.put(EXPECTED_VALUE, expectedValue.getKey(inputParameter));
         }
 
         validateResultDataStorageConfig.setConfig(configMap);
@@ -270,6 +275,6 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                 parameter.getMetricParameter().get(DATABASE),
                 parameter.getMetricParameter().get(TABLE),
                 parameter.getMetricParameter().get(COLUMN),
-                jobExecutionInfo.getId()));
+                jobExecutionInfo.getId())).substring(0,8);
     }
 }

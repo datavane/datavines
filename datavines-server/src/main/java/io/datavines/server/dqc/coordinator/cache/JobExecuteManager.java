@@ -66,6 +66,8 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.*;
 
+import static io.datavines.common.ConfigConstants.POST_SQL;
+import static io.datavines.common.ConfigConstants.PRE_SQL;
 import static io.datavines.server.utils.DefaultDataSourceInfoUtils.getDefaultConnectionInfo;
 
 public class JobExecuteManager {
@@ -551,6 +553,8 @@ public class JobExecuteManager {
         jobExecutionRequest.setErrorDataStorageType(jobExecution.getErrorDataStorageType());
         jobExecutionRequest.setErrorDataStorageParameter(jobExecution.getErrorDataStorageParameter());
         Map<String,String> inputParameter = new HashMap<>();
+        inputParameter.put(PRE_SQL, jobExecution.getPreSql());
+        inputParameter.put(POST_SQL, jobExecution.getPostSql());
 
         JobExecutionInfo jobExecutionInfo = new JobExecutionInfo(
                 jobExecution.getId(), jobExecution.getName(),
@@ -559,7 +563,7 @@ public class JobExecuteManager {
                 getDefaultConnectionInfo().getType(), JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
                 jobExecutionParameter);
         DataVinesJobConfig qualityConfig =
-                DataVinesConfigurationManager.generateConfiguration(jobExecution.getJobType(),inputParameter, jobExecutionInfo);
+                DataVinesConfigurationManager.generateConfiguration(jobExecution.getJobType(), inputParameter, jobExecutionInfo);
 
         jobExecutionRequest.setExecuteFilePath(jobExecution.getExecuteFilePath());
         jobExecutionRequest.setLogPath(jobExecution.getLogPath());

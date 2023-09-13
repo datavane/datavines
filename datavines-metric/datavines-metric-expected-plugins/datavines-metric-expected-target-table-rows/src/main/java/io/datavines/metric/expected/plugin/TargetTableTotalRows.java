@@ -20,14 +20,16 @@ import io.datavines.metric.api.ExpectedValue;
 
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
+
 public class TargetTableTotalRows implements ExpectedValue {
 
-    private StringBuilder sql =
+    private final StringBuilder sql =
             new StringBuilder("select count(1) as expected_value from ${target_table}");
 
     @Override
     public String getName() {
-        return "expected_value";
+        return "target_table_total_rows";
     }
 
     @Override
@@ -36,18 +38,22 @@ public class TargetTableTotalRows implements ExpectedValue {
     }
 
     @Override
-    public String getType() {
-        return "target_table_total_rows";
+    public String getKey(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return "expected_value_" + uniqueKey;
     }
 
     @Override
-    public String getExecuteSql() {
-        return sql.toString();
+    public String getExecuteSql(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        String newKey = "expected_value_" + uniqueKey;
+        return sql.toString().replace("expected_value",newKey);
     }
 
     @Override
-    public String getOutputTable() {
-        return "total_count";
+    public String getOutputTable(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return "target_table_total_count_" + uniqueKey;
     }
 
     @Override

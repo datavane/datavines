@@ -119,7 +119,7 @@ public class Register {
             //Get the current active server, and then get all running tasks of the server other than the active server list
             List<String> activeServerList = activeServerInfoList
                     .stream()
-                    .map(ServerInfo::toString)
+                    .map(ServerInfo::getAddr)
                     .collect(Collectors.toList());
 
             jobExecutionFailover.handleJobExecutionFailover(activeServerList);

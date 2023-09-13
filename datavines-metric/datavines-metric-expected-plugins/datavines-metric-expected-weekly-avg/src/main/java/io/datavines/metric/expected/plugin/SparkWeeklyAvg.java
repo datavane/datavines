@@ -20,16 +20,19 @@ import io.datavines.metric.api.ExpectedValue;
 
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
+
 public class SparkWeeklyAvg implements ExpectedValue {
 
     @Override
     public String getName() {
-        return "weekly_range.weekly_avg";
+        return "weekly_avg";
     }
 
     @Override
-    public String getType() {
-        return "weekly_avg";
+    public String getKey(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return String.format("weekly_range_%s.expected_value_%s",uniqueKey,uniqueKey);
     }
 
     @Override
@@ -38,13 +41,17 @@ public class SparkWeeklyAvg implements ExpectedValue {
     }
 
     @Override
-    public String getExecuteSql() {
-        return "select round(avg(actual_value),2) as weekly_avg from dv_actual_values where  data_time >= date_sub(date_format(${data_time}, 'yyyy-MM-dd'), (7- datediff(next_day(date_format(${data_time}, 'yyyy-MM-dd'),'Sunday'),date_format(${data_time}, 'yyyy-MM-dd')))-1) and data_time < date_add(date_format(${data_time}, 'yyyy-MM-dd'),1) and unique_code = ${unique_code}";
+    public String getExecuteSql(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return "select round(avg(actual_value),2) as expected_value_" + uniqueKey +
+                " from dv_actual_values where data_time >= date_sub(date_format(${data_time},'yyyy-MM-dd'), (7- datediff(next_day(date_format(${data_time}, 'yyyy-MM-dd'),'Sunday'),date_format(${data_time}, 'yyyy-MM-dd')))-1)" +
+                " and data_time < date_add(date_format(${data_time}, 'yyyy-MM-dd'),1) and unique_code = ${unique_code}";
     }
 
     @Override
-    public String getOutputTable() {
-        return "weekly_range";
+    public String getOutputTable(Map<String,String> inputParameter) {
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        return "weekly_range_" + uniqueKey;
     }
 
     @Override

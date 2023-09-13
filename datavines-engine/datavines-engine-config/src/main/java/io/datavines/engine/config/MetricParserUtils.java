@@ -149,17 +149,31 @@ public class MetricParserUtils {
         String[] columnList = new String[mappingColumnList.size()];
         for (int i = 0; i < mappingColumnList.size(); i++) {
             MappingColumn column = mappingColumnList.get(i);
-            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE),column.getColumn())
+            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE_ALIAS),column.getColumn())
                     + column.getOperator()
-                    + getCoalesceString(inputParameterValueResult.get(TABLE2),column.getColumn2());
+                    + getCoalesceString(inputParameterValueResult.get(TABLE2_ALIAS),column.getColumn2());
         }
 
         return String.join(AND,columnList);
     }
 
+    public static String getTableAliasColumns(List<MappingColumn> mappingColumnList, String tableAlias, int index) {
+        String[] columnList = new String[mappingColumnList.size()];
+        for (int i = 0; i < mappingColumnList.size(); i++) {
+            MappingColumn column = mappingColumnList.get(i);
+            if (index == 1) {
+                columnList[i] = tableAlias + "." + column.getColumn() + " AS " +  column.getColumn() + "_" + index;;
+            } else if (index == 2){
+                columnList[i] = tableAlias + "." + column.getColumn2() + " AS " +  column.getColumn2() + "_" + index;;
+            }
+        }
+
+        return String.join(", ",columnList);
+    }
+
     public static String getWhereClause(List<MappingColumn> mappingColumnList,Map<String,String> inputParameterValueResult) {
-        String columnNotNull = "( NOT (" + getColumnIsNullStr(inputParameterValueResult.get(TABLE),getColumnListInTable(mappingColumnList)) + " ))";
-        String columnIsNull2 = "( " + getColumnIsNullStr(inputParameterValueResult.get(TABLE2),getColumnListInTable2(mappingColumnList)) + " )";
+        String columnNotNull = "( NOT (" + getColumnIsNullStr(inputParameterValueResult.get(TABLE_ALIAS),getColumnListInTable(mappingColumnList)) + " ))";
+        String columnIsNull2 = "( " + getColumnIsNullStr(inputParameterValueResult.get(TABLE2_ALIAS),getColumnListInTable2(mappingColumnList)) + " )";
 
         return columnNotNull + AND + columnIsNull2;
     }

@@ -23,19 +23,23 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.api.env.Execution;
 import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.engine.local.api.utils.LoggerFactory;
 import io.datavines.engine.local.api.utils.SqlUtils;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import static io.datavines.common.ConfigConstants.INVALIDATE_ITEMS_TABLE;
+import static io.datavines.common.ConfigConstants.*;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 
-@Slf4j
 public class LocalExecution implements Execution<LocalSource, LocalTransform, LocalSink> {
+
+    private final Logger log = LoggerFactory.getLogger(LocalExecution.class);
 
     private final LocalRuntimeEnvironment localRuntimeEnvironment;
 
@@ -55,21 +59,40 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
         }
 
         List<String> invalidItemTableSet = new ArrayList<>();
-
+        String preSql = null;
+        String postSql = null;
         try {
-            sources.forEach(localSource -> {
+            for (LocalSource localSource : sources)  {
                 switch (SourceType.of(localSource.getConfig().getString(PLUGIN_TYPE))){
                     case SOURCE:
                         localRuntimeEnvironment.setSourceConnection(localSource.getConnectionItem(localRuntimeEnvironment));
                         if (!localSource.checkTableExist()) {
                             throw new DataVinesException("source table is not exist");
                         }
+
+                        preSql = localSource.getConfig().getString(PRE_SQL);
+                        postSql = localSource.getConfig().getString(POST_SQL);
+                        try {
+                            executeScript(preSql, localRuntimeEnvironment.getSourceConnection().getConnection());
+                        } catch (SQLException e) {
+                            throw new DataVinesException(e);
+                        }
+
                         break;
                     case TARGET:
                         localRuntimeEnvironment.setTargetConnection(localSource.getConnectionItem(localRuntimeEnvironment));
                         if (!localSource.checkTableExist()) {
                             throw new DataVinesException("target table is not exist");
                         }
+
+                        preSql = localSource.getConfig().getString(PRE_SQL);
+                        postSql = localSource.getConfig().getString(POST_SQL);
+                        try {
+                            executeScript(preSql, localRuntimeEnvironment.getTargetConnection().getConnection());
+                        } catch (SQLException e) {
+                            throw new DataVinesException(e);
+                        }
+
                         break;
                     case METADATA:
                         localRuntimeEnvironment.setMetadataConnection(localSource.getConnectionItem(localRuntimeEnvironment));
@@ -77,7 +100,7 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
                     default:
                         break;
                 }
-            });
+            }
 
             List<ResultList> taskResult = new ArrayList<>();
             List<ResultList> actualValue = new ArrayList<>();
@@ -111,13 +134,11 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
                         localSink.output(null, localRuntimeEnvironment);
                         break;
                     case ACTUAL_VALUE:
+                    case PROFILE_VALUE:
                         localSink.output(actualValue, localRuntimeEnvironment);
                         break;
                     case VALIDATE_RESULT:
                         localSink.output(taskResult, localRuntimeEnvironment);
-                        break;
-                    case PROFILE_VALUE:
-                        localSink.output(actualValue, localRuntimeEnvironment);
                         break;
                     default:
                         break;
@@ -136,11 +157,42 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
             }
         }
 
+        post(postSql);
+
         localRuntimeEnvironment.close();
+    }
+
+    private void post(String postSql) {
+        try {
+            if (localRuntimeEnvironment.getSourceConnection() != null) {
+                executeScript(postSql, localRuntimeEnvironment.getSourceConnection().getConnection());
+            }
+        } catch (SQLException e) {
+            throw new DataVinesException(e);
+        }
+
+        try {
+            if (localRuntimeEnvironment.getTargetConnection() != null) {
+                executeScript(postSql, localRuntimeEnvironment.getTargetConnection().getConnection());
+            }
+        } catch (SQLException e) {
+            throw new DataVinesException(e);
+        }
     }
 
     @Override
     public void stop() throws Exception {
         localRuntimeEnvironment.close();
+    }
+
+    private void executeScript(String script, Connection connection) {
+        if (StringUtils.isNotEmpty(script) && !"null".equalsIgnoreCase(script)) {
+            try (Statement statement = connection.createStatement()) {
+                log.info("execute script: {}", script);
+                statement.execute(script);
+            } catch (SQLException e) {
+                log.error("execute script error", e);
+            }
+        }
     }
 }

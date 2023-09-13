@@ -18,6 +18,7 @@ package io.datavines.engine.local.transform.sql;
 
 import io.datavines.common.config.Config;
 import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.engine.local.api.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Connection;
@@ -35,7 +36,7 @@ public class InvalidateItemsExecutor implements ITransformExecutor {
         String sql = config.getString(SQL);
 
         Statement statement = connection.createStatement();
-        statement.execute("DROP VIEW IF EXISTS " + outputTable);
+        SqlUtils.dropView(outputTable, statement);
         statement.execute("CREATE VIEW " + outputTable + " AS " + sql);
         statement.close();
         return null;
