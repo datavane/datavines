@@ -113,7 +113,7 @@ public class JobExecutionFailover {
     }
 
     private void handleRerunJobExecution(List<JobExecution> needRerunJobExecutionList) {
-        needRerunJobExecutionList.forEach(jobExecution -> jobExecuteManager.addExecuteCommand(jobExecution));
+        needRerunJobExecutionList.forEach(jobExecuteManager::addExecuteCommand);
     }
 
     class YarnJobExecutionStatusChecker implements Runnable {
@@ -121,7 +121,7 @@ public class JobExecutionFailover {
         @Override
         public void run() {
 
-            if (Stopper.isRunning() && needCheckStatusJobExecutionMap.size() > 0) {
+            if (Stopper.isRunning() && !needCheckStatusJobExecutionMap.isEmpty()) {
                 needCheckStatusJobExecutionMap.forEach((k,v) ->{
                     JobExecuteResponseCommand responseCommand =
                             new JobExecuteResponseCommand(v.getId());

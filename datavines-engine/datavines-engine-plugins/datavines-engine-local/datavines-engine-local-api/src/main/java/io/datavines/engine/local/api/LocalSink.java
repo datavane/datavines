@@ -17,6 +17,7 @@
 package io.datavines.engine.local.api;
 
 import io.datavines.common.config.Config;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.api.component.Component;
 import io.datavines.engine.local.api.entity.ResultList;
 
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.EXPECTED_VALUE;
+import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
 
 public interface LocalSink extends Component {
 
@@ -39,12 +41,13 @@ public interface LocalSink extends Component {
         if (CollectionUtils.isEmpty(resultList)) {
             return;
         }
-        config.configMap().forEach((k,v) -> {
-                if (k.startsWith(EXPECTED_VALUE)) {
-                    inputParameter.put(k, String.valueOf(v));
-                }
-            }
-        );
+        String metricUniqueKey = config.getString(METRIC_UNIQUE_KEY);
+        String expectedValueKey = String.format("%s_%s", EXPECTED_VALUE, metricUniqueKey);
+        if (!StringUtils.isEmptyOrNullStr(config.getString(expectedValueKey))) {
+            inputParameter.put(expectedValueKey, config.getString(expectedValueKey));
+        } else {
+            inputParameter.put(expectedValueKey, "0");
+        }
 
         resultList.forEach(item -> {
             if (item != null) {

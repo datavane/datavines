@@ -40,14 +40,6 @@ public class YarnUtils {
 
     private static final String YARN_RESOURCE_MANAGER_HTTP_ADDRESS_PORT_KEY = "yarn.resource.manager.http.address.port";
 
-    private static final String YARN_MODE = CommonPropertyUtils.getString(YARN_MODE_KEY, YARN_MODE_NONE);
-
-    private static final String YARN_RESOURCE_MANAGER_HA_IDS =
-            CommonPropertyUtils.getString(YARN_RESOURCE_MANAGER_HA_IDS_KEY,"");
-
-    private static final String YARN_APPLICATION_STATUS_ADDRESS =
-            CommonPropertyUtils.getString(YARN_APPLICATION_STATUS_ADDRESS_KEY, "");
-
     private static final String HADOOP_RM_STATE_ACTIVE = "ACTIVE";
     private static final String HADOOP_RM_STATE_STANDBY = "STANDBY";
 
@@ -65,20 +57,21 @@ public class YarnUtils {
      * @return url of application
      */
     public static String getApplicationUrl(String applicationId) {
-
+        String mode = CommonPropertyUtils.getString(YARN_MODE_KEY, YARN_MODE_NONE);
         String appUrl = "";
         //not use resource manager
-        if (YARN_MODE_NONE.equals(YARN_MODE)){
+        if (YARN_MODE_NONE.equals(mode)){
             yarnEnabled = false;
             logger.warn("should not step here");
             return appUrl;
-        } else if (YARN_MODE_HA.equals(YARN_MODE)) {
+        } else if (YARN_MODE_HA.equals(mode)) {
             //resource manager HA enabled
-            appUrl = getAppAddress(YARN_APPLICATION_STATUS_ADDRESS, YARN_RESOURCE_MANAGER_HA_IDS);
+            appUrl = getAppAddress(CommonPropertyUtils.getString(YARN_APPLICATION_STATUS_ADDRESS_KEY, ""),
+                    CommonPropertyUtils.getString(YARN_RESOURCE_MANAGER_HA_IDS_KEY,""));
             yarnEnabled = true;
-        } else if (YARN_MODE_STANDALONE.equals(YARN_MODE)) {
+        } else if (YARN_MODE_STANDALONE.equals(mode)) {
             //single resource manager enabled
-            appUrl = YARN_APPLICATION_STATUS_ADDRESS;
+            appUrl = CommonPropertyUtils.getString(YARN_APPLICATION_STATUS_ADDRESS_KEY, "");
             yarnEnabled = true;
         }
 

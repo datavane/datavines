@@ -256,7 +256,7 @@ public class SqlUtils {
                 statement.execute("DROP VIEW " + viewName);
             }
         } catch (Exception e) {
-            log.error("drop view error : ", e);
+            log.error("drop {} view error",viewName);
         }
     }
 
@@ -266,7 +266,7 @@ public class SqlUtils {
                 statement.execute("DROP VIEW " + viewName);
             }
         } catch (Exception e) {
-            log.error("drop view error : ", e);
+            log.error("drop {} view error", viewName);
         }
     }
 
