@@ -16,6 +16,8 @@
  */
 package io.datavines.connector.plugin;
 
+import io.datavines.common.utils.StringUtils;
+
 import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
@@ -24,9 +26,21 @@ public class ImpalaConnectorParameterConverter extends JdbcConnectorParameterCon
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
-        return String.format("jdbc:hive2://%s:%s/%s;auth=noSasl",
-                parameter.get(HOST),
-                parameter.get(PORT),
-                parameter.get(DATABASE));
+
+        StringBuilder address = new StringBuilder();
+        address.append("jdbc:hive2://");
+        Object port = parameter.get(PORT);
+        for (String host : parameter.get(HOST).toString().split(",")) {
+            address.append(String.format("%s:%s,", host, port));
+        }
+        address.deleteCharAt(address.length() - 1);
+        address.append("/").append(parameter.get(DATABASE));
+        String properties = (String) parameter.get(PROPERTIES);
+        if (StringUtils.isNotEmpty(properties)) {
+            address.append(";").append(properties);
+        }
+
+        address.append(";auth=noSasl");
+        return address.toString();
     }
 }
