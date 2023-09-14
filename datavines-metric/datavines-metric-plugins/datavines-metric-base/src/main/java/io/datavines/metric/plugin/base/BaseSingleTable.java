@@ -22,6 +22,7 @@ import io.datavines.common.entity.ExecuteSql;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricLevel;
 import io.datavines.metric.api.SqlMetric;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -71,7 +72,8 @@ public abstract class BaseSingleTable implements SqlMetric {
 
     @Override
     public void prepare(Map<String, String> config) {
-        if (config.containsKey("filter")) {
+        // If the filter condition is an empty string, using String.join may result in SQL syntax errors.
+        if (config.containsKey("filter") && StringUtils.isNotBlank(config.get("filter"))) {
             filters.add(config.get("filter"));
         }
 
