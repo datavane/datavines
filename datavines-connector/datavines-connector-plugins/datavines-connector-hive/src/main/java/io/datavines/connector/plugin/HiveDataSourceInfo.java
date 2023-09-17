@@ -27,7 +27,14 @@ public class HiveDataSourceInfo extends BaseJdbcDataSourceInfo {
 
     @Override
     public String getAddress() {
-        return "jdbc:hive2://"+getHost()+":"+getPort();
+        StringBuilder address = new StringBuilder();
+        address.append("jdbc:hive2://");
+        String port = getPort();
+        for (String host : getHost().split(",")) {
+            address.append(String.format("%s:%s,", host, port));
+        }
+        address.deleteCharAt(address.length() - 1);
+        return address.toString();
     }
 
     @Override
@@ -42,7 +49,7 @@ public class HiveDataSourceInfo extends BaseJdbcDataSourceInfo {
 
     @Override
     protected String getSeparator() {
-        return "?";
+        return ";";
     }
 
 }

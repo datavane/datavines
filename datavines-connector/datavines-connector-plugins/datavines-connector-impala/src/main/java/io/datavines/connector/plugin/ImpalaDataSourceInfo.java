@@ -31,7 +31,15 @@ public class ImpalaDataSourceInfo extends BaseJdbcDataSourceInfo {
 
     @Override
     public String getAddress() {
-        return "jdbc:hive2"+"://"+getHost()+":"+getPort();
+        StringBuilder address = new StringBuilder();
+        address.append("jdbc:hive2://");
+        String port = getPort();
+
+        for (String host : getHost().split(",")) {
+            address.append(String.format("%s:%s,", host, port));
+        }
+        address.deleteCharAt(address.length() - 1);
+        return address.toString();
     }
 
     @Override
@@ -46,12 +54,13 @@ public class ImpalaDataSourceInfo extends BaseJdbcDataSourceInfo {
 
     @Override
     protected String getSeparator() {
-        return "";
+        return ";";
     }
 
     @Override
     public String getJdbcUrl() {
-        return "jdbc:hive2"+"://"+getHost()+":"+getPort()+"/;auth=noSasl";
+        String jdbcUrl = super.getJdbcUrl();
+        return jdbcUrl + ";auth=noSasl";
     }
 
 }

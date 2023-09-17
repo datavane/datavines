@@ -26,16 +26,20 @@ public class HiveConnectorParameterConverter extends JdbcConnectorParameterConve
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
-        String url = String.format("jdbc:hive2://%s:%s/%s",
-                parameter.get(HOST),
-                parameter.get(PORT),
-                parameter.get(DATABASE));
-        String properties = (String)parameter.get(PROPERTIES);
-        if (StringUtils.isNotEmpty(properties)) {
-            url += "?" + properties;
-        }
 
-        return url;
+        StringBuilder address = new StringBuilder();
+        address.append("jdbc:hive2://");
+        Object port = parameter.get(PORT);
+        for (String host : parameter.get(HOST).toString().split(",")) {
+            address.append(String.format("%s:%s,", host, port));
+        }
+        address.deleteCharAt(address.length() - 1);
+        address.append("/").append(parameter.get(DATABASE));
+        String properties = (String) parameter.get(PROPERTIES);
+        if (StringUtils.isNotEmpty(properties)) {
+            address.append(";").append(properties);
+        }
+        return address.toString();
     }
 
 }
