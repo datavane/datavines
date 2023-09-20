@@ -56,7 +56,7 @@ export DATAVINES_LOG_DIR=$DATAVINES_HOME/logs
 export DATAVINES_CONF_DIR=$DATAVINES_HOME/conf
 export DATAVINES_LIB_JARS=$DATAVINES_HOME/libs/*
 
-export DATAVINES_OPTS="-server -Xmx16g -Xms1g -Xss512k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
+export DATAVINES_OPTS="-server -Xmx16g -Xms1g -XX:+UseG1GC -XX:G1HeapRegionSize=8M"
 export STOP_TIMEOUT=5
 
 if [ ! -d "$DATAVINES_LOG_DIR" ]; then
