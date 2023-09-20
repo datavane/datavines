@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Tree, message, Button, Dropdown, Menu, Spin, Tooltip, Input, Form,
+    Tree, message, Button, Dropdown, Menu, Spin, Tooltip, Input, Form, Row, Col,
 } from 'antd';
 import {
     DatabaseOutlined, CopyOutlined, DownOutlined, PoweroffOutlined, ReloadOutlined,
@@ -158,9 +158,9 @@ const Index = ({
             });
             setDefaultSelectId(`${databases[0].uuid}@@${databases[0].name}`);
             setExpandedKeys([`${databases[0].uuid}@@${databases[0].name}`]);
-            // init filter data
-            setFilterData(databases)
         }
+        // init filter data
+        setFilterData(databases)
         return () => {
             if (databases.length > 0 && expandedKeys.length === 0) {
                 setTreeHeight(document.getElementsByClassName('dv-editor-tree_list') && document.getElementsByClassName('dv-editor-tree_list').length > 0
@@ -251,26 +251,27 @@ const Index = ({
                     alignItems: 'center',
                 }}
             >
-                <Form form={form}>
-                    <Form.Item>
-                        <Input placeholder={intl.formatMessage({id: 'common_search'})}
-                               onChange={e => setSearchTerm(e.target.value)}
-                               allowClear
+                <Row style={{ display: 'flex', alignItems: 'center' }}>
+                    <Form form={form} layout="inline" style={{ flex: 1 }}>
+                        <Form.Item name="searchInput" style={{ flex: 1 }}>
+                            <Input placeholder={intl.formatMessage({id: 'common_search'})}
+                                   onChange={e => setSearchTerm(e.target.value)}
+                                   allowClear
+                            />
+                        </Form.Item>
+                    </Form>
+                    <span style={{ marginRight: 5 }}>
+                        <ReloadOutlined
+                            onClick={() => {
+                                // refresh search input
+                                form.resetFields();
+                                setSearchTerm("");
+
+                                getDatabases();
+                            }}
                         />
-                    </Form.Item>
-                </Form>
-                <span style={{ marginRight: 15 }}>
-                    <ReloadOutlined
-                        onClick={() => {
-                            // refresh search input
-                            form.resetFields();
-                            setSearchTerm("");
-
-                            getDatabases();
-                        }}
-                    />
-
-                </span>
+                    </span>
+                </Row>
             </div>
             {
                 defaultSelectId ? (
