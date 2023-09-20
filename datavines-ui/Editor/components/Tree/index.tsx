@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Tree, message, Button, Dropdown, Menu, Spin, Tooltip,
+    Tree, message, Button, Dropdown, Menu, Spin, Tooltip, Input, Form,
 } from 'antd';
 import {
     DatabaseOutlined, CopyOutlined, DownOutlined, PoweroffOutlined, ReloadOutlined,
@@ -42,6 +42,8 @@ const Index = ({
         setExpandedKeys([...expandedKeys, key]);
     });
     const { onRequestTable, onRequestCloumn, onSeletCol } = useTableCloumn({ $setExpandedKeys });
+
+    const [filterData, setFilterData] = useState(databases)
 
     const renderSingle = (item: IDvDataBaseItem) => ({
         title: <span className="dv-editor-tree-title">{item.name}</span>,
@@ -108,11 +110,17 @@ const Index = ({
         if (e.node.type === 'database') {
             setSpinning(true);
             onRequestTable(e.node.dataName, e.node.uuid, allSelectDatabases, () => {
+                // update filter data where selected
+                let originJson = JSON.stringify(databases)
+                setFilterData(filterDataRecursion(JSON.parse(originJson), searchTerm))
                 setSpinning(false);
             });
         } else if (e.node.type === 'table') {
             setSpinning(true);
             onRequestCloumn(e.node.parentName, e.node.dataName, e.node.uuid, allSelectDatabases, () => {
+                // update filter data where selected
+                let originJson = JSON.stringify(databases)
+                setFilterData(filterDataRecursion(JSON.parse(originJson), searchTerm))
                 setSpinning(false);
             });
         } else if (e.node.type === 'column') {
@@ -150,6 +158,8 @@ const Index = ({
             });
             setDefaultSelectId(`${databases[0].uuid}@@${databases[0].name}`);
             setExpandedKeys([`${databases[0].uuid}@@${databases[0].name}`]);
+            // init filter data
+            setFilterData(databases)
         }
         return () => {
             if (databases.length > 0 && expandedKeys.length === 0) {
@@ -198,6 +208,41 @@ const Index = ({
                 </Dropdown>
             ) : <div>{nodeData.title as string}</div>
     );
+
+    const [searchTerm, setSearchTerm] = useState('');
+
+    // 递归过滤 关键词
+    const filterDataRecursion = (data: any[], searchTerm: string) => {
+        return data.filter((item) => {
+            const childrenList = item.children || [];
+            // If the current node satisfies the condition, return directly.
+            if (item.name.toLowerCase().includes(searchTerm.trim().toLowerCase())) {
+                return true;
+            }
+            // recursively match the child nodes.
+            const filterChildrenList = filterDataRecursion(childrenList, searchTerm);
+            if (filterChildrenList.length > 0) {
+                // update filter children nodes
+                item.children = filterChildrenList;
+                return true;
+            }
+            return false;
+        });
+    };
+
+    // listener input
+    useEffect(() => {
+        const originJson = JSON.stringify(databases)
+        if(searchTerm != ''){
+            let filterDatabases = filterDataRecursion(JSON.parse(originJson), searchTerm)
+            setFilterData(filterDatabases)
+        }else {
+            setFilterData(databases)
+        }
+    }, [searchTerm])
+
+    const [form] = Form.useForm();
+
     return (
         <div className="dv-editor-tree">
             <div
@@ -206,9 +251,21 @@ const Index = ({
                     alignItems: 'center',
                 }}
             >
+                <Form form={form}>
+                    <Form.Item>
+                        <Input placeholder={intl.formatMessage({id: 'common_search'})}
+                               onChange={e => setSearchTerm(e.target.value)}
+                               allowClear
+                        />
+                    </Form.Item>
+                </Form>
                 <span style={{ marginRight: 15 }}>
                     <ReloadOutlined
                         onClick={() => {
+                            // refresh search input
+                            form.resetFields();
+                            setSearchTerm("");
+
                             getDatabases();
                         }}
                     />
@@ -225,7 +282,8 @@ const Index = ({
                                 onSelect={onSelect}
                                 onExpand={onExpand}
                                 expandedKeys={expandedKeys}
-                                treeData={databases.map((item) => renderSingle(item))}
+                                // use filter data gen tree
+                                treeData={filterData.map((item) => renderSingle(item))}
                                 titleRender={titleRender}
                                 defaultSelectedKeys={[defaultSelectId]}
                                 height={treeHeight}
