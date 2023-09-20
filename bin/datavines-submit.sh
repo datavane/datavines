@@ -36,7 +36,7 @@ source /etc/profile
 
 export JAVA_HOME=$JAVA_HOME
 export DATAVINES_LIB_JARS=$DATAVINES_HOME/libs/
-export DATAVINES_OPTS="-server -Xmx16g -Xms1g -Xss512k -XX:+DisableExplicitGC -XX:+UseConcMarkSweepGC -XX:+CMSParallelRemarkEnabled -XX:LargePageSizeInBytes=128m -XX:+UseFastAccessorMethods -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
+export DATAVINES_OPTS="-server -Xmx16g -Xms1g -XX:+UseG1GC -XX:G1HeapRegionSize=8M"
 
 cd $DATAVINES_HOME
 
