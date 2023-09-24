@@ -171,9 +171,16 @@ const MetricTabs = (props: TmetricTabsProps) => {
                     // @ts-ignore
                     $name: values.name, uuid: guid(), ...detail, parameterItem: {},
                 };
-                if (detail?.parameterItem && !detail?.id) {
-                    // @ts-ignore
-                    item.parameterItem = { ...(detail?.parameterItem || {}) };
+                if (detail?.parameterItem) {
+                    if(!detail?.id){
+                        // @ts-ignore
+                        item.parameterItem = { ...(detail?.parameterItem || {}) };
+                    }else {
+                        // In editing interface, pass the detail.parameterItem.metricParameter into the item
+                        if(item && item.parameterItem){
+                            item.parameterItem.metricParameter = detail?.parameterItem?.metricParameter
+                        }
+                    }
                 }
                 newPanes.push(item);
                 setItems(newPanes);
