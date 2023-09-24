@@ -29,6 +29,7 @@ import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.common.entity.job.SubmitJob;
+import io.datavines.server.api.dto.bo.job.JobExecutionPageParam;
 import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
@@ -107,10 +108,9 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
     }
 
     @Override
-    public IPage<JobExecutionVO> getJobExecutionPage(String searchVal, Long jobId, Integer pageNumber, Integer pageSize) {
-        Page<JobExecutionVO> page = new Page<>(pageNumber, pageSize);
-        IPage<JobExecutionVO> jobs = baseMapper.getJobExecutionPage(page, searchVal, jobId);
-        return jobs;
+    public IPage<JobExecutionVO> getJobExecutionPage(JobExecutionPageParam pageParam) {
+        Page<JobExecutionVO> page = new Page<>(pageParam.getPageNumber(), pageParam.getPageSize());
+        return baseMapper.getJobExecutionPage(page, pageParam.getSearchVal(), pageParam.getJobId() , pageParam.getDatasourceId(), pageParam.getStatus(), pageParam.getMetricType(), pageParam.getSchemaName(), pageParam.getTableName(),pageParam.getColumnName(), pageParam.getStartTime(), pageParam.getEndTime());
     }
 
     @Override

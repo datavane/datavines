@@ -1,5 +1,5 @@
 import * as echarts from 'echarts/core';
-import { LineChart, BarChart } from 'echarts/charts';
+import {LineChart, BarChart, PieChart} from 'echarts/charts';
 import {
     TitleComponent,
     TooltipComponent,
@@ -26,6 +26,7 @@ echarts.use([
     UniversalTransition,
     CanvasRenderer,
     BarChart,
+    PieChart,
     LegendComponent,
 ]);
 const Index = ({ id, option, style = {} }:{id:string, option:any, style?:any}) => {

@@ -14,6 +14,7 @@ import { $http } from '@/http';
 import store from '@/store';
 import EditorData from '@/view/Main/HomeDetail/EditorData';
 import Jobs from '@/view/Main/HomeDetail/Jobs';
+import Dashboard from "view/Main/HomeDetail/Dashboard";
 
 type DataSource = {
     id:number,
@@ -115,7 +116,14 @@ const DetailMain = () => {
         <MenuLayout menus={detailMenus}>
             {renderTopContent()}
             <div style={{
-                display: !location.pathname.includes('jobs') ? 'block' : 'none',
+                display: location.pathname.includes('dashboard') ? 'block' : 'none',
+            }}
+            >
+                <Dashboard />
+            </div>
+
+            <div style={{
+                display: location.pathname.includes('editor') ? 'block' : 'none',
             }}
             >
                 <EditorData />

@@ -172,7 +172,7 @@ const Index = () => {
     ];
     return (
         <div
-            className="dv-page-paddinng"
+            className="dv-page-padding"
             style={
                 {
                     padding: '20px 0px 20px 0px',

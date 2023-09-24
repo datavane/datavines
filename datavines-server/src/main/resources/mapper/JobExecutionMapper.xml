@@ -21,7 +21,37 @@
 <mapper namespace="io.datavines.server.repository.mapper.JobExecutionMapper">
 
     <sql id="basic_sql">
-        select * from dv_job_execution where job_id = #{jobId}
+        select * from dv_job_execution
+                 <where>
+                     <if test="jobId != null">
+                          and job_id = #{jobId}
+                     </if>
+                     <if test="metricType != null">
+                         and metric_type = #{metricType}
+                     </if>
+                     <if test="schemaName != null">
+                         and schema_name = #{schemaName}
+                     </if>
+                     <if test="tableName != null">
+                         and table_name = #{tableName}
+                     </if>
+                     <if test="columnName != null">
+                         and column_name = #{columnName}
+                     </if>
+                     <if test="startTime != null">
+                         and update_time &gt;= #{startTime}
+                     </if>
+                     <if test="endTime != null">
+                         and update_time &lt;= #{endTime}
+                     </if>
+                     <if test="datasourceId != null">
+                         and datasource_id = #{datasourceId}
+                     </if>
+                     <if test="status != null">
+                         and status = #{status}
+                     </if>
+
+                 </where>
     </sql>
 
     <select id="getJobExecutionPage" resultType="io.datavines.server.api.dto.vo.JobExecutionVO">

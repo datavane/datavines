@@ -35,6 +35,7 @@ export default {
     '/main/warning': '告警管理',
     '/main/userManage': '用户管理',
     '/main/errorDataManage': '错误数据管理',
+    '/main/detail/:id/dashboard': '质量大盘',
     '/main/detail/:id/editor': '数据目录',
     '/main/detail/:id/jobs': '作业管理',
     '/main/detail/:id/tasks': '结果管理',

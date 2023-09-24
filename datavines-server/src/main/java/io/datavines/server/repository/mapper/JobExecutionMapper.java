@@ -34,6 +34,11 @@ public interface JobExecutionMapper extends BaseMapper<JobExecution>  {
     List<JobExecution> listByJobId(long jobId);
 
     IPage<JobExecutionVO> getJobExecutionPage(Page<JobExecutionVO> page,
-                                      @Param("searchVal") String searchVal,
-                                      @Param("jobId") Long jobId);
+                                              @Param("searchVal") String searchVal,
+                                              @Param("jobId") Long jobId,
+                                              @Param("datasourceId") Long datasourceId,
+                                              @Param("status") int status,
+                                              @Param("metricType") String metricType, @Param("schemaName") String schemaName,
+                                              @Param("tableName") String tableName, @Param("columnName") String columnName,
+                                              @Param("startTime") String startTime, @Param("endTime") String endTime);
 }

@@ -20,6 +20,7 @@ type TJobs = {
 }
 
 const Jobs = ({ datasourceId }: TJobs) => {
+    console.log("datasourceId:" ,datasourceId);
     const intl = useIntl();
     const form = Form.useForm()[0];
     const [loading, setLoading] = useState(false);
@@ -248,7 +249,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
         },
     ];
     return (
-        <div className="dv-page-paddinng" style={{ height: 'calc(100vh - 73px)' }}>
+        <div className="dv-page-padding" style={{ height: 'calc(100vh - 73px)' }}>
             <Tabs defaultActiveKey="0" items={items} onChange={onChangeTab} />
             {/* <Title>{intl.formatMessage({ id: 'jobs_list' })}</Title> */}
             <div style={{ paddingTop: '0px' }}>

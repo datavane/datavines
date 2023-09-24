@@ -21,6 +21,7 @@ import java.util.List;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.common.entity.job.SubmitJob;
+import io.datavines.server.api.dto.bo.job.JobExecutionPageParam;
 import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
 import io.datavines.server.repository.entity.JobExecution;
@@ -38,7 +39,13 @@ public interface JobExecutionService extends IService<JobExecution> {
 
     int deleteByJobId(long jobId);
 
-    IPage<JobExecutionVO> getJobExecutionPage(String searchVal, Long jobId, Integer pageNumber, Integer pageSize);
+//    IPage<JobExecutionVO> getJobExecutionPage(String searchVal, Long jobId,
+//                                              String metricType, String schemaName,
+//                                              String tableName, String columnName,
+//                                              String startTime, String endTime,
+//                                              Integer pageNumber, Integer pageSize);
+
+    IPage<JobExecutionVO> getJobExecutionPage(JobExecutionPageParam pageParam);
 
     Long submitJob(SubmitJob submitJob) throws DataVinesServerException;
 

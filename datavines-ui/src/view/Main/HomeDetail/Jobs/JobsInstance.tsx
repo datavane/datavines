@@ -131,7 +131,7 @@ const JobsInstance = () => {
     ];
     return (
         <div
-            className="dv-page-paddinng"
+            className="dv-page-padding"
             style={{
                 padding: '0px 20px 0px 0px',
                 height: 'auto',

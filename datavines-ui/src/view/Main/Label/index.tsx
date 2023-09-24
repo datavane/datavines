@@ -92,7 +92,7 @@ const Index = () => {
         getTagList(tagCategoryList[index].uuid);
     };
     return (
-        <div className="dv-label dv-page-paddinng">
+        <div className="dv-label dv-page-padding">
             <div>
                 <p className="dv-label-title">
                     {intl.formatMessage({ id: 'label_title' })}

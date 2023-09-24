@@ -4,6 +4,14 @@ import { DatabaseOutlined, UnorderedListOutlined, HistoryOutlined } from '@ant-d
 import { TRouter } from './type';
 
 const detailRouter: TRouter = {
+    'dv-detail-dashboard': {
+        path: '/main/detail/:id/dashboard',
+        key: '/main/detail/:id/dashboard',
+        label: '',
+        exact: false,
+        icon: <UnorderedListOutlined />,
+        component: lazy(() => import(/* webpackChunkName: 'view-detail-jobs' */ '@/view/Main/HomeDetail/Dashboard')),
+    },
     'dv-detail-editor': {
         path: '/main/detail/:id/editor',
         key: '/main/detail/:id/editor',
@@ -19,7 +27,7 @@ const detailRouter: TRouter = {
         exact: false,
         icon: <UnorderedListOutlined />,
         component: lazy(() => import(/* webpackChunkName: 'view-detail-jobs' */ '@/view/Main/HomeDetail/Jobs')),
-    },
+    }
 };
 
 export default detailRouter;
