@@ -16,12 +16,14 @@
  */
 package io.datavines.common.utils;
 
-import io.datavines.common.utils.StringUtils;
+import io.datavines.common.CommonConstants;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
 import java.math.RoundingMode;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -79,8 +81,15 @@ public class OSUtils {
    * @return  available Physical Memory Size, unit: G
    */
   public static double availablePhysicalMemorySize() {
-    GlobalMemory memory = hal.getMemory();
-    double  availablePhysicalMemorySize = (memory.getAvailable() + memory.getSwapUsed()) /1024.0/1024/1024;
+    double  availablePhysicalMemorySize;
+
+    if (CommonConstants.KUBERNETES_MODE) {
+      long freeMemory = Runtime.getRuntime().freeMemory();
+      availablePhysicalMemorySize = freeMemory /1024.0/1024/1024;
+    } else {
+      GlobalMemory memory = hal.getMemory();
+      availablePhysicalMemorySize = (memory.getAvailable() + memory.getSwapUsed()) /1024.0/1024/1024;
+    }
 
     DecimalFormat df = new DecimalFormat(TWO_DECIMAL);
     df.setRoundingMode(RoundingMode.HALF_UP);
@@ -110,7 +119,13 @@ public class OSUtils {
    * @return load average
    */
   public static double loadAverage() {
-    double loadAverage =  hal.getProcessor().getSystemLoadAverage();
+    double loadAverage;
+    if (CommonConstants.KUBERNETES_MODE) {
+      OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
+      loadAverage = operatingSystemMXBean.getSystemLoadAverage();
+    } else {
+      loadAverage =  hal.getProcessor().getSystemLoadAverage();
+    }
 
     DecimalFormat df = new DecimalFormat(TWO_DECIMAL);
 
