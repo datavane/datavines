@@ -643,8 +643,9 @@ CREATE TABLE `dv_registry_lock`
     `create_time`      datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
     `update_time`      datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
     PRIMARY KEY (`id`),
-    unique (`lock_key`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+    UNIQUE KEY (`uniq_lock_key`) (`lock_key`) USING BTREE,
+    KEY `idx_upt` (`update_time`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT='注册锁';
 
 -- ----------------------------
 -- Table structure for dv_sla
