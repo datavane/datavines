@@ -24,6 +24,7 @@ export default {
     dv_metric_title_verify_configure: 'Verify configuration',
     dv_metric_title_actuator_engine: 'Execution engine',
     dv_metric_title_actuator_engine_config: 'Execution engine configuration',
+    editor_dv_metric_jobs_name: 'Please enter job name!',
     editor_dv_metric_select_placeholder: 'Please select metric!',
     editor_dv_metric_select_databases: 'Please select databases!',
     editor_dv_metric_select_table: 'Please select table!',

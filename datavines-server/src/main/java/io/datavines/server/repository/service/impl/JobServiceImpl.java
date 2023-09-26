@@ -136,7 +136,11 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         isMetricSuitable(jobCreate.getDataSourceId(), jobCreate.getDataSourceId2(), jobCreate.getEngineType(), jobParameters);
         List<String> fqnList = setJobAttribute(job, jobParameters);
-        job.setName(getJobName(jobCreate.getType(), jobCreate.getParameter()));
+        if(StringUtils.isEmpty(jobCreate.getJobName())){
+            job.setName(getJobName(jobCreate.getType(), jobCreate.getParameter()));
+        }else {
+            job.setName(jobCreate.getJobName());
+        }
         if (getByKeyAttribute(job)) {
             throw new DataVinesServerException(Status.JOB_EXIST_ERROR, job.getName());
         }
@@ -198,7 +202,14 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         List<BaseJobParameter> jobParameters = JSONUtils.toList(jobUpdate.getParameter(), BaseJobParameter.class);
         isMetricSuitable(jobUpdate.getDataSourceId(), jobUpdate.getDataSourceId2(), jobUpdate.getEngineType(), jobParameters);
         List<String> fqnList = setJobAttribute(job, jobParameters);
-        job.setName(getJobName(jobUpdate.getType(), jobUpdate.getParameter()));
+        if(StringUtils.isEmpty(jobUpdate.getJobName())){
+            job.setName(getJobName(jobUpdate.getType(), jobUpdate.getParameter()));
+        }else {
+            job.setName(jobUpdate.getJobName());
+        }
+        if (getByKeyAttribute(job)) {
+            throw new DataVinesServerException(Status.JOB_EXIST_ERROR, job.getName());
+        }
         job.setUpdateBy(ContextHolder.getUserId());
         job.setUpdateTime(LocalDateTime.now());
 

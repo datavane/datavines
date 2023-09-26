@@ -2,7 +2,7 @@ import React, {
     useRef, useImperativeHandle, useState, useMemo,
 } from 'react';
 import {
-    ModalProps, Tabs, Spin, Button, message, Input,
+    ModalProps, Tabs, Spin, Button, message, Input, Form, Col, Row,
 } from 'antd';
 import {
     useModal, useImmutable, usePersistFn, useContextModal, useMount, useLoading, IF,
@@ -49,6 +49,11 @@ export const Inner = ({
             Authorization: `Bearer ${loginInfo.token}`,
         },
     }), [workspaceId]);
+
+    const [jobName, setJobName] = useState('');
+
+    const [jobForm] = Form.useForm();
+
     useImperativeHandle(innerRef, () => ({
         getData() {
             return {};
@@ -60,6 +65,7 @@ export const Inner = ({
         }
         const res = await $http.get(`/job/${id}`);
         try {
+            setJobName(res.name)
             res.parameter = res.parameter ? JSON.parse(res.parameter) || [] : [];
             res.parameterItem = res.parameter?.[0] || {};
         } catch (error) {
@@ -108,20 +114,28 @@ export const Inner = ({
         try {
             setLoading(true);
             const params = await metricConfigRef.current.getValues();
+            // check job name
+            const fieldsValid = await jobForm.validateFields();
+            if (!fieldsValid) {
+                console.log(fieldsValid)
+                return; // 直接 return 整个函数
+            }
             if (jobId) {
-                await $http.put('/job', { ...params, id: jobId, runningNow });
+                debugger
+                await $http.put('/job', { ...params, jobName: jobName, id: jobId, runningNow });
                 getConfig(jobId);
             } else {
                 let resData = {};
                 let url = '/job';
+                debugger
                 if (entityUuid) {
                     resData = {
                         entityUuid,
-                        jobCreate: { ...params, runningNow },
+                        jobCreate: { ...params, jobName: jobName, runningNow },
                     };
                     url = '/catalog/add-metric';
                 } else {
-                    resData = { ...params, runningNow };
+                    resData = { ...params, jobName: jobName, runningNow };
                 }
                 const res = await $http.post(url, resData);
                 setJobId(res);
@@ -179,6 +193,22 @@ export const Inner = ({
                         )}
                     >
                         <div style={{ width: 'calc(100% - 80px)' }}>
+                            <Row gutter={30} style={{ marginTop: 15 }}>
+                                <Col span={12}>
+                                    <Form name="baseJob" form={jobForm} initialValues={{jobName: jobName}}>
+                                        <Form.Item
+                                            label={intl.formatMessage({id: "jobs_name"})}
+                                            name="jobName"
+                                            rules={[{ required: true, message: intl.formatMessage({ id: 'editor_dv_metric_jobs_name' }) }]}
+                                        >
+                                            <Input allowClear onChange={e => setJobName(e.target.value)}
+                                                   autoComplete="off"
+                                                   placeholder={intl.formatMessage({id: 'jobs_name'})}
+                                            />
+                                        </Form.Item>
+                                    </Form>
+                                </Col>
+                            </Row>
                             <DvEditor {...editorParams} locale={locale} innerRef={metricConfigRef} id={data.id} showMetricConfig detail={metricDetail} />
                         </div>
                     </PageContainer>

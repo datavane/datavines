@@ -73,4 +73,6 @@ public class JobCreate {
      */
     private int runningNow;
 
+    private String jobName;
+
 }
