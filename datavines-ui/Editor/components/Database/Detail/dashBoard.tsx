@@ -40,12 +40,14 @@ const Index = ({ id, option, style = {} }:{id:string, option:any, style?:any}) =
             if (document.getElementById(id) && document.getElementById(id)?.innerHTML) {
                 // eslint-disable-next-line no-unused-expressions
                 myChart?.dispose && myChart.current?.dispose();
+                myChart.clear();
                 setMyChart(null);
-                const dom = document.getElementById(id) as HTMLElement;
-                dom.innerHTML = '';
+                // const dom = document.getElementById(id) as HTMLElement;
+                // dom.innerHTML = "";
             }
             return;
         }
+
         if (!myChart) {
             const charts = echarts.init(document.getElementById(id) as HTMLElement);
             setMyChart(charts);

@@ -20,6 +20,7 @@ import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.common.entity.job.SubmitJob;
+import io.datavines.server.api.dto.bo.job.JobExecutionDashboardParam;
 import io.datavines.server.api.dto.bo.job.JobExecutionPageParam;
 import io.datavines.server.api.dto.vo.JobExecutionResultVO;
 import io.datavines.server.repository.entity.JobExecution;
@@ -94,26 +95,10 @@ public class JobExecutionController {
         return jobExecutionResultService.getResultVOListByJobExecutionId(executionId);
     }
 
-//    @ApiOperation(value = "get job execution page", response = JobExecutionResultVO.class, responseContainer = "page")
-//    @GetMapping(value = "/page")
-//    public Object page(@RequestParam(value = "searchVal", required = false) String searchVal,
-//                       @RequestParam(value ="jobId",required = false) Long jobId,
-//                       @RequestParam(value ="metricType",required = false) String metricType,
-//                       @RequestParam(value ="schemaName",required = false) String schemaName,
-//                       @RequestParam(value ="tableName",required = false) String tableName,
-//                       @RequestParam(value ="columnName",required = false) String columnName,
-//                       @RequestParam(value ="status",required = false) String status,
-//                       @RequestParam(value ="startTime",required = false) String startTime,
-//                       @RequestParam(value ="endTime",required = false) String endTime,
-//                       @RequestParam("pageNumber") Integer pageNumber,
-//                       @RequestParam("pageSize") Integer pageSize)  {
-//        return jobExecutionService.getJobExecutionPage(searchVal, jobId, metricType, schemaName, tableName, columnName, startTime, endTime, pageNumber, pageSize);
-//    }
-
     @ApiOperation(value = "get job execution page", response = JobExecutionResultVO.class, responseContainer = "page")
     @PostMapping(value = "/page")
     public Object page(@Valid @RequestBody JobExecutionPageParam jobExecutionPageParam)  {
-        log.info("pageParam : {}", jobExecutionPageParam);
+        log.info("param : {}" , jobExecutionPageParam);
         return jobExecutionService.getJobExecutionPage(jobExecutionPageParam);
     }
 
@@ -123,5 +108,17 @@ public class JobExecutionController {
                                     @RequestParam("pageNumber") Integer pageNumber,
                                     @RequestParam("pageSize") Integer pageSize){
         return jobExecutionErrorDataService.readErrorDataPage(taskId, pageNumber, pageSize);
+    }
+
+    @ApiOperation(value = "get job execution agg pie", response = JobExecutionResultVO.class)
+    @PostMapping(value = "/agg-pie")
+    public Object getExecutionAggPie(@Valid @RequestBody JobExecutionDashboardParam dashboardParam)  {
+        return jobExecutionService.getJobExecutionAggPie(dashboardParam);
+    }
+
+    @ApiOperation(value = "get job execution trend bar", response = JobExecutionResultVO.class)
+    @PostMapping(value = "/trend-bar")
+    public Object getExecutionTrendBar(@Valid @RequestBody JobExecutionDashboardParam dashboardParam)  {
+        return jobExecutionService.getJobExecutionTrendBar(dashboardParam);
     }
 }

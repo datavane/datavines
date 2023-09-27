@@ -29,7 +29,7 @@ const JobsInstance = () => {
     const getData = async (values?: any, $pageParams?: any) => {
         try {
             setLoading(true);
-            const res = (await $http.get('/job/execution/page', {
+            const res = (await $http.post('/job/execution/page', {
                 jobId: qs.jobId,
                 ...($pageParams || pageParams),
                 ...(values || form.getFieldsValue()),

@@ -1,6 +1,6 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
+ * contributor license agreements`.`  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -16,23 +16,29 @@
  */
 package io.datavines.server.repository.service.impl;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.param.ExecuteRequestParam;
+import io.datavines.common.utils.DateUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
+import io.datavines.core.utils.LanguageUtils;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.common.entity.job.SubmitJob;
+import io.datavines.server.api.dto.bo.job.JobExecutionDashboardParam;
 import io.datavines.server.api.dto.bo.job.JobExecutionPageParam;
-import io.datavines.server.api.dto.vo.JobExecutionVO;
+import io.datavines.server.api.dto.vo.*;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
@@ -55,7 +61,9 @@ import io.datavines.server.enums.Priority;
 import org.springframework.transaction.annotation.Transactional;
 
 import static io.datavines.common.ConfigConstants.ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE;
+import static io.datavines.core.constant.DataVinesConstants.EMPTY;
 import static io.datavines.core.constant.DataVinesConstants.SPARK;
+import static java.util.Collections.EMPTY_LIST;
 
 @Service("jobExecutionService")
 public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, JobExecution>  implements JobExecutionService {
@@ -292,5 +300,149 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
         });
 
         return resultList;
+    }
+
+    @Override
+    public List<JobExecutionAggItem> getJobExecutionAggPie(JobExecutionDashboardParam dashboardParam) {
+        List<String> statusList = new ArrayList<>(Arrays.asList("6","7"));
+
+        List<JobExecutionAggItem> items =
+                baseMapper.getJobExecutionAggPie(dashboardParam.getDatasourceId(), dashboardParam.getMetricType(),
+                        dashboardParam.getSchemaName(), dashboardParam.getTableName(), dashboardParam.getColumnName(),
+                        dashboardParam.getStartTime(), dashboardParam.getEndTime());
+        if (CollectionUtils.isEmpty(items)) {
+            return new ArrayList<>();
+        }
+        items = items.stream().filter(it -> statusList.contains(it.getName())).collect(Collectors.toList());
+
+        boolean isZh = LanguageUtils.isZhContext();
+        for (JobExecutionAggItem jobExecutionAggItem : items) {
+            switch (jobExecutionAggItem.getName()) {
+                case "1":
+                    if (isZh) {
+                        jobExecutionAggItem.setName("执行中");
+                    } else {
+                        jobExecutionAggItem.setName("Running");
+                    }
+
+                    break;
+                case "6":
+                    if (isZh) {
+                        jobExecutionAggItem.setName("执行失败");
+                    } else {
+                        jobExecutionAggItem.setName("Failure");
+                    }
+
+                    break;
+                case "7":
+                    if (isZh) {
+                        jobExecutionAggItem.setName("执行成功");
+                    } else {
+                        jobExecutionAggItem.setName("Success");
+                    }
+
+                    break;
+                case "9":
+                    if (isZh) {
+                        jobExecutionAggItem.setName("停止");
+                    } else {
+                        jobExecutionAggItem.setName("Kill");
+                    }
+
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return items;
+    }
+
+    @Override
+    public JobExecutionTrendBar getJobExecutionTrendBar(JobExecutionDashboardParam dashboardParam) {
+
+        JobExecutionTrendBar trendBar = new JobExecutionTrendBar();
+
+        String startDateStr = "";
+        String endDateStr = "";
+        if (StringUtils.isEmpty(dashboardParam.getStartTime()) && StringUtils.isEmpty(dashboardParam.getEndTime())) {
+            startDateStr = DateUtils.format(DateUtils.addDays(new Date(), -5),"yyyy-MM-dd");
+            endDateStr = DateUtils.format(DateUtils.addDays(new Date(), +1),"yyyy-MM-dd");
+        } else {
+            if (StringUtils.isEmpty(dashboardParam.getEndTime())) {
+                startDateStr = dashboardParam.getStartTime().substring(0,10);
+                endDateStr = DateUtils.format(new Date(),"yyyy-MM-dd");
+            } else if (StringUtils.isEmpty(dashboardParam.getStartTime())) {
+                Date endDate = DateUtils.parse(dashboardParam.getEndTime(), "yyyy-MM-dd");
+                startDateStr = DateUtils.format(DateUtils.addDays(endDate,-6),"yyyy-MM-dd");
+                endDateStr = dashboardParam.getEndTime().substring(0,10);
+            }
+        }
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate startDate = LocalDate.parse(startDateStr, formatter);
+        LocalDate endDate = LocalDate.parse(endDateStr, formatter);
+
+        List<String> dateList = new ArrayList<>();
+        LocalDate currentDate = startDate;
+
+        while (!currentDate.isAfter(endDate)) {
+            dateList.add(currentDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            currentDate = currentDate.plusDays(1);
+        }
+
+        List<JobExecutionTrendBarItem> trendBars = baseMapper.getJobExecutionTrendBar(dashboardParam.getDatasourceId(),
+                dashboardParam.getMetricType(), dashboardParam.getSchemaName(), dashboardParam.getTableName(), dashboardParam.getColumnName(),
+                startDateStr, endDateStr);
+
+        if (CollectionUtils.isEmpty(trendBars)) {
+            return trendBar;
+        }
+
+        Map<String, List<JobExecutionTrendBarItem>> trendBarListMap = new HashMap<>();
+        trendBars.forEach(it -> {
+            if (trendBarListMap.get(it.getCreateDate()) == null) {
+                List<JobExecutionTrendBarItem> list = new ArrayList<>();
+                list.add(it);
+                trendBarListMap.put(it.getCreateDate(), list);
+            } else {
+                trendBarListMap.get(it.getCreateDate()).add(it);
+            }
+        });
+
+        List<Integer> allList = new ArrayList<>();
+        List<Integer> successList = new ArrayList<>();
+        List<Integer> failureList = new ArrayList<>();
+
+        dateList.forEach(date -> {
+            List<JobExecutionTrendBarItem> list = trendBarListMap.get(date);
+            if (CollectionUtils.isEmpty(list)) {
+                allList.add(0);
+                successList.add(0);
+                failureList.add(0);
+            } else {
+                int all = 0;
+                int success = 0;
+                int failure = 0;
+                for (JobExecutionTrendBarItem item :list) {
+                    if (item.getStatus() == 6) {
+                        failure++;
+                    } else if (item.getStatus() == 7) {
+                        success++;
+                    }
+                }
+                allList.add(failure+success);
+                failureList.add(failure);
+                successList.add(success);
+            }
+        });
+
+
+        trendBar.setDateList(dateList);
+        trendBar.setAllList(allList);
+        trendBar.setSuccessList(successList);
+        trendBar.setFailureList(failureList);
+
+        return trendBar;
     }
 }

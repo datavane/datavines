@@ -17,19 +17,14 @@
 package io.datavines.server.api.dto.bo.job;
 
 import lombok.Data;
+
 import javax.validation.constraints.NotNull;
 
 @Data
 @NotNull(message = "JobExecutionPageParam cannot be null")
-public class JobExecutionPageParam {
+public class JobExecutionDashboardParam {
 
     private Long datasourceId;
-
-    private Integer status;
-
-    private String searchVal;
-
-    private Long jobId;
 
     private String metricType;
 
@@ -42,9 +37,4 @@ public class JobExecutionPageParam {
     private String startTime;
 
     private String endTime;
-
-    private Integer pageNumber;
-
-    private Integer pageSize;
-
 }

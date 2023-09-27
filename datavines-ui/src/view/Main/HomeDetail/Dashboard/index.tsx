@@ -39,46 +39,7 @@ interface Option {
     isLeaf?: boolean;
 }
 
-const pieOption = {
-    tooltip: {
-        trigger: 'item'
-    },
-    legend: {
-        top: '5%',
-        left: 'center'
-    },
-    series: [
-        {
-            name: 'Access From',
-            type: 'pie',
-            radius: ['40%', '70%'],
-            avoidLabelOverlap: false,
-            itemStyle: {
-                borderRadius: 10,
-                borderColor: '#fff',
-                borderWidth: 2
-            },
-            label: {
-                show: false,
-                position: 'center'
-            },
-            emphasis: {
-                label: {
-                    show: true,
-                    fontSize: 40,
-                    fontWeight: 'bold'
-                }
-            },
-            labelLine: {
-                show: false
-            },
-            data: [
-                { value: 1048, name: 'Success' },
-                { value: 735, name: 'Failure' },
-            ]
-        }
-    ]
-};
+
 
 const app: any = {};
 const posList = [
@@ -162,87 +123,9 @@ const labelOption: BarLabelOption = {
     }
 };
 
-const barOption = {
-    tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-            type: 'shadow'
-        }
-    },
-    legend: {
-        data: ['Forest', 'Steppe', 'Desert', 'Wetland']
-    },
-    toolbox: {
-        show: true,
-        orient: 'vertical',
-        left: 'right',
-        top: 'center',
-        feature: {
-            mark: { show: true },
-            dataView: { show: true, readOnly: false },
-            magicType: { show: true, type: ['line', 'bar', 'stack'] },
-            restore: { show: true },
-            saveAsImage: { show: true }
-        }
-    },
-    xAxis: [
-        {
-            type: 'category',
-            axisTick: { show: false },
-            data: ['2012', '2013', '2014', '2015', '2016']
-        }
-    ],
-    yAxis: [
-        {
-            type: 'value'
-        }
-    ],
-    series: [
-        {
-            name: 'Forest',
-            type: 'bar',
-            barGap: 0,
-            label: labelOption,
-            emphasis: {
-                focus: 'series'
-            },
-            data: [320, 332, 301, 334, 390]
-        },
-        {
-            name: 'Steppe',
-            type: 'bar',
-            label: labelOption,
-            emphasis: {
-                focus: 'series'
-            },
-            data: [220, 182, 191, 234, 290]
-        },
-        {
-            name: 'Desert',
-            type: 'bar',
-            label: labelOption,
-            emphasis: {
-                focus: 'series'
-            },
-            data: [150, 232, 201, 154, 190]
-        },
-        {
-            name: 'Wetland',
-            type: 'bar',
-            label: labelOption,
-            emphasis: {
-                focus: 'series'
-            },
-            data: [98, 77, 101, 99, 40]
-        }
-    ]
-};
-
-
-
 const Dashboard = ({ datasourceId }: TJobs) => {
-    const [dqBarOption, setDqBarOption] = useState<any>(barOption);
-    const [dqPieOption, setDqPieOption] = useState<any>(pieOption);
+    const [dqBarOption, setDqBarOption] = useState<any>();
+    const [dqPieOption, setDqPieOption] = useState<any>();
 
     const intl = useIntl();
     const match = useRouteMatch();
@@ -317,12 +200,11 @@ const Dashboard = ({ datasourceId }: TJobs) => {
     const { Render: RenderErrorDataModal, show: showErrorDataModal } = useInstanceErrorDataModal({});
     const { Render: RenderResultModal, show: showResultModal } = useInstanceResult({});
     const { Render: RenderLoggerModal, show: showLoggerModal } = useLogger({});
-    // const optionLists: Option[] = [];
-    // const [options, setOptions] = useState<Option[]>(optionLists);
+
     const [databases, setDataBases] = useState<Option[]>([]);
     const [metricList, setMetricList] = useState([]);
 
-    const getJobExecutionData = async () => {
+    const getJobExecutionData = async (pageParam1 :any) => {
         try {
             setLoading(true);
             const res = (await $http.post('/job/execution/page', {
@@ -331,9 +213,9 @@ const Dashboard = ({ datasourceId }: TJobs) => {
                 columnName : entityParam.columnName,
                 metricType : metricType,
                 datasourceId : datasourceId || (match.params as any).id,
-                pageNumber : pageParam.pageNumber,
+                pageNumber : pageParam1.pageNumber,
                 pageSize : 5,
-                status:  2,
+                status:  6,
                 startTime : startTime,
                 endTime : endTime
                 },
@@ -342,6 +224,153 @@ const Dashboard = ({ datasourceId }: TJobs) => {
                 list: res?.records || [],
                 total: res.total || 0,
             });
+        } catch (error) {
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getJobExecutionAggPie = async () => {
+        try {
+            setLoading(true);
+            const res = (await $http.post('/job/execution/agg-pie', {
+                    schemaName : entityParam.schemaName,
+                    tableName : entityParam.tableName,
+                    columnName : entityParam.columnName,
+                    metricType : metricType,
+                    datasourceId : datasourceId || (match.params as any).id,
+                    startTime : startTime,
+                    endTime : endTime
+                },
+            )) || [];
+            console.log("agg pie res : ", res)
+
+            const pieOption = {
+                tooltip: {
+                    trigger: 'item'
+                },
+                legend: {
+                    top: '5%',
+                    left: 'center'
+                },
+                color: ['#ef6567', '#91cd77'],
+                series: [
+                    {
+                        name: 'Execution Agg Pie',
+                        type: 'pie',
+                        radius: ['40%', '70%'],
+                        avoidLabelOverlap: false,
+                        itemStyle: {
+                            borderRadius: 10,
+                            borderColor: '#fff',
+                            borderWidth: 2
+                        },
+                        label: {
+                            show: false,
+                            position: 'center'
+                        },
+                        emphasis: {
+                            label: {
+                                show: true,
+                                fontSize: 40,
+                                fontWeight: 'bold'
+                            }
+                        },
+                        labelLine: {
+                            show: false
+                        },
+                        data: res
+                    }
+                ]
+            };
+            setDqPieOption(pieOption)
+
+        } catch (error) {
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const getJobExecutionTrendBar = async () => {
+        try {
+            setLoading(true);
+            const res = (await $http.post('/job/execution/trend-bar', {
+                    schemaName : entityParam.schemaName,
+                    tableName : entityParam.tableName,
+                    columnName : entityParam.columnName,
+                    metricType : metricType,
+                    datasourceId : datasourceId || (match.params as any).id,
+                    startTime : startTime,
+                    endTime : endTime
+                },
+            )) || [];
+            console.log("agg bar res : ", res)
+
+            const barOption = {
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        type: 'shadow'
+                    }
+                },
+                toolbox: {
+                    show: true,
+                    orient: 'vertical',
+                    left: 'right',
+                    top: 'center',
+                    feature: {
+                        mark: { show: true },
+                        dataView: { show: true, readOnly: false },
+                        magicType: { show: true, type: ['line', 'bar', 'stack'] },
+                        restore: { show: true },
+                        saveAsImage: { show: true }
+                    }
+                },
+                xAxis: [
+                    {
+                        type: 'category',
+                        axisTick: { show: false },
+                        data: res.dateList
+                    }
+                ],
+                yAxis: [
+                    {
+                        type: 'value'
+                    }
+                ],
+                series: [
+                    {
+                        name: 'All',
+                        type: 'bar',
+                        barGap: 0,
+                        label: labelOption,
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: res.allList
+                    },
+                    {
+                        name: 'Success',
+                        type: 'bar',
+                        label: labelOption,
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: res.successList
+                    },
+                    {
+                        name: 'Failure',
+                        type: 'bar',
+                        label: labelOption,
+                        emphasis: {
+                            focus: 'series'
+                        },
+                        data: res.failureList
+                    }
+                ]
+            };
+            setDqBarOption(barOption)
+
         } catch (error) {
         } finally {
             setLoading(false);
@@ -368,16 +397,22 @@ const Dashboard = ({ datasourceId }: TJobs) => {
         })
         // @ts-ignore
         setDataBases($reDatabases1);
-        getJobExecutionData();
+        getJobExecutionData(pageParam);
+        getJobExecutionAggPie();
+        getJobExecutionTrendBar();
     });
-    const onPageChange = ({ current, pageSize }: any) => {
 
+    const onPageChange = ({ current, pageSize }: any) => {
+        console.log("current page :" , current)
         setPageParam({
             pageNumber : current,
             pageSize : pageSize
         })
 
-        getJobExecutionData();
+        getJobExecutionData({
+            pageNumber : current,
+            pageSize : pageSize
+        });
     };
 
     const onLog = (record: TJobsInstanceTableItem) => {
@@ -404,7 +439,9 @@ const Dashboard = ({ datasourceId }: TJobs) => {
     };
 
     const onQueryClick = () => {
-        getJobExecutionData();
+        getJobExecutionData(pageParam);
+        getJobExecutionAggPie();
+        getJobExecutionTrendBar();
     }
 
     const columns: ColumnsType<TJobsInstanceTableItem> = [
@@ -452,7 +489,7 @@ const Dashboard = ({ datasourceId }: TJobs) => {
         },
     ];
     return (
-        <div className="dv-page-padding" style={{ height: 'calc(100vh - 75px)' }}>
+        <div className="dv-page-padding" style={{height:'calc(100vh - 100px)'}} >
             <div>
                 <Row style = {{marginTop: '20px'}}>
                     <Col span={24}>
@@ -469,19 +506,19 @@ const Dashboard = ({ datasourceId }: TJobs) => {
                     </Col>
                 </Row>
             </div>
-            <div>
+            <div  style={{height:'calc(100vh - 160px)',overflow: 'auto'}}>
                 <Row style = {{marginTop: '20px'}}>
                     <Col span={12}>
                         <Title>
                             {intl.formatMessage({ id: 'config_title' })}
                         </Title>
-                        <DashBoard option={dqPieOption} id={"1"} style={{height:'350px'}}/>
+                        <DashBoard option={dqPieOption} id={"1"} style={{height:'350px',width:'calc(50vw - 100px)'}}/>
                     </Col>
                     <Col span={12}>
                         <Title>
                             {intl.formatMessage({ id: 'config_title' })}
                         </Title>
-                        <DashBoard option={dqBarOption} id={"2"} style={{height:'350px'}}/>
+                        <DashBoard option={dqBarOption} id={"2"} style={{height:'350px',width:'calc(50vw - 100px)'}}/>
                     </Col>
                 </Row>
                 <Row>
