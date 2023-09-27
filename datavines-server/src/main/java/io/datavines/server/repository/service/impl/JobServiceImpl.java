@@ -186,7 +186,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         if (job == null) {
             throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobUpdate.getId());
         }
-
+        String originJobName = job.getName();
         if (jobUpdate.getIsErrorDataOutputToDataSource()!= null && jobUpdate.getIsErrorDataOutputToDataSource()) {
             DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
             if (dataSource != null) {
@@ -207,7 +207,8 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         }else {
             job.setName(jobUpdate.getJobName());
         }
-        if (getByKeyAttribute(job)) {
+        // add check if the name has changed
+        if (getByKeyAttribute(job) && !org.apache.commons.lang3.StringUtils.equals(originJobName, job.getName())) {
             throw new DataVinesServerException(Status.JOB_EXIST_ERROR, job.getName());
         }
         job.setUpdateBy(ContextHolder.getUserId());
