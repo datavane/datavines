@@ -643,8 +643,9 @@ CREATE TABLE `dv_registry_lock`
     `create_time`      datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
     `update_time`      datetime    NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'update time',
     PRIMARY KEY (`id`),
-    unique (`lock_key`)
-) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4;
+    UNIQUE KEY `uniq_lock_key` (`lock_key`) USING BTREE,
+    KEY `idx_upt` (`update_time`)
+) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COMMENT='注册锁';
 
 -- ----------------------------
 -- Table structure for dv_sla
@@ -793,7 +794,7 @@ CREATE TABLE `dv_config` (
     `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
     `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
     PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8mb4 COMMENT='配置';
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COMMENT='配置';
 
 INSERT INTO `dv_config` VALUES ('1', '-1', 'data.quality.jar.name', '/libs/datavines-engine-spark-core-1.0.0-SNAPSHOT.jar', '1', '1', '2023-09-02 16:52:56', '1', '2023-09-03 09:56:12');
 INSERT INTO `dv_config` VALUES ('2', '-1', 'yarn.mode', 'standalone', '1', '1', '2023-09-02 18:28:59', '1', '2023-09-03 12:46:24');
