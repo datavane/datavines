@@ -280,5 +280,9 @@ export default {
     config_title: 'Config Management',
     config_var_key: 'Config Key',
     config_var_value: 'Config Value',
-    create_config: 'Create Config'
+    create_config: 'Create Config',
+
+    quality_dashboard_profile: 'Quality Profile',
+    quality_dashboard_trend: 'Quality Trend',
+    quality_dashboard_failure_execution: 'Fail Check',
 };

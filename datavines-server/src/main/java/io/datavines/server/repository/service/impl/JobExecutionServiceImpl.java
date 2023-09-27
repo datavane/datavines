@@ -370,12 +370,22 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
             endDateStr = DateUtils.format(DateUtils.addDays(new Date(), +1),"yyyy-MM-dd");
         } else {
             if (StringUtils.isEmpty(dashboardParam.getEndTime())) {
+                Date startDate = DateUtils.parse(dashboardParam.getStartTime(), "yyyy-MM-dd");
                 startDateStr = dashboardParam.getStartTime().substring(0,10);
-                endDateStr = DateUtils.format(new Date(),"yyyy-MM-dd");
+                endDateStr = DateUtils.format(DateUtils.addDays(startDate,7),"yyyy-MM-dd");
             } else if (StringUtils.isEmpty(dashboardParam.getStartTime())) {
                 Date endDate = DateUtils.parse(dashboardParam.getEndTime(), "yyyy-MM-dd");
                 startDateStr = DateUtils.format(DateUtils.addDays(endDate,-6),"yyyy-MM-dd");
                 endDateStr = dashboardParam.getEndTime().substring(0,10);
+            } else {
+                Date endDate = DateUtils.parse(dashboardParam.getEndTime(), "yyyy-MM-dd HH:mm:dd");
+                Date startDate = DateUtils.parse(dashboardParam.getStartTime(), "yyyy-MM-dd HH:mm:dd");
+                long days = DateUtils.diffDays(endDate,startDate);
+                if (days > 7) {
+                    endDate = DateUtils.addDays(startDate, 7);
+                }
+                startDateStr = DateUtils.format(startDate,"yyyy-MM-dd");
+                endDateStr = DateUtils.format(endDate,"yyyy-MM-dd");
             }
         }
 

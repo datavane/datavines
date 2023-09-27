@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { lazy } from 'react';
-import { DatabaseOutlined, UnorderedListOutlined, HistoryOutlined } from '@ant-design/icons';
+import { DatabaseOutlined, UnorderedListOutlined, HistoryOutlined ,BarChartOutlined} from '@ant-design/icons';
 import { TRouter } from './type';
 
 const detailRouter: TRouter = {
@@ -8,15 +8,15 @@ const detailRouter: TRouter = {
         path: '/main/detail/:id/dashboard',
         key: '/main/detail/:id/dashboard',
         label: '',
-        exact: false,
-        icon: <UnorderedListOutlined />,
+        exact: true,
+        icon: <BarChartOutlined/>,
         component: lazy(() => import(/* webpackChunkName: 'view-detail-jobs' */ '@/view/Main/HomeDetail/Dashboard')),
     },
     'dv-detail-editor': {
         path: '/main/detail/:id/editor',
         key: '/main/detail/:id/editor',
         label: '',
-        exact: true,
+        exact: false,
         icon: <DatabaseOutlined />,
         component: lazy(() => import(/* webpackChunkName: 'view-detail-editor' */ '@/view/Main/HomeDetail/EditorData')),
     },

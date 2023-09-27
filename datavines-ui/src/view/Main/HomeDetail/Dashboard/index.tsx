@@ -510,13 +510,13 @@ const Dashboard = ({ datasourceId }: TJobs) => {
                 <Row style = {{marginTop: '20px'}}>
                     <Col span={12}>
                         <Title>
-                            {intl.formatMessage({ id: 'config_title' })}
+                            {intl.formatMessage({ id: 'quality_dashboard_profile' })}
                         </Title>
                         <DashBoard option={dqPieOption} id={"1"} style={{height:'350px',width:'calc(50vw - 100px)'}}/>
                     </Col>
                     <Col span={12}>
                         <Title>
-                            {intl.formatMessage({ id: 'config_title' })}
+                            {intl.formatMessage({ id: 'quality_dashboard_trend' })}
                         </Title>
                         <DashBoard option={dqBarOption} id={"2"} style={{height:'350px',width:'calc(50vw - 100px)'}}/>
                     </Col>
@@ -524,7 +524,7 @@ const Dashboard = ({ datasourceId }: TJobs) => {
                 <Row>
                     <Col span={24} >
                         <Title>
-                            {intl.formatMessage({ id: 'config_title' })}
+                            {intl.formatMessage({ id: 'quality_dashboard_failure_execution' })}
                         </Title>
                         <Table<TJobsInstanceTableItem>
                             size="middle"

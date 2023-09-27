@@ -278,5 +278,9 @@ export default {
     config_title: '参数管理',
     config_var_key: '参数名',
     config_var_value: '参数值',
-    create_config: '创建参数'
+    create_config: '创建参数',
+
+    quality_dashboard_profile: '质量概览',
+    quality_dashboard_trend: '质量趋势',
+    quality_dashboard_failure_execution: '失败作业',
 };

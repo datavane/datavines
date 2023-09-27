@@ -182,6 +182,10 @@ public class DateUtils {
         return (long) Math.ceil(diffMin(d1, d2) / 60.0);
     }
 
+    public static long diffDays(Date d1, Date d2) {
+        return (long) Math.ceil(diffMin(d1, d2) / 60.0/24);
+    }
+
     /**
      * get minutes between two dates
      *
