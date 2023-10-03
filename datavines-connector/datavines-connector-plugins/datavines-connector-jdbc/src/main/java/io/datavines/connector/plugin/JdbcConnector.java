@@ -247,6 +247,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         ResultSet rs = null;
         List<ColumnInfo> columnList = new ArrayList<>();
         try {
+            //TODO 目前oracle版本存在拿不到column_name,要考虑下这块的内容
             rs = getMetadataColumns(metaData, catalog, schema, tableName, "%");
             if (rs == null) {
                 return columnList;

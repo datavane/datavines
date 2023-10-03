@@ -20,12 +20,15 @@ import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.common.datasource.jdbc.JdbcDataSourceInfoManager;
 import io.datavines.common.datasource.jdbc.JdbcExecutorClient;
+import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.DatabaseInfo;
 import io.datavines.common.datasource.jdbc.utils.JdbcDataSourceUtils;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.GetDatabasesRequestParam;
 import io.datavines.common.utils.JSONUtils;
 import lombok.extern.slf4j.Slf4j;
+import oracle.jdbc.OracleConnection;
+import oracle.jdbc.OracleDatabaseMetaData;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -41,7 +44,12 @@ public class OracleConnector extends JdbcConnector {
 
     @Override
     public ResultSet getMetadataColumns(DatabaseMetaData metaData, String catalog, String schema, String tableName, String columnName) throws SQLException {
-        return metaData.getColumns(schema, null, tableName, columnName);
+        OracleDatabaseMetaData oracleMetaData = (OracleDatabaseMetaData) metaData;
+        OracleConnection connection = (OracleConnection) oracleMetaData.getConnection();
+        connection.setRemarksReporting(true);
+
+        ResultSet resultSet =  oracleMetaData.getColumns(schema, null, tableName, columnName);
+        return resultSet;
     }
 
     @Override
@@ -56,6 +64,32 @@ public class OracleConnector extends JdbcConnector {
         return stmt.executeQuery("select username from all_users");
     }
 
+
+
+    @Override
+    public List<ColumnInfo> getColumns(String catalog, String schema, String tableName, DatabaseMetaData metaData) {
+
+        ResultSet rs = null;
+        List<ColumnInfo> columnList = new ArrayList<>();
+        try {
+            //TODO 目前oracle版本存在拿不到column_name,要考虑下这块的内容
+            rs = getMetadataColumns(metaData, catalog, schema, tableName, "%");
+            if (rs == null) {
+                return columnList;
+            }
+            while (rs.next()) {
+                String name = rs.getString("COLUMN_NAME");
+                String rawType = rs.getString("TYPE_NAME");
+                String comment = rs.getString("REMARKS");
+                columnList.add(new ColumnInfo(name, rawType, comment,false));
+            }
+        } catch (Exception e) {
+            logger.error(e.toString(), e);
+        } finally {
+            JdbcDataSourceUtils.closeResult(rs);
+        }
+        return columnList;
+    }
 
 
 
