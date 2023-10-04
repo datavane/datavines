@@ -71,7 +71,6 @@ public class ConfigConstants {
     public static final String INVALIDATE_ITEM_CAN_OUTPUT = "invalidate_item_can_output";
 
     public static final String DATABASE = "database";
-
     public static final String SCHEMA = "schema";
     public static final String USER = "user";
     public static final String PASSWORD = "password";
