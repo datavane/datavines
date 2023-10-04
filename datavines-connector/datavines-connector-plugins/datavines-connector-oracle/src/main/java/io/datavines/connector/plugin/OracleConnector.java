@@ -18,14 +18,8 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
-import io.datavines.common.datasource.jdbc.JdbcDataSourceInfoManager;
-import io.datavines.common.datasource.jdbc.JdbcExecutorClient;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
-import io.datavines.common.datasource.jdbc.entity.DatabaseInfo;
 import io.datavines.common.datasource.jdbc.utils.JdbcDataSourceUtils;
-import io.datavines.common.param.ConnectorResponse;
-import io.datavines.common.param.GetDatabasesRequestParam;
-import io.datavines.common.utils.JSONUtils;
 import lombok.extern.slf4j.Slf4j;
 import oracle.jdbc.OracleConnection;
 import oracle.jdbc.OracleDatabaseMetaData;
@@ -64,8 +58,6 @@ public class OracleConnector extends JdbcConnector {
         return stmt.executeQuery("select username from all_users");
     }
 
-
-
     @Override
     public List<ColumnInfo> getColumns(String catalog, String schema, String tableName, DatabaseMetaData metaData) {
 
@@ -90,7 +82,5 @@ public class OracleConnector extends JdbcConnector {
         }
         return columnList;
     }
-
-
 
 }

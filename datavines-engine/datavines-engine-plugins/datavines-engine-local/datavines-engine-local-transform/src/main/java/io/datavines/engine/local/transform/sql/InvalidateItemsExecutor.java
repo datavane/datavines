@@ -16,7 +16,6 @@
  */
 package io.datavines.engine.local.transform.sql;
 
-//import com.baomidou.mybatisplus.annotation.DbType;
 import io.datavines.common.config.Config;
 import io.datavines.engine.local.api.entity.ResultList;
 import lombok.extern.slf4j.Slf4j;
@@ -34,9 +33,7 @@ public class InvalidateItemsExecutor implements ITransformExecutor {
 
         String outputTable = config.getString(INVALIDATE_ITEMS_TABLE);
         String sql = config.getString(SQL);
-
         Statement statement = connection.createStatement();
-
         if("oracle".equalsIgnoreCase(connection.getMetaData().getDatabaseProductName())) {
             statement.execute("CREATE OR REPLACE VIEW " + outputTable + " AS " + sql);
         } else {
@@ -44,7 +41,6 @@ public class InvalidateItemsExecutor implements ITransformExecutor {
             statement.execute("DROP VIEW IF EXISTS " + outputTable);
             statement.execute("CREATE VIEW " + outputTable + " AS " + sql);
         }
-
         statement.close();
         return null;
     }
