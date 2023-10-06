@@ -35,7 +35,8 @@ export default {
     '/main/warning': 'Warning',
     '/main/userManage': 'User',
     '/main/errorDataManage': 'ErrorData',
-    '/main/detail/:id/editor': 'Data',
+    '/main/detail/:id/dashboard': 'Dashboard',
+    '/main/detail/:id/editor': 'Catalog',
     '/main/detail/:id/jobs': 'Jobs',
     '/main/detail/:id/tasks': 'Results',
     '/main/detail/:id': 'Detail',
@@ -96,6 +97,12 @@ export default {
     jobs_task_name: 'JobExecution Name',
     jobs_task_type: 'Job Type',
     jobs_task_status: 'JobExecution Status',
+    jobs_task_schema_name: 'Database',
+    jobs_task_table_name: 'Table',
+    jobs_task_column_name: 'Column',
+    jobs_task_metric_type: 'Metric Type',
+    jobs_task_start_time: 'Start Time',
+    jobs_task_end_time: 'End Time',
     jobs_task_stop_btn: 'Stop',
     jobs_task_result: 'ExecutionResult',
     jobs_task_error_data: 'Error',
@@ -279,5 +286,9 @@ export default {
     config_title: 'Config Management',
     config_var_key: 'Config Key',
     config_var_value: 'Config Value',
-    create_config: 'Create Config'
+    create_config: 'Create Config',
+
+    quality_dashboard_profile: 'Quality Profile',
+    quality_dashboard_trend: 'Quality Trend',
+    quality_dashboard_failure_execution: 'Fail Check',
 };

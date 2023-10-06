@@ -1,6 +1,8 @@
 import * as echarts from 'echarts/core';
-import { LineChart, BarChart } from 'echarts/charts';
+import {LineChart, BarChart, PieChart} from 'echarts/charts';
+
 import {
+    ToolboxComponent,
     TitleComponent,
     TooltipComponent,
     GridComponent,
@@ -26,7 +28,9 @@ echarts.use([
     UniversalTransition,
     CanvasRenderer,
     BarChart,
+    PieChart,
     LegendComponent,
+    ToolboxComponent
 ]);
 const Index = ({ id, option, style = {} }:{id:string, option:any, style?:any}) => {
     const [myChart, setMyChart] = useState<any>(null);
@@ -35,16 +39,18 @@ const Index = ({ id, option, style = {} }:{id:string, option:any, style?:any}) =
             setMyChart(null);
             return;
         }
-        if (!option?.series || !option?.series?.length || option.series[0]?.data?.length === 0) {
+        if (!option?.series || !option?.series?.length || !option.series[0]?.data ||option.series[0]?.data?.length === 0) {
             if (document.getElementById(id) && document.getElementById(id)?.innerHTML) {
                 // eslint-disable-next-line no-unused-expressions
-                myChart?.dispose && myChart.current?.dispose();
-                setMyChart(null);
-                const dom = document.getElementById(id) as HTMLElement;
-                dom.innerHTML = '';
+                if (myChart != null) {
+                    myChart?.dispose && myChart.current?.dispose();
+                    myChart.clear();
+                    setMyChart(null);
+                }
             }
             return;
         }
+
         if (!myChart) {
             const charts = echarts.init(document.getElementById(id) as HTMLElement);
             setMyChart(charts);

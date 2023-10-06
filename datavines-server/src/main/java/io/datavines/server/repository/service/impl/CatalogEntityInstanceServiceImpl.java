@@ -34,6 +34,7 @@ import io.datavines.server.api.dto.bo.catalog.OptionItem;
 import io.datavines.server.api.dto.bo.catalog.profile.RunProfileRequest;
 import io.datavines.server.api.dto.bo.job.DataProfileJobCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.JobCreateWithEntityUuid;
+import io.datavines.server.api.dto.bo.job.JobExecutionPageParam;
 import io.datavines.server.api.dto.vo.DataTime2ValueItem;
 import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.server.api.dto.vo.catalog.*;
@@ -990,6 +991,11 @@ public class CatalogEntityInstanceServiceImpl
         CatalogEntityMetricJobRel rel = list.get(0);
         Long jobId = rel.getMetricJobId();
 
-        return jobExecutionService.getJobExecutionPage("", jobId, pageNumber, pageSize);
+        JobExecutionPageParam pageParam = new JobExecutionPageParam();
+        pageParam.setPageNumber(pageNumber);
+        pageParam.setPageSize(pageSize);
+        pageParam.setJobId(jobId);
+
+        return jobExecutionService.getJobExecutionPage(pageParam);
     }
 }

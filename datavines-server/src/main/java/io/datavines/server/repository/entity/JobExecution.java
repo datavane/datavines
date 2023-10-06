@@ -48,6 +48,18 @@ public class JobExecution implements Serializable {
     @TableField(value = "job_type")
     private JobType jobType;
 
+    @TableField(value = "schema_name")
+    private String schemaName;
+
+    @TableField(value = "table_name")
+    private String tableName;
+
+    @TableField(value = "column_name")
+    private String columnName;
+
+    @TableField(value = "metric_type")
+    private String metricType;
+
     @TableField(value = "datasource_id")
     private Long dataSourceId;
 

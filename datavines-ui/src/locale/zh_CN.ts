@@ -35,6 +35,7 @@ export default {
     '/main/warning': '告警管理',
     '/main/userManage': '用户管理',
     '/main/errorDataManage': '错误数据管理',
+    '/main/detail/:id/dashboard': '质量大盘',
     '/main/detail/:id/editor': '数据目录',
     '/main/detail/:id/jobs': '作业管理',
     '/main/detail/:id/tasks': '结果管理',
@@ -96,6 +97,12 @@ export default {
     jobs_task_name: '执行记录名称',
     jobs_task_type: '执行记录类型',
     jobs_task_status: '执行记录状态',
+    jobs_task_schema_name: '数据库名',
+    jobs_task_table_name: '表名',
+    jobs_task_column_name: '列名',
+    jobs_task_metric_type: '规则类型',
+    jobs_task_start_time: '开始时间',
+    jobs_task_end_time: '结束时间',
     jobs_task_stop_btn: '停止',
     jobs_task_result: '结果',
     jobs_task_error_data: '错误数据',
@@ -277,5 +284,9 @@ export default {
     config_title: '参数管理',
     config_var_key: '参数名',
     config_var_value: '参数值',
-    create_config: '创建参数'
+    create_config: '创建参数',
+
+    quality_dashboard_profile: '质量概览',
+    quality_dashboard_trend: '质量趋势',
+    quality_dashboard_failure_execution: '失败作业',
 };

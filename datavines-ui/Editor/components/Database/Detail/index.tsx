@@ -7,7 +7,7 @@ import './index.less';
 import useRequest from '@Editor/hooks/useRequest';
 import DashBoard from './dashBoard';
 import Runs from './runs';
-import { Inner } from '../../../../src/view/Main/HomeDetail/Jobs/useAddEditJobsModal';
+import { Inner } from 'view/Main/HomeDetail/Jobs/useAddEditJobsModal';
 
 const Index = (props: any, ref:any) => {
     const { id, selectDatabases, changeTabKey } = props;

@@ -29,18 +29,21 @@ public enum JobType {
      * 1 DATA_PROFILE
      * 2 DATA_RECONCILIATION
      */
-    DATA_QUALITY(0, "DATA_QUALITY"),
-    DATA_PROFILE(1, "DATA_PROFILE"),
-    DATA_RECONCILIATION(2, "DATA_RECONCILIATION");
+    DATA_QUALITY(0, "DATA_QUALITY", "数据质量检查"),
+    DATA_PROFILE(1, "DATA_PROFILE","数据概览检查"),
+    DATA_RECONCILIATION(2, "DATA_RECONCILIATION","数据比对检查");
 
-    JobType(int code, String description) {
+    JobType(int code, String description, String zhDescription) {
         this.code = code;
         this.description = description;
+        this.zhDescription = zhDescription;
     }
 
     @EnumValue
     private final int code;
     private final String description;
+
+    private final String zhDescription;
 
     public int getCode() {
         return code;
@@ -48,6 +51,10 @@ public enum JobType {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getZhDescription() {
+        return zhDescription;
     }
 
     private static final HashMap<String, JobType> JOB_TYPE_MAP = new HashMap<>();

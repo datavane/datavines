@@ -21,11 +21,95 @@
 <mapper namespace="io.datavines.server.repository.mapper.JobExecutionMapper">
 
     <sql id="basic_sql">
-        select * from dv_job_execution where job_id = #{jobId}
+        select * from dv_job_execution
+                 <where>
+                     <if test="jobId != null">
+                          and job_id = #{jobId}
+                     </if>
+                     <if test="metricType != null">
+                         and metric_type = #{metricType}
+                     </if>
+                     <if test="schemaName != null">
+                         and schema_name = #{schemaName}
+                     </if>
+                     <if test="tableName != null">
+                         and table_name = #{tableName}
+                     </if>
+                     <if test="columnName != null">
+                         and column_name = #{columnName}
+                     </if>
+                     <if test="startTime != null">
+                         and update_time &gt;= #{startTime}
+                     </if>
+                     <if test="endTime != null">
+                         and update_time &lt;= #{endTime}
+                     </if>
+                     <if test="datasourceId != null">
+                         and datasource_id = #{datasourceId}
+                     </if>
+                     <if test="status != null">
+                         and status = #{status}
+                     </if>
+
+                 </where>
+    </sql>
+
+    <sql id="basic_sql_1">
+        select * from dv_job_execution
+        <where>
+            <if test="metricType != null">
+                and metric_type = #{metricType}
+            </if>
+            <if test="schemaName != null">
+                and schema_name = #{schemaName}
+            </if>
+            <if test="tableName != null">
+                and table_name = #{tableName}
+            </if>
+            <if test="columnName != null">
+                and column_name = #{columnName}
+            </if>
+            <if test="startTime != null">
+                and update_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and update_time &lt;= #{endTime}
+            </if>
+            <if test="datasourceId != null">
+                and datasource_id = #{datasourceId}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="basic_sql_2">
+        select DATE_FORMAT(create_time, '%Y-%m-%d') AS create_date, status  from dv_job_execution
+        <where>
+            <if test="metricType != null">
+                and metric_type = #{metricType}
+            </if>
+            <if test="schemaName != null">
+                and schema_name = #{schemaName}
+            </if>
+            <if test="tableName != null">
+                and table_name = #{tableName}
+            </if>
+            <if test="columnName != null">
+                and column_name = #{columnName}
+            </if>
+            <if test="startTime != null">
+                and create_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null">
+                and create_time &lt;= #{endTime}
+            </if>
+            <if test="datasourceId != null">
+                and datasource_id = #{datasourceId}
+            </if>
+        </where>
     </sql>
 
     <select id="getJobExecutionPage" resultType="io.datavines.server.api.dto.vo.JobExecutionVO">
-        select p.id, p.name, p.job_type, p.status, p.update_time from (<include refid="basic_sql"/>) p
+        select p.id, p.name, p.schema_name, p.table_name, p.column_name, p.metric_type, p.job_type, p.status, p.start_time, p.end_time, p.update_time from (<include refid="basic_sql"/>) p
         <where>
             <if test="searchVal != null">
                 LOWER(p.`name`) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
@@ -33,5 +117,13 @@
         </where>
         order by p.update_time desc
 
+    </select>
+
+    <select id="getJobExecutionAggPie" resultType="io.datavines.server.api.dto.vo.JobExecutionAggItem">
+        select p.status as `name`, count(1) as `value` from (<include refid="basic_sql_1"/>) p GROUP BY p.status
+    </select>
+
+    <select id="getJobExecutionTrendBar" resultType="io.datavines.server.api.dto.vo.JobExecutionTrendBarItem">
+        select p.create_date, status, count(1) as num from (<include refid="basic_sql_2"/>) p group by p.create_date,p.status order by create_date
     </select>
 </mapper>

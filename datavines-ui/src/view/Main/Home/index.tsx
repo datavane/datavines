@@ -51,7 +51,7 @@ function App() {
         getData();
     }, { immediate: true });
     const goDetail = usePersistFn((record: IDataSourceListItem) => {
-        history.push(`/main/detail/${record.id}/editor?name=${record.name}`);
+        history.push(`/main/detail/${record.id}/dashboard?name=${record.name}`);
     });
     const onSearch = usePersistFn((values) => {
         getData(values);

@@ -232,7 +232,6 @@ const Jobs = ({ datasourceId }: TJobs) => {
             pageNumber: 1,
             pageSize: 10,
         });
-        // getData(undefined, +key);
     };
 
     const items: TabsProps['items'] = [
@@ -248,7 +247,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
         },
     ];
     return (
-        <div className="dv-page-paddinng" style={{ height: 'calc(100vh - 73px)' }}>
+        <div className="dv-page-padding" style={{ height: 'calc(100vh - 73px)' }}>
             <Tabs defaultActiveKey="0" items={items} onChange={onChangeTab} />
             {/* <Title>{intl.formatMessage({ id: 'jobs_list' })}</Title> */}
             <div style={{ paddingTop: '0px' }}>

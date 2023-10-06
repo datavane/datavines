@@ -8,7 +8,7 @@ import SLAsSetting from './SLAsSetting';
 const Index = () => {
     const match = useRouteMatch();
     return (
-        <div className="dv-page-paddinng">
+        <div className="dv-page-padding">
             <Switch>
                 <Route path={match.path} exact component={SLAsNoticeList} />
                 <Route path={`${match.path}/SLAs`} exact component={SLAs} />

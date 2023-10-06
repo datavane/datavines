@@ -11,7 +11,6 @@ import { useMount, Popconfirm } from '@/common';
 import { SearchForm } from '@/component';
 import { $http } from '@/http';
 import { useSelector } from '@/store';
-import { defaultRender } from '@/utils/helper';
 import Title from "component/Title";
 import {TConfigTableItem} from "@/type/config";
 
@@ -129,7 +128,7 @@ const Index = () => {
     return (
 
             <div
-                className="dv-page-paddinng"
+                className="dv-page-padding"
                 style={
                     {
                         padding: '20px 20px 20px 0px',

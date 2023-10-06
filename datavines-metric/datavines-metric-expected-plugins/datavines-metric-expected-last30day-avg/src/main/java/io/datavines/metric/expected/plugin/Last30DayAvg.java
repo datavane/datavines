@@ -43,7 +43,7 @@ public class Last30DayAvg implements ExpectedValue {
     @Override
     public String getExecuteSql(Map<String,String> inputParameter) {
         String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
-        return "select round(avg(actual_value),2) as last_30d_avg" + "expected_value_" + uniqueKey +
+        return "select round(avg(actual_value),2) as expected_value_" + uniqueKey +
                 " from dv_actual_values where data_time >= date_sub(date_format(${data_time},'%Y-%m-%d'),interval 30 DAY)" +
                 " and data_time < date_add(date_format(${data_time},'%Y-%m-%d'),interval 1 DAY) and unique_code = ${unique_code}";
     }

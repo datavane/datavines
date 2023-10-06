@@ -29,7 +29,7 @@ const JobsInstance = () => {
     const getData = async (values?: any, $pageParams?: any) => {
         try {
             setLoading(true);
-            const res = (await $http.get('/job/execution/page', {
+            const res = (await $http.post('/job/execution/page', {
                 jobId: qs.jobId,
                 ...($pageParams || pageParams),
                 ...(values || form.getFieldsValue()),
@@ -91,6 +91,34 @@ const JobsInstance = () => {
             render: (text) => defaultRender(text, 300),
         },
         {
+            title: intl.formatMessage({ id: 'jobs_task_schema_name' }),
+            dataIndex: 'schemaName',
+            key: 'schemaName',
+            width: 100,
+            render: (text) => defaultRender(text, 300),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_table_name' }),
+            dataIndex: 'tableName',
+            key: 'tableName',
+            width: 200,
+            render: (text) => defaultRender(text, 300),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_column_name' }),
+            dataIndex: 'columnName',
+            key: 'columnName',
+            width: 200,
+            render: (text) => defaultRender(text, 300),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_metric_type' }),
+            dataIndex: 'metricType',
+            key: 'metricType',
+            width: 300,
+            render: (text) => defaultRender(text, 300),
+        },
+        {
             title: intl.formatMessage({ id: 'jobs_task_type' }),
             dataIndex: 'jobType',
             key: 'jobType',
@@ -105,9 +133,16 @@ const JobsInstance = () => {
             render: (text: string) => <div>{text}</div>,
         },
         {
-            title: intl.formatMessage({ id: 'jobs_update_time' }),
-            dataIndex: 'updateTime',
-            key: 'updateTime',
+            title: intl.formatMessage({ id: 'jobs_task_start_time' }),
+            dataIndex: 'startTime',
+            key: 'startTime',
+            width: 160,
+            render: (text: string) => <div>{text || '--'}</div>,
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_end_time' }),
+            dataIndex: 'endTime',
+            key: 'endTime',
             width: 160,
             render: (text: string) => <div>{text || '--'}</div>,
         },
@@ -131,7 +166,7 @@ const JobsInstance = () => {
     ];
     return (
         <div
-            className="dv-page-paddinng"
+            className="dv-page-padding"
             style={{
                 padding: '0px 20px 0px 0px',
                 height: 'auto',

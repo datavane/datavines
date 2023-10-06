@@ -20,6 +20,8 @@ import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.common.entity.job.SubmitJob;
+import io.datavines.server.api.dto.bo.job.JobExecutionDashboardParam;
+import io.datavines.server.api.dto.bo.job.JobExecutionPageParam;
 import io.datavines.server.api.dto.vo.JobExecutionResultVO;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.service.JobExecutionErrorDataService;
@@ -94,12 +96,9 @@ public class JobExecutionController {
     }
 
     @ApiOperation(value = "get job execution page", response = JobExecutionResultVO.class, responseContainer = "page")
-    @GetMapping(value = "/page")
-    public Object page(@RequestParam(value = "searchVal", required = false) String searchVal,
-                       @RequestParam("jobId") Long jobId,
-                       @RequestParam("pageNumber") Integer pageNumber,
-                       @RequestParam("pageSize") Integer pageSize)  {
-        return jobExecutionService.getJobExecutionPage(searchVal, jobId, pageNumber, pageSize);
+    @PostMapping(value = "/page")
+    public Object page(@Valid @RequestBody JobExecutionPageParam jobExecutionPageParam)  {
+        return jobExecutionService.getJobExecutionPage(jobExecutionPageParam);
     }
 
     @ApiOperation(value = "get job execution error data page", response = Object.class, responseContainer = "page")
@@ -108,5 +107,17 @@ public class JobExecutionController {
                                     @RequestParam("pageNumber") Integer pageNumber,
                                     @RequestParam("pageSize") Integer pageSize){
         return jobExecutionErrorDataService.readErrorDataPage(taskId, pageNumber, pageSize);
+    }
+
+    @ApiOperation(value = "get job execution agg pie", response = JobExecutionResultVO.class)
+    @PostMapping(value = "/agg-pie")
+    public Object getExecutionAggPie(@Valid @RequestBody JobExecutionDashboardParam dashboardParam)  {
+        return jobExecutionService.getJobExecutionAggPie(dashboardParam);
+    }
+
+    @ApiOperation(value = "get job execution trend bar", response = JobExecutionResultVO.class)
+    @PostMapping(value = "/trend-bar")
+    public Object getExecutionTrendBar(@Valid @RequestBody JobExecutionDashboardParam dashboardParam)  {
+        return jobExecutionService.getJobExecutionTrendBar(dashboardParam);
     }
 }

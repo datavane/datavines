@@ -18,6 +18,8 @@ package io.datavines.server.repository.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.datavines.server.api.dto.vo.JobExecutionAggItem;
+import io.datavines.server.api.dto.vo.JobExecutionTrendBarItem;
 import io.datavines.server.api.dto.vo.JobExecutionVO;
 import org.apache.ibatis.annotations.*;
 
@@ -34,6 +36,20 @@ public interface JobExecutionMapper extends BaseMapper<JobExecution>  {
     List<JobExecution> listByJobId(long jobId);
 
     IPage<JobExecutionVO> getJobExecutionPage(Page<JobExecutionVO> page,
-                                      @Param("searchVal") String searchVal,
-                                      @Param("jobId") Long jobId);
+                                              @Param("searchVal") String searchVal,
+                                              @Param("jobId") Long jobId,
+                                              @Param("datasourceId") Long datasourceId,
+                                              @Param("status") Integer status,
+                                              @Param("metricType") String metricType, @Param("schemaName") String schemaName,
+                                              @Param("tableName") String tableName, @Param("columnName") String columnName,
+                                              @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+    List<JobExecutionAggItem> getJobExecutionAggPie(@Param("datasourceId") Long datasourceId,
+                                                    @Param("metricType") String metricType, @Param("schemaName") String schemaName,
+                                                    @Param("tableName") String tableName, @Param("columnName") String columnName,
+                                                    @Param("startTime") String startTime, @Param("endTime") String endTime);
+    List<JobExecutionTrendBarItem> getJobExecutionTrendBar(@Param("datasourceId") Long datasourceId,
+                                                           @Param("metricType") String metricType, @Param("schemaName") String schemaName,
+                                                           @Param("tableName") String tableName, @Param("columnName") String columnName,
+                                                           @Param("startTime") String startTime, @Param("endTime") String endTime);
 }

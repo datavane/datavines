@@ -19,6 +19,7 @@ package io.datavines.server.api.dto.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.JobType;
+import io.datavines.core.utils.LanguageUtils;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -33,15 +34,29 @@ public class JobExecutionVO implements Serializable {
 
     private String name;
 
+    private String schemaName;
+
+    private String tableName;
+
+    private String columnName;
+
+    private String metricType;
+
     private JobType jobType;
 
     private ExecutionStatus status;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime startTime;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
+    private LocalDateTime endTime;
+
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private LocalDateTime updateTime;
 
     public String getJobType() {
-        return jobType.getDescription();
+        return LanguageUtils.isZhContext()? jobType.getZhDescription() : jobType.getDescription();
     }
 
     public String getStatus() {
