@@ -251,7 +251,7 @@ const Index = ({
                     alignItems: 'center',
                 }}
             >
-                <Row style={{ display: 'flex', alignItems: 'center' }}>
+                <Row style={{ display: 'flex', alignItems: 'center' ,marginBottom:15}}>
                     <Form form={form} layout="inline" style={{ flex: 1 }}>
                         <Form.Item name="searchInput" style={{ flex: 1 }}>
                             <Input placeholder={intl.formatMessage({id: 'common_search'})}
@@ -260,7 +260,7 @@ const Index = ({
                             />
                         </Form.Item>
                     </Form>
-                    <span style={{ marginRight: 5 }}>
+                    <span style={{ marginRight: 15, marginLeft: 2}}>
                         <ReloadOutlined
                             onClick={() => {
                                 // refresh search input

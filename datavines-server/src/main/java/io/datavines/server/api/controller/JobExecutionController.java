@@ -98,7 +98,6 @@ public class JobExecutionController {
     @ApiOperation(value = "get job execution page", response = JobExecutionResultVO.class, responseContainer = "page")
     @PostMapping(value = "/page")
     public Object page(@Valid @RequestBody JobExecutionPageParam jobExecutionPageParam)  {
-        log.info("param : {}" , jobExecutionPageParam);
         return jobExecutionService.getJobExecutionPage(jobExecutionPageParam);
     }
 

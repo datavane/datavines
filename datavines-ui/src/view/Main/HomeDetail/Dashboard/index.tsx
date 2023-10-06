@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Button,
     Cascader,
@@ -15,18 +15,19 @@ import {
     Table
 } from "antd";
 import DashBoard from "@Editor/components/Database/Detail/dashBoard";
-import {SearchForm, Title} from "@/component";
+import {Title} from "@/component";
 import {useIntl} from "react-intl";
 import * as echarts from 'echarts';
-import {useHistory, useRouteMatch} from "react-router-dom";
+import {useRouteMatch} from "react-router-dom";
 import {$http} from "@/http";
-import {IF, Popconfirm, useMount} from "@Editor/common";
+import {useMount} from "@Editor/common";
 import {ColumnsType} from "antd/lib/table";
 import {TJobsInstanceTableItem} from "@/type/JobsInstance";
 import {defaultRender} from "utils/helper";
 import {useInstanceErrorDataModal} from "view/Main/HomeDetail/Jobs/useInstanceErrorDataModal";
 import {useInstanceResult} from "view/Main/HomeDetail/Jobs/useInstanceResult";
 import {useLogger} from "view/Main/HomeDetail/Jobs/useLogger";
+import { useWatch } from '@/common';
 
 type TJobs = {
     datasourceId?: any,
@@ -38,8 +39,6 @@ interface Option {
     children?: Option[];
     isLeaf?: boolean;
 }
-
-
 
 const app: any = {};
 const posList = [
@@ -89,40 +88,6 @@ app.configParameters = {
     }
 };
 
-app.config = {
-    rotate: 90,
-    align: 'left',
-    verticalAlign: 'middle',
-    position: 'insideBottom',
-    distance: 15,
-    onChange: function () {
-        const labelOption: BarLabelOption = {
-            rotate: app.config.rotate as BarLabelOption['rotate'],
-            align: app.config.align as BarLabelOption['align'],
-            verticalAlign: app.config
-                .verticalAlign as BarLabelOption['verticalAlign'],
-            position: app.config.position as BarLabelOption['position'],
-            distance: app.config.distance as BarLabelOption['distance']
-        };
-    }
-};
-
-type BarLabelOption = NonNullable<echarts.BarSeriesOption['label']>;
-
-const labelOption: BarLabelOption = {
-    show: true,
-    position: app.config.position as BarLabelOption['position'],
-    distance: app.config.distance as BarLabelOption['distance'],
-    align: app.config.align as BarLabelOption['align'],
-    verticalAlign: app.config.verticalAlign as BarLabelOption['verticalAlign'],
-    rotate: app.config.rotate as BarLabelOption['rotate'],
-    formatter: '{c}  {name|{a}}',
-    fontSize: 16,
-    rich: {
-        name: {}
-    }
-};
-
 const Dashboard = ({ datasourceId }: TJobs) => {
     const [dqBarOption, setDqBarOption] = useState<any>();
     const [dqPieOption, setDqPieOption] = useState<any>();
@@ -163,6 +128,12 @@ const Dashboard = ({ datasourceId }: TJobs) => {
                     columnName : value[2]
                 })
             }
+        } else {
+            setEntityParam({
+                schemaName : null,
+                tableName : null,
+                columnName : null
+            })
         }
     };
 
@@ -256,7 +227,6 @@ const Dashboard = ({ datasourceId }: TJobs) => {
                 color: ['#ef6567', '#91cd77'],
                 series: [
                     {
-                        name: 'Execution Agg Pie',
                         type: 'pie',
                         radius: ['40%', '70%'],
                         avoidLabelOverlap: false,
@@ -308,63 +278,45 @@ const Dashboard = ({ datasourceId }: TJobs) => {
 
             const barOption = {
                 tooltip: {
-                    trigger: 'axis',
-                    axisPointer: {
-                        type: 'shadow'
-                    }
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['All', 'Success', 'Failure']
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
                 },
                 toolbox: {
-                    show: true,
-                    orient: 'vertical',
-                    left: 'right',
-                    top: 'center',
                     feature: {
-                        mark: { show: true },
-                        dataView: { show: true, readOnly: false },
-                        magicType: { show: true, type: ['line', 'bar', 'stack'] },
-                        restore: { show: true },
-                        saveAsImage: { show: true }
+                        saveAsImage: {}
                     }
                 },
-                xAxis: [
-                    {
-                        type: 'category',
-                        axisTick: { show: false },
-                        data: res.dateList
-                    }
-                ],
-                yAxis: [
-                    {
-                        type: 'value'
-                    }
-                ],
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: res.dateList
+                },
+                yAxis: {
+                    type: 'value'
+                },
                 series: [
                     {
                         name: 'All',
-                        type: 'bar',
-                        barGap: 0,
-                        label: labelOption,
-                        emphasis: {
-                            focus: 'series'
-                        },
+                        type: 'line',
                         data: res.allList
                     },
                     {
                         name: 'Success',
-                        type: 'bar',
-                        label: labelOption,
-                        emphasis: {
-                            focus: 'series'
-                        },
+                        type: 'line',
                         data: res.successList
                     },
                     {
                         name: 'Failure',
-                        type: 'bar',
-                        label: labelOption,
-                        emphasis: {
-                            focus: 'series'
-                        },
+                        type: 'line',
+                        color: 'red',
                         data: res.failureList
                     }
                 ]
@@ -377,21 +329,42 @@ const Dashboard = ({ datasourceId }: TJobs) => {
         }
     };
 
+    useEffect(() => {
+
+    }, []);
+
+    useWatch([(match.params as any).id], () =>{
+        refreshData()
+    })
+
     useMount(async () => {
+        refreshData()
+    });
+
+    const refreshData = async () => {
+        setEntityParam({
+            schemaName: null,
+            tableName: null,
+            columnName: null
+        })
+
+        setMetricType(null)
+        setStartTime(null)
+        setEndTime(null)
 
         const $metricList = await $http.get('metric/list/DATA_QUALITY');
         let $reMetricList = $metricList ? JSON.parse(JSON.stringify($metricList)) : [];
-        const $reMetricList1 : ((prevState: never[]) => never[]) | { value: any; label: any;}[]=[];
+        const $reMetricList1: ((prevState: never[]) => never[]) | { value: any; label: any; }[] = [];
         $reMetricList.forEach((item: { key: any; label: any; }) => {
             return $reMetricList1?.push({value: item.key, label: item.label});
         })
         // @ts-ignore
         setMetricList($reMetricList1);
-        console.log("metricList: ", $reMetricList )
+        console.log("metricList: ", $reMetricList)
         const $datasourceId = datasourceId || (match.params as any).id
         const $databases = await $http.get(`/datasource/${$datasourceId}/databases`);
         let $reDatabases = $databases ? JSON.parse(JSON.stringify($databases)) : [];
-        const $reDatabases1: ((prevState: never[]) => never[]) | { value: any; label: any; isLeaf:any;}[]=[];
+        const $reDatabases1: ((prevState: never[]) => never[]) | { value: any; label: any; isLeaf: any; }[] = [];
         $reDatabases.forEach((item: { name: any; }) => {
             return $reDatabases1.push({value: item.name, label: item.name, isLeaf: false});
         })
@@ -400,10 +373,9 @@ const Dashboard = ({ datasourceId }: TJobs) => {
         getJobExecutionData(pageParam);
         getJobExecutionAggPie();
         getJobExecutionTrendBar();
-    });
+    }
 
     const onPageChange = ({ current, pageSize }: any) => {
-        console.log("current page :" , current)
         setPageParam({
             pageNumber : current,
             pageSize : pageSize
@@ -426,7 +398,6 @@ const Dashboard = ({ datasourceId }: TJobs) => {
     };
 
     const onMetricSelectChange  = (value: string) => {
-        console.log(value)
         setMetricType(value)
     };
 
@@ -453,6 +424,34 @@ const Dashboard = ({ datasourceId }: TJobs) => {
             render: (text) => defaultRender(text, 300),
         },
         {
+            title: intl.formatMessage({ id: 'jobs_task_schema_name' }),
+            dataIndex: 'schemaName',
+            key: 'schemaName',
+            width: 100,
+            render: (text) => defaultRender(text, 300),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_table_name' }),
+            dataIndex: 'tableName',
+            key: 'tableName',
+            width: 200,
+            render: (text) => defaultRender(text, 300),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_column_name' }),
+            dataIndex: 'columnName',
+            key: 'columnName',
+            width: 200,
+            render: (text) => defaultRender(text, 300),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_metric_type' }),
+            dataIndex: 'metricType',
+            key: 'metricType',
+            width: 300,
+            render: (text) => defaultRender(text, 300),
+        },
+        {
             title: intl.formatMessage({ id: 'jobs_task_type' }),
             dataIndex: 'jobType',
             key: 'jobType',
@@ -467,9 +466,16 @@ const Dashboard = ({ datasourceId }: TJobs) => {
             render: (text: string) => <div>{text}</div>,
         },
         {
-            title: intl.formatMessage({ id: 'jobs_update_time' }),
-            dataIndex: 'updateTime',
-            key: 'updateTime',
+            title: intl.formatMessage({ id: 'jobs_task_start_time' }),
+            dataIndex: 'startTime',
+            key: 'startTime',
+            width: 160,
+            render: (text: string) => <div>{text || '--'}</div>,
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_end_time' }),
+            dataIndex: 'endTime',
+            key: 'endTime',
             width: 160,
             render: (text: string) => <div>{text || '--'}</div>,
         },

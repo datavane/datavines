@@ -20,7 +20,6 @@ type TJobs = {
 }
 
 const Jobs = ({ datasourceId }: TJobs) => {
-    console.log("datasourceId:" ,datasourceId);
     const intl = useIntl();
     const form = Form.useForm()[0];
     const [loading, setLoading] = useState(false);
@@ -233,7 +232,6 @@ const Jobs = ({ datasourceId }: TJobs) => {
             pageNumber: 1,
             pageSize: 10,
         });
-        // getData(undefined, +key);
     };
 
     const items: TabsProps['items'] = [

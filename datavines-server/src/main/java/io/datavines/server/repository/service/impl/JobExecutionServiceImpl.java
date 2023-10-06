@@ -1,6 +1,6 @@
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements`.`  See the NOTICE file distributed with
+ * contributor license agreements.  See the NOTICE file distributed with
  * this work for additional information regarding copyright ownership.
  * The ASF licenses this file to You under the Apache License, Version 2.0
  * (the "License"); you may not use this file except in compliance with
@@ -22,15 +22,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
 import io.datavines.common.entity.JobExecutionParameter;
-import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.common.utils.DateUtils;
-import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
 import io.datavines.core.utils.LanguageUtils;
 import io.datavines.metric.api.ResultFormula;
@@ -39,7 +36,6 @@ import io.datavines.server.api.dto.bo.job.JobExecutionDashboardParam;
 import io.datavines.server.api.dto.bo.job.JobExecutionPageParam;
 import io.datavines.server.api.dto.vo.*;
 import io.datavines.core.exception.DataVinesServerException;
-import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
 import io.datavines.server.repository.service.*;
@@ -60,10 +56,7 @@ import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import org.springframework.transaction.annotation.Transactional;
 
-import static io.datavines.common.ConfigConstants.ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE;
-import static io.datavines.core.constant.DataVinesConstants.EMPTY;
 import static io.datavines.core.constant.DataVinesConstants.SPARK;
-import static java.util.Collections.EMPTY_LIST;
 
 @Service("jobExecutionService")
 public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, JobExecution>  implements JobExecutionService {
@@ -369,14 +362,14 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
             startDateStr = DateUtils.format(DateUtils.addDays(new Date(), -5),"yyyy-MM-dd");
             endDateStr = DateUtils.format(DateUtils.addDays(new Date(), +1),"yyyy-MM-dd");
         } else {
-            if (StringUtils.isEmpty(dashboardParam.getEndTime())) {
-                Date startDate = DateUtils.parse(dashboardParam.getStartTime(), "yyyy-MM-dd");
+            if (StringUtils.isEmpty(dashboardParam.getEndTime()) && StringUtils.isNotEmpty(dashboardParam.getStartTime())) {
                 startDateStr = dashboardParam.getStartTime().substring(0,10);
+                Date startDate = DateUtils.stringToDate(dashboardParam.getStartTime());
                 endDateStr = DateUtils.format(DateUtils.addDays(startDate,7),"yyyy-MM-dd");
-            } else if (StringUtils.isEmpty(dashboardParam.getStartTime())) {
-                Date endDate = DateUtils.parse(dashboardParam.getEndTime(), "yyyy-MM-dd");
-                startDateStr = DateUtils.format(DateUtils.addDays(endDate,-6),"yyyy-MM-dd");
+            } else if (StringUtils.isEmpty(dashboardParam.getStartTime()) && StringUtils.isNotEmpty(dashboardParam.getEndTime())) {
                 endDateStr = dashboardParam.getEndTime().substring(0,10);
+                Date endDate = DateUtils.stringToDate(dashboardParam.getEndTime());
+                startDateStr = DateUtils.format(DateUtils.addDays(endDate,-6),"yyyy-MM-dd");
             } else {
                 Date endDate = DateUtils.parse(dashboardParam.getEndTime(), "yyyy-MM-dd HH:mm:dd");
                 Date startDate = DateUtils.parse(dashboardParam.getStartTime(), "yyyy-MM-dd HH:mm:dd");
@@ -405,20 +398,20 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
                 dashboardParam.getMetricType(), dashboardParam.getSchemaName(), dashboardParam.getTableName(), dashboardParam.getColumnName(),
                 startDateStr, endDateStr);
 
-        if (CollectionUtils.isEmpty(trendBars)) {
-            return trendBar;
-        }
-
         Map<String, List<JobExecutionTrendBarItem>> trendBarListMap = new HashMap<>();
-        trendBars.forEach(it -> {
-            if (trendBarListMap.get(it.getCreateDate()) == null) {
-                List<JobExecutionTrendBarItem> list = new ArrayList<>();
-                list.add(it);
-                trendBarListMap.put(it.getCreateDate(), list);
-            } else {
-                trendBarListMap.get(it.getCreateDate()).add(it);
-            }
-        });
+        if (CollectionUtils.isNotEmpty(trendBars)) {
+            trendBars.forEach(it -> {
+                if (trendBarListMap.get(it.getCreateDate()) == null) {
+                    List<JobExecutionTrendBarItem> list = new ArrayList<>();
+                    list.add(it);
+                    trendBarListMap.put(it.getCreateDate(), list);
+                } else {
+                    trendBarListMap.get(it.getCreateDate()).add(it);
+                }
+            });
+        } else {
+            return null;
+        }
 
         List<Integer> allList = new ArrayList<>();
         List<Integer> successList = new ArrayList<>();
@@ -431,14 +424,13 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
                 successList.add(0);
                 failureList.add(0);
             } else {
-                int all = 0;
                 int success = 0;
                 int failure = 0;
                 for (JobExecutionTrendBarItem item :list) {
                     if (item.getStatus() == 6) {
-                        failure++;
+                        failure += item.getNum();
                     } else if (item.getStatus() == 7) {
-                        success++;
+                        success += item.getNum();
                     }
                 }
                 allList.add(failure+success);
@@ -446,7 +438,6 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
                 successList.add(success);
             }
         });
-
 
         trendBar.setDateList(dateList);
         trendBar.setAllList(allList);

@@ -519,7 +519,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         jobExecution.setId(null);
         jobExecution.setJobId(jobId);
         jobExecution.setParameter(executionParameter);
-        jobExecution.setName(job.getName() + "_task_" + System.currentTimeMillis());
+        jobExecution.setName(job.getName() + "_" + System.currentTimeMillis());
         jobExecution.setJobType(job.getType());
         jobExecution.setErrorDataStorageType(errorDataStorageType);
         jobExecution.setErrorDataStorageParameter(errorDataStorageParameter);

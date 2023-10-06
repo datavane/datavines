@@ -18,7 +18,7 @@ import Dashboard from "view/Main/HomeDetail/Dashboard";
 
 type DataSource = {
     id:number,
-    name:'hellow'
+    name:string
 }
 const DetailMain = () => {
     const { isDetailPage } = useSelector((r:any) => r.commonReducer);
@@ -53,14 +53,7 @@ const DetailMain = () => {
         key: item.path.replace(/:id/, (match.params as any).id || ''),
         label: intl.formatMessage({ id: item.path as any }),
     })) as MenuItem[];
-    const generateRoute = (menusArray: MenuItem[]) => menusArray.map((route) => (
-        <Route
-            key={`${route.label}-${route.path}`}
-            path={route.path}
-            exact={route.exact ? true : undefined}
-            component={route.component}
-        />
-    ));
+
     const history = useHistory();
     const goBack = () => {
         // eslint-disable-next-line no-unused-expressions
@@ -68,7 +61,7 @@ const DetailMain = () => {
     };
     const onChangeDataSource = (id: string) => {
         const url = `${match.path}`.replace(/:id/, id);
-        history.push(`${url}/editor`);
+        history.push(`${url}/dashboard`);
     };
     const changeType = () => {
         store.dispatch({
@@ -76,7 +69,7 @@ const DetailMain = () => {
             payload: !editType,
         });
     };
-    const renderDataSourcSelect = () => (
+    const renderDataSourceSelect = () => (
         <CustomSelect
             showSearch
             style={{
@@ -102,8 +95,8 @@ const DetailMain = () => {
             <div onClick={goBack} style={{ cursor: 'pointer' }}>
                 <ArrowLeftOutlined />
             </div>
-            {renderDataSourcSelect()}
-            {!location.pathname.includes('jobs') ? (
+            {renderDataSourceSelect()}
+            {!location.pathname.includes('jobs') && !location.pathname.includes('dashboard') ? (
                 <Button style={{ marginLeft: '10px' }} onClick={changeType}>
                     { editType ? intl.formatMessage({ id: 'jobs_directory' }) : intl.formatMessage({ id: 'jobs_editor' })}
                 </Button>
@@ -139,5 +132,4 @@ const DetailMain = () => {
     );
 };
 
-//   export default App;
 export default DetailMain;

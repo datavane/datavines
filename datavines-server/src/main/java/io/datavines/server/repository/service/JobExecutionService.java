@@ -29,7 +29,6 @@ import io.datavines.server.api.dto.vo.JobExecutionVO;
 import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.core.exception.DataVinesServerException;
-import org.apache.ibatis.annotations.Param;
 
 public interface JobExecutionService extends IService<JobExecution> {
 
