@@ -121,13 +121,11 @@ export const Inner = ({
                 return; // 直接 return 整个函数
             }
             if (jobId) {
-                debugger
                 await $http.put('/job', { ...params, jobName: jobName, id: jobId, runningNow });
                 getConfig(jobId);
             } else {
                 let resData = {};
                 let url = '/job';
-                debugger
                 if (entityUuid) {
                     resData = {
                         entityUuid,

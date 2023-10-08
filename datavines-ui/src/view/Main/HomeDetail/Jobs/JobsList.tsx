@@ -1,19 +1,17 @@
-import React, { useState } from 'react';
-import {
-    Table, Form, Button, Popconfirm, message, Dropdown, Menu, Tabs, TabsProps,
-} from 'antd';
-import type { MenuProps } from 'antd';
-import { ColumnsType } from 'antd/lib/table';
-import { useIntl } from 'react-intl';
-import { useHistory, useRouteMatch } from 'react-router-dom';
-import { TJobsTableData, TJobsTableItem } from '@/type/Jobs';
-import { Title, SearchForm } from '@/component';
-import { useWatch } from '@/common';
-import { $http } from '@/http';
-import { defaultRender } from '@/utils/helper';
-import { useAddEditJobsModal } from './useAddEditJobsModal';
-import { useSelectSLAsModal } from './useSelectSLAsModal';
+import React, {useState} from 'react';
+import type {MenuProps} from 'antd';
+import {Button, DatePicker, Dropdown, Form, Input, Menu, message, Popconfirm, Row, Table, Tabs, TabsProps,} from 'antd';
+import {ColumnsType} from 'antd/lib/table';
+import {useIntl} from 'react-intl';
+import {useHistory, useRouteMatch} from 'react-router-dom';
+import {TJobsTableData, TJobsTableItem} from '@/type/Jobs';
+import {useWatch} from '@/common';
+import {$http} from '@/http';
+import {defaultRender} from '@/utils/helper';
+import {useAddEditJobsModal} from './useAddEditJobsModal';
+import {useSelectSLAsModal} from './useSelectSLAsModal';
 import store from '@/store';
+import dayjs from "dayjs";
 
 type TJobs = {
     datasourceId?: any,
@@ -78,14 +76,28 @@ const Jobs = ({ datasourceId }: TJobs) => {
             ]}
         />
     );
+
+
+    const transDateFormat = (datetime: any, format: string) => {
+        if (datetime){
+            const day = dayjs(datetime)
+            if(day.isValid()){
+                return day.format(format)
+            }
+        }
+    }
+
     // eslint-disable-next-line default-param-last
     const getData = async (values: any = null, typeData?:number) => {
         try {
             setLoading(true);
+            let formValue = form.getFieldsValue();
+            formValue.startTime = transDateFormat(formValue.startTime, 'YYYY-MM-DD HH:mm:ss')
+            formValue.endTime = transDateFormat(formValue.endTime, 'YYYY-MM-DD HH:mm:ss')
             const res = (await $http.get('/job/page', {
                 datasourceId: datasourceId || (match.params as any).id,
                 ...pageParams,
-                ...(values || form.getFieldsValue()),
+                ...(values || formValue),
                 type: typeData !== undefined ? typeData : type,
             })) || [];
             setTableData({
@@ -100,8 +112,12 @@ const Jobs = ({ datasourceId }: TJobs) => {
     useWatch([pageParams], () => {
         getData();
     }, { immediate: true });
-    const onSearch = () => {
+    // const onSearch = () => {
+    //     setPageParams({ ...pageParams, pageNumber: 1 });
+    // };
+    const onSearch = (_values: any) => {
         setPageParams({ ...pageParams, pageNumber: 1 });
+        // getData()
     };
     const onChange = ({ current, pageSize }: any) => {
         setPageParams({
@@ -180,6 +196,34 @@ const Jobs = ({ datasourceId }: TJobs) => {
             render: (text: string) => defaultRender(text, 200),
         },
         {
+            title: intl.formatMessage({ id: 'jobs_schedule_express' }),
+            dataIndex: 'cronExpression',
+            key: 'cronExpression',
+            width: 200,
+            render: (text: string) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_success_count' }),
+            dataIndex: 'successCount',
+            key: 'successCount',
+            width: 200,
+            render: (text: number) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_fail_count' }),
+            dataIndex: 'failCount',
+            key: 'failCount',
+            width: 200,
+            render: (text: number) => defaultRender(text, 200),
+        },
+        {
+            title: intl.formatMessage({ id: 'jobs_task_last_time' }),
+            dataIndex: 'lastJobExecutionTime',
+            key: 'lastJobExecutionTime',
+            width: 200,
+            render: (text: string) => defaultRender(text, 200),
+        },
+        {
             title: intl.formatMessage({ id: 'jobs_updater' }),
             dataIndex: 'updater',
             key: 'updater',
@@ -246,14 +290,88 @@ const Jobs = ({ datasourceId }: TJobs) => {
             children: '',
         },
     ];
+
+    const Date = <DatePicker showTime />;
+
     return (
         <div className="dv-page-padding" style={{ height: 'calc(100vh - 73px)' }}>
             <Tabs defaultActiveKey="0" items={items} onChange={onChangeTab} />
             {/* <Title>{intl.formatMessage({ id: 'jobs_list' })}</Title> */}
             <div style={{ paddingTop: '0px' }}>
                 <div className="dv-flex-between">
-                    <SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />
+                    {/*<SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />*/}
+                    <div className="dv-datasource__search">
+                        <Form form={form}>
+                            <Form.Item
+                                label="规则作业名"
+                                name="searchVal"
+                            >
+                                <Input
+                                    style={{ width: '100%' }}
+                                    autoComplete="off"
+                                />
+                            </Form.Item>
+                            <Row style={{width: '100%'}}>
+                                <Form.Item style={{width: '33%'}}
+                                    label="数据库"
+                                    name="schemaSearch"
+                                >
+                                    <Input
+                                        style={{ width: '100%' }}
+                                        autoComplete="off"
+                                    />
+                                </Form.Item>
+
+                                <Form.Item style={{width: '33%'}}
+                                    label="表"
+                                    name="tableSearch"
+                                >
+                                    <Input
+                                        style={{ width: '100%' }}
+                                        autoComplete="off"
+                                    />
+                                </Form.Item>
+                                <Form.Item style={{width: '33%'}}
+                                    label="列"
+                                    name="columnSearch"
+                                >
+                                    <Input
+                                        style={{ width: '100%' }}
+                                        autoComplete="off"
+                                    />
+                                </Form.Item>
+                            </Row>
+
+                            <Row >
+                                <Form.Item
+                                    label={intl.formatMessage({ id: 'jobs_update_time' })}
+                                    name="startTime"
+                                >
+                                    {Date}
+                                </Form.Item>
+                                {/*</Col>*/}
+                                <span style={{ margin: '5px 10px 0px' }}>
+                                {intl.formatMessage({ id: 'jobs_schedule_time_to' })}
+                                </span>
+                                <Form.Item
+                                    label=""
+                                    name="endTime"
+                                    style={{ display: 'inline-block' }}
+                                >
+                                    {Date}
+                                </Form.Item>
+                            </Row>
+
+                        </Form>
+                    </div>
                     <div>
+                        <Button
+                            type="default"
+                            style={{ marginRight: 15 }}
+                            onClick={onSearch}
+                        >
+                            {intl.formatMessage({ id: 'common_search' })}
+                        </Button>
                         <Dropdown overlay={menu}>
                             <Button
                                 type="primary"

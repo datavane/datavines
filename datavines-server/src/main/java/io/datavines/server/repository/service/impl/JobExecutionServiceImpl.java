@@ -446,4 +446,11 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 
         return trendBar;
     }
+
+    @Override
+    public JobExecutionStat getJobExecutionStat(Long jobId) {
+        return baseMapper.getJobExecutionStat(jobId);
+    }
+
+
 }
