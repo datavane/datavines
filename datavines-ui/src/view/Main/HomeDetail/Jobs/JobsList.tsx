@@ -303,7 +303,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
                     <div className="dv-datasource__search">
                         <Form form={form}>
                             <Form.Item
-                                label="规则作业名"
+                                label={intl.formatMessage({id: "jobs_name"})}
                                 name="searchVal"
                             >
                                 <Input
@@ -313,7 +313,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
                             </Form.Item>
                             <Row style={{width: '100%'}}>
                                 <Form.Item style={{width: '33%'}}
-                                    label="数据库"
+                                    label={intl.formatMessage({id: "job_database"})}
                                     name="schemaSearch"
                                 >
                                     <Input
@@ -323,7 +323,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
                                 </Form.Item>
 
                                 <Form.Item style={{width: '33%'}}
-                                    label="表"
+                                    label={intl.formatMessage({id: "job_table"})}
                                     name="tableSearch"
                                 >
                                     <Input
@@ -332,7 +332,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
                                     />
                                 </Form.Item>
                                 <Form.Item style={{width: '33%'}}
-                                    label="列"
+                                    label={intl.formatMessage({id: "job_column"})}
                                     name="columnSearch"
                                 >
                                     <Input
