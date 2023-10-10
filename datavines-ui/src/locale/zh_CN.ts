@@ -109,6 +109,9 @@ export default {
     jobs_task_error_data_view: '查看错误数据',
     jobs_task_log_btn: '日志',
     jobs_task_result_btn: '检查结果',
+    jobs_task_success_count: '执行成功数',
+    jobs_task_fail_count: '执行失败数',
+    jobs_task_last_time: '最近一次执行检查的时间',
 
     jobs_task_check_result: '检查结果',
     jobs_task_check_subject: '检查对象',
@@ -223,6 +226,7 @@ export default {
     job_profile_schedule: '定时调度配置',
     jobs_status: '执行状态',
     jobs_execution_time: '执行时间',
+    job_search_col: '搜索列',
 
     warn_sLAs_name: '名称',
     warn_sLAs_type: '类型',

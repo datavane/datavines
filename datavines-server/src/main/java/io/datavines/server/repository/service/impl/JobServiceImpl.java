@@ -42,6 +42,7 @@ import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.api.dto.bo.job.DataProfileJobCreateOrUpdate;
 import io.datavines.server.api.dto.bo.job.JobCreate;
 import io.datavines.server.api.dto.bo.job.JobUpdate;
+import io.datavines.server.api.dto.vo.JobExecutionStat;
 import io.datavines.server.api.dto.vo.JobVO;
 import io.datavines.server.api.dto.vo.SlaConfigVO;
 import io.datavines.server.api.dto.vo.SlaVO;
@@ -439,14 +440,28 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     @Override
-    public IPage<JobVO> getJobPage(String searchVal, Long dataSourceId, Integer type, Integer pageNumber, Integer pageSize) {
+    public IPage<JobVO> getJobPage(String searchVal,
+                                   String schemaSearch,
+                                   String tableSearch,
+                                   String columnSearch,
+                                   String startTime,
+                                   String endTime,
+                                   Long dataSourceId, Integer type, Integer pageNumber, Integer pageSize) {
         Page<JobVO> page = new Page<>(pageNumber, pageSize);
-        IPage<JobVO> jobs = baseMapper.getJobPage(page, searchVal, dataSourceId, type);
+        IPage<JobVO> jobs = baseMapper.getJobPageSelect(page, searchVal, schemaSearch, tableSearch, columnSearch, startTime, endTime, dataSourceId, type);
         List<JobVO> jobList = jobs.getRecords();
         if (CollectionUtils.isNotEmpty(jobList)) {
             for(JobVO jobVO: jobList) {
                 List<SlaVO> slaList = slaService.getSlaByJobId(jobVO.getId());
                 jobVO.setSlaList(slaList);
+                JobExecutionStat jobExecutionStat = jobExecutionService.getJobExecutionStat(jobVO.getId());
+                if(jobExecutionStat != null){
+                    jobVO.setTotalCount(jobExecutionStat.getTotalCount());
+                    jobVO.setSuccessCount(jobExecutionStat.getSuccessCount());
+                    jobVO.setFailCount(jobExecutionStat.getFailCount());
+                    jobVO.setFirstJobExecutionTime(jobExecutionStat.getFirstJobExecutionTime());
+                    jobVO.setLastJobExecutionTime(jobExecutionStat.getLastJobExecutionTime());
+                }
             }
         }
         return jobs;

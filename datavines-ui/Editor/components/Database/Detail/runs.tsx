@@ -71,7 +71,7 @@ const Index = (props: any, ref:any) => {
     }];
     const getData = async () => {
         setLoading(true);
-        const res = await $http.get('/job/execution/page', {
+        const res = await $http.post('/job/execution/page', {
             jobId: id,
             pageNumber: 1,
             pageSize: 999,

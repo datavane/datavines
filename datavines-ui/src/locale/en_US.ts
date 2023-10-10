@@ -109,6 +109,9 @@ export default {
     jobs_task_error_data_view: 'ErrorData',
     jobs_task_log_btn: 'Log',
     jobs_task_result_btn: 'Result',
+    jobs_task_success_count: 'Success Count',
+    jobs_task_fail_count: 'Fail Count',
+    jobs_task_last_time: 'Last Job Execution Time',
 
     jobs_task_check_result: 'Check Result',
     jobs_task_check_subject: 'Check Subject',
@@ -221,6 +224,7 @@ export default {
     job_variance: 'Variance',
 
     job_choose_col: 'Choose Col',
+    job_search_col: 'Search Col',
     job_profile_schedule: 'Schedule',
     job_profile_execution_history: 'Execution History',
     jobs_status: 'Execution Status',
