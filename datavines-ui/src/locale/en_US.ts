@@ -224,6 +224,7 @@ export default {
     job_variance: 'Variance',
 
     job_choose_col: 'Choose Col',
+    job_search_col: 'Search Col',
     job_profile_schedule: 'Schedule',
     job_profile_execution_history: 'Execution History',
     jobs_status: 'Execution Status',

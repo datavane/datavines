@@ -226,6 +226,7 @@ export default {
     job_profile_schedule: '定时调度配置',
     jobs_status: '执行状态',
     jobs_execution_time: '执行时间',
+    job_search_col: '搜索列',
 
     warn_sLAs_name: '名称',
     warn_sLAs_type: '类型',

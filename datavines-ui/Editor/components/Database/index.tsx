@@ -4,9 +4,23 @@ import React, {
     useRef, useState, useEffect,
 } from 'react';
 import {
-    Tabs, Tag, Table, Modal, Form, Button, Select, message, Spin, Pagination, DatePicker, Dropdown, Drawer,
+    Tabs,
+    Tag,
+    Table,
+    Modal,
+    Form,
+    Button,
+    Select,
+    message,
+    Spin,
+    Pagination,
+    DatePicker,
+    Dropdown,
+    Drawer,
+    Input,
+    Space, Card,
 } from 'antd';
-import { RightOutlined, PlusOutlined, ArrowLeftOutlined } from '@ant-design/icons';
+import { RightOutlined, PlusOutlined, ArrowLeftOutlined, SearchOutlined } from '@ant-design/icons';
 import './index.less';
 import { setEditorFn, useEditorActions, useEditorContextState } from '@Editor/store/editor';
 import { IF } from '@Editor/common';
@@ -432,8 +446,76 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     };
 
     const [chooesColList, setChooesColList] = useState([]);
+    // define filter list
+    const [filterChooseColList, setFilterChooseColList] = useState(chooesColList);
+    const [searchCol, setSearchCol] = useState('');
+    const filterCol = (data: any[], searchCol: string) => {
+        return data.filter((item) => {
+            return item.name.toLowerCase().includes(searchCol.trim().toLowerCase());
+        });
+    };
+
+    const excludeColSet = (data: string[], excludeColSet: Set<string>) => {
+        return data.filter(item => {
+            return !excludeColSet.has(item)
+        });
+    };
+    const excludeColStr = (data: string[], excludeStr: string) => {
+        return data.filter(item => {
+            return item != excludeStr
+        });
+    };
+
+    // filter based on input values
+    useEffect(() => {
+        const originChooseColListJson = JSON.stringify(chooesColList)
+        if(searchCol != ''){
+            let filterColList = filterCol(JSON.parse(originChooseColListJson), searchCol)
+            // @ts-ignore
+            setFilterChooseColList(filterColList)
+        }else {
+            setFilterChooseColList(chooesColList)
+        }
+    }, [searchCol])
+
+    // synchronize table rowSelection updates when closing tags
+    const handleClose = (removedTag: string) => {
+        const newTags = colCheckList.filter((tag) => tag !== removedTag);
+        setColCheckList(newTags);
+    };
+
     const [chooesColModalOpen, setChooesColModalOpen] = useState(false);
     const [colCheckList, setColCheckList] = useState<string[]>([]);
+    const colCheckTagList = colCheckList.map(item => (
+        <Tag key={item}
+             closable
+             onClose={(e) => {
+                 e.preventDefault();
+                 handleClose(item);
+             }}
+        >
+            {item}
+        </Tag>
+    ))
+    const changeCol = (selectedRowKeys: any[], selectedRows: any[], info: {
+        type: string
+    }) => {
+        // 单选放在 onSelect 中过滤
+        if(info.type == 'all'){
+            // 此时为 取消全选
+            // 此时仅取消 当前过滤的 col
+            if(selectedRowKeys.length == 0){
+                // @ts-ignore
+                const filterColSet = new Set(filterChooseColList.map(item => item.name));
+                setColCheckList(excludeColSet(colCheckList, filterColSet))
+            }else {
+                // 此时为 勾选全选
+                // 因此 当前已选择的 和 当前全选的 数组进行合并 去重
+                setColCheckList([...new Set([...selectedRowKeys, ...colCheckList])])
+            }
+        }
+    };
+
     const chooseColumns = [{
         title: intl.formatMessage({ id: 'job_column_Name' }),
         dataIndex: 'name',
@@ -466,6 +548,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
     const runProfileGetCol = async () => {
         const res = await $http.get(`/catalog/list/column-with-detail/${selectDatabases[currentIndex]?.uuid}`);
         setChooesColList(res);
+        setFilterChooseColList(res);
         const resCheck = await $http.get(`/catalog/profile/selected-columns/${selectDatabases[currentIndex]?.uuid}?uuid=${selectDatabases[currentIndex]?.uuid}`);
         setColCheckList(resCheck);
         setChooesColModalOpen(true);
@@ -999,15 +1082,41 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 onCancel={() => setChooesColModalOpen(false)}
                 destroyOnClose
             >
+                <Card style={colCheckTagList.length === 0 ? {display: 'none'} : {
+                    marginBottom: 16,
+                    maxHeight: '200px',
+                    overflowY: 'auto'
+                }}>
+                    <Space size={[0, 8]} wrap>
+                        {colCheckTagList}
+                    </Space>
+                </Card>
+                <Input addonBefore={<SearchOutlined />}
+                       placeholder={intl.formatMessage({ id: 'job_search_col' })}
+                       onChange={e => setSearchCol(e.target.value)}
+                       allowClear
+                />
                 <Table
                     style={{ marginTop: 20 }}
                     rowSelection={{
                         type: 'checkbox',
-                        onChange: (val:any[]) => setColCheckList(val),
+                        selectedRowKeys: colCheckList,
+                        onChange: changeCol,
+                        onSelect: (record, selected, selectedRows, nativeEvent) => {
+                            // onChange 事件中 单选取消 无法知道 取消的是哪一个元素
+                            // 所以在 filter 的情况下，单选取消会有问题
+                            // 因此在这里做 单选的 change
+                            if(!selected){
+                                setColCheckList(excludeColStr(colCheckList, record.name))
+                            }else {
+                                colCheckList.push(record.name)
+                                setColCheckList([...new Set(colCheckList)])
+                            }
+                        },
                         defaultSelectedRowKeys: colCheckList,
                     }}
                     size="small"
-                    dataSource={chooesColList}
+                    dataSource={filterChooseColList}
                     columns={chooseColumns}
                     pagination={
                         false
