@@ -138,6 +138,7 @@ public abstract class BaseCommandProcess {
         command.add("sudo");
         command.add("-u");
         command.add(jobExecutionRequest.getTenantCode());
+        command.add("-i");
         command.add(commandInterpreter());
         command.addAll(commandOptions());
         command.add(commandFile);
