@@ -23,10 +23,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.server.api.dto.bo.job.JobExecutionDashboardParam;
 import io.datavines.server.api.dto.bo.job.JobExecutionPageParam;
-import io.datavines.server.api.dto.vo.JobExecutionAggItem;
-import io.datavines.server.api.dto.vo.JobExecutionTrendBar;
-import io.datavines.server.api.dto.vo.JobExecutionVO;
-import io.datavines.server.api.dto.vo.MetricExecutionDashBoard;
+import io.datavines.server.api.dto.vo.*;
 import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.core.exception.DataVinesServerException;
 
@@ -61,4 +58,6 @@ public interface JobExecutionService extends IService<JobExecution> {
     List<JobExecutionAggItem> getJobExecutionAggPie(JobExecutionDashboardParam dashboardParam);
 
     JobExecutionTrendBar getJobExecutionTrendBar(JobExecutionDashboardParam dashboardParam);
+
+    JobExecutionStat getJobExecutionStat(Long jobId);
 }

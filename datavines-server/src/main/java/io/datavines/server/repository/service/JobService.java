@@ -45,7 +45,16 @@ public interface JobService extends IService<Job> {
 
     List<Job> listByDataSourceId(Long dataSourceId);
 
-    IPage<JobVO> getJobPage(String searchVal, Long dataSourceId, Integer type, Integer pageNumber, Integer pageSize);
+    IPage<JobVO> getJobPage(String searchVal,
+                            String schemaSearch,
+                            String tableSearch,
+                            String columnSearch,
+                            String startTime,
+                            String endTime,
+                            Long dataSourceId,
+                            Integer type,
+                            Integer pageNumber,
+                            Integer pageSize);
 
     boolean execute(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException;
 

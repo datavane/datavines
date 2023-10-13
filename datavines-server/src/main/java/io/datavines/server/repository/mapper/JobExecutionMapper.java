@@ -19,6 +19,7 @@ package io.datavines.server.repository.mapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.datavines.server.api.dto.vo.JobExecutionAggItem;
+import io.datavines.server.api.dto.vo.JobExecutionStat;
 import io.datavines.server.api.dto.vo.JobExecutionTrendBarItem;
 import io.datavines.server.api.dto.vo.JobExecutionVO;
 import org.apache.ibatis.annotations.*;
@@ -52,4 +53,7 @@ public interface JobExecutionMapper extends BaseMapper<JobExecution>  {
                                                            @Param("metricType") String metricType, @Param("schemaName") String schemaName,
                                                            @Param("tableName") String tableName, @Param("columnName") String columnName,
                                                            @Param("startTime") String startTime, @Param("endTime") String endTime);
+
+
+    JobExecutionStat getJobExecutionStat(@Param("jobId") Long jobId);
 }

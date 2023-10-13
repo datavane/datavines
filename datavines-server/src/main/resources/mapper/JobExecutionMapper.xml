@@ -126,4 +126,20 @@
     <select id="getJobExecutionTrendBar" resultType="io.datavines.server.api.dto.vo.JobExecutionTrendBarItem">
         select p.create_date, status, count(1) as num from (<include refid="basic_sql_2"/>) p group by p.create_date,p.status order by create_date
     </select>
+
+    <select id="getJobExecutionStat" resultType="io.datavines.server.api.dto.vo.JobExecutionStat">
+        select p.job_id,
+               count(1) as total_count,
+               sum(if(status = 6, 1, 0)) as fail_count,
+               sum(if(status = 7, 1, 0)) as success_count,
+               max(start_time) as last_job_execution_time,
+               min(start_time) as first_job_execution_time
+        from dv_job_execution p
+        <where>
+            <if test="jobId != null">
+                and job_id = #{jobId}
+            </if>
+        </where>
+        group by p.job_id
+    </select>
 </mapper>
