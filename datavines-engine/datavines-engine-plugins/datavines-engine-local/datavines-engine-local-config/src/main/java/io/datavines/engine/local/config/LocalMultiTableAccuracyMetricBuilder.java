@@ -112,7 +112,7 @@ public class LocalMultiTableAccuracyMetricBuilder extends BaseLocalConfiguration
                     ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
-                            .getNewPlugin(connectorParameter.getType());
+                            .getNewPlugin(jobExecutionInfo.getErrorDataStorageType());
 
                     if (connectorFactory == null) {
                         return;

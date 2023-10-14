@@ -79,11 +79,11 @@ public class MultiTableAccuracy implements SqlMetric {
     @Override
     public void prepare(Map<String, String> config) {
         if (config.containsKey("filter")) {
-            sourceTableSql.append("WHERE (${filter})");
+            sourceTableSql.append(" WHERE (${filter}) ");
         }
 
         if (config.containsKey("filter2")) {
-            targetTableSql.append("WHERE (${filter2})");
+            targetTableSql.append(" WHERE (${filter2}) ");
         }
 
         invalidateItemsSql
