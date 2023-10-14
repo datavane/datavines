@@ -42,22 +42,22 @@
         left join `dv_job_schedule` s on p.id = s.job_id and s.status = 1
         <where>
             <if test="searchVal != null and searchVal != ''">
-                LOWER(p.`name`) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
+                AND LOWER(p.`name`) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
             </if>
             <if test="schemaSearch != null and schemaSearch != ''">
-                LOWER(p.schema_name) LIKE CONCAT(CONCAT('%', LOWER(#{schemaSearch})), '%')
+                AND LOWER(p.schema_name) LIKE CONCAT(CONCAT('%', LOWER(#{schemaSearch})), '%')
             </if>
             <if test="tableSearch != null and tableSearch != ''">
-                LOWER(p.table_name) LIKE CONCAT(CONCAT('%', LOWER(#{tableSearch})), '%')
+                AND LOWER(p.table_name) LIKE CONCAT(CONCAT('%', LOWER(#{tableSearch})), '%')
             </if>
             <if test="columnSearch != null and columnSearch != ''">
-                LOWER(p.column_name) LIKE CONCAT(CONCAT('%', LOWER(#{columnSearch})), '%')
+                AND LOWER(p.column_name) LIKE CONCAT(CONCAT('%', LOWER(#{columnSearch})), '%')
             </if>
             <if test="startTime != null and startTime != ''">
-                and p.update_time &gt;= #{startTime}
+                AND p.update_time &gt;= #{startTime}
             </if>
             <if test="endTime != null and endTime != ''">
-                and p.update_time &lt;= #{endTime}
+                AND p.update_time &lt;= #{endTime}
             </if>
         </where>
         order by p.update_time desc

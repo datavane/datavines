@@ -296,23 +296,24 @@ const Jobs = ({ datasourceId }: TJobs) => {
     return (
         <div className="dv-page-padding" style={{ height: 'calc(100vh - 73px)' }}>
             <Tabs defaultActiveKey="0" items={items} onChange={onChangeTab} />
-            {/* <Title>{intl.formatMessage({ id: 'jobs_list' })}</Title> */}
             <div style={{ paddingTop: '0px' }}>
                 <div className="dv-flex-between">
                     {/*<SearchForm form={form} onSearch={onSearch} placeholder={intl.formatMessage({ id: 'common_search' })} />*/}
                     <div className="dv-datasource__search">
                         <Form form={form}>
-                            <Form.Item
-                                label={intl.formatMessage({id: "jobs_name"})}
-                                name="searchVal"
-                            >
-                                <Input
-                                    style={{ width: '100%' }}
-                                    autoComplete="off"
-                                />
-                            </Form.Item>
+
                             <Row style={{width: '100%'}}>
-                                <Form.Item style={{width: '33%'}}
+                                <Form.Item style={{width: '18%'}}
+                                    label={intl.formatMessage({id: "jobs_name"})}
+                                    name="searchVal"
+                                >
+                                    <Input
+                                        style={{ width: '100%' }}
+                                        autoComplete="off"
+                                    />
+                                </Form.Item>
+
+                                <Form.Item style={{width: '15%',marginLeft: '10px'}}
                                     label={intl.formatMessage({id: "job_database"})}
                                     name="schemaSearch"
                                 >
@@ -322,7 +323,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
                                     />
                                 </Form.Item>
 
-                                <Form.Item style={{width: '33%'}}
+                                <Form.Item style={{width: '15%',marginLeft: '10px'}}
                                     label={intl.formatMessage({id: "job_table"})}
                                     name="tableSearch"
                                 >
@@ -331,7 +332,8 @@ const Jobs = ({ datasourceId }: TJobs) => {
                                         autoComplete="off"
                                     />
                                 </Form.Item>
-                                <Form.Item style={{width: '33%'}}
+
+                                <Form.Item style={{width: '15%',marginLeft: '10px'}}
                                     label={intl.formatMessage({id: "job_column"})}
                                     name="columnSearch"
                                 >
@@ -340,28 +342,26 @@ const Jobs = ({ datasourceId }: TJobs) => {
                                         autoComplete="off"
                                     />
                                 </Form.Item>
-                            </Row>
 
-                            <Row >
-                                <Form.Item
+                                <Form.Item style={{width: '15%',marginLeft: '10px'}}
                                     label={intl.formatMessage({ id: 'jobs_update_time' })}
                                     name="startTime"
                                 >
                                     {Date}
                                 </Form.Item>
-                                {/*</Col>*/}
+
                                 <span style={{ margin: '5px 10px 0px' }}>
                                 {intl.formatMessage({ id: 'jobs_schedule_time_to' })}
                                 </span>
+
                                 <Form.Item
                                     label=""
                                     name="endTime"
-                                    style={{ display: 'inline-block' }}
+                                    style={{ display: 'inline-block', width: '15%',marginLeft: '10px'}}
                                 >
                                     {Date}
                                 </Form.Item>
                             </Row>
-
                         </Form>
                     </div>
                     <div>
