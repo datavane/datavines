@@ -68,6 +68,8 @@ public enum Status {
     TASK_LOG_PATH_NOT_EXIST_ERROR(13010002, "Task {0} Log Path  Not Exist Error", "任务 {0} 的日志路径不存在错误"),
     TASK_EXECUTE_HOST_NOT_EXIST_ERROR(13010003, "Task Execute Host {0} Not Exist Error", "任务 {0} 的执行服务地址不存在错误"),
 
+    TASK_EXECUTE_NOT_RUNNING(13010004, "Taskt {0} has not running", "任务 {0} 还没有开始运行，请稍后重试"),
+
     JOB_PARAMETER_IS_NULL_ERROR(14010001, "Job {0} Parameter is Null Error", "作业 {0} 参数为空错误"),
     CREATE_JOB_ERROR(14010002, "Create Job {0} Error", "创建作业 {0} 错误"),
     JOB_NOT_EXIST_ERROR(14010003, "Job {0} Not Exist Error", "作业 {0} 不存在错误"),
