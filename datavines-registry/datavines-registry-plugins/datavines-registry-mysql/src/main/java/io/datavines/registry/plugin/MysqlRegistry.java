@@ -17,6 +17,7 @@
 package io.datavines.registry.plugin;
 
 import io.datavines.registry.api.*;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,6 +26,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
+@Slf4j
 public class MysqlRegistry implements Registry {
 
     private static final Logger logger = LoggerFactory.getLogger(MysqlRegistry.class);
@@ -75,7 +77,7 @@ public class MysqlRegistry implements Registry {
         try {
             mysqlServerStateManager.registry(subscribeListener);
         } catch (Exception e){
-            e.printStackTrace();
+            logger.warn("subscribe error: ", e);
         }
 
     }
@@ -85,7 +87,7 @@ public class MysqlRegistry implements Registry {
         try {
             mysqlServerStateManager.unRegistry();
         } catch (Exception e){
-            e.printStackTrace();
+            logger.warn("unSubscribe error: ", e);
         }
     }
 
