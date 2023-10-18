@@ -134,6 +134,7 @@ public class MysqlServerStateManager {
         preparedStatement.setString(1, serverInfo.getHost());
         preparedStatement.setInt(2, serverInfo.getServerPort());
         preparedStatement.executeUpdate();
+        preparedStatement.close();
     }
 
     private void executeUpdate(ServerInfo serverInfo) throws SQLException {
@@ -143,6 +144,7 @@ public class MysqlServerStateManager {
         preparedStatement.setString(2, serverInfo.getHost());
         preparedStatement.setInt(3, serverInfo.getServerPort());
         preparedStatement.executeUpdate();
+        preparedStatement.close();
     }
 
     private void executeDelete(ServerInfo serverInfo) throws SQLException {
@@ -151,6 +153,7 @@ public class MysqlServerStateManager {
         preparedStatement.setString(1, serverInfo.getHost());
         preparedStatement.setInt(2, serverInfo.getServerPort());
         preparedStatement.executeUpdate();
+        preparedStatement.close();
     }
 
     private boolean isExists(ServerInfo serverInfo) throws SQLException {
@@ -161,10 +164,12 @@ public class MysqlServerStateManager {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet == null) {
+            preparedStatement.close();
             return false;
         }
         boolean result = resultSet.first();
         resultSet.close();
+        preparedStatement.close();
         return result;
     }
 
@@ -174,17 +179,20 @@ public class MysqlServerStateManager {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet == null) {
+            preparedStatement.close();
             return null;
         }
 
         ConcurrentHashMap<String, ServerInfo> map = new ConcurrentHashMap<>();
-        while (resultSet.next()){
+        while (resultSet.next()) {
             String host = resultSet.getString("host");
             int port = resultSet.getInt("port");
             Timestamp updateTime = resultSet.getTimestamp("update_time");
             Timestamp createTime = resultSet.getTimestamp("create_time");
             map.put(host + ":" + port, new ServerInfo(host, port, createTime, updateTime));
         }
+        resultSet.close();
+        preparedStatement.close();
         return map;
     }
 
