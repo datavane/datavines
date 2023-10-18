@@ -264,6 +264,9 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
         if(null == jobExecution){
             throw new DataVinesServerException(Status.TASK_NOT_EXIST_ERROR, jobExecutionId);
         }
+        if(jobExecution.getStatus() == ExecutionStatus.SUBMITTED_SUCCESS){
+            throw new DataVinesServerException(Status.TASK_EXECUTE_NOT_RUNNING, jobExecutionId);
+        }
         String executeHost = jobExecution.getExecuteHost();
         if(StringUtils.isEmpty(executeHost)){
             throw new DataVinesServerException(Status.TASK_EXECUTE_HOST_NOT_EXIST_ERROR, jobExecutionId);
