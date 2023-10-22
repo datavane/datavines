@@ -31,5 +31,5 @@ public class RegistryLock {
 
     private String lockOwner;
 
-    private Timestamp updateTime;;
+    private Timestamp updateTime;
 }

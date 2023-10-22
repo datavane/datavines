@@ -16,14 +16,16 @@
  */
 package io.datavines.engine.local.connector;
 
+import com.alibaba.druid.pool.DruidPooledConnection;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
 import io.datavines.common.utils.CommonPropertyUtils;
+import io.datavines.common.utils.ConnectionUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSource;
-import io.datavines.engine.local.api.entity.ConnectionItem;
+import io.datavines.engine.local.api.entity.ConnectionHolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,14 +80,14 @@ public class LocalFileSource implements LocalSource {
     }
 
     @Override
-    public ConnectionItem getConnectionItem(LocalRuntimeEnvironment env) {
+    public ConnectionHolder getConnectionItem(LocalRuntimeEnvironment env) {
         Connection conn;
         try {
             conn = getConnection();
             Statement statement = conn.createStatement();
             statement.execute(buildCreateTableSql(config.getString("table_name"), config.getString("schema"), config.getString("path")));
             statement.close();
-            return new ConnectionItem(conn, config);
+            return new ConnectionHolder(conn, config);
         } catch (Exception e) {
             log.error("can not create connection");
         }

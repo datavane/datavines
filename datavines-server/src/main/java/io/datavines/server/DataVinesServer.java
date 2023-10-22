@@ -17,6 +17,7 @@
 package io.datavines.server;
 
 import com.zaxxer.hikari.HikariDataSource;
+import io.datavines.common.datasource.jdbc.JdbcDataSourceManager;
 import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.Stopper;
 import io.datavines.common.utils.ThreadUtils;
@@ -124,7 +125,7 @@ public class DataVinesServer {
             this.jobExecuteManager.close();
             this.register.close();
             this.jobExecutionFailover.close();
-
+            JdbcDataSourceManager.getInstance().close();
         } catch (Exception e) {
             logger.error("coordinator server stop exception ", e);
             System.exit(-1);
@@ -135,6 +136,7 @@ public class DataVinesServer {
         javax.sql.DataSource defaultDataSource =
                 SpringApplicationContext.getBean(javax.sql.DataSource.class);
         HikariDataSource hikariDataSource = (HikariDataSource)defaultDataSource;
+        CommonPropertyUtils.setValue("driver",hikariDataSource.getDriverClassName());
         CommonPropertyUtils.setValue("url",hikariDataSource.getJdbcUrl());
         CommonPropertyUtils.setValue("username", hikariDataSource.getUsername());
         CommonPropertyUtils.setValue("password", hikariDataSource.getPassword());

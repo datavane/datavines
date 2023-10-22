@@ -19,7 +19,7 @@ package io.datavines.engine.local.connector.executor;
 import io.datavines.common.config.Config;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
-import io.datavines.engine.local.api.entity.ConnectionItem;
+import io.datavines.engine.local.api.entity.ConnectionHolder;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -32,7 +32,7 @@ public class ValidateResultDataSinkExecutor extends BaseDataSinkExecutor {
     public ValidateResultDataSinkExecutor(Config config, LocalRuntimeEnvironment env) {
         super(config, env);
         if (env.getMetadataConnection() == null) {
-            env.setMetadataConnection(new ConnectionItem(config));
+            env.setMetadataConnection(new ConnectionHolder(config));
         }
     }
 

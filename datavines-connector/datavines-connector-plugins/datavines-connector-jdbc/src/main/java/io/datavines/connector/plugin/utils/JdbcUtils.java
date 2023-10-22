@@ -60,9 +60,8 @@ public class JdbcUtils {
 
     public static String getCreateTableStatement(String table, List<StructField> fields, Dialect dialect, TypeConverter typeConverter) {
         if (CollectionUtils.isNotEmpty(fields)) {
-            String columns = fields.stream().map(field -> {
-                return dialect.quoteIdentifier(field.getName()) + " " + typeConverter.convertToOriginType(field.getDataType());
-            }).collect(Collectors.joining(","));
+            String columns = fields.stream().map(field ->
+                    dialect.quoteIdentifier(field.getName()) + " " + typeConverter.convertToOriginType(field.getDataType())).collect(Collectors.joining(","));
 
             return String.format("CREATE TABLE IF NOT EXISTS %s (%s)", table, columns);
         }

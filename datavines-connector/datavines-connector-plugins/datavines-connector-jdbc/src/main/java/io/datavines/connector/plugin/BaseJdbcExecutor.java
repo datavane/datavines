@@ -37,7 +37,7 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
     }
 
     @Override
-    public ConnectorResponse queryForPage(ExecuteRequestParam param) {
+    public ConnectorResponse queryForPage(ExecuteRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
 
@@ -63,7 +63,7 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
     }
 
     @Override
-    public ConnectorResponse queryForOne(ExecuteRequestParam param) {
+    public ConnectorResponse queryForOne(ExecuteRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
 

@@ -16,10 +16,9 @@
  */
 package io.datavines.registry.plugin;
 
+import io.datavines.common.utils.ConnectionUtils;
 import io.datavines.registry.api.*;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -28,8 +27,6 @@ import java.util.Properties;
 
 @Slf4j
 public class MysqlRegistry implements Registry {
-
-    private static final Logger logger = LoggerFactory.getLogger(MysqlRegistry.class);
 
     private MysqlMutex mysqlMutex;
 
@@ -48,7 +45,7 @@ public class MysqlRegistry implements Registry {
             mysqlMutex = new MysqlMutex(connection, properties);
             mysqlServerStateManager = new MysqlServerStateManager(connection, properties);
         } catch (SQLException exception) {
-            logger.error("init mysql mutex error: " + exception.getLocalizedMessage());
+            log.error("init mysql mutex error: " + exception.getLocalizedMessage());
         }
     }
 
@@ -57,7 +54,7 @@ public class MysqlRegistry implements Registry {
         try {
             return mysqlMutex.acquire(key, timeout);
         } catch (Exception e) {
-            logger.warn("acquire lock error: ", e);
+            log.warn("acquire lock error: ", e);
             return false;
         }
     }
@@ -67,7 +64,7 @@ public class MysqlRegistry implements Registry {
         try {
             return mysqlMutex.release(key);
         } catch (Exception e) {
-            logger.warn("acquire lock error: ", e);
+            log.warn("acquire lock error: ", e);
             return false;
         }
     }
@@ -77,7 +74,7 @@ public class MysqlRegistry implements Registry {
         try {
             mysqlServerStateManager.registry(subscribeListener);
         } catch (Exception e){
-            logger.warn("subscribe error: ", e);
+            log.warn("subscribe error: ", e);
         }
 
     }
@@ -87,7 +84,7 @@ public class MysqlRegistry implements Registry {
         try {
             mysqlServerStateManager.unRegistry();
         } catch (Exception e){
-            logger.warn("unSubscribe error: ", e);
+            log.warn("unSubscribe error: ", e);
         }
     }
 

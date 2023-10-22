@@ -141,7 +141,7 @@ public class HttpUtils {
         StringEntity stringEntity=new StringEntity(body, ContentType.APPLICATION_JSON);
         HttpPost httpPost = new HttpPost(url);
         if(headers != null && !headers.isEmpty()){
-            headers.forEach((k, v) -> httpPost.addHeader(k,v));
+            headers.forEach(httpPost::addHeader);
         }
 
         httpPost.setEntity(stringEntity);

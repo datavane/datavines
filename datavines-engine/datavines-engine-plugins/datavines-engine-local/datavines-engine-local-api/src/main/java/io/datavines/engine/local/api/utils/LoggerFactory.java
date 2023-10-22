@@ -29,7 +29,7 @@ public class LoggerFactory {
     public static Logger getLogger(Class clazz) {
         if (logger != null) {
             return logger;
-        }   else {
+        } else {
             return org.slf4j.LoggerFactory.getLogger(clazz);
         }
     }

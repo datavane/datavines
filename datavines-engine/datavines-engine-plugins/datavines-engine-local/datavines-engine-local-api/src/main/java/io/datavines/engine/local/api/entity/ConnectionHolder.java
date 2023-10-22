@@ -16,30 +16,34 @@
  */
 package io.datavines.engine.local.api.entity;
 
+import com.alibaba.druid.pool.DruidPooledConnection;
 import io.datavines.common.config.Config;
-import io.datavines.engine.local.api.utils.ConnectionUtils;
+import io.datavines.common.utils.ConnectionUtils;
+import io.datavines.engine.local.api.utils.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class ConnectionItem {
+public class ConnectionHolder {
 
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionHolder.class);
     private Connection connection;
 
     private final Config config;
 
-    public ConnectionItem(Config config){
+    public ConnectionHolder(Config config){
         this.config = config;
     }
 
-    public ConnectionItem(Connection connection, Config config) {
+    public ConnectionHolder(Connection connection, Config config) {
         this.connection = connection;
         this.config = config;
     }
 
     public Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed() || !connection.isValid(10)) {
-            connection = ConnectionUtils.getConnection(config);
+            connection = ConnectionUtils.getConnection(config, logger);
         }
         return connection;
     }
