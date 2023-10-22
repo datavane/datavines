@@ -24,7 +24,7 @@ import io.datavines.connector.plugin.utils.JdbcUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSource;
-import io.datavines.engine.local.api.entity.ConnectionItem;
+import io.datavines.engine.local.api.entity.ConnectionHolder;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import io.datavines.spi.PluginLoader;
 import org.slf4j.Logger;
@@ -42,7 +42,7 @@ public class BaseJdbcSource implements LocalSource {
 
     private Config config = new Config();
 
-    private ConnectionItem connectionItem;
+    private ConnectionHolder connectionHolder;
 
     @Override
     public void setConfig(Config config) {
@@ -83,15 +83,18 @@ public class BaseJdbcSource implements LocalSource {
     }
 
     @Override
-    public ConnectionItem getConnectionItem(LocalRuntimeEnvironment env) {
-        connectionItem = new ConnectionItem(config);
-        return connectionItem;
+    public ConnectionHolder getConnectionItem(LocalRuntimeEnvironment env) {
+        if (connectionHolder == null) {
+            connectionHolder = new ConnectionHolder(config);
+        }
+
+        return connectionHolder;
     }
 
     @Override
     public boolean checkTableExist() {
 
-        if (connectionItem != null) {
+        if (connectionHolder != null) {
             ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class)
                     .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE));
             JdbcOptions jdbcOptions = new JdbcOptions();
@@ -99,7 +102,7 @@ public class BaseJdbcSource implements LocalSource {
             jdbcOptions.setTableName(config.getString(TABLE));
             jdbcOptions.setQueryTimeout(10000);
             try {
-                 return JdbcUtils.tableExists(connectionItem.getConnection(),jdbcOptions, connectorFactory.getDialect());
+                 return JdbcUtils.tableExists(connectionHolder.getConnection(), jdbcOptions, connectorFactory.getDialect());
             } catch (Exception e) {
                 log.error("check table {} exists error :", config.getString(TABLE), e);
                 return false;

@@ -36,7 +36,7 @@ public class JdbcExecutorClient {
         return jdbcDataSourceManager.getDataSource(baseJdbcDataSourceInfo).getConnection();
     }
 
-    public JdbcTemplate getJdbcTemplate() {
+    public JdbcTemplate getJdbcTemplate() throws SQLException {
         JdbcTemplate jdbcTemplate = new JdbcTemplate(jdbcDataSourceManager.getDataSource(baseJdbcDataSourceInfo));
         jdbcTemplate.setFetchSize(500);
         return jdbcTemplate;

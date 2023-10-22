@@ -17,6 +17,7 @@
 package io.datavines.registry.plugin;
 
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import io.datavines.common.utils.ConnectionUtils;
 import io.datavines.common.utils.NetUtils;
 import io.datavines.common.utils.ThreadUtils;
 import io.datavines.registry.api.ServerInfo;
@@ -57,7 +58,7 @@ public class MysqlMutex {
                 new LockTermRefreshTask(lockHoldMap),
                 2,
                 2,
-                TimeUnit.MILLISECONDS);
+                TimeUnit.SECONDS);
 
         clearExpireLock();
     }
@@ -117,6 +118,7 @@ public class MysqlMutex {
         preparedStatement.setString(2, this.serverInfo.getAddr());
         preparedStatement.setTimestamp(3, updateTime);
         preparedStatement.executeUpdate();
+        preparedStatement.close();
         return new RegistryLock(key, this.serverInfo.getAddr(), updateTime);
     }
 
@@ -127,15 +129,16 @@ public class MysqlMutex {
         preparedStatement.setTimestamp(1, updateTime);
         preparedStatement.setString(2, key);
         preparedStatement.executeUpdate();
+        preparedStatement.close();
         return new RegistryLock(key, this.serverInfo.getAddr(), updateTime);
     }
-
 
     private void executeDelete(String key) throws SQLException {
         checkConnection();
         PreparedStatement preparedStatement = connection.prepareStatement("delete from dv_registry_lock where lock_key = ?");
         preparedStatement.setString(1, key);
         preparedStatement.executeUpdate();
+        preparedStatement.close();
         lockHoldMap.remove(key);
     }
 
@@ -146,10 +149,12 @@ public class MysqlMutex {
         ResultSet resultSet = preparedStatement.executeQuery();
 
         if (resultSet == null) {
+            preparedStatement.close();
             return false;
         }
         boolean result = resultSet.first();
         resultSet.close();
+        preparedStatement.close();
         return result;
     }
 
@@ -158,7 +163,7 @@ public class MysqlMutex {
         PreparedStatement preparedStatement = connection.prepareStatement("delete from dv_registry_lock where update_time < ?");
         preparedStatement.setTimestamp(1, new Timestamp(System.currentTimeMillis() - expireTimeWindow));
         preparedStatement.executeUpdate();
-
+        preparedStatement.close();
         // 将超时的lockKey移除掉
         lockHoldMap.values().removeIf((v -> v.getUpdateTime().getTime() < (System.currentTimeMillis()- expireTimeWindow)));
     }

@@ -27,7 +27,7 @@ import io.datavines.connector.api.entity.JdbcOptions;
 import io.datavines.connector.api.entity.StructField;
 import io.datavines.connector.plugin.utils.JdbcUtils;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
-import io.datavines.engine.local.api.entity.ConnectionItem;
+import io.datavines.engine.local.api.entity.ConnectionHolder;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import io.datavines.engine.local.api.utils.SqlUtils;
@@ -45,23 +45,23 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
 
     protected Logger log = LoggerFactory.getLogger(ErrorDataSinkExecutor.class);
 
-    private ConnectionItem connectionItem;
+    private ConnectionHolder connectionHolder;
 
     public ErrorDataSinkExecutor(Config config, LocalRuntimeEnvironment env) {
         super(config, env);
     }
 
-    private ConnectionItem getConnectionItem() {
+    private ConnectionHolder getConnectionHolder() {
 
-        if (connectionItem == null) {
+        if (connectionHolder == null) {
             if (StringUtils.isEmptyOrNullStr(config.getString(ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE))) {
-                connectionItem = new ConnectionItem(config);
+                connectionHolder = new ConnectionHolder(config);
             } else {
-                connectionItem = env.getSourceConnection();
+                connectionHolder = env.getSourceConnection();
             }
         }
 
-        return connectionItem;
+        return connectionHolder;
     }
 
     @Override
@@ -107,7 +107,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
             String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
             ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
             Dialect dialect = connectorFactory.getDialect();
-            if (!checkTableExist(getConnectionItem().getConnection(),
+            if (!checkTableExist(getConnectionHolder().getConnection(),
                     dialect.quoteIdentifier(targetDatabase)+"."+dialect.quoteIdentifier(targetTable), dialect)) {
                 sourceConnectionStatement.execute(dialect.getCreateTableAsSelectStatement(sourceTable, targetDatabase, targetTable));
             } else {
@@ -157,7 +157,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
             Dialect dialect = connectorFactory.getDialect();
             String targetTableName = config.getString(ERROR_DATA_FILE_NAME);
             List<StructField> columns = getTableSchema(sourceConnectionStatement, config, typeConverter);
-            if (!checkTableExist(getConnectionItem().getConnection(), targetTableName, dialect)) {
+            if (!checkTableExist(getConnectionHolder().getConnection(), targetTableName, dialect)) {
                 createTable(typeConverter, dialect, targetTableName, columns);
             }
             //根据行数进行分页查询。分批写到文件里面
@@ -165,7 +165,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
             int totalPage = count/pageSize + (count%pageSize>0 ? 1:0);
 
             errorDataResultSet = sourceConnectionStatement.executeQuery(connectorFactory.getDialect().getSelectQuery(sourceTable));
-            errorDataStorageConnection = getConnectionItem().getConnection();
+            errorDataStorageConnection = getConnectionHolder().getConnection();
             String insertStatement = JdbcUtils.getInsertStatement(targetTableName, columns, dialect);
             if (StringUtils.isEmpty(insertStatement)) {
                 return;
@@ -314,7 +314,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
         }
 
         log.info("create error data table : " + createTableSql);
-        Statement statement = getConnectionItem().getConnection().createStatement();
+        Statement statement = getConnectionHolder().getConnection().createStatement();
         statement.execute(createTableSql);
         statement.close();
     }

@@ -65,6 +65,10 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
             for (LocalSource localSource : sources)  {
                 switch (SourceType.of(localSource.getConfig().getString(PLUGIN_TYPE))){
                     case SOURCE:
+                        if (localRuntimeEnvironment.getSourceConnection() != null) {
+                            break;
+                        }
+
                         localRuntimeEnvironment.setSourceConnection(localSource.getConnectionItem(localRuntimeEnvironment));
                         if (!localSource.checkTableExist()) {
                             throw new DataVinesException("source table is not exist");
@@ -80,6 +84,10 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
 
                         break;
                     case TARGET:
+                        if (localRuntimeEnvironment.getTargetConnection() != null) {
+                            break;
+                        }
+
                         localRuntimeEnvironment.setTargetConnection(localSource.getConnectionItem(localRuntimeEnvironment));
                         if (!localSource.checkTableExist()) {
                             throw new DataVinesException("target table is not exist");
@@ -95,6 +103,10 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
 
                         break;
                     case METADATA:
+                        if (localRuntimeEnvironment.getMetadataConnection() != null) {
+                            break;
+                        }
+
                         localRuntimeEnvironment.setMetadataConnection(localSource.getConnectionItem(localRuntimeEnvironment));
                         break;
                     default:

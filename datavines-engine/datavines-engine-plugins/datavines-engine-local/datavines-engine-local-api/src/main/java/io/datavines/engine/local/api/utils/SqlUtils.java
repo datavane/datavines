@@ -17,6 +17,7 @@
 package io.datavines.engine.local.api.utils;
 
 import io.datavines.common.utils.StringUtils;
+import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.entity.QueryColumn;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.entity.ResultListWithColumns;
@@ -27,6 +28,7 @@ import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.*;
 import org.apache.commons.collections4.CollectionUtils;
+import org.slf4j.Logger;
 
 import java.sql.*;
 import java.util.*;
@@ -34,8 +36,9 @@ import java.util.*;
 import static io.datavines.common.CommonConstants.DOT;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
-@Slf4j
 public class SqlUtils {
+
+    protected static Logger log = LoggerFactory.getLogger(SqlUtils.class);
 
     public static ResultListWithColumns getListWithHeaderFromResultSet(ResultSet rs, Set<String> queryFromsAndJoins) throws SQLException {
 

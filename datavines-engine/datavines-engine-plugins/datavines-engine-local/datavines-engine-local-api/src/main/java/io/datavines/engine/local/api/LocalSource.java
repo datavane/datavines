@@ -17,11 +17,11 @@
 package io.datavines.engine.local.api;
 
 import io.datavines.engine.api.component.Component;
-import io.datavines.engine.local.api.entity.ConnectionItem;
+import io.datavines.engine.local.api.entity.ConnectionHolder;
 
 public interface LocalSource extends Component {
 
-    ConnectionItem getConnectionItem(LocalRuntimeEnvironment env);
+    ConnectionHolder getConnectionItem(LocalRuntimeEnvironment env);
 
     boolean checkTableExist();
 

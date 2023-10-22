@@ -20,15 +20,19 @@ import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
 import io.datavines.engine.api.env.Execution;
 import io.datavines.engine.api.env.RuntimeEnvironment;
-import io.datavines.engine.local.api.entity.ConnectionItem;
+import io.datavines.engine.local.api.entity.ConnectionHolder;
+import io.datavines.engine.local.api.utils.LoggerFactory;
+import org.slf4j.Logger;
 
 public class LocalRuntimeEnvironment implements RuntimeEnvironment {
 
-    private ConnectionItem sourceConnection;
+    protected Logger log = LoggerFactory.getLogger(LocalRuntimeEnvironment.class);
 
-    private ConnectionItem targetConnection;
+    private ConnectionHolder sourceConnection;
 
-    private ConnectionItem metadataConnection;
+    private ConnectionHolder targetConnection;
+
+    private ConnectionHolder metadataConnection;
 
     @Override
     public void prepare() {
@@ -55,27 +59,27 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
         return null;
     }
 
-    public ConnectionItem getSourceConnection() {
+    public ConnectionHolder getSourceConnection() {
         return sourceConnection;
     }
 
-    public void setSourceConnection(ConnectionItem sourceConnection) {
+    public void setSourceConnection(ConnectionHolder sourceConnection) {
         this.sourceConnection = sourceConnection;
     }
 
-    public ConnectionItem getMetadataConnection() {
+    public ConnectionHolder getMetadataConnection() {
         return metadataConnection;
     }
 
-    public void setMetadataConnection(ConnectionItem metadataConnection) {
+    public void setMetadataConnection(ConnectionHolder metadataConnection) {
         this.metadataConnection = metadataConnection;
     }
 
-    public ConnectionItem getTargetConnection() {
+    public ConnectionHolder getTargetConnection() {
         return targetConnection;
     }
 
-    public void setTargetConnection(ConnectionItem targetConnection) {
+    public void setTargetConnection(ConnectionHolder targetConnection) {
         this.targetConnection = targetConnection;
     }
 
