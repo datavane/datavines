@@ -199,21 +199,21 @@ const Jobs = ({ datasourceId }: TJobs) => {
             title: intl.formatMessage({ id: 'jobs_schedule_express' }),
             dataIndex: 'cronExpression',
             key: 'cronExpression',
-            width: 200,
+            width: 150,
             render: (text: string) => defaultRender(text, 200),
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_success_count' }),
             dataIndex: 'successCount',
             key: 'successCount',
-            width: 200,
+            width: 100,
             render: (text: number) => defaultRender(text, 200),
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_fail_count' }),
             dataIndex: 'failCount',
             key: 'failCount',
-            width: 200,
+            width: 100,
             render: (text: number) => defaultRender(text, 200),
         },
         {
@@ -242,7 +242,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
             fixed: 'right',
             key: 'right',
             dataIndex: 'right',
-            width: 260,
+            width: 300,
             render: (text: string, record: TJobsTableItem) => {
                 const editComp = <a style={{ marginRight: 5 }} onClick={() => { onEdit(record); }}>{intl.formatMessage({ id: 'common_edit' })}</a>;
                 const deleteComp = (
