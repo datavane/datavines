@@ -222,6 +222,7 @@ export default {
     job_avg: 'Avg',
     job_stdDev: 'StdDev',
     job_variance: 'Variance',
+    job_config_info: 'Job Config Info',
 
     job_choose_col: 'Choose Col',
     job_search_col: 'Search Col',

@@ -26,6 +26,7 @@ import Schedule from '@/view/Main/HomeDetail/Jobs/components/Schedule';
 import SearchForm from './SearchForm';
 import store from '@/store';
 import { useLogger } from '@/view/Main/HomeDetail/Jobs/useLogger';
+import TextArea from "antd/lib/input/TextArea";
 
 type DIndexProps = {
     onShowModal?: (...args: any[]) => any;
@@ -468,13 +469,19 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
         setChooesColList(res);
         const resCheck = await $http.get(`/catalog/profile/selected-columns/${selectDatabases[currentIndex]?.uuid}?uuid=${selectDatabases[currentIndex]?.uuid}`);
         setColCheckList(resCheck);
+        const resFilter = await $http.get(`/catalog/profile/filter/${selectDatabases[currentIndex]?.uuid}?uuid=${selectDatabases[currentIndex]?.uuid}`);
+        setProfileFilterText(resFilter)
+        filterForm.setFieldValue('filter', resFilter);
         setChooesColModalOpen(true);
     };
+    const [filterForm] = Form.useForm();
+    const [profileFilterText, setProfileFilterText] = useState('');
     const runProfile = async () => {
         await $http.post('/catalog/profile/execute-select-columns', {
             selectAll: chooesColList.length === colCheckList.length,
             selectedColumnList: colCheckList,
             uuid: selectDatabases[currentIndex]?.uuid,
+            filter: profileFilterText
         }).then(() => {
             setChooesColModalOpen(false);
             message.success(intl.formatMessage({ id: 'common_success' }));
@@ -986,7 +993,7 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
             <Modal
                 width="400px"
                 open={chooesColModalOpen}
-                title={intl.formatMessage({ id: 'job_choose_col' })}
+                title={intl.formatMessage({ id: 'job_config_info' })}
                 maskClosable={false}
                 footer={[
                     <Button key="good" onClick={() => setChooesColModalOpen(false)}>
@@ -999,24 +1006,41 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 onCancel={() => setChooesColModalOpen(false)}
                 destroyOnClose
             >
-                <Table
+                <Form
+                    form={filterForm}
+                    layout='vertical'
                     style={{ marginTop: 20 }}
-                    rowSelection={{
-                        type: 'checkbox',
-                        onChange: (val:any[]) => setColCheckList(val),
-                        defaultSelectedRowKeys: colCheckList,
-                    }}
-                    size="small"
-                    dataSource={chooesColList}
-                    columns={chooseColumns}
-                    pagination={
-                        false
-                    }
-                    rowKey="name"
-                    scroll={{
-                        y: 300,
-                    }}
-                />
+                >
+                    <Form.Item
+                        label={`${intl.formatMessage({ id: 'job_choose_col' })}`}
+                        name='colList'
+                    >
+                        <Table
+                            rowSelection={{
+                                type: 'checkbox',
+                                onChange: (val:any[]) => setColCheckList(val),
+                                defaultSelectedRowKeys: colCheckList,
+                            }}
+                            size="small"
+                            dataSource={chooesColList}
+                            columns={chooseColumns}
+                            pagination={
+                                false
+                            }
+                            rowKey="name"
+                            scroll={{
+                                y: 300,
+                            }}
+                        />
+                    </Form.Item>
+                    <Form.Item
+                        label={`${intl.formatMessage({ id: 'dv_metric_condition' })}`}
+                        name='filter'
+                    >
+                        <TextArea autoComplete="off" value={profileFilterText} onChange={e => setProfileFilterText(e.target.value)}/>
+                    </Form.Item>
+                </Form>
+
             </Modal>
             <RenderModal />
             <Drawer width="50%" title={intl.formatMessage({ id: 'job_profile_execution_history' })} placement="right" onClose={onDrawerClose} open={openDrawer}>

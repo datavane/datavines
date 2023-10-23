@@ -82,6 +82,8 @@ public interface CatalogEntityInstanceService extends IService<CatalogEntityInst
 
     List<String> getProfileJobSelectedColumns(String uuid);
 
+    String getProfileJobFilter(String uuid);
+
     boolean deleteInstanceByDataSourceId(Long datasourceId);
 
     IPage<JobExecutionVO> profileJobExecutionPage(String uuid, Integer pageNumber, Integer pageSize);

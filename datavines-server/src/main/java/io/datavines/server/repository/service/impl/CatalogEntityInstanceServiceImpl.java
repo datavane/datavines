@@ -825,6 +825,7 @@ public class CatalogEntityInstanceServiceImpl
     @Override
     public long executeDataProfileJob(RunProfileRequest runProfileRequest, int runningNow) {
         String uuid = runProfileRequest.getUuid();
+        String filter = runProfileRequest.getFilter() == null ? "" : runProfileRequest.getFilter();
         CatalogEntityInstance entityInstance = getCatalogEntityInstance(uuid);
         if (entityInstance == null) {
             return -1L;
@@ -856,6 +857,7 @@ public class CatalogEntityInstanceServiceImpl
                 metricParameter.put("table", tableName);
                 metricParameter.put("entity_uuid", entityInstance.getUuid());
                 metricParameter.put("actual_value_type", "count");
+                metricParameter.put("filter", filter);
                 baseJobParameter.setMetricParameter(metricParameter);
                 baseJobParameter.setExpectedType("fix_value");
                 jobParameters.add(baseJobParameter);
@@ -909,6 +911,7 @@ public class CatalogEntityInstanceServiceImpl
                 metricParameter1.put("column", values[2]);
                 metricParameter1.put("entity_uuid", catalogEntityInstance.getUuid());
                 metricParameter1.put("actual_value_type", "count");
+                metricParameter1.put("filter", filter);
                 baseJobParameter.setMetricParameter(metricParameter1);
                 baseJobParameter.setExpectedType("fix_value");
                 jobParameters.add(baseJobParameter);
@@ -997,5 +1000,33 @@ public class CatalogEntityInstanceServiceImpl
         pageParam.setJobId(jobId);
 
         return jobExecutionService.getJobExecutionPage(pageParam);
+    }
+
+    @Override
+    public String getProfileJobFilter(String uuid) {
+        CatalogEntityMetricJobRel rel = catalogEntityMetricJobRelService.getOne(new QueryWrapper<CatalogEntityMetricJobRel>().eq("entity_uuid", uuid).eq("metric_job_type", DATA_PROFILE.getDescription()));
+        String filter = "";
+        if (rel == null) {
+            return filter;
+        }
+        long jobId = rel.getMetricJobId();
+        Job job = jobService.getById(jobId);
+        if (job == null) {
+            return filter;
+        }
+        String parameter = job.getParameter();
+        try {
+            List<BaseJobParameter> jobParameterList = JSONUtils.toList(parameter,BaseJobParameter.class);
+            for (BaseJobParameter baseJobParameter : jobParameterList) {
+                Map<String, Object> metricParameter = baseJobParameter.getMetricParameter();
+                filter = (String) metricParameter.get("filter");
+                if(org.apache.commons.lang3.StringUtils.isNotBlank(filter)){
+                    break;
+                }
+            }
+        } catch (Exception e){
+            log.error("data profile job parameter:[{}] get filter error, ", e);
+        }
+        return filter;
     }
 }
