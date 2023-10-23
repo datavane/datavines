@@ -71,7 +71,7 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
 
                 //get the error data storage parameter
                 if (StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageType())
-                        &&StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageParameter())) {
+                        && StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageParameter())) {
                     SinkConfig errorDataSinkConfig = new SinkConfig();
                     errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
 

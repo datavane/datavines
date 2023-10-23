@@ -79,6 +79,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(POST_SQL, metricInputParameter.get(POST_SQL));
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
+                    boolean invalidateItemCanOutput = Boolean.parseBoolean(metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
                     invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 
@@ -115,6 +116,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(POST_SQL, metricInputParameter.get(POST_SQL));
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
+                    boolean invalidateItemCanOutput = Boolean.parseBoolean(metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
                     invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
                     if (targetConnectorSet.contains(connectorUUID)) {
@@ -163,6 +165,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                         .getNewPlugin(metricType);
 
                 MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
+                boolean invalidateItemCanOutput = Boolean.parseBoolean(metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
                 invalidateItemCanOutput &= sqlMetric.isInvalidateItemsCanOutput();
                 metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 

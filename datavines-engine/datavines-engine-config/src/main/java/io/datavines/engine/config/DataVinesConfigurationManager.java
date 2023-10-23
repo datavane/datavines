@@ -83,12 +83,12 @@ public class DataVinesConfigurationManager {
 
         JobConfigurationBuilder builder = PluginLoader
                 .getPluginLoader(JobConfigurationBuilder.class)
-                .getOrCreatePlugin(jobExecutionInfo.getEngineType() + "_" + sqlMetric.getType().getDescription());
+                .getNewPlugin(jobExecutionInfo.getEngineType() + "_" + sqlMetric.getType().getDescription());
 
         if (jobType == JobType.DATA_PROFILE) {
             builder = PluginLoader
                     .getPluginLoader(JobConfigurationBuilder.class)
-                    .getOrCreatePlugin(jobExecutionInfo.getEngineType() + "_data_profile");
+                    .getNewPlugin(jobExecutionInfo.getEngineType() + "_data_profile");
         }
 
         builder.init(inputParameter, jobExecutionInfo);
