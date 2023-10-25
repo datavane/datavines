@@ -95,6 +95,12 @@ public class CatalogController {
         return catalogEntityInstanceService.executeDataProfileJob(runProfileRequest);
     }
 
+    @ApiOperation(value = "get filter", response = String.class)
+    @GetMapping(value = "/profile/filter/{uuid}")
+    public Object getProfileJobFilter(@PathVariable String uuid) {
+        return catalogEntityInstanceService.getProfileJobFilter(uuid);
+    }
+
     @ApiOperation(value = "get selected column list", response = OptionItem.class, responseContainer = "list")
     @GetMapping(value = "/profile/selected-columns/{uuid}")
     public Object getProfileJobSelectedColumns(@PathVariable String uuid) {

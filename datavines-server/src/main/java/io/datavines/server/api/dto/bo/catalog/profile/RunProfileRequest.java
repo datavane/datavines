@@ -30,4 +30,6 @@ public class RunProfileRequest {
     private boolean selectAll;
 
     private List<String> selectedColumnList;
+
+    private String filter;
 }

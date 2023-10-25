@@ -227,6 +227,7 @@ export default {
     jobs_status: '执行状态',
     jobs_execution_time: '执行时间',
     job_search_col: '搜索列',
+    job_config_info: '配置信息',
 
     warn_sLAs_name: '名称',
     warn_sLAs_type: '类型',
