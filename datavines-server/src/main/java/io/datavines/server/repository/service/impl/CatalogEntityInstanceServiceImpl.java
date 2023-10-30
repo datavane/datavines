@@ -25,6 +25,7 @@ import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.EntityRelType;
 import io.datavines.common.enums.JobType;
+import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.DateUtils;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
@@ -926,6 +927,16 @@ public class CatalogEntityInstanceServiceImpl
         createOrUpdate.setTableName(tableName);
         createOrUpdate.setSelectedColumn(String.join(",", columns));
         createOrUpdate.setRunningNow(runningNow);
+        String livyEngineParameter = CommonPropertyUtils.getString("profile.engine.parameter.livy");
+        if (StringUtils.isNotEmpty(livyEngineParameter)) {
+            createOrUpdate.setEngineType("livy");
+            createOrUpdate.setEngineParameter(livyEngineParameter);
+        }
+        String sparkEngineParameter = CommonPropertyUtils.getString("profile.engine.parameter.spark");
+        if (StringUtils.isNotEmpty(sparkEngineParameter)) {
+            createOrUpdate.setEngineType("spark");
+            createOrUpdate.setEngineParameter(sparkEngineParameter);
+        }
         long jobId = jobService.createOrUpdateDataProfileJob(createOrUpdate);
 
         if (jobId != -1L) {
