@@ -25,6 +25,7 @@ import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.api.SqlMetric;
+import org.apache.commons.lang3.StringUtils;
 
 import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
 
@@ -78,11 +79,11 @@ public class MultiTableAccuracy implements SqlMetric {
 
     @Override
     public void prepare(Map<String, String> config) {
-        if (config.containsKey("filter")) {
+        if (config.containsKey("filter") && StringUtils.isNotBlank(config.get("filter"))) {
             sourceTableSql.append(" WHERE (${filter}) ");
         }
 
-        if (config.containsKey("filter2")) {
+        if (config.containsKey("filter2") && StringUtils.isNotBlank(config.get("filter2"))) {
             targetTableSql.append(" WHERE (${filter2}) ");
         }
 

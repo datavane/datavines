@@ -20,6 +20,7 @@ import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -61,7 +62,7 @@ public class ColumnUnique extends BaseSingleTableColumn {
     @Override
     public void prepare(Map<String, String> config) {
 
-        if (config.containsKey("filter")) {
+        if (config.containsKey("filter") && StringUtils.isNotBlank(config.get("filter"))) {
             invalidateItemsSql.append(" where ").append(config.get("filter"));
         }
 

@@ -17,6 +17,7 @@
 package io.datavines.metric.expected.plugin;
 
 import io.datavines.metric.api.ExpectedValue;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
@@ -63,7 +64,7 @@ public class TargetTableTotalRows implements ExpectedValue {
 
     @Override
     public void prepare(Map<String, String> config) {
-        if (config.containsKey("filter")) {
+        if (config.containsKey("filter") && StringUtils.isNotBlank(config.get("filter"))) {
             if (sql.toString().contains("where")) {
                 sql.append(" and ").append(config.get("filter"));
             } else {
