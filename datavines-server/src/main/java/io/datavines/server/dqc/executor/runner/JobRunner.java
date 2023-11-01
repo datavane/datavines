@@ -111,8 +111,10 @@ public class JobRunner implements Runnable {
                         new JobExecuteResponseCommand(this.jobExecutionRequest.getJobExecutionId());
                 responseCommand.setStatus(ExecutionStatus.KILL.getCode());
                 responseCommand.setEndTime(LocalDateTime.now());
-                responseCommand.setApplicationIds(engineExecutor.getProcessResult().getApplicationId());
-                responseCommand.setProcessId(engineExecutor.getProcessResult().getProcessId());
+                if (engineExecutor.getProcessResult() != null) {
+                    responseCommand.setApplicationIds(engineExecutor.getProcessResult().getApplicationId());
+                    responseCommand.setProcessId(engineExecutor.getProcessResult().getProcessId());
+                }
                 jobExecuteManager.processJobExecutionExecuteResponse(responseCommand);
 
             } catch (Exception e) {
