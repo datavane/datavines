@@ -410,7 +410,7 @@ public class JobExecuteManager {
             }
 
             logger.info("jobExecution {} is timeout, do something",jobExecutionId);
-
+            doKillCommand(jobExecutionId);
         }
     }
 
