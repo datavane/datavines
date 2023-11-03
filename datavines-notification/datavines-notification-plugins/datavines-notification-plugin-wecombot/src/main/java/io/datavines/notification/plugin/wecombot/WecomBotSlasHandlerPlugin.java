@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package io.datavines.notification.plugin.wecombot;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,10 +24,8 @@ import io.datavines.common.param.form.type.InputParam;
 import io.datavines.notification.api.entity.*;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
 import lombok.extern.slf4j.Slf4j;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
 
 @Slf4j
 public class WecomBotSlasHandlerPlugin implements SlasHandlerPlugin {
@@ -52,7 +49,6 @@ public class WecomBotSlasHandlerPlugin implements SlasHandlerPlugin {
             }
             records.add(record);
         }
-
         result.setRecords(records);
         return result;
     }
@@ -65,11 +61,9 @@ public class WecomBotSlasHandlerPlugin implements SlasHandlerPlugin {
                 .addValidate(Validate.newBuilder().setRequired(true).build())
                 .build();
         paramsList.add(webhook);
-
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         String result = null;
-
         try {
             result = mapper.writeValueAsString(paramsList);
         } catch (JsonProcessingException e) {
@@ -90,7 +84,6 @@ public class WecomBotSlasHandlerPlugin implements SlasHandlerPlugin {
         } catch (JsonProcessingException e) {
             log.error("json parse error : {}", e.getMessage(), e);
         }
-
         return result;
     }
 }

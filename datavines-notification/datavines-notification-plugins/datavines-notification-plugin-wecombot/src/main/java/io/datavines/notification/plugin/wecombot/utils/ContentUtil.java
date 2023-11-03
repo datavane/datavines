@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ContentUtil {
-
     public static Map<String, Object> createParamMap(Object... elements) {
         Map<String, Object> paramMap = new HashMap<>(32);
         if (elements.length % 2 == 1) {

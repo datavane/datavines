@@ -16,8 +16,6 @@
  */
 package io.datavines.notification.plugin.wecombot;
 
-
-
 public class WecomBotConstants {
     public static final String MSG_TYPE = "msgtype";
     public static final String MARKDOWN = "markdown";
@@ -25,12 +23,4 @@ public class WecomBotConstants {
     public static final String FIRST_TITLE_START = "# ";
     public static final String QUOTE_START = "> ";
     public static final String END = "\n";
-
-
-
-
-
-
-
-
 }

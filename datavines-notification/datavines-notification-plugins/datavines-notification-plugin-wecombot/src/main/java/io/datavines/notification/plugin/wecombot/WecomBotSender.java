@@ -15,7 +15,6 @@
  * limitations under the License.
  */
 package io.datavines.notification.plugin.wecombot;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import io.datavines.common.utils.HttpUtils;
@@ -29,14 +28,10 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
-
-
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import static java.util.Objects.requireNonNull;
-
 
 @Slf4j
 @EqualsAndHashCode
@@ -45,13 +40,11 @@ public class WecomBotSender {
 
     private String webhookList;
 
-    private String mustNotNull = "must not be null";
-
     public WecomBotSender(SlaSenderMessage senderMessage) {
         String configString = senderMessage.getConfig();
         Map<String, String> config = JSONUtils.toMap(configString);
         webhookList = config.get("webhook");
-        requireNonNull(webhookList, "webhook" + mustNotNull);
+        requireNonNull(webhookList, "webhook must not be null");
 
     }
 
@@ -68,7 +61,7 @@ public class WecomBotSender {
         for (String receiver : receiverSet) {
             try {
                 String markdownMessage = getMarkdownMessage(subject, message);
-                Map<String, Object> paramMap = ContentUtil.createParamMap( WecomBotConstants.MARKDOWN, ContentUtil.createParamMap(WecomBotConstants.CONTENT, markdownMessage));
+                Map<String, Object> paramMap = ContentUtil.createParamMap(WecomBotConstants.MSG_TYPE, WecomBotConstants.MARKDOWN, WecomBotConstants.MARKDOWN, ContentUtil.createParamMap(WecomBotConstants.CONTENT, markdownMessage));
                 String res = HttpUtils.post(receiver, JSONUtils.toJsonString(paramMap), null);
                 WecomBotRes wecomBotRes = WecomBotRes.parseFromJson(res);
                 if(!wecomBotRes.success()){
@@ -80,7 +73,6 @@ public class WecomBotSender {
                 log.error("wecomBot send error", e);
             }
         }
-
         if (!CollectionUtils.isEmpty(failToReceivers)) {
             String recordMessage = String.format("send to %s fail", String.join(",", failToReceivers));
             result.setStatus(false);

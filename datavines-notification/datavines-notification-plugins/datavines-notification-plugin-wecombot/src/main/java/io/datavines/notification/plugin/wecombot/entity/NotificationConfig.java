@@ -24,6 +24,5 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class NotificationConfig {
-
     private String receiverType;
 }

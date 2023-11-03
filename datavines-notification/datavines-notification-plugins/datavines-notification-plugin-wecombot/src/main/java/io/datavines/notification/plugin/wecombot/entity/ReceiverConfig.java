@@ -19,8 +19,6 @@ package io.datavines.notification.plugin.wecombot.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-
-
 @Data
 @EqualsAndHashCode
 @ToString
