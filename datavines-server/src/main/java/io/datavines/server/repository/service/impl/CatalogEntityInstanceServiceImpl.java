@@ -21,10 +21,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
+import io.datavines.common.entity.SparkEngineParameter;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.EntityRelType;
 import io.datavines.common.enums.JobType;
+import io.datavines.common.utils.CommonPropertyUtils;
 import io.datavines.common.utils.DateUtils;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
@@ -926,6 +928,8 @@ public class CatalogEntityInstanceServiceImpl
         createOrUpdate.setTableName(tableName);
         createOrUpdate.setSelectedColumn(String.join(",", columns));
         createOrUpdate.setRunningNow(runningNow);
+        engineParameter(createOrUpdate);
+
         long jobId = jobService.createOrUpdateDataProfileJob(createOrUpdate);
 
         if (jobId != -1L) {
@@ -952,6 +956,40 @@ public class CatalogEntityInstanceServiceImpl
         }
 
         return jobId;
+    }
+
+    private void engineParameter(DataProfileJobCreateOrUpdate createOrUpdate) {
+        String profileEngine = CommonPropertyUtils.getString("profile.execute.engine");
+        if ("livy".equalsIgnoreCase(profileEngine)) {
+
+            createOrUpdate.setEngineType("livy");
+            String deployMode = CommonPropertyUtils.getString("livy.engine.parameter.deploy.mode", "cluster");
+            int numExecutors = CommonPropertyUtils.getInt("livy.engine.parameter.num.executors", 1);
+            int driverCores = CommonPropertyUtils.getInt("livy.engine.parameter.driver.cores", 1);
+            String driverMemory = CommonPropertyUtils.getString("livy.engine.parameter.driver.memory", "512M");
+            int executorCores = CommonPropertyUtils.getInt("livy.engine.parameter.executor.cores", 1);
+            String executorMemory = CommonPropertyUtils.getString("livy.engine.parameter.executor.memory", "512M");
+            String others = CommonPropertyUtils.getString("livy.engine.parameter.others");
+
+            SparkEngineParameter engineParameter = new SparkEngineParameter("JAVA", deployMode, driverCores, driverMemory,
+                    numExecutors, executorCores, executorMemory, others);
+
+            createOrUpdate.setEngineParameter(JSONUtils.toJsonString(engineParameter));
+        } else if ("spark".equalsIgnoreCase(profileEngine)) {
+
+            createOrUpdate.setEngineType("spark");
+            String deployMode = CommonPropertyUtils.getString("spark.engine.parameter.deploy.mode", "cluster");
+            int numExecutors = CommonPropertyUtils.getInt("spark.engine.parameter.num.executors", 1);
+            int driverCores = CommonPropertyUtils.getInt("spark.engine.parameter.driver.cores", 1);
+            String driverMemory = CommonPropertyUtils.getString("spark.engine.parameter.driver.memory", "512M");
+            int executorCores = CommonPropertyUtils.getInt("spark.engine.parameter.executor.cores", 1);
+            String executorMemory = CommonPropertyUtils.getString("spark.engine.parameter.executor.memory", "512M");
+            String others = CommonPropertyUtils.getString("spark.engine.parameter.others");
+
+            SparkEngineParameter engineParameter = new SparkEngineParameter("JAVA", deployMode, driverCores, driverMemory,
+                    numExecutors, executorCores, executorMemory, others);
+            createOrUpdate.setEngineParameter(JSONUtils.toJsonString(engineParameter));
+        }
     }
 
     @Override

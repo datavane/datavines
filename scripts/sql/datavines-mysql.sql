@@ -827,6 +827,13 @@ INSERT INTO `dv_config` VALUES ('22', '-1', 'livy.task.jars', CONCAT('datavines-
                                                                     'datavines-engine-api-1.0.0-SNAPSHOT.jar,mysql-connector-java-8.0.16.jar,httpclient-4.4.1.jar,'
                                                                     'httpcore-4.4.1.jar,postgresql-42.2.6.jar,presto-jdbc-0.283.jar,trino-jdbc-407.jar,clickhouse-jdbc-0.1.53.jar'),
                                 '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('23', '-1', 'profile.execute.engine', 'local', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('24', '-1', 'spark.engine.parameter.deploy.mode', 'cluster', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('25', '-1', 'spark.engine.parameter.num.executors', '1', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('26', '-1', 'spark.engine.parameter.driver.cores', '1', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('27', '-1', 'spark.engine.parameter.driver.memory', '512M', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('28', '-1', 'spark.engine.parameter.executor.cores', '1', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
+INSERT INTO `dv_config` VALUES ('29', '-1', 'spark.engine.parameter.executor.memory', '512M', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
 
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0');
 INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `update_by`) VALUES ('1', "admin\'s default", '1', '1');

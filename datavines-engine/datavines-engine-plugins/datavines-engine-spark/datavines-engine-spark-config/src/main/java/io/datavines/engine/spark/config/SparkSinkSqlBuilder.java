@@ -65,4 +65,20 @@ public class SparkSinkSqlBuilder {
                 + " join ( ${expected_execute_sql} ) tmp2";
     }
 
+    public static String getProfileValueSql() {
+
+        List<String> columnList = new ArrayList<>(MetricConstants.PROFILE_COLUMN_LIST.size());
+
+        for (ColumnInfo columnInfo : MetricConstants.PROFILE_COLUMN_LIST) {
+
+            if (columnInfo.isNeedSingleQuotation()) {
+                columnList.add(StringUtils.wrapperSingleQuotes("${" + columnInfo.getParameterName() + "}") + " as "
+                        + columnInfo.getName());
+            } else {
+                columnList.add("${" + columnInfo.getParameterName() + "}" + " as " + columnInfo.getName());
+            }
+        }
+
+        return "select " + String.join(", ", columnList) + " from ${actual_table}";
+    }
 }
