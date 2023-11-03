@@ -23,6 +23,7 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.notification.api.entity.SlaNotificationResultRecord;
 import io.datavines.notification.api.entity.SlaSenderMessage;
+import io.datavines.notification.plugin.wecombot.entity.WecomBotRes;
 import io.datavines.notification.plugin.wecombot.utils.ContentUtil;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -67,9 +68,13 @@ public class WecomBotSender {
         for (String receiver : receiverSet) {
             try {
                 String markdownMessage = getMarkdownMessage(subject, message);
-                Map<String, Object> paramMap = ContentUtil.createParamMap(WecomBotConstants.MSG_TYPE, WecomBotConstants.MARKDOWN, WecomBotConstants.MARKDOWN, ContentUtil.createParamMap(WecomBotConstants.CONTENT, markdownMessage));
-                log.debug("wecomBot sender webhook:{} , param:{}", receiver, JSONUtils.toJsonString(paramMap));
-                HttpUtils.post(receiver, JSONUtils.toJsonString(paramMap), null);
+                Map<String, Object> paramMap = ContentUtil.createParamMap( WecomBotConstants.MARKDOWN, ContentUtil.createParamMap(WecomBotConstants.CONTENT, markdownMessage));
+                String res = HttpUtils.post(receiver, JSONUtils.toJsonString(paramMap), null);
+                WecomBotRes wecomBotRes = WecomBotRes.parseFromJson(res);
+                if(!wecomBotRes.success()){
+                    failToReceivers.add(receiver);
+                    log.info("wecomBot sender error, please check config! webhook: {} , param: {}, res: {}", receiver, JSONUtils.toJsonString(paramMap), res);
+                }
             } catch (Exception e) {
                 failToReceivers.add(receiver);
                 log.error("wecomBot send error", e);
@@ -83,7 +88,6 @@ public class WecomBotSender {
         } else {
             result.setStatus(true);
         }
-
         return result;
     }
 
