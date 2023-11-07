@@ -69,8 +69,8 @@ public class JdbcConnectionInfo {
                 "&" + properties;
     }
 
-    private String getOrEmpty (String keyword) {
-        return StringUtils.isNotEmpty(keyword)? keyword.trim():"";
+    private String getOrEmpty(String keyword) {
+        return StringUtils.isNotEmpty(keyword)? keyword.trim() : "";
     }
 
     public String getUniqueKey() {

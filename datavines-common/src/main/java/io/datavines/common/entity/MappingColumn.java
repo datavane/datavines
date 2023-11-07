@@ -16,12 +16,16 @@
  */
 package io.datavines.common.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * MappingColumn
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MappingColumn {
 
     private String column;
@@ -29,12 +33,4 @@ public class MappingColumn {
     private String operator;
 
     private String column2;
-
-    public MappingColumn() {}
-
-    public MappingColumn(String column, String operator, String column2) {
-        this.column = column;
-        this.operator = operator;
-        this.column2 = column2;
-    }
 }

@@ -16,9 +16,13 @@
  */
 package io.datavines.common.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class JobExecutionInfo {
 
     private Long id;
@@ -40,24 +44,4 @@ public class JobExecutionInfo {
     private String validateResultDataStorageParameter;
 
     private JobExecutionParameter jobExecutionParameter;
-
-    public JobExecutionInfo() {
-    }
-
-    public JobExecutionInfo(Long id, String name,
-                            String engineType, String engineParameter,
-                            String errorDataStorageType, String errorDataStorageParameter, String errorDataFileName,
-                            String validateResultDataStorageType, String validateResultDataStorageParameter,
-                            JobExecutionParameter jobExecutionParameter) {
-        this.id = id;
-        this.name = name;
-        this.engineType = engineType;
-        this.engineParameter = engineParameter;
-        this.errorDataStorageType = errorDataStorageType;
-        this.errorDataStorageParameter = errorDataStorageParameter;
-        this.errorDataFileName = errorDataFileName;
-        this.validateResultDataStorageType = validateResultDataStorageType;
-        this.validateResultDataStorageParameter = validateResultDataStorageParameter;
-        this.jobExecutionParameter = jobExecutionParameter;
-    }
 }

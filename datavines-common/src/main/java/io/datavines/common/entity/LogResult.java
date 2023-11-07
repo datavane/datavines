@@ -16,17 +16,17 @@
  */
 package io.datavines.common.entity;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class LogResult {
 
     private String msg;
 
     private int offsetLine;
 
-    public LogResult(String msg, int offsetLine){
-        this.msg = msg;
-        this.offsetLine = offsetLine;
-    }
 }
