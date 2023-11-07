@@ -89,19 +89,16 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
         if (dataSource == null) {
             throw new DataVinesServerException(Status.DATASOURCE_NOT_EXIST_ERROR, dataSourceId);
         } else {
-
+            if (baseMapper.insert(catalogMetaDataFetchTaskSchedule) <= 0) {
+                log.info("create catalog task schedule fail : {}", catalogMetaDataFetchTaskSchedule);
+                throw new DataVinesServerException(Status.CREATE_CATALOG_TASK_SCHEDULE_ERROR);
+            }
             try {
                 addScheduleJob(scheduleCreateOrUpdate, catalogMetaDataFetchTaskSchedule);
             } catch (Exception e) {
                 throw new DataVinesServerException(Status.ADD_QUARTZ_ERROR);
             }
         }
-
-        if (baseMapper.insert(catalogMetaDataFetchTaskSchedule) <= 0) {
-            log.info("create catalog task schedule fail : {}", catalogMetaDataFetchTaskSchedule);
-            throw new DataVinesServerException(Status.CREATE_CATALOG_TASK_SCHEDULE_ERROR);
-        }
-
         log.info("create job schedule success: datasource id : {}, cronExpression : {}",
                 catalogMetaDataFetchTaskSchedule.getDataSourceId(),
                 catalogMetaDataFetchTaskSchedule.getCronExpression());
