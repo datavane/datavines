@@ -30,7 +30,10 @@ import org.slf4j.LoggerFactory;
 public class CommonPropertyUtils {
 
     public static final String EXEC_THREADS = "exec.threads";
-    public static final Integer EXEC_THREADS_DEFAULT = 100;
+    public static final Integer EXEC_THREADS_DEFAULT = 20;
+
+    public static final String METADATA_FETCH_EXEC_THREADS = "metadata.fetch.exec.threads";
+    public static final Integer METADATA_FETCH_EXEC_THREADS_DEFAULT = 5;
 
     public static final String MAX_CPU_LOAD_AVG = "max.cpu.load.avg";
     public static final Double MAX_CPU_LOAD_AVG_DEFAULT = 0.5;

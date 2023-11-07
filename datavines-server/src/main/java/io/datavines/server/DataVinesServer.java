@@ -26,6 +26,7 @@ import io.datavines.registry.api.Registry;
 import io.datavines.server.catalog.metadata.CatalogMetaDataFetchTaskManager;
 import io.datavines.server.catalog.metadata.CatalogMetaDataFetchTaskScheduler;
 import io.datavines.server.catalog.metadata.CatalogMetaDataFetchTaskFailover;
+import io.datavines.server.dqc.coordinator.cache.JobExecutionResponseProcessor;
 import io.datavines.server.registry.Register;
 import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
 import io.datavines.server.dqc.coordinator.failover.JobExecutionFailover;
@@ -75,6 +76,8 @@ public class DataVinesServer {
 
         jobExecuteManager = new JobExecuteManager();
         jobExecuteManager.start();
+
+        JobExecutionResponseProcessor.getInstance().setJobExecuteManager(jobExecuteManager);
 
         CatalogMetaDataFetchTaskManager catalogMetaDataFetchTaskManager = new CatalogMetaDataFetchTaskManager();
         catalogMetaDataFetchTaskManager.start();

@@ -23,8 +23,8 @@ import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.LoggerUtils;
 import io.datavines.engine.api.engine.EngineExecutor;
-import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
 import io.datavines.server.dqc.command.JobExecuteResponseCommand;
+import io.datavines.server.dqc.coordinator.cache.JobExecutionResponseProcessor;
 import io.datavines.spi.PluginLoader;
 
 import org.slf4j.Logger;
@@ -36,15 +36,12 @@ public class JobRunner implements Runnable {
 
     private final JobExecutionRequest jobExecutionRequest;
 
-    private final JobExecuteManager jobExecuteManager;
-
     private EngineExecutor engineExecutor;
 
     private final Configurations configurations;
 
-    public JobRunner(JobExecutionRequest jobExecutionRequest, JobExecuteManager jobExecuteManager, Configurations configurations){
+    public JobRunner(JobExecutionRequest jobExecutionRequest, Configurations configurations){
         this.jobExecutionRequest = jobExecutionRequest;
-        this.jobExecuteManager = jobExecuteManager;
         this.configurations = configurations;
     }
 
@@ -96,7 +93,7 @@ public class JobRunner implements Runnable {
             responseCommand.setApplicationIds(engineExecutor.getProcessResult().getApplicationId());
             responseCommand.setProcessId(engineExecutor.getProcessResult().getProcessId());
         } finally {
-            jobExecuteManager.processJobExecutionExecuteResponse(responseCommand);
+            JobExecutionResponseProcessor.getInstance().processJobExecutionExecuteResponse(responseCommand);
         }
     }
 
@@ -115,8 +112,7 @@ public class JobRunner implements Runnable {
                     responseCommand.setApplicationIds(engineExecutor.getProcessResult().getApplicationId());
                     responseCommand.setProcessId(engineExecutor.getProcessResult().getProcessId());
                 }
-                jobExecuteManager.processJobExecutionExecuteResponse(responseCommand);
-
+                JobExecutionResponseProcessor.getInstance().processJobExecutionExecuteResponse(responseCommand);
             } catch (Exception e) {
                 logger.error(e.getMessage(),e);
             }
