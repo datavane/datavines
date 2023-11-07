@@ -30,7 +30,7 @@ public class LocalEngineExecutor extends AbstractEngineExecutor {
 
     @Override
     public void init(JobExecutionRequest jobExecutionRequest, Logger logger, Configurations configurations) throws Exception {
-        String threadLoggerInfoName = String.format(LoggerUtils.JOB_LOG_INFO_FORMAT, jobExecutionRequest.getJobExecutionUniqueId());
+        String threadLoggerInfoName = String.format(LoggerUtils.JOB_LOG_INFO_FORMAT, jobExecutionRequest.getJobExecutionUniqueId()+"_"+System.currentTimeMillis());
         Thread.currentThread().setName(threadLoggerInfoName);
         this.jobExecutionRequest = jobExecutionRequest;
         this.logger = logger;
@@ -38,6 +38,9 @@ public class LocalEngineExecutor extends AbstractEngineExecutor {
 
     @Override
     public void execute() throws Exception {
+        logger.info("=====thread sleep start====");
+        Thread.sleep(120000);
+        logger.info("=====thread sleep end====");
         String[] args = new String[1];
         args[0] = jobExecutionRequest.getApplicationParameter();
         bootstrap = new LocalDataVinesBootstrap(this.logger);
