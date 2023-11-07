@@ -86,6 +86,11 @@ public class ConfigConstants {
     public static final String TYPE = "type";
     public static final String DRIVER = "driver";
     public static final String SQL = "sql";
+    public static final String SPARK_MONGODB_INPUT_URI = "spark.mongodb.input.uri";
+    public static final String SPARK_MONGODB_OUTPUT_URI = "spark.mongodb.output.uri";
+    public static final String SPARK_MONGODB_INPUT_COLLECTION = "spark.mongodb.input.collection";
+    public static final String SPARK_MONGODB_OUTPUT_COLLECTION = "spark.mongodb.output.collection";
+
     public static final String INPUT_TABLE = "input_table";
     public static final String OUTPUT_TABLE = "output_table";
     public static final String TMP_TABLE = "tmp_table";
