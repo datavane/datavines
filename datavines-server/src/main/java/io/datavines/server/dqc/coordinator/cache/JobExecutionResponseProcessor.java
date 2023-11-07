@@ -14,29 +14,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.common.entity;
+package io.datavines.server.dqc.coordinator.cache;
 
-import io.datavines.common.enums.ExecutionStatus;
-import lombok.Data;
+import io.datavines.server.dqc.command.JobExecuteResponseCommand;
 
-@Data
-public class ProcessResult {
+public class JobExecutionResponseProcessor {
 
-    private Integer exitStatusCode;
+    private JobExecuteManager jobExecuteManager;
 
-    private String applicationId;
+    private JobExecutionResponseProcessor(){}
 
-    private Integer processId;
-
-    public ProcessResult(){
-        this.exitStatusCode = ExecutionStatus.FAILURE.getCode();
-        this.processId = -1;
-        this.applicationId = "-1";
+    private static class Singleton {
+        static JobExecutionResponseProcessor instance = new JobExecutionResponseProcessor();
     }
 
-    public ProcessResult(Integer exitStatusCode){
-        this.exitStatusCode = exitStatusCode;
-        this.processId = -1;
-        this.applicationId = "-1";
+    public static JobExecutionResponseProcessor getInstance(){
+        return Singleton.instance;
     }
+
+    public void setJobExecuteManager(JobExecuteManager jobExecuteManager) {
+        this.jobExecuteManager = jobExecuteManager;
+    }
+
+    public void processJobExecutionExecuteResponse(JobExecuteResponseCommand jobExecuteResponseCommand) {
+        jobExecuteManager.processJobExecutionExecuteResponse(jobExecuteResponseCommand);
+    }
+
 }

@@ -203,7 +203,7 @@ public class JobExecuteManager {
                 CommonPropertyUtils.getInt(CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT)));
         doAck(jobExecutionRequest);
 
-        JobRunner jobRunner = new JobRunner(jobExecutionRequest, this, configurations);
+        JobRunner jobRunner = new JobRunner(jobExecutionRequest, configurations);
         JobExecutionContext jobExecutionContext = new JobExecutionContext();
         jobExecutionContext.setJobExecutionRequest(jobExecutionRequest);
         jobExecutionContext.setJobRunner(jobRunner);
@@ -297,7 +297,6 @@ public class JobExecuteManager {
                             unFinishedJobExecutionMap.put(jobExecutionRequest.getJobExecutionId(), jobExecutionRequest);
                             if (ExecutionStatus.of(jobExecutionRequest.getStatus()).typeIsSuccess()) {
                                 unFinishedJobExecutionMap.remove(jobExecutionRequest.getJobExecutionId());
-                                jobExecutionCache.remove(jobExecutionRequest.getJobExecutionId());
                                 jobExecution.setApplicationId(jobExecutionRequest.getApplicationId());
                                 jobExecution.setProcessId(jobExecutionRequest.getProcessId());
                                 jobExecution.setExecuteHost(jobExecutionRequest.getExecuteHost());
@@ -367,7 +366,6 @@ public class JobExecuteManager {
 
     private void updateJobExecutionAndRemoveCache(JobExecutionRequest jobExecutionRequest, JobExecution jobExecution) {
         unFinishedJobExecutionMap.remove(jobExecutionRequest.getJobExecutionId());
-        jobExecutionCache.remove(jobExecutionRequest.getJobExecutionId());
         jobExternalService.deleteJobExecutionResultByJobExecutionId(jobExecutionRequest.getJobExecutionId());
         jobExternalService.deleteActualValuesByJobExecutionId(jobExecutionRequest.getJobExecutionId());
         jobExecution.setApplicationId(jobExecutionRequest.getApplicationId());

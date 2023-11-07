@@ -54,7 +54,7 @@ public class CatalogMetaDataFetchTaskManager {
 
     public CatalogMetaDataFetchTaskManager() {
         this.taskExecuteService = Executors.newFixedThreadPool(
-                CommonPropertyUtils.getInt(CommonPropertyUtils.EXEC_THREADS,CommonPropertyUtils.EXEC_THREADS_DEFAULT),
+                CommonPropertyUtils.getInt(CommonPropertyUtils.METADATA_FETCH_EXEC_THREADS,CommonPropertyUtils.METADATA_FETCH_EXEC_THREADS_DEFAULT),
                 new NamedThreadFactory("CatalogMetaDataFetchExecutor-Execute-Thread"));
     }
 

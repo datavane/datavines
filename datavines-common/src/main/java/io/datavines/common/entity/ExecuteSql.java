@@ -17,8 +17,10 @@
 package io.datavines.common.entity;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class ExecuteSql {
 
     private String sql;
@@ -26,9 +28,6 @@ public class ExecuteSql {
     private String resultTable;
 
     private boolean isErrorOutput;
-
-    public ExecuteSql() {
-    }
 
     public ExecuteSql(String sql, String resultTable) {
         this.sql = sql;
