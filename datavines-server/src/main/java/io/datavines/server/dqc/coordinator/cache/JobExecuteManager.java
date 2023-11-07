@@ -404,11 +404,6 @@ public class JobExecuteManager {
                 return;
             }
 
-            if (this.retryTimes != jobExecutionRequest.getRetryTimes()) {
-                logger.info("jobExecution {} is finished, do nothing...",jobExecutionId);
-                return;
-            }
-
             logger.info("jobExecution {} is timeout, do something",jobExecutionId);
             doKillCommand(jobExecutionId);
         }
