@@ -39,11 +39,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.core.env.Environment;
 
 import javax.annotation.PostConstruct;
 
-@SpringBootApplication(scanBasePackages = {"io.datavines"})
+@SpringBootApplication(scanBasePackages = {"io.datavines"},
+        exclude = {MongoAutoConfiguration.class, MongoDataAutoConfiguration.class})
 public class DataVinesServer {
 
     private static final Logger logger = LoggerFactory.getLogger(DataVinesServer.class);

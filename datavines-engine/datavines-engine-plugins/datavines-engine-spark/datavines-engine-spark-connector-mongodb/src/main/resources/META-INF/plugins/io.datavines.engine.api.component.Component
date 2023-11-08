@@ -1,0 +1,4 @@
+spark-mongodb-sink=io.datavines.engine.spark.jdbc.sink.MongodbSink
+spark-mongodb-source=io.datavines.engine.spark.jdbc.source.MongodbSource
+livy-mongodb-sink=io.datavines.engine.spark.jdbc.sink.MongodbSink
+livy-mongodb-source=io.datavines.engine.spark.jdbc.source.MongodbSource

@@ -28,50 +28,33 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <packaging>jar</packaging>
-    <artifactId>datavines-engine-spark-executor</artifactId>
+    <artifactId>datavines-engine-spark-connector-mongodb</artifactId>
 
     <dependencies>
-
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-api</artifactId>
+            <artifactId>datavines-engine-spark-api</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-executor</artifactId>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_${scala.binary.version}</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-spark-core</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_${scala.binary.version}</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-spark-connector-jdbc</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_${scala.binary.version}</artifactId>
         </dependency>
 
         <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-spark-connector-mongodb</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.mongodb.spark</groupId>
+            <artifactId>mongo-spark-connector_${scala.binary.version}</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-spark-connector-file</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-spark-transform-sql</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
     </dependencies>
 
 </project>
