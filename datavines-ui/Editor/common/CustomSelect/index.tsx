@@ -25,7 +25,7 @@ const CustomSelect = ({
         ...rest,
     };
     return (
-        <Select value={value} onChange={onChange} {...selectParams}>
+        <Select showSearch optionFilterProp="children" value={value} onChange={onChange} filterOption={(input, option: any) => (option?.value ?? '').toLowerCase().indexOf(input.toLowerCase()) >= 0} {...selectParams}>
             {
                 (source || []).map((item, index) => {
                     const key = item.key || `${index}_${item.value}_${item.label}`;
