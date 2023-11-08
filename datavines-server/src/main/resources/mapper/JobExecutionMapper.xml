@@ -38,10 +38,10 @@
                      <if test="columnName != null">
                          and column_name = #{columnName}
                      </if>
-                     <if test="startTime != null">
+                     <if test="startTime != null and startTime != ''">
                          and update_time &gt;= #{startTime}
                      </if>
-                     <if test="endTime != null">
+                     <if test="endTime != null and endTime != ''">
                          and update_time &lt;= #{endTime}
                      </if>
                      <if test="datasourceId != null">

@@ -53,6 +53,28 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
             }
         }
     }
+    const transDateArrFormat = (updateTimeArr: any[], format: string) => {
+        let res = {'startTime' : '', 'endTime' : ''}
+        if (updateTimeArr){
+            if (updateTimeArr.length == 2) {
+                console.log(updateTimeArr[0])
+                console.log(updateTimeArr[1])
+                const startDay = dayjs(updateTimeArr[0])
+                const endDay = dayjs(updateTimeArr[1])
+
+                if (startDay.isValid()) {
+                    res['startTime'] = startDay.format(format)
+                    console.log("start " + startDay.format(format))
+                }
+                if(endDay.isValid()){
+                    res['endTime'] = endDay.format(format)
+                    console.log("end " + endDay.format(format))
+                }
+            }
+        }
+        return res
+    }
+
     const Date = <DatePicker showTime />;
 
     const jobExecutionColumns: ColumnsType<TJobExecutionLosTableItem> = [
@@ -157,8 +179,9 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
         try {
             setLoading(true);
             let formValue = form.getFieldsValue();
-            formValue.startTime = transDateFormat(formValue.startTime, 'YYYY-MM-DD HH:mm:ss')
-            formValue.endTime = transDateFormat(formValue.endTime, 'YYYY-MM-DD HH:mm:ss')
+            const updateTimeRes = transDateArrFormat(formValue.updateTime, 'YYYY-MM-DD HH:mm:ss')
+            formValue.startTime = updateTimeRes['startTime']
+            formValue.endTime = updateTimeRes['endTime']
             const res = (await $http.post('/job/execution/page', {
                 datasourceId: datasourceId || (match.params as any).id,
                 ...pageParams,
@@ -185,7 +208,7 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
                     <div className="dv-datasource__search">
                         <Form form={form}>
                             <Row style={{width: '100%'}}>
-                                <Form.Item style={{width: '18%'}}
+                                <Form.Item style={{width: '15%'}}
                                            label={intl.formatMessage({id: "jobs_task_name"})}
                                            name="searchVal"
                                 >
@@ -237,23 +260,12 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
                                     />
                                 </Form.Item>
 
-                                <Form.Item style={{width: '15%',marginLeft: '10px'}}
+                                <Form.Item style={{width: '32%',marginLeft: '10px'}}
                                            label={intl.formatMessage({ id: 'jobs_update_time' })}
-                                           name="startTime"
+                                           name='updateTime'
                                 >
-                                    {Date}
-                                </Form.Item>
-
-                                <span style={{ margin: '5px 10px 0px' }}>
-                                {intl.formatMessage({ id: 'jobs_schedule_time_to' })}
-                                </span>
-
-                                <Form.Item
-                                    label=""
-                                    name="endTime"
-                                    style={{ display: 'inline-block', width: '15%',marginLeft: '10px'}}
-                                >
-                                    {Date}
+                                    <DatePicker.RangePicker allowEmpty={[true, true]}
+                                                            style={{ width: '100%' }}  showTime />
                                 </Form.Item>
                             </Row>
                         </Form>
