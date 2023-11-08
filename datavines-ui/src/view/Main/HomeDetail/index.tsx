@@ -15,6 +15,7 @@ import store from '@/store';
 import EditorData from '@/view/Main/HomeDetail/EditorData';
 import Jobs from '@/view/Main/HomeDetail/Jobs';
 import Dashboard from "view/Main/HomeDetail/Dashboard";
+import JobExecutionLogs from "view/Main/HomeDetail/JobExecutionLogs";
 
 type DataSource = {
     id:number,
@@ -96,7 +97,7 @@ const DetailMain = () => {
                 <ArrowLeftOutlined />
             </div>
             {renderDataSourceSelect()}
-            {!location.pathname.includes('jobs') && !location.pathname.includes('dashboard') ? (
+            {!location.pathname.includes('jobs') && !location.pathname.includes('dashboard') && !location.pathname.includes('jobExecutionLogs') ? (
                 <Button style={{ marginLeft: '10px' }} onClick={changeType}>
                     { editType ? intl.formatMessage({ id: 'jobs_directory' }) : intl.formatMessage({ id: 'jobs_editor' })}
                 </Button>
@@ -126,6 +127,12 @@ const DetailMain = () => {
             }}
             >
                 <Jobs />
+            </div>
+            <div style={{
+                display: location.pathname.includes('jobExecutionLogs') ? 'block' : 'none',
+            }}
+            >
+                <JobExecutionLogs />
             </div>
         </MenuLayout>
 
