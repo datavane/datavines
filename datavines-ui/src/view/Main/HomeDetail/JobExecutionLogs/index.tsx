@@ -67,7 +67,7 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
             title: intl.formatMessage({ id: 'jobs_task_schema_name' }),
             dataIndex: 'schemaName',
             key: 'schemaName',
-            width: 100,
+            width: 120,
             render: (text) => defaultRender(text, 300),
         },
         {
@@ -88,21 +88,21 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
             title: intl.formatMessage({ id: 'jobs_task_metric_type' }),
             dataIndex: 'metricType',
             key: 'metricType',
-            width: 300,
+            width: 220,
             render: (text) => defaultRender(text, 300),
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_type' }),
             dataIndex: 'jobType',
             key: 'jobType',
-            width: 140,
+            width: 180,
             render: (text: string) => <div>{text}</div>,
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_status' }),
             dataIndex: 'status',
             key: 'status',
-            width: 140,
+            width: 160,
             render: (text: string) => <div>{text}</div>,
         },
         {
