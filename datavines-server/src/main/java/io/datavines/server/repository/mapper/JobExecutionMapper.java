@@ -43,7 +43,10 @@ public interface JobExecutionMapper extends BaseMapper<JobExecution>  {
                                               @Param("status") Integer status,
                                               @Param("metricType") String metricType, @Param("schemaName") String schemaName,
                                               @Param("tableName") String tableName, @Param("columnName") String columnName,
-                                              @Param("startTime") String startTime, @Param("endTime") String endTime);
+                                              @Param("startTime") String startTime, @Param("endTime") String endTime,
+                                              @Param("schemaSearch") String schemaSearch,
+                                              @Param("tableSearch") String tableSearch,
+                                              @Param("columnSearch") String columnSearch);
 
     List<JobExecutionAggItem> getJobExecutionAggPie(@Param("datasourceId") Long datasourceId,
                                                     @Param("metricType") String metricType, @Param("schemaName") String schemaName,

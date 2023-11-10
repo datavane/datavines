@@ -35,6 +35,7 @@ export default {
     '/main/warning': 'Warning',
     '/main/userManage': 'User',
     '/main/errorDataManage': 'ErrorData',
+    '/main/detail/:id/jobExecutionLogs': 'JobExecutionLogs',
     '/main/detail/:id/dashboard': 'Dashboard',
     '/main/detail/:id/editor': 'Catalog',
     '/main/detail/:id/jobs': 'Jobs',

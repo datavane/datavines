@@ -111,7 +111,8 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
     @Override
     public IPage<JobExecutionVO> getJobExecutionPage(JobExecutionPageParam pageParam) {
         Page<JobExecutionVO> page = new Page<>(pageParam.getPageNumber(), pageParam.getPageSize());
-        return baseMapper.getJobExecutionPage(page, pageParam.getSearchVal(), pageParam.getJobId() , pageParam.getDatasourceId(), pageParam.getStatus(), pageParam.getMetricType(), pageParam.getSchemaName(), pageParam.getTableName(),pageParam.getColumnName(), pageParam.getStartTime(), pageParam.getEndTime());
+        return baseMapper.getJobExecutionPage(page, pageParam.getSearchVal(), pageParam.getJobId(), pageParam.getDatasourceId(), pageParam.getStatus(), pageParam.getMetricType(), pageParam.getSchemaName(), pageParam.getTableName(), pageParam.getColumnName(), pageParam.getStartTime(), pageParam.getEndTime(),
+                pageParam.getSchemaSearch(), pageParam.getTableSearch(), pageParam.getColumnSearch());
     }
 
     @Override

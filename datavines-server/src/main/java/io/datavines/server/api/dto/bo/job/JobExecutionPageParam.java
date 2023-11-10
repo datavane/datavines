@@ -47,4 +47,10 @@ public class JobExecutionPageParam {
 
     private Integer pageSize;
 
+    private String schemaSearch;
+
+    private String tableSearch;
+
+    private String columnSearch;
+
 }
