@@ -133,6 +133,12 @@
             <artifactId>datavines-connector-databend</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-connector-mongodb</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 </project>

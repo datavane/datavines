@@ -38,6 +38,7 @@
         <module>datavines-engine-spark-transform-sql</module>
         <module>datavines-engine-spark-config</module>
         <module>datavines-engine-spark-connector-file</module>
+        <module>datavines-engine-spark-connector-mongodb</module>
     </modules>
 
     <properties>
@@ -80,6 +81,13 @@
                         <groupId>com.fasterxml.jackson.core</groupId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.mongodb.spark</groupId>
+                <artifactId>mongo-spark-connector_${scala.binary.version}</artifactId>
+                <version>${spark.version}</version>
+                <scope>${spark.scope}</scope>
             </dependency>
 
             <dependency>

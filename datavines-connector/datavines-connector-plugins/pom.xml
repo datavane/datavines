@@ -44,6 +44,7 @@
         <module>datavines-connector-starrocks</module>
         <module>datavines-connector-doris</module>
         <module>datavines-connector-databend</module>
+        <module>datavines-connector-mongodb</module>
     </modules>
 
 
