@@ -14,28 +14,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.api.entity;
+package io.datavines.connector.plugin;
 
-import lombok.Data;
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
-@Data
-public class JdbcOptions {
+public class SqlServerExecutor extends BaseJdbcExecutor {
 
-    private String url;
-
-    private String databaseName;
-
-    private String schemaName;
-
-    private String tableName;
-
-    private String query;
-
-    private String partitionColumn;
-
-    private int queryTimeout;
-
-    private int fetchSize;
-
-    private int batchSize;
+    @Override
+    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
+        return new SqlServerDataSourceInfo(jdbcConnectionInfo);
+    }
 }

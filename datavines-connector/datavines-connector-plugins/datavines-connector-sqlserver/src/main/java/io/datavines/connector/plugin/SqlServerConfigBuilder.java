@@ -16,23 +16,25 @@
  */
 package io.datavines.connector.plugin;
 
-import java.util.Map;
+import io.datavines.common.param.form.Validate;
+import io.datavines.common.param.form.type.InputParam;
 
-import static io.datavines.common.ConfigConstants.*;
-
-public class PostgreSqlDialect extends JdbcDialect {
+public class SqlServerConfigBuilder extends JdbcConfigBuilder {
 
     @Override
-    public Map<String, String> getDialectKeyMap() {
-        super.getDialectKeyMap();
-        dialectKeyMap.put(REGEX_KEY, "${column} ~ '${regexp}'");
-        dialectKeyMap.put(NOT_REGEX_KEY, "${column} !~ '${regexp}'");
-        dialectKeyMap.put(LENGTH_KEY, "length(${column}::text)");
-        return dialectKeyMap;
+    protected InputParam getPropertiesInput(boolean isEn) {
+        return getInputParam("properties",
+                isEn ? "properties" : "参数",
+                isEn ? "please enter properties,like key=value&key1=value1" : "请填入参数，格式为key=value&key1=value1", 2, null,
+                "trustServerCertificate=false");
     }
 
     @Override
-    public String getDriver() {
-        return "org.postgresql.Driver";
+    protected InputParam getSchemaInput(boolean isEn) {
+        return getInputParam("schema",
+                isEn ? "schema" : "Schema",
+                isEn ? "please enter schema" : "请填入 Schema", 1,
+                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter schema" : "请填入 Schema").build(),
+                null);
     }
 }

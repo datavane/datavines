@@ -75,6 +75,8 @@ public class ConfigConstants {
     public static final String INVALIDATE_ITEM_CAN_OUTPUT = "invalidate_item_can_output";
     public static final String ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE = "error_data_output_to_datasource_database";
     public static final String DATABASE = "database";
+    public static final String SCHEMA = "schema";
+    public static final String SCHEMA2 = "schema2";
     public static final String USER = "user";
     public static final String PASSWORD = "password";
     public static final String DB_TABLE = "dbtable";
@@ -121,6 +123,8 @@ public class ConfigConstants {
     public static final String STRING_TYPE = "string_type";
 
     public static final String LIMIT_KEY = "limit_key";
+
+    public static final String LENGTH_KEY = "length_key";
 
     public static final String INVALIDATE_ITEMS_TABLE = "invalidate_items_table";
 

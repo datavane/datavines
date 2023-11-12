@@ -68,7 +68,7 @@ public class ColumnLength extends BaseSingleTableColumn {
     public void prepare(Map<String, String> config) {
 
         if (config.containsKey("length") && config.containsKey("comparator") && config.containsKey("column")) {
-            filters.add(" length(${column}) ${comparator} ${length}");
+            filters.add(" ${length_key} ${comparator} ${length}");
         }
         super.prepare(config);
     }

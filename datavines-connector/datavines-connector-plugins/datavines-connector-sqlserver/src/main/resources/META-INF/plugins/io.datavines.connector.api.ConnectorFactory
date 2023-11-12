@@ -1,0 +1,1 @@
+sqlserver=io.datavines.connector.plugin.SqlServerConnectorFactory

@@ -307,9 +307,9 @@ CREATE TABLE `dv_catalog_schema_change` (
   `parent_uuid` varchar(64) NOT NULL COMMENT '父实体UUID',
   `entity_uuid` varchar(64) NOT NULL COMMENT '实体UUID',
   `change_type` varchar(64) NOT NULL COMMENT '变更类型',
-  `database_name` varchar(128) DEFAULT NULL COMMENT '数据库',
-  `table_name` varchar(128) DEFAULT NULL COMMENT '表',
-  `column_name` varchar(128) DEFAULT NULL COMMENT '列',
+  `database_name` varchar(255) DEFAULT NULL COMMENT '数据库',
+  `table_name` varchar(255) DEFAULT NULL COMMENT '表',
+  `column_name` varchar(255) DEFAULT NULL COMMENT '列',
   `change_before` text DEFAULT NULL COMMENT '变更前',
   `change_after` text DEFAULT NULL COMMENT '变更后',
   `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
@@ -805,7 +805,6 @@ INSERT INTO `dv_config` VALUES ('2', '-1', 'yarn.mode', 'standalone', '1', '1', 
 INSERT INTO `dv_config` VALUES ('3', '-1', 'yarn.application.status.address', 'http://%s:%s/ws/v1/cluster/apps/%s', '1', '1', '2023-09-03 09:57:01', '1', '2023-09-03 09:57:01');
 INSERT INTO `dv_config` VALUES ('4', '-1', 'yarn.resource.manager.http.address.port', '8088', '1', '1', '2023-09-03 09:57:34', '1', '2023-09-03 09:57:34');
 INSERT INTO `dv_config` VALUES ('5', '-1', 'yarn.resource.manager.ha.ids', '192.168.0.x,192.168.0.x', '1', '1', '2023-09-03 09:58:17', '1', '2023-09-03 09:58:17');
-INSERT INTO `dv_config` VALUES ('6', '-1', 'exec.threads', '100', '1', '1', '2023-09-03 09:58:43', '1', '2023-09-03 09:58:43');
 INSERT INTO `dv_config` VALUES ('7', '-1', 'max.cpu.load.avg', '10', '1', '1', '2023-09-03 09:59:06', '1', '2023-09-03 09:59:06');
 INSERT INTO `dv_config` VALUES ('8', '-1', 'reserved.memory', '0.3f', '1', '1', '2023-09-03 09:59:28', '1', '2023-09-03 09:59:28');
 INSERT INTO `dv_config` VALUES ('9', '-1', 'file.max.length', '10000000', '1', '1', '2023-09-03 14:57:33', '1', '2023-09-03 14:57:33');

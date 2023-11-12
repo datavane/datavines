@@ -14,28 +14,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.api.entity;
+package io.datavines.connector.plugin;
 
-import lombok.Data;
+import io.datavines.connector.api.*;
 
-@Data
-public class JdbcOptions {
+public class SqlServerConnectorFactory extends AbstractJdbcConnectorFactory {
 
-    private String url;
+    @Override
+    public ConnectorParameterConverter getConnectorParameterConverter() {
+        return new SqlServerConnectorParameterConverter();
+    }
 
-    private String databaseName;
+    @Override
+    public Dialect getDialect() {
+        return new SqlServerDialect();
+    }
 
-    private String schemaName;
+    @Override
+    public Connector getConnector() {
+        return new SqlServerConnector();
+    }
 
-    private String tableName;
+    @Override
+    public Executor getExecutor() {
+        return new SqlServerExecutor();
+    }
 
-    private String query;
-
-    private String partitionColumn;
-
-    private int queryTimeout;
-
-    private int fetchSize;
-
-    private int batchSize;
+    @Override
+    public ConfigBuilder getConfigBuilder() {
+        return new SqlServerConfigBuilder();
+    }
 }

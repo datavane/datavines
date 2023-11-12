@@ -42,7 +42,13 @@ public class JdbcConfigBuilder implements ConfigBuilder {
         if (getCatalogInput(isEn) != null) {
             params.add(getCatalogInput(isEn));
         }
+
         params.add(getDatabaseInput(isEn));
+
+        if (getSchemaInput(isEn) != null) {
+            params.add(getSchemaInput(isEn));
+        }
+
         params.add(getUserInput(isEn));
         params.add(getPasswordInput(isEn));
         params.add(getPropertiesInput(isEn));
@@ -77,6 +83,10 @@ public class JdbcConfigBuilder implements ConfigBuilder {
     }
 
     protected InputParam getCatalogInput(boolean isEn) {
+        return null;
+    }
+
+    protected InputParam getSchemaInput(boolean isEn) {
         return null;
     }
 

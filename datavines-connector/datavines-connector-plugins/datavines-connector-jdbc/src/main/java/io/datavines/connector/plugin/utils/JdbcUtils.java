@@ -36,8 +36,13 @@ public class JdbcUtils {
         PreparedStatement statement = null;
         try {
             String table = options.getTableName();
+
+            if (StringUtils.isNotEmpty(options.getSchemaName())) {
+                table = options.getSchemaName() + "." + table;
+            }
+
             if (StringUtils.isNotEmpty(options.getDatabaseName())) {
-                table = options.getDatabaseName() + "." + options.getTableName();
+                table = options.getDatabaseName() + "." + table;
             }
 
             statement = connection.prepareStatement(dialect.getTableExistsQuery(table));
