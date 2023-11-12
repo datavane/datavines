@@ -14,28 +14,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.api.entity;
+package io.datavines.connector.plugin;
 
-import lombok.Data;
+import io.datavines.common.param.form.Validate;
+import io.datavines.common.param.form.type.InputParam;
 
-@Data
-public class JdbcOptions {
+public class PostgreSqlConfigBuilder extends JdbcConfigBuilder {
 
-    private String url;
-
-    private String databaseName;
-
-    private String schemaName;
-
-    private String tableName;
-
-    private String query;
-
-    private String partitionColumn;
-
-    private int queryTimeout;
-
-    private int fetchSize;
-
-    private int batchSize;
+    @Override
+    protected InputParam getSchemaInput(boolean isEn) {
+        return getInputParam("schema",
+                isEn ? "schema" : "Schema",
+                isEn ? "please enter schema" : "请填入 Schema", 1,
+                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter schema" : "请填入 Schema").build(),
+                null);
+    }
 }

@@ -43,6 +43,8 @@ public class ConnectionInfo {
 
     private String database;
 
+    private String schema;
+
     private String properties;
 
     private String address;
@@ -72,6 +74,7 @@ public class ConnectionInfo {
         configMap.put(USER, user);
         configMap.put(PROPERTIES, properties);
         configMap.put(CATALOG, catalog);
+        configMap.put(SCHEMA, schema);
         return configMap;
     }
 
@@ -83,5 +86,6 @@ public class ConnectionInfo {
         this.user = (String)configMap.get(USER);
         this.properties = (String)configMap.get(PROPERTIES);
         this.catalog = (String)configMap.get(CATALOG);
+        this.schema =  (String)configMap.get(SCHEMA);
     }
 }

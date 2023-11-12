@@ -14,28 +14,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.api.entity;
+package io.datavines.connector.plugin;
 
-import lombok.Data;
+import java.util.Map;
 
-@Data
-public class JdbcOptions {
+import io.datavines.common.utils.StringUtils;
+import static io.datavines.common.ConfigConstants.*;
 
-    private String url;
+public class SqlServerConnectorParameterConverter extends JdbcConnectorParameterConverter {
 
-    private String databaseName;
+    @Override
+    protected String getUrl(Map<String, Object> parameter) {
+        String url = String.format("jdbc:sqlserver://%s:%s;databaseName=%s",
+                parameter.get(HOST),
+                parameter.get(PORT),
+                parameter.get(DATABASE));
+        String properties = (String)parameter.get(PROPERTIES);
+        if (StringUtils.isNotEmpty(properties)) {
+            url += ";" + properties;
+        }
 
-    private String schemaName;
+        return url;
+    }
 
-    private String tableName;
-
-    private String query;
-
-    private String partitionColumn;
-
-    private int queryTimeout;
-
-    private int fetchSize;
-
-    private int batchSize;
 }

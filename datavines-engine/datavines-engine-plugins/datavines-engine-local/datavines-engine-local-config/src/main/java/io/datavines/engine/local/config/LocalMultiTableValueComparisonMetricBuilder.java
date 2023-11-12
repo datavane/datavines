@@ -98,7 +98,7 @@ public class LocalMultiTableValueComparisonMetricBuilder extends BaseLocalConfig
         if (StringUtils.isNotEmpty(expectedExecuteSql)) {
             expectedExecuteSql = expectedExecuteSql.replace("as expected_value", "as expected_value_" + inputParameter.get(METRIC_UNIQUE_KEY));
         }
-        return new ExecuteSql(expectedExecuteSql, inputParameter.get(TABLE));
+        return new ExecuteSql(expectedExecuteSql, inputParameter.get(TABLE2));
     }
 
     @Override

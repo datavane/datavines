@@ -99,6 +99,7 @@ public class BaseJdbcSource implements LocalSource {
                     .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE));
             JdbcOptions jdbcOptions = new JdbcOptions();
             jdbcOptions.setDatabaseName(config.getString(DATABASE));
+            jdbcOptions.setSchemaName(config.getString(SCHEMA));
             jdbcOptions.setTableName(config.getString(TABLE));
             jdbcOptions.setQueryTimeout(10000);
             try {

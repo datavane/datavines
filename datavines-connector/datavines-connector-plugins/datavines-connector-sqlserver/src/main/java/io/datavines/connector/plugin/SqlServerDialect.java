@@ -14,28 +14,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.api.entity;
+package io.datavines.connector.plugin;
 
-import lombok.Data;
+import java.util.Map;
 
-@Data
-public class JdbcOptions {
+import static io.datavines.common.ConfigConstants.STRING_TYPE;
 
-    private String url;
+public class SqlServerDialect extends JdbcDialect {
 
-    private String databaseName;
+    @Override
+    public Map<String, String> getDialectKeyMap() {
+        super.getDialectKeyMap();
+        dialectKeyMap.put(STRING_TYPE, "char");
+        return dialectKeyMap;
+    }
 
-    private String schemaName;
+    @Override
+    public String getDriver() {
+        return "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    }
 
-    private String tableName;
+    @Override
+    public boolean invalidateItemCanOutputToSelf() {
+        return true;
+    }
 
-    private String query;
-
-    private String partitionColumn;
-
-    private int queryTimeout;
-
-    private int fetchSize;
-
-    private int batchSize;
+    @Override
+    public boolean supportToBeErrorDataStorage() {
+        return true;
+    }
 }
