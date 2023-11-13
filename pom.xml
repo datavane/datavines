@@ -100,6 +100,7 @@
         <lz4.version>1.3.0</lz4.version>
         <commons-configuration.version>1.8</commons-configuration.version>
         <hive.version>2.1.0</hive.version>
+        <sqlserver.version>6.1.0.jre8</sqlserver.version>
         <hikari.version>4.0.3</hikari.version>
         <spring.version>5.3.12</spring.version>
         <kerberos.version>1.0.1.RELEASE</kerberos.version>
@@ -562,6 +563,11 @@
                 <version>${hive.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.microsoft.sqlserver</groupId>
+                <artifactId>mssql-jdbc</artifactId>
+                <version>${sqlserver.version}</version>
+            </dependency>
             <dependency>
                 <groupId>com.zaxxer</groupId>
                 <artifactId>HikariCP</artifactId>

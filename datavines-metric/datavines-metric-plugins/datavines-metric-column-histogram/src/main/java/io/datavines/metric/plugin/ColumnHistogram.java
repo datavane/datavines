@@ -71,12 +71,12 @@ public class ColumnHistogram extends BaseSingleTableColumn {
         ExecuteSql executeSql = new ExecuteSql();
         executeSql.setResultTable("invalidate_count_"+uniqueKey);
         StringBuilder actualValueSql = new StringBuilder();
-        actualValueSql.append("select concat(k, '\001', cast(count as ${string_type})) as actual_value_").append(uniqueKey).append(" from (select if(${column} is null, 'NULL', cast(${column} as ${string_type})) as k, count(1) as count from ${table}");
+        actualValueSql.append("select concat(k, '\001', cast(count as ${string_type})) as actual_value_").append(uniqueKey).append(" from (select ${if_function}(${column} is null, 'NULL', cast(${column} as ${string_type})) as k, count(1) as count from ${table}");
         if (filters.size() > 0) {
             actualValueSql.append(" where ").append(String.join(" and ", filters));
         }
 
-        actualValueSql.append(" group by ${column} order by count desc limit 50) T");
+        actualValueSql.append(" group by ${column} order by count desc ${limitTop50}) T");
         executeSql.setSql(actualValueSql.toString());
         executeSql.setErrorOutput(false);
         return executeSql;
