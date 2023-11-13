@@ -122,6 +122,10 @@ public class ConfigConstants {
 
     public static final String STRING_TYPE = "string_type";
 
+    public static final String IF_FUNCTION_KEY = "if_function_key";
+
+    public static final String LIMIT_TOP_50_KEY = "limit_top_50_key";
+
     public static final String LIMIT_KEY = "limit_key";
 
     public static final String LENGTH_KEY = "length_key";

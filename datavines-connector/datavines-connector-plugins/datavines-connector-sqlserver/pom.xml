@@ -37,6 +37,11 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+        </dependency>
+
     </dependencies>
 
 </project>
