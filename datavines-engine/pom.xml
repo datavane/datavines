@@ -36,6 +36,7 @@
         <module>datavines-engine-core</module>
         <module>datavines-engine-executor</module>
         <module>datavines-engine-config</module>
+        <module>datavines-engine-common</module>
     </modules>
 
     <dependencies>
