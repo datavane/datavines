@@ -20,23 +20,21 @@ import io.datavines.metric.api.ExpectedValue;
 
 import java.util.Map;
 
-import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
-
-public class FixValue implements ExpectedValue {
+public class SparkNone implements ExpectedValue {
 
     @Override
     public String getName() {
-        return "fix_value";
+        return "none";
     }
 
     @Override
     public String getZhName() {
-        return "固定值";
+        return "无";
     }
 
     @Override
     public String getKey(Map<String,String> inputParameter) {
-        return null;
+        return "0";
     }
 
     @Override
