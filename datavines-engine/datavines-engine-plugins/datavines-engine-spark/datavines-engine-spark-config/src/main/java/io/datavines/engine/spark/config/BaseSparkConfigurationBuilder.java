@@ -27,6 +27,7 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.engine.common.utils.ParserUtils;
 import io.datavines.engine.config.BaseJobConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.spi.PluginLoader;
@@ -70,7 +71,9 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                             .getPluginLoader(ConnectorFactory.class)
                             .getNewPlugin(connectorParameter.getType());
                     connectorParameterMap.put(DATABASE, metricInputParameter.get(DATABASE));
+
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
+                    connectorParameterMap.put(PASSWORD, ParserUtils.encode((String)connectorParameterMap.get(PASSWORD)));
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 
                     String outputTable = metricInputParameter.get(DATABASE) + "_" + metricInputParameter.get(TABLE);
@@ -82,6 +85,9 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     metricInputParameter.put(REGEX_KEY, "regexp(${column}, ${regex})");
                     metricInputParameter.put(NOT_REGEX_KEY, "!regexp(${column}, ${regex})");
                     metricInputParameter.put(STRING_TYPE, "string");
+                    metricInputParameter.put(IF_FUNCTION_KEY, "if");
+                    metricInputParameter.put(LIMIT_TOP_50_KEY, " limit 50");
+                    metricInputParameter.put(LENGTH_KEY, "length(${column})");
                     if (connectorParameter.getParameters().get(SCHEMA) != null) {
                         metricInputParameter.put(SCHEMA, (String)connectorParameter.getParameters().get(SCHEMA));
                     }
@@ -110,6 +116,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                             .getNewPlugin(connectorParameter2.getType());
                     connectorParameterMap.put(DATABASE, metricInputParameter.get(DATABASE2));
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
+                    connectorParameterMap.put(PASSWORD, ParserUtils.encode((String)connectorParameterMap.get(PASSWORD)));
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 
                     String outputTable = metricInputParameter.get(DATABASE2) + "_" + metricInputParameter.get(TABLE2) + "2";
@@ -189,7 +196,6 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
             connectorParameterMap.put(TABLE, jobExecutionInfo.getErrorDataFileName());
             connectorParameterMap.put(SQL, "SELECT * FROM "+ inputParameter.get(INVALIDATE_ITEMS_TABLE));
             errorDataSinkConfig.setConfig(connectorParameterMap);
-
         }
 
         return errorDataSinkConfig;

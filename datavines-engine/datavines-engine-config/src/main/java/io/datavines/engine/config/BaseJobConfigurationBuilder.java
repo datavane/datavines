@@ -236,7 +236,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
         configMap.put(JOB_EXECUTION_ID, jobExecutionInfo.getId());
         configMap.put(INVALIDATE_ITEMS_TABLE, inputParameter.get(INVALIDATE_ITEMS_TABLE));
         configMap.put(METRIC_UNIQUE_KEY, inputParameter.get(METRIC_UNIQUE_KEY));
-        if (expectedValue != null && StringUtils.isNotEmpty(expectedValue.getOutputTable(inputParameter))) {
+        if (expectedValue != null && StringUtils.isNotEmpty(expectedValue.getKey(inputParameter))) {
             inputParameter.put(EXPECTED_VALUE, expectedValue.getKey(inputParameter));
             configMap.put(EXPECTED_VALUE, expectedValue.getKey(inputParameter));
         }

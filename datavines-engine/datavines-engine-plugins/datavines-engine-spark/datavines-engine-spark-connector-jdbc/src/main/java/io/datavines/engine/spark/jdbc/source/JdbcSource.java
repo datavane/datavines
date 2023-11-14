@@ -17,6 +17,7 @@
 package io.datavines.engine.spark.jdbc.source;
 
 import io.datavines.common.utils.StringUtils;
+import io.datavines.engine.common.utils.ParserUtils;
 import org.apache.spark.sql.DataFrameReader;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
@@ -87,7 +88,7 @@ public class JdbcSource implements SparkBatchSource {
         properties.setProperty(DRIVER, config.getString(DRIVER));
         String password = config.getString(PASSWORD);
         if (!StringUtils.isEmptyOrNullStr(password)) {
-            properties.put(PASSWORD, password);
+            properties.put(PASSWORD, ParserUtils.decode(password));
         }
 
         Config jdbcConfig = TypesafeConfigUtils.extractSubConfigThrowable(config, "jdbc.", false);
