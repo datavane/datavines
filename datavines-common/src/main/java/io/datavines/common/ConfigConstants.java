@@ -119,10 +119,11 @@ public class ConfigConstants {
 
     public static final String UNIX_TIMESTAMP = "unix_timestamp";
 
-
     public static final String STRING_TYPE = "string_type";
 
     public static final String IF_FUNCTION_KEY = "if_function_key";
+
+    public static final String IF_CASE_KEY = "if_case_key";
 
     public static final String LIMIT_TOP_50_KEY = "limit_top_50_key";
 

@@ -304,10 +304,39 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
     public List<JobExecutionAggItem> getJobExecutionAggPie(JobExecutionDashboardParam dashboardParam) {
         List<String> statusList = new ArrayList<>(Arrays.asList("6","7"));
 
+        String startDateStr = "";
+        String endDateStr = "";
+        if (StringUtils.isEmpty(dashboardParam.getStartTime()) && StringUtils.isEmpty(dashboardParam.getEndTime())) {
+            startDateStr = DateUtils.format(DateUtils.addDays(new Date(), -5),"yyyy-MM-dd");
+            endDateStr = DateUtils.format(DateUtils.addDays(new Date(), +1),"yyyy-MM-dd");
+        } else {
+            if (StringUtils.isEmpty(dashboardParam.getEndTime()) && StringUtils.isNotEmpty(dashboardParam.getStartTime())) {
+                startDateStr = dashboardParam.getStartTime().substring(0,10);
+                Date startDate = DateUtils.stringToDate(dashboardParam.getStartTime());
+                endDateStr = DateUtils.format(DateUtils.addDays(startDate,7),"yyyy-MM-dd");
+            } else if (StringUtils.isEmpty(dashboardParam.getStartTime()) && StringUtils.isNotEmpty(dashboardParam.getEndTime())) {
+                endDateStr = dashboardParam.getEndTime().substring(0,10);
+                Date endDate = DateUtils.stringToDate(dashboardParam.getEndTime());
+                startDateStr = DateUtils.format(DateUtils.addDays(endDate,-6),"yyyy-MM-dd");
+            } else {
+                Date endDate = DateUtils.parse(dashboardParam.getEndTime(), YYYY_MM_DD_HH_MM_SS);
+                Date startDate = DateUtils.parse(dashboardParam.getStartTime(), YYYY_MM_DD_HH_MM_SS);
+                long days = DateUtils.diffDays(endDate,startDate);
+                if (days > 7) {
+                    endDate = DateUtils.addDays(startDate, 7);
+                }
+                startDateStr = DateUtils.format(startDate,"yyyy-MM-dd");
+                endDateStr = DateUtils.format(endDate,"yyyy-MM-dd");
+            }
+        }
+        startDateStr += " 00:00:00";
+        endDateStr += " 23:59:59";
+
         List<JobExecutionAggItem> items =
                 baseMapper.getJobExecutionAggPie(dashboardParam.getDatasourceId(), dashboardParam.getMetricType(),
                         dashboardParam.getSchemaName(), dashboardParam.getTableName(), dashboardParam.getColumnName(),
-                        dashboardParam.getStartTime(), dashboardParam.getEndTime());
+                        startDateStr, endDateStr);
+
         if (CollectionUtils.isEmpty(items)) {
             return new ArrayList<>();
         }
@@ -399,6 +428,8 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
             currentDate = currentDate.plusDays(1);
         }
 
+        startDateStr += " 00:00:00";
+        endDateStr += " 23:59:59";
         List<JobExecutionTrendBarItem> trendBars = baseMapper.getJobExecutionTrendBar(dashboardParam.getDatasourceId(),
                 dashboardParam.getMetricType(), dashboardParam.getSchemaName(), dashboardParam.getTableName(), dashboardParam.getColumnName(),
                 startDateStr, endDateStr);
