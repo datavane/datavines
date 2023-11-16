@@ -56,6 +56,7 @@ import io.datavines.server.enums.CommandType;
 import io.datavines.server.enums.Priority;
 import org.springframework.transaction.annotation.Transactional;
 
+import static io.datavines.common.CommonConstants.YYYY_MM_DD_HH_MM_SS;
 import static io.datavines.core.constant.DataVinesConstants.SPARK;
 
 @Service("jobExecutionService")
@@ -375,8 +376,8 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
                 Date endDate = DateUtils.stringToDate(dashboardParam.getEndTime());
                 startDateStr = DateUtils.format(DateUtils.addDays(endDate,-6),"yyyy-MM-dd");
             } else {
-                Date endDate = DateUtils.parse(dashboardParam.getEndTime(), "yyyy-MM-dd HH:mm:dd");
-                Date startDate = DateUtils.parse(dashboardParam.getStartTime(), "yyyy-MM-dd HH:mm:dd");
+                Date endDate = DateUtils.parse(dashboardParam.getEndTime(), YYYY_MM_DD_HH_MM_SS);
+                Date startDate = DateUtils.parse(dashboardParam.getStartTime(), YYYY_MM_DD_HH_MM_SS);
                 long days = DateUtils.diffDays(endDate,startDate);
                 if (days > 7) {
                     endDate = DateUtils.addDays(startDate, 7);
