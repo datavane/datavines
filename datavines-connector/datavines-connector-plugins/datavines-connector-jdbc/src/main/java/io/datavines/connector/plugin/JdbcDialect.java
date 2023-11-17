@@ -38,6 +38,7 @@ public abstract class JdbcDialect implements Dialect {
         dialectKeyMap.put(IF_FUNCTION_KEY, "if");
         dialectKeyMap.put(LIMIT_TOP_50_KEY, " limit 50");
         dialectKeyMap.put(LENGTH_KEY, "length(${column})");
+        dialectKeyMap.put(IF_CASE_KEY, "if(${column} is null, 'NULL', cast(${column} as ${string_type}))");
         return dialectKeyMap;
     }
 
