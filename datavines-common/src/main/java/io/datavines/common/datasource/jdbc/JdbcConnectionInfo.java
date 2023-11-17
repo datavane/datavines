@@ -53,6 +53,8 @@ public class JdbcConnectionInfo {
      */
     private String database;
 
+    private String schema;
+
     /**
      * properties
      */

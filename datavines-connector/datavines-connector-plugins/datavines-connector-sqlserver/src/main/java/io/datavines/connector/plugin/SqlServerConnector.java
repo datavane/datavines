@@ -33,12 +33,12 @@ public class SqlServerConnector extends JdbcConnector {
 
     @Override
     public ResultSet getMetadataColumns(DatabaseMetaData metaData, String catalog, String schema, String tableName, String columnName) throws SQLException {
-        return metaData.getColumns(schema, null, tableName, columnName);
+        return metaData.getColumns(catalog, schema, tableName, columnName);
     }
 
     @Override
     public ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {
-        return metaData.getTables(schema, null, null, TABLE_TYPES);
+        return metaData.getTables(catalog, schema, null, TABLE_TYPES);
     }
 
     @Override

@@ -61,15 +61,21 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         String dataSourceParam = param.getDataSourceParam();
         JdbcExecutorClient executorClient = getJdbcExecutorClient(dataSourceParam);
         Connection connection = executorClient.getConnection();
-
-        ResultSet rs = getMetadataDatabases(connection);
         List<DatabaseInfo> databaseList = new ArrayList<>();
-        while (rs.next()) {
-            databaseList.add(new DatabaseInfo(rs.getString(1), DATABASE));
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+        String curDatabase = jdbcConnectionInfo == null ?
+                "" : StringUtils.isEmpty(jdbcConnectionInfo.getCatalog()) ?
+                        jdbcConnectionInfo.getDatabase() : jdbcConnectionInfo.getCatalog();
+        if (StringUtils.isEmpty(curDatabase)) {
+            ResultSet rs = getMetadataDatabases(connection);
+            while (rs.next()) {
+                databaseList.add(new DatabaseInfo(rs.getString(1), DATABASE));
+            }
+        }else {
+            databaseList.add(new DatabaseInfo(curDatabase, DATABASE));
         }
         JdbcDataSourceUtils.releaseConnection(connection);
         builder.result(databaseList);
-
         return builder.build();
     }
 
@@ -101,10 +107,11 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
         try {
             DatabaseMetaData metaData = connection.getMetaData();
-            String schema = param.getDataBase();
+            String catalog = StringUtils.isEmpty(jdbcConnectionInfo.getSchema()) ? jdbcConnectionInfo.getCatalog() : param.getDataBase();
+            String schema = StringUtils.isEmpty(jdbcConnectionInfo.getSchema()) ?  param.getDataBase() : jdbcConnectionInfo.getSchema();
 
             tableList = new ArrayList<>();
-            tables = getMetadataTables(metaData, jdbcConnectionInfo.getCatalog(), schema);
+            tables = getMetadataTables(metaData, catalog, schema);
 
             if (null == tables) {
                 return builder.result(tableList).build();
@@ -146,12 +153,13 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
         TableColumnInfo tableColumnInfo = null;
         try {
-            String dbName = param.getDataBase();
+            String catalog = StringUtils.isEmpty(jdbcConnectionInfo.getSchema()) ? jdbcConnectionInfo.getCatalog() : param.getDataBase();
+            String schema = StringUtils.isEmpty(jdbcConnectionInfo.getSchema()) ?  param.getDataBase() : jdbcConnectionInfo.getSchema();
             String tableName = param.getTable();
             if (null != connection) {
                 DatabaseMetaData metaData = connection.getMetaData();
-                List<String> primaryKeys = getPrimaryKeys(jdbcConnectionInfo.getCatalog(), dbName, tableName, metaData);
-                List<ColumnInfo> columns = getColumns(jdbcConnectionInfo.getCatalog(), dbName, tableName, metaData);
+                List<String> primaryKeys = getPrimaryKeys(catalog, schema, tableName, metaData);
+                List<ColumnInfo> columns = getColumns(catalog, schema, tableName, metaData);
                 tableColumnInfo = new TableColumnInfo(tableName, primaryKeys, columns);
             }
         } catch (SQLException e) {
