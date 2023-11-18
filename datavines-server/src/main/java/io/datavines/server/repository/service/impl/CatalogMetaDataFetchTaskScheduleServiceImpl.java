@@ -157,8 +157,8 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
     public boolean deleteById(long id) {
         CatalogMetaDataFetchTaskSchedule catalogMetaDataFetchTaskSchedule = getById(id);
         if (catalogMetaDataFetchTaskSchedule != null) {
-            Boolean deleteJob = quartzExecutor.deleteJob(getScheduleJobInfo(catalogMetaDataFetchTaskSchedule));
-            if (!deleteJob ) {
+            boolean deleteJob = quartzExecutor.deleteJob(getScheduleJobInfo(catalogMetaDataFetchTaskSchedule));
+            if (!deleteJob) {
                 return false;
             }
             return removeById(id);
@@ -175,7 +175,7 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
             return false;
         }
 
-        Boolean deleteJob = quartzExecutor.deleteJob(getScheduleJobInfo(catalogMetaDataFetchTaskSchedule));
+        boolean deleteJob = quartzExecutor.deleteJob(getScheduleJobInfo(catalogMetaDataFetchTaskSchedule));
         if (!deleteJob ) {
             return false;
         }
@@ -228,7 +228,7 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
                     throw new DataVinesServerException(Status.SCHEDULE_PARAMETER_IS_NULL_ERROR);
                 }
 
-                Boolean isValid = quartzExecutor.isValid(param.getCrontab());
+                boolean isValid = quartzExecutor.isValid(param.getCrontab());
                 if (!isValid) {
                     throw new DataVinesServerException(Status.SCHEDULE_CRON_IS_INVALID_ERROR, param.getCrontab());
                 }

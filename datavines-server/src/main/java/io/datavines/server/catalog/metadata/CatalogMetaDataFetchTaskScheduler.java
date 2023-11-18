@@ -30,9 +30,6 @@ import static io.datavines.common.utils.CommonPropertyUtils.*;
 @Slf4j
 public class CatalogMetaDataFetchTaskScheduler extends Thread {
 
-    private final String CATALOG_METADATA_TASK_LOCK_KEY =
-            CommonPropertyUtils.getString(CommonPropertyUtils.CATALOG_METADATA_TASK_LOCK_KEY, CommonPropertyUtils.CATALOG_METADATA_TASK_LOCK_KEY_DEFAULT);
-
     private static final int[] RETRY_BACKOFF = {1, 2, 3, 5, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
 
     private final JobExternalService jobExternalService;

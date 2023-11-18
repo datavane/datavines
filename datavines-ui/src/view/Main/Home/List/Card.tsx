@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import {
-    Pagination, Dropdown, Menu, Popconfirm, Row, Col, Tag, Modal,
+    Pagination, Dropdown, Menu, Popconfirm, Row, Col, Tag, Modal, Table
 } from 'antd';
 import {
     EditOutlined, DeleteOutlined, EllipsisOutlined, FundOutlined,
 } from '@ant-design/icons';
 import { useIntl } from 'react-intl';
 import { IDataSourceListItem, IDataSourceList } from '@/type/dataSource';
-import Schedule from '@/view/Main/HomeDetail/Jobs/components/Schedule';
+import MetaDataFetcher from "view/Main/Home/List/MetaDataFetcher";
 
 type IndexProps = {
     tableData: IDataSourceList,
@@ -95,7 +95,6 @@ const Index: React.FC<IndexProps> = ({
                                         },
                                         {
                                             label: (
-
                                                 <a onClick={() => {
                                                     setisScheduleOpen(true);
                                                     setUuid(item.id);
@@ -104,7 +103,6 @@ const Index: React.FC<IndexProps> = ({
                                                     <FundOutlined style={{ marginRight: '4px' }} />
                                                     {intl.formatMessage({ id: 'home_metadata_fetch' })}
                                                 </a>
-
                                             ),
                                             key: 'push',
                                         },
@@ -129,78 +127,8 @@ const Index: React.FC<IndexProps> = ({
                         {intl.formatMessage({ id: 'datasource_updateTime' })}
                         ：
                         {item.updateTime}
-
                     </span>
-
                 </div>
-                {/* <Card
-                    title={(
-                        <a
-                            style={{
-                                color: '#ffd56a',
-                            }}
-                            onClick={() => {
-                                goDetail(item);
-                            }}
-                        >
-                            {item.name}
-                        </a>
-                    )}
-                    extra={(
-                        <div onClick={(e) => (e.stopPropagation())}>
-                            <Dropdown
-                                overlay={(
-                                    <Menu
-                                        items={[
-                                            {
-                                                label: <span onClick={() => (onEdit(item))}>{intl.formatMessage({ id: 'common_edit' })}</span>,
-                                                key: 'edit',
-                                                icon: <EyeOutlined />,
-                                            },
-                                            {
-                                                label: (
-                                                    <Popconfirm
-                                                        title={intl.formatMessage({ id: 'common_delete_tip' })}
-                                                        onConfirm={() => { onDelete(item); }}
-                                                        okText={intl.formatMessage({ id: 'common_Ok' })}
-                                                        cancelText={intl.formatMessage({ id: 'common_Cancel' })}
-                                                    >
-                                                        <a style={{ color: '#f81d22' }}>{intl.formatMessage({ id: 'common_delete' })}</a>
-                                                    </Popconfirm>
-                                                ),
-                                                icon: <DeleteOutlined />,
-                                                key: 'delete',
-                                            },
-                                        ]}
-                                    />
-                                )}
-                                placement="bottomLeft"
-                            >
-                                <a style={{
-                                    color: '#ffd56a',
-                                }}
-                                >
-                                    {intl.formatMessage({ id: 'common_more' })}
-
-                                </a>
-                            </Dropdown>
-                        </div>
-                    )}
-                    style={{ marginBottom: '15px' }}
-                >
-                    <p>
-                        {intl.formatMessage({ id: 'datasource_modal_source_type' })}
-                        :
-                        {' '}
-                        {item.type}
-                    </p>
-                    <p>
-                        {intl.formatMessage({ id: 'datasource_updateTime' })}
-                        :
-                        {' '}
-                        {item.updateTime}
-                    </p>
-                </Card> */}
             </Col>
         </React.Fragment>
     );
@@ -228,7 +156,7 @@ const Index: React.FC<IndexProps> = ({
                 />
             </div>
             <Modal
-                width="700px"
+                width="1500px"
                 footer={[]}
                 title={intl.formatMessage({ id: 'home_metadata_fetch_schedule' })}
                 onCancel={() => {
@@ -237,15 +165,11 @@ const Index: React.FC<IndexProps> = ({
                 open={isScheduleOpen}
                 maskClosable={false}
             >
-                <Schedule
+                <MetaDataFetcher
+                    datasourceId={uuid}
                     onSavaEnd={() => {
                         setisScheduleOpen(false);
                     }}
-                    width="100%"
-                    style={{ height: 'auto' }}
-                    jobId={uuid}
-                    isShowPush
-                    api="catalog/metadata"
                 />
             </Modal>
         </>

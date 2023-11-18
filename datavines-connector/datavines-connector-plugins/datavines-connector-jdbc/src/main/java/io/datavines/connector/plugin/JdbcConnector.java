@@ -75,12 +75,13 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
     private JdbcExecutorClient getJdbcExecutorClient(String dataSourceParam) {
         JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-
-        return jdbcExecutorClientManager.getExecutorClient(JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
+        return jdbcExecutorClientManager.getExecutorClient(
+                JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
     }
 
     private JdbcExecutorClient getJdbcExecutorClient(String dataSourceParam, JdbcConnectionInfo jdbcConnectionInfo) {
-        return jdbcExecutorClientManager.getExecutorClient(JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
+        return jdbcExecutorClientManager.getExecutorClient(
+                JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
     }
 
     @Override
@@ -124,7 +125,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
             }
 
         } catch (Exception e) {
-            logger.error("get table list error: {0}", e);
+            logger.error("get table list error: ", e);
         } finally {
             JdbcDataSourceUtils.releaseConnection(connection);
         }
@@ -155,8 +156,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
                 tableColumnInfo = new TableColumnInfo(tableName, primaryKeys, columns);
             }
         } catch (SQLException e) {
-            logger.error(e.toString(), e);
-            throw new SQLException(e.getMessage() + ", " + dataSourceParam);
+            logger.error("get column list error , param is {} : ", param, e);
         } finally {
             JdbcDataSourceUtils.releaseConnection(connection);
         }
@@ -183,7 +183,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
             return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(result).build();
         } catch (SQLException e) {
-            logger.error(e.toString(), e);
+            logger.error("test connect error, param is {} :", JSONUtils.toJsonString(param), e);
         }
 
         return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
@@ -199,11 +199,12 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
             if (rs == null) {
                 return primaryKeys;
             }
+
             while (rs.next()) {
                 primaryKeys.add(rs.getString("COLUMN_NAME"));
             }
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            logger.error("get primary key error, param is {} :", schema + "." + tableName, e);
         } finally {
             JdbcDataSourceUtils.closeResult(rs);
         }
@@ -225,7 +226,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
                 columnList.add(new ColumnInfo(name, rawType, comment,false));
             }
         } catch (Exception e) {
-            logger.error(e.toString(), e);
+            logger.error("get column error, param is {} :", schema + "." + tableName, e);
         } finally {
             JdbcDataSourceUtils.closeResult(rs);
         }
