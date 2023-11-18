@@ -81,8 +81,9 @@ export default {
 
     home_search_placeholder: '搜索数据源',
     home_create_datasource: '创建数据源',
-    home_metadata_fetch: '元数据抓取',
-    home_metadata_fetch_schedule: '元数据抓取调度',
+    home_metadata_fetch: '元数据管理',
+    home_metadata_fetch_now: '立即抓取',
+    home_metadata_fetch_schedule: '元数据调度管理',
 
     // jobs
     jobs_list: '规则作业列表',
@@ -102,6 +103,9 @@ export default {
     jobs_task_table_name: '表名',
     jobs_task_column_name: '列名',
     jobs_task_metric_type: '规则类型',
+    jobs_task_execute_host: '执行服务器地址',
+    jobs_task_schedule_time: '调度时间',
+    jobs_task_submit_time: '提交时间',
     jobs_task_start_time: '开始时间',
     jobs_task_end_time: '结束时间',
     jobs_task_stop_btn: '停止',

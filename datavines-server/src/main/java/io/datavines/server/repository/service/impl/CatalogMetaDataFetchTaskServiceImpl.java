@@ -17,6 +17,8 @@
 package io.datavines.server.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.CommonPropertyUtils;
@@ -26,6 +28,7 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
+import io.datavines.server.api.dto.vo.catalog.CatalogMetaDataFetchTaskVO;
 import io.datavines.server.enums.FetchType;
 import io.datavines.server.registry.RegistryHolder;
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchCommand;
@@ -68,8 +71,7 @@ public class CatalogMetaDataFetchTaskServiceImpl
         queryWrapper.lambda().eq(CatalogMetaDataFetchTask::getStatus,0)
                 .eq(CatalogMetaDataFetchTask::getDataSourceId, catalogRefresh.getDatasourceId())
                 .eq(CatalogMetaDataFetchTask::getParameter, JSONUtils.toJsonString(catalogRefresh));
-        List<CatalogMetaDataFetchTask> oldTaskList =
-                baseMapper.selectList(queryWrapper);
+        List<CatalogMetaDataFetchTask> oldTaskList = baseMapper.selectList(queryWrapper);
 
         if (CollectionUtils.isNotEmpty(oldTaskList)) {
             registryHolder.release("1028");
@@ -164,6 +166,7 @@ public class CatalogMetaDataFetchTaskServiceImpl
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean deleteByDataSourceId(long dataSourceId) {
         remove(new QueryWrapper<CatalogMetaDataFetchTask>().eq("datasource_id", dataSourceId));
         catalogMetaDataFetchTaskScheduleService.deleteByDataSourceId(dataSourceId);
@@ -214,5 +217,11 @@ public class CatalogMetaDataFetchTaskServiceImpl
         }
 
         return refreshTime;
+    }
+
+    @Override
+    public IPage<CatalogMetaDataFetchTaskVO> getFetchTaskPage(Long datasourceId,Integer pageNumber, Integer pageSize) {
+        Page<CatalogMetaDataFetchTaskVO> page = new Page<>(pageNumber, pageSize);
+        return baseMapper.getJobExecutionPage(page, datasourceId);
     }
 }

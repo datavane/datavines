@@ -81,8 +81,9 @@ export default {
 
     home_search_placeholder: 'Search to DataSource',
     home_create_datasource: 'Create DataSource',
-    home_metadata_fetch: 'Metadata Fetcher',
-    home_metadata_fetch_schedule: 'Metadata Fetcher Schedule',
+    home_metadata_fetch: 'Metadata Manager',
+    home_metadata_fetch_now: 'Fetch',
+    home_metadata_fetch_schedule: 'Metadata Schedule Manager',
 
     // jobs
     jobs_list: 'Jobs',
@@ -102,6 +103,9 @@ export default {
     jobs_task_table_name: 'Table',
     jobs_task_column_name: 'Column',
     jobs_task_metric_type: 'Metric Type',
+    jobs_task_execute_host: 'Execute Host',
+    jobs_task_schedule_time: 'Schedule Time',
+    jobs_task_submit_time: 'Submit Time',
     jobs_task_start_time: 'Start Time',
     jobs_task_end_time: 'End Time',
     jobs_task_stop_btn: 'Stop',
