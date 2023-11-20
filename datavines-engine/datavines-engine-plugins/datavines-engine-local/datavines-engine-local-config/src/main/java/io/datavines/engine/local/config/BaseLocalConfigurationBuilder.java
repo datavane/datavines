@@ -166,20 +166,20 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
                 String table = metricInputParameter.get(TABLE);
-                if (StringUtils.isNotEmpty(metricInputParameter.get(SCHEMA))) {
+                if (!StringUtils.isEmptyOrNullStr(metricInputParameter.get(SCHEMA))) {
                     table = metricInputParameter.get(SCHEMA) + "." + table;
                 }
 
-                if (StringUtils.isNotEmpty(metricInputParameter.get(DATABASE))) {
+                if (!StringUtils.isEmptyOrNullStr(metricInputParameter.get(DATABASE))) {
                     table = metricInputParameter.get(DATABASE) + "." + table;
                 }
 
                 String table2 = metricInputParameter.get(TABLE2);
-                if (StringUtils.isNotEmpty(metricInputParameter.get(SCHEMA2))) {
+                if (!StringUtils.isEmptyOrNullStr(metricInputParameter.get(SCHEMA2))) {
                     table2 = metricInputParameter.get(SCHEMA2) + "." + table2;
                 }
 
-                if (StringUtils.isNotEmpty(metricInputParameter.get(DATABASE2))) {
+                if (!StringUtils.isEmptyOrNullStr(metricInputParameter.get(DATABASE2))) {
                     table2 = metricInputParameter.get(DATABASE2) + "." + table2;
                 }
 

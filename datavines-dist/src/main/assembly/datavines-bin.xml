@@ -96,6 +96,7 @@
                 <include>io.datavines:datavines-engine-spark-connector-jdbc</include>
                 <include>io.datavines:datavines-engine-spark-connector-mongodb</include>
                 <include>io.datavines:datavines-engine-core</include>
+                <include>io.datavines:datavines-engine-common</include>
                 <include>io.datavines:datavines-engine-spark-transform-sql</include>
                 <include>io.datavines:datavines-engine-api</include>
                 <include>mysql:mysql-connector-java</include>

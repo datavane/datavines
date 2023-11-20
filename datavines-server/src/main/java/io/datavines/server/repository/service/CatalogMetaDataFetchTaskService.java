@@ -16,8 +16,10 @@
  */
 package io.datavines.server.repository.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
+import io.datavines.server.api.dto.vo.catalog.CatalogMetaDataFetchTaskVO;
 import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTask;
 
 import java.time.LocalDateTime;
@@ -42,4 +44,6 @@ public interface CatalogMetaDataFetchTaskService extends IService<CatalogMetaDat
     boolean deleteByDataSourceId(long dataSourceId);
 
     LocalDateTime getRefreshTime(long dataSourceId, String databaseName, String tableName);
+
+    IPage<CatalogMetaDataFetchTaskVO> getFetchTaskPage(Long datasourceId,Integer pageNumber, Integer pageSize);
 }

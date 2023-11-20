@@ -112,8 +112,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         GetDatabasesRequestParam param = new GetDatabasesRequestParam();
         param.setType(dataSource.getType());
         param.setDataSourceParam(dataSource.getParam());
-        ConnectorResponse connectorResponse =
-                connectorFactory.getConnector().getDatabases(param);
+        ConnectorResponse connectorResponse = connectorFactory.getConnector().getDatabases(param);
 
         if (connectorResponse == null || connectorResponse.getResult() == null) {
             return;

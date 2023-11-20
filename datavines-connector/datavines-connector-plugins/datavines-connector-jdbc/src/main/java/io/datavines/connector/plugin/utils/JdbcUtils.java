@@ -37,11 +37,11 @@ public class JdbcUtils {
         try {
             String table = options.getTableName();
 
-            if (StringUtils.isNotEmpty(options.getSchemaName())) {
+            if (!StringUtils.isEmptyOrNullStr(options.getSchemaName())) {
                 table = options.getSchemaName() + "." + table;
             }
 
-            if (StringUtils.isNotEmpty(options.getDatabaseName())) {
+            if (!StringUtils.isEmptyOrNullStr(options.getDatabaseName())) {
                 table = options.getDatabaseName() + "." + table;
             }
 

@@ -14,20 +14,46 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.server.repository.mapper;
+package io.datavines.metric.expected.plugin;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import io.datavines.metric.api.ExpectedValue;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import io.datavines.server.api.dto.vo.catalog.CatalogMetaDataFetchTaskVO;
-import io.datavines.server.repository.entity.catalog.CatalogMetaDataFetchTask;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import java.util.Map;
 
-@Mapper
-public interface CatalogMetaDataFetchTaskMapper extends BaseMapper<CatalogMetaDataFetchTask>  {
+public class SparkNone implements ExpectedValue {
 
-    IPage<CatalogMetaDataFetchTaskVO> getJobExecutionPage(Page<CatalogMetaDataFetchTaskVO> page,
-                                                          @Param("datasourceId") Long datasourceId);
+    @Override
+    public String getName() {
+        return "none";
+    }
+
+    @Override
+    public String getZhName() {
+        return "无";
+    }
+
+    @Override
+    public String getKey(Map<String,String> inputParameter) {
+        return "0";
+    }
+
+    @Override
+    public String getExecuteSql(Map<String,String> inputParameter) {
+        return null;
+    }
+
+    @Override
+    public String getOutputTable(Map<String,String> inputParameter) {
+        return null;
+    }
+
+    @Override
+    public boolean isNeedDefaultDatasource() {
+        return false;
+    }
+
+    @Override
+    public void prepare(Map<String, String> config) {
+
+    }
 }

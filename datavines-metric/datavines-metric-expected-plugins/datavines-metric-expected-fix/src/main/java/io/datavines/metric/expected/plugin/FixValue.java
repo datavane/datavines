@@ -36,8 +36,7 @@ public class FixValue implements ExpectedValue {
 
     @Override
     public String getKey(Map<String,String> inputParameter) {
-        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
-        return "expected_value_" + uniqueKey;
+        return null;
     }
 
     @Override
