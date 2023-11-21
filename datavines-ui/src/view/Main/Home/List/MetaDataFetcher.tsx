@@ -5,7 +5,7 @@ import {
 import { useIntl } from 'react-intl';
 import Schedule from '@/view/Main/HomeDetail/Jobs/components/Schedule';
 import {Tabs} from "antd/lib";
-import TabPane = Tabs.TabPane;
+import TabPane from "antd/lib/tabs/TabPane";
 import {TJobsInstanceTableData, TJobsInstanceTableItem} from "@/type/JobsInstance";
 import {$http} from "@/http";
 import {IF, useMount} from "@Editor/common";
