@@ -46,4 +46,9 @@ public class PostgreSqlConnector extends JdbcConnector {
         DatabaseMetaData metaData = connection.getMetaData();
         return metaData.getCatalogs();
     }
+
+    @Override
+    public ResultSet getPrimaryKeys(DatabaseMetaData metaData,String catalog, String schema, String tableName) throws SQLException {
+        return metaData.getPrimaryKeys(catalog, schema, tableName);
+    }
 }

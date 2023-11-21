@@ -47,4 +47,9 @@ public class SqlServerConnector extends JdbcConnector {
         return metaData.getCatalogs();
     }
 
+    @Override
+    public ResultSet getPrimaryKeys(DatabaseMetaData metaData,String catalog, String schema, String tableName) throws SQLException {
+        return metaData.getPrimaryKeys(catalog, schema, tableName);
+    }
+
 }
