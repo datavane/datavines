@@ -31,4 +31,6 @@ public interface SlaJobService extends IService<SlaJob> {
     IPage<SlaJobVO> pageSlaJob(Long slaId, String searchVal, Integer pageNumber, Integer pageSize);
 
     boolean createOrUpdateSlaJob(SlaJobCreateOrUpdate createOrUpdate);
+
+    int deleteByJobId(Long id);
 }

@@ -17,6 +17,7 @@
 package io.datavines.server.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,6 +39,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -97,5 +99,19 @@ public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> impleme
             slaJob.setUpdateTime(LocalDateTime.now());
             return save(slaJob);
         }
+    }
+
+    @Override
+    public int deleteByJobId(Long id) {
+        List<SlaJob> slaJobs = baseMapper.selectList(new QueryWrapper<SlaJob>().eq("job_id", id));
+        if (CollectionUtils.isNotEmpty(slaJobs)) {
+            List<Long> ids = slaJobs.stream()
+                    .map(SlaJob::getId)
+                    .collect(Collectors.toList());
+            if (baseMapper.deleteBatchIds(ids) > 0) {
+                return 1;
+            }
+        }
+        return 0;
     }
 }

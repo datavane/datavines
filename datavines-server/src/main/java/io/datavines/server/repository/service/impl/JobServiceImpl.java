@@ -102,6 +102,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     private SlaService slaService;
 
     @Autowired
+    private SlaJobService slaJobService;
+
+    @Autowired
     private CatalogEntityMetricJobRelService catalogEntityMetricJobRelService;
 
     @Autowired
@@ -109,6 +112,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     @Autowired
     private CatalogEntityInstanceService catalogEntityInstanceService;
+
+    @Autowired
+    private JobScheduleService jobScheduleService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -413,10 +419,18 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     @Override
     @Transactional(rollbackFor = Exception.class)
     public int deleteById(long id) {
+
+        catalogEntityMetricJobRelService.deleteByJobId(id);
+        jobExecutionService.deleteByJobId(id);
+        issueService.deleteByJobId(id);
+
+        JobSchedule jobSchedule = jobScheduleService.getByJobId(id);
+        if (jobSchedule != null) {
+            jobScheduleService.deleteBySchedule(jobSchedule);
+        }
+        slaJobService.deleteByJobId(id);
+
         if (baseMapper.deleteById(id) > 0) {
-            catalogEntityMetricJobRelService.deleteByJobId(id);
-            jobExecutionService.deleteByJobId(id);
-            issueService.deleteByJobId(id);
             return 1;
         } else {
             return 0;
