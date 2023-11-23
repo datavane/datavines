@@ -253,7 +253,6 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
             instanceService.updateById(entityInstanceOld);
             entityUUID = entityInstanceOld.getUuid();
         } else {
-            entityInstance.setCreateTime(LocalDateTime.now());
             entityInstance.setUuid(UUID.randomUUID().toString());
             entityUUID = instanceService.create(entityInstance);
         }
