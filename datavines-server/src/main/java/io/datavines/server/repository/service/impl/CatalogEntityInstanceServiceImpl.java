@@ -200,6 +200,7 @@ public class CatalogEntityInstanceServiceImpl
             return false;
         }
         entityInstance.setStatus(String.format("%s_%s",CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_DELETED, UUID.randomUUID().toString()));
+        entityInstance.setUpdateTime(LocalDateTime.now());
         baseMapper.updateById(entityInstance);
         return true;
     }
