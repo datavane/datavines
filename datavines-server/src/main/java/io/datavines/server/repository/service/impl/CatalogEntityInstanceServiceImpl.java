@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.common.CommonConstants;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.entity.SparkEngineParameter;
 import io.datavines.common.entity.job.BaseJobParameter;
@@ -100,7 +101,7 @@ public class CatalogEntityInstanceServiceImpl
         return baseMapper.selectOne(new QueryWrapper<CatalogEntityInstance>()
                 .eq("datasource_id", dataSourceId)
                 .eq("fully_qualified_name", fqn)
-                .eq("status","active"));
+                .eq("status",CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE));
     }
 
     @Override
@@ -146,7 +147,7 @@ public class CatalogEntityInstanceServiceImpl
         if (CollectionUtils.isNotEmpty(uuidList)) {
             entityInstanceList = baseMapper.selectList(new QueryWrapper<CatalogEntityInstance>()
                     .in("uuid", uuidList)
-                    .eq("status", "active")
+                    .eq("status", CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE)
                     .orderBy(true, true, "id"));
         }
 
@@ -167,7 +168,7 @@ public class CatalogEntityInstanceServiceImpl
         if (CollectionUtils.isNotEmpty(uuidList)) {
             queryWrapper.lambda()
                     .in(CatalogEntityInstance::getUuid, uuidList)
-                    .eq(CatalogEntityInstance::getStatus, "active")
+                    .eq(CatalogEntityInstance::getStatus, CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE)
                     .like(StringUtils.isNotEmpty(name), CatalogEntityInstance::getDisplayName, name)
                     .orderBy(true, true, CatalogEntityInstance::getId);
             return page(page, queryWrapper);
@@ -198,7 +199,8 @@ public class CatalogEntityInstanceServiceImpl
         if (entityInstance == null) {
             return false;
         }
-        entityInstance.setStatus("deleted");
+        entityInstance.setStatus(String.format("%s_%s",CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_DELETED, UUID.randomUUID().toString()));
+        entityInstance.setUpdateTime(LocalDateTime.now());
         baseMapper.updateById(entityInstance);
         return true;
     }
