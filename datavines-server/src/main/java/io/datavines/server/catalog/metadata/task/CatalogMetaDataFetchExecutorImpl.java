@@ -17,6 +17,7 @@
 package io.datavines.server.catalog.metadata.task;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.datavines.common.CommonConstants;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.DatabaseInfo;
 import io.datavines.common.datasource.jdbc.entity.TableColumnInfo;
@@ -190,7 +191,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
                 databaseEntityInstance.setFullyQualifiedName(databaseInfo.getName());
                 databaseEntityInstance.setUpdateTime(LocalDateTime.now());
                 databaseEntityInstance.setUpdateBy(0L);
-                databaseEntityInstance.setStatus("active");
+                databaseEntityInstance.setStatus(CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE);
                 databaseEntityInstance.setDatasourceId(datasourceId);
 
                 CatalogEntityInstance databaseEntityInstanceOld = instanceService.getByDataSourceAndFQN(datasourceId, fqn);
@@ -233,7 +234,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         if (CollectionUtils.isNotEmpty(databaseEntityRelList)) {
             databaseEntityRelList.forEach(item -> {
                 CatalogEntityInstance entityInstance = instanceService.getOne(
-                        new QueryWrapper<CatalogEntityInstance>().eq("uuid", item.getEntity2Uuid()).eq("status","active"));
+                        new QueryWrapper<CatalogEntityInstance>().eq("uuid", item.getEntity2Uuid()).eq("status",CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE));
 
                 if (entityInstance != null) {
                     entityListFromDb.add(dataSource.getId()+"@@"+entityInstance.getFullyQualifiedName());
@@ -273,7 +274,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
             oldDatabaseInstance.setUuid(UUID.randomUUID().toString());
             oldDatabaseInstance.setUpdateTime(LocalDateTime.now());
             oldDatabaseInstance.setUpdateBy(0L);
-            oldDatabaseInstance.setStatus("active");
+            oldDatabaseInstance.setStatus(CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE);
             oldDatabaseInstance.setDatasourceId(datasourceId);
             instanceService.create(oldDatabaseInstance);
         }
@@ -397,7 +398,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
                 tableEntityInstance.setDescription(tableInfo.getComment());
                 tableEntityInstance.setUpdateTime(LocalDateTime.now());
                 tableEntityInstance.setUpdateBy(0L);
-                tableEntityInstance.setStatus("active");
+                tableEntityInstance.setStatus(CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE);
                 tableEntityInstance.setProperties(JSONUtils.toJsonString(tableInfo));
                 tableEntityInstance.setOwner(StringUtils.isNotEmpty(tableInfo.getOwner()) ? tableInfo.getOwner():"");
                 if (StringUtils.isNotEmpty(tableInfo.getCreateTime())) {
@@ -509,7 +510,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         if (CollectionUtils.isNotEmpty(columnEntityRelList)) {
             columnEntityRelList.forEach(item -> {
                 CatalogEntityInstance entityInstance = instanceService
-                        .getOne(new QueryWrapper<CatalogEntityInstance>().eq("uuid", item.getEntity2Uuid()).eq("status","active"));
+                        .getOne(new QueryWrapper<CatalogEntityInstance>().eq("uuid", item.getEntity2Uuid()).eq("status",CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE));
 
                 if (entityInstance != null) {
                     columnListFromDb.add(datasourceId + "@@" + entityInstance.getFullyQualifiedName());
@@ -625,7 +626,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
                 columnEntityInstance.setUpdateBy(0L);
                 columnEntityInstance.setDatasourceId(datasourceId);
                 columnEntityInstance.setProperties(JSONUtils.toJsonString(columnInfo));
-                columnEntityInstance.setStatus("active");
+                columnEntityInstance.setStatus(CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE);
                 CatalogEntityInstance columnEntityInstanceOld = instanceService.getByDataSourceAndFQN(datasourceId, fqn);
                 String columnUUID = createOrUpdateCatalogEntityInstance(columnEntityInstance, columnEntityInstanceOld);
 

@@ -31,6 +31,8 @@ public interface JobScheduleService extends IService<JobSchedule> {
 
     int deleteById(long id);
 
+    int deleteBySchedule(JobSchedule jobSchedule);
+
     JobSchedule getById(long id);
 
     JobSchedule getByJobId(Long jobId);
