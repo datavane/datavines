@@ -76,10 +76,9 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
                     errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
 
                     Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, Object.class));
-                    ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
-                            .getNewPlugin(connectorParameter.getType());
+                            .getNewPlugin(jobExecutionInfo.getErrorDataStorageType());
 
                     if (connectorFactory == null) {
                         return;
