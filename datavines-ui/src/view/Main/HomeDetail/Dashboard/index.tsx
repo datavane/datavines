@@ -185,7 +185,7 @@ const Dashboard = ({ datasourceId }: TJobs) => {
                 metricType : metricType,
                 datasourceId : datasourceId || (match.params as any).id,
                 pageNumber : pageParam1.pageNumber,
-                pageSize : 5,
+                pageSize : pageParam1.pageSize,
                 status:  6,
                 startTime : startTime,
                 endTime : endTime
@@ -545,6 +545,7 @@ const Dashboard = ({ datasourceId }: TJobs) => {
                                 showSizeChanger: true,
                                 current: pageParam.pageNumber,
                                 pageSize: pageParam.pageSize,
+                                pageSizeOptions: [5, 10, 20, 50, 100],
                             }}
                         />
                         <RenderLoggerModal />
