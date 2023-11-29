@@ -18,6 +18,7 @@ package io.datavines.engine.local.connector;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.connector.api.entity.JdbcOptions;
 import io.datavines.connector.plugin.utils.JdbcUtils;
@@ -98,7 +99,15 @@ public class BaseJdbcSource implements LocalSource {
             ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class)
                     .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE));
             JdbcOptions jdbcOptions = new JdbcOptions();
-            jdbcOptions.setDatabaseName(config.getString(DATABASE));
+
+            // oracle:The database does not participate in table full path concatenation
+            String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
+            if (!StringUtils.isEmptyOrNullStr(srcConnectorType) && srcConnectorType.equals("oracle")) {
+                jdbcOptions.setDatabaseName(null);
+            }else{
+                jdbcOptions.setDatabaseName(config.getString(DATABASE));
+            }
+
             jdbcOptions.setSchemaName(config.getString(SCHEMA));
             jdbcOptions.setTableName(config.getString(TABLE));
             jdbcOptions.setQueryTimeout(10000);

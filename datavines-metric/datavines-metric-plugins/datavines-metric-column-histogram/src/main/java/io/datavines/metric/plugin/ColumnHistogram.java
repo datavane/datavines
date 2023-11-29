@@ -71,12 +71,29 @@ public class ColumnHistogram extends BaseSingleTableColumn {
         ExecuteSql executeSql = new ExecuteSql();
         executeSql.setResultTable("invalidate_count_"+uniqueKey);
         StringBuilder actualValueSql = new StringBuilder();
-        actualValueSql.append("select concat(k, '\001', cast(count as ${string_type})) as actual_value_").append(uniqueKey).append(" from (select ${if_case_key} as k, count(1) as count from ${table}");
+
+        // oracle concat function: Only two parameters are supported
+        String srcConnectorType = inputParameter.get("src_connector_type");
+        switch (srcConnectorType){
+            case "oracle":
+                actualValueSql.append("select concat(concat(k, '\001'), count) as actual_value_").append(uniqueKey).append(" from (select ${if_case_key} as k, count(1) as count from ${table}");
+                break;
+            default:
+                actualValueSql.append("select concat(k, '\001', cast(count as ${string_type})) as actual_value_").append(uniqueKey).append(" from (select ${if_case_key} as k, count(1) as count from ${table}");
+                break;
+        }
         if (!filters.isEmpty()) {
             actualValueSql.append(" where ").append(String.join(" and ", filters));
         }
 
-        actualValueSql.append(" group by ${column} order by count desc ${limit_top_50_key}) T");
+        if (!filters.isEmpty() && srcConnectorType.equals("oracle")) {
+            actualValueSql.append(" and ${limit_top_50_key} group by ${column} order by count desc) T");
+        }else if(filters.isEmpty() && srcConnectorType.equals("oracle")){
+            actualValueSql.append(" where ${limit_top_50_key} group by ${column} order by count desc ) T");
+        }else{
+            actualValueSql.append(" group by ${column} order by count desc ${limit_top_50_key}) T");
+        }
+
         executeSql.setSql(actualValueSql.toString());
         executeSql.setErrorOutput(false);
         return executeSql;

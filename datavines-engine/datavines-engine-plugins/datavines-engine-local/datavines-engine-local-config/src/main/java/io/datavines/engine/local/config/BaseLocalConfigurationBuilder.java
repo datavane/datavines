@@ -171,7 +171,9 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                 }
 
                 if (!StringUtils.isEmptyOrNullStr(metricInputParameter.get(DATABASE))) {
-                    table = metricInputParameter.get(DATABASE) + "." + table;
+                    if(!metricInputParameter.get("src_connector_type").equals("oracle")) {
+                        table = metricInputParameter.get(DATABASE) + "." + table;
+                    }
                 }
 
                 String table2 = metricInputParameter.get(TABLE2);
@@ -180,7 +182,9 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                 }
 
                 if (!StringUtils.isEmptyOrNullStr(metricInputParameter.get(DATABASE2))) {
-                    table2 = metricInputParameter.get(DATABASE2) + "." + table2;
+                    if(!metricInputParameter.get("src_connector_type").equals("oracle")) {
+                        table2 = metricInputParameter.get(DATABASE2) + "." + table2;
+                    }
                 }
 
                 metricInputParameter.put(TABLE, table);

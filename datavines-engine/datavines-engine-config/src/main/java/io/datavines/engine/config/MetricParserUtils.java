@@ -179,7 +179,8 @@ public class MetricParserUtils {
     }
 
     public static String getCoalesceString(String table, String column) {
-        return "coalesce(" + table + "." + column + ", '')";
+        // select coalesce(CURRENT_DATE,''),coalesce(1,'') from dual --oracle error:The data type is inconsistent
+        return "coalesce(" + table + "." + column + ", null)";
     }
 
     public static String getColumnIsNullStr(String table, List<String> columns) {

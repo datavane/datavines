@@ -106,6 +106,7 @@
                 <include>org.postgresql:postgresql</include>
                 <include>com.facebook.presto:presto-jdbc</include>
                 <include>io.trino:trino-jdbc</include>
+                <include>com.oracle:ojdbc*</include>
             </includes>
         </dependencySet>
     </dependencySets>

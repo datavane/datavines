@@ -35,8 +35,22 @@ public class DataReconciliationJobParameterBuilder implements ParameterBuilder {
             JobExecutionParameter jobExecutionParameter = new JobExecutionParameter();
             DataReconciliationJobParameter dataReconciliationJobParameter = jobParameters.get(0);
             Map<String,Object> metricParameters = dataReconciliationJobParameter.getMetricParameter();
+            Map<String, Object> metricParameter2 = dataReconciliationJobParameter.getMetricParameter2();
 
-            metricParameters.putAll(dataReconciliationJobParameter.getMetricParameter2());
+            /**
+             * The data type is oracle and the data directory is schema instead of database. schema and Database are modified here
+             */
+            if (connectionInfo.getType().equals("oracle")) {
+                metricParameters.put("schema", metricParameters.get("database"));
+                metricParameters.put("database",connectionInfo.getDatabase());
+            }
+
+            if (connectionInfo2.getType().equals("oracle")) {
+                metricParameter2.put("schema2", metricParameter2.get("database2"));
+                metricParameter2.put("database2",connectionInfo2.getDatabase());
+            }
+
+            metricParameters.putAll(metricParameter2);
             metricParameters.put("mappingColumns", JSONUtils.toJsonString(dataReconciliationJobParameter.getMappingColumns()));
             dataReconciliationJobParameter.setMetricParameter(metricParameters);
             jobExecutionParameter.setMetricParameterList(new ArrayList<>(Collections.singletonList(dataReconciliationJobParameter)));

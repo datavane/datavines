@@ -111,6 +111,8 @@
         <commons.email.version>1.5</commons.email.version>
         <poi.version>4.1.2</poi.version>
         <javax.mail.version>1.6.2</javax.mail.version>
+        <oracle.version>19.3.0.0</oracle.version>
+        <orai18n.version>12.1.0.2.0</orai18n.version>
 
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
@@ -280,6 +282,18 @@
                 <artifactId>mysql-connector-java</artifactId>
                 <version>${mysql.version}</version>
 <!--                <scope>test</scope>-->
+            </dependency>
+
+            <dependency>
+                <groupId>com.oracle.ojdbc</groupId>
+                <artifactId>ojdbc8</artifactId>
+                <version>${oracle.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>cn.easyproject</groupId>
+                <artifactId>orai18n</artifactId>
+                <version>${orai18n.version}</version>
             </dependency>
 
             <dependency>

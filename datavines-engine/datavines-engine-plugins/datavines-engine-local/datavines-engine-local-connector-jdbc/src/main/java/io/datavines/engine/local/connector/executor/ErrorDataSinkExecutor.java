@@ -180,7 +180,8 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                 for (Map<String, Object> row: resultList.getResultList()) {
                     for (int j=0 ;j<columns.size();j++) {
                         StructField field = columns.get(j);
-                        String value = String.valueOf(row.get(field.getName()));
+                        // oracle metadata is uppercase by default
+                        String value = String.valueOf(row.get(field.getName().toLowerCase()));
                         String rowContent = "null".equalsIgnoreCase(value) ? null : value;
                         if (rowContent != null) {
                             rowContent = rowContent.replaceAll("\"","");

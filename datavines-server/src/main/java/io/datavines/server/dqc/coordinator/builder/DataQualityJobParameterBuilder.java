@@ -38,6 +38,13 @@ public class DataQualityJobParameterBuilder implements ParameterBuilder {
             JobExecutionParameter jobExecutionParameter = new JobExecutionParameter();
             for (BaseJobParameter metricJobParameter : jobParameters) {
                 Map<String,Object> metricParameters = metricJobParameter.getMetricParameter();
+                /**
+                 * The data type is oracle and the data directory is schema instead of database. schema and Database are modified here
+                 */
+                if (srcConnectionInfo.getType().equals("oracle")) {
+                    metricParameters.put("schema", metricParameters.get("database"));
+                    metricParameters.put("database",srcConnectionInfo.getDatabase());
+                }
                 metricJobParameter.setMetricParameter(metricParameters);
             }
 

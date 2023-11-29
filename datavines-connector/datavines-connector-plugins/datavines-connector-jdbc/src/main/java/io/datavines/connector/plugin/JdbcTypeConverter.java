@@ -53,6 +53,7 @@ public class JdbcTypeConverter implements TypeConverter {
                 return DataType.FLOAT_TYPE;
             case "DOUBLE":
             case "DOUBLE_UNSIGNED":
+            case "NUMBER":
                 return DataType.DOUBLE_TYPE;
             case "TIME":
                 return DataType.TIME_TYPE;
@@ -71,6 +72,7 @@ public class JdbcTypeConverter implements TypeConverter {
             case "JSON":
             case "ENUM":
             case "STRING":
+            case "VARCHAR2":
                 return DataType.STRING_TYPE;
             case "BINARY":
             case "VARBINARY":
