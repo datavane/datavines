@@ -16,6 +16,12 @@
  */
 package io.datavines.connector.plugin;
 
+import io.datavines.connector.api.Connector;
+import io.datavines.connector.api.ConnectorParameterConverter;
+import io.datavines.connector.api.Dialect;
+import io.datavines.connector.api.Executor;
+import io.datavines.connector.api.ConfigBuilder;
+
 public class OracleConnectorFactory extends AbstractJdbcConnectorFactory{
     @Override
     public ConnectorParameterConverter getConnectorParameterConverter() {
