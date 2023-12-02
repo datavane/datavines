@@ -106,7 +106,7 @@
                 <include>org.postgresql:postgresql</include>
                 <include>com.facebook.presto:presto-jdbc</include>
                 <include>io.trino:trino-jdbc</include>
-                <include>com.dameng:clickhouse-jdbcDmJdbcDriver18</include>
+                <include>com.dameng:DmJdbcDriver18</include>
             </includes>
         </dependencySet>
     </dependencySets>
