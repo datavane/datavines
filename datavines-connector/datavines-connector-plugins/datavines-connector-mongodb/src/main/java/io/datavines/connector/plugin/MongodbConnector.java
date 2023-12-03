@@ -57,7 +57,6 @@ public class MongodbConnector implements Connector {
 
     private static final List<String> SYSTEM_TABLE = Arrays.asList("system.indexes", "system.users", "system.version", "system.views");
 
-
     @Override
     public ConnectorResponse getDatabases(GetDatabasesRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
