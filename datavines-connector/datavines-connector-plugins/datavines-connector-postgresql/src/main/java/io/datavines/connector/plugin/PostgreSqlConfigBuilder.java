@@ -24,9 +24,8 @@ public class PostgreSqlConfigBuilder extends JdbcConfigBuilder {
     @Override
     protected InputParam getSchemaInput(boolean isEn) {
         return getInputParam("schema",
-                isEn ? "schema" : "Schema",
-                isEn ? "please enter schema" : "请填入 Schema", 1,
-                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter schema" : "请填入 Schema").build(),
-                null);
+                isEn ? "schema" : "模式",
+                isEn ? "please enter schema" : "请填入模式", 1,
+                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter schema" : "请填入模式").build(), null);
     }
 }

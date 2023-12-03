@@ -23,9 +23,9 @@ import io.datavines.common.datasource.jdbc.entity.TableInfo;
 import io.datavines.common.datasource.jdbc.entity.TableColumnInfo;
 import io.datavines.common.param.*;
 import io.datavines.common.utils.JSONUtils;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.Connector;
 import io.datavines.common.datasource.jdbc.utils.JdbcDataSourceUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -98,14 +98,23 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         Connection connection = executorClient.getConnection();
 
         List<TableInfo> tableList = null;
-        ResultSet tables = null;
+        ResultSet tables;
 
         try {
             DatabaseMetaData metaData = connection.getMetaData();
-            String schema = param.getDataBase();
+            String catalog;
+            String schema;
+
+            if (StringUtils.isNotEmpty(jdbcConnectionInfo.getCatalog())) {
+                catalog = jdbcConnectionInfo.getCatalog();
+                schema = param.getDataBase();
+            } else {
+                catalog = param.getDataBase();
+                schema = StringUtils.isEmptyOrNullStr(jdbcConnectionInfo.getSchema())  ? null : jdbcConnectionInfo.getSchema();
+            }
 
             tableList = new ArrayList<>();
-            tables = getMetadataTables(metaData, jdbcConnectionInfo.getCatalog(), schema);
+            tables = getMetadataTables(metaData, catalog, schema);
 
             if (null == tables) {
                 return builder.result(tableList).build();
@@ -147,12 +156,22 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
         TableColumnInfo tableColumnInfo = null;
         try {
-            String dbName = param.getDataBase();
+            String catalog;
+            String schema;
+
+            if (StringUtils.isNotEmpty(jdbcConnectionInfo.getCatalog())) {
+                catalog = jdbcConnectionInfo.getCatalog();
+                schema = param.getDataBase();
+            } else {
+                catalog = param.getDataBase();
+                schema = StringUtils.isEmptyOrNullStr(jdbcConnectionInfo.getSchema())  ? null : jdbcConnectionInfo.getSchema();
+            }
+
             String tableName = param.getTable();
             if (null != connection) {
                 DatabaseMetaData metaData = connection.getMetaData();
-                List<String> primaryKeys = getPrimaryKeys(jdbcConnectionInfo.getCatalog(), dbName, tableName, metaData);
-                List<ColumnInfo> columns = getColumns(jdbcConnectionInfo.getCatalog(), dbName, tableName, metaData);
+                List<String> primaryKeys = getPrimaryKeys(catalog, schema, tableName, metaData);
+                List<ColumnInfo> columns = getColumns(catalog, schema, tableName, metaData);
                 tableColumnInfo = new TableColumnInfo(tableName, primaryKeys, columns);
             }
         } catch (SQLException e) {
@@ -254,6 +273,6 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
     }
 
     protected ResultSet getPrimaryKeys(DatabaseMetaData metaData,String catalog, String schema, String tableName) throws SQLException {
-        return metaData.getPrimaryKeys(schema, null, tableName);
+        return metaData.getPrimaryKeys(catalog, schema, tableName);
     }
 }

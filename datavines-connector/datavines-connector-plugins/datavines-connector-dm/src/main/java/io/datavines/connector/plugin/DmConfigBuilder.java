@@ -22,15 +22,11 @@ import io.datavines.common.param.form.type.InputParam;
 public class DmConfigBuilder extends JdbcConfigBuilder{
 
     @Override
-    protected InputParam getDatabaseInput(boolean isEn) {
-        // DM only need schema.
-        // To avoid affecting the original code structure, the schema will be stored in the database here
-        return getInputParam("database",
+    protected InputParam getSchemaInput(boolean isEn) {
+        return getInputParam("schema",
                 isEn ? "schema" : "模式",
                 isEn ? "please enter schema, which is usually the same as the username" : "请填入模式, 一般和用户名相同", 1,
                 Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter schema" : "请填入模式").build(),
                 null);
     }
-
-
 }

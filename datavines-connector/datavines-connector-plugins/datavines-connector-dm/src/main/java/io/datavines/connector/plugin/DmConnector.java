@@ -35,21 +35,4 @@ public class DmConnector  extends JdbcConnector {
         // DM only need schema
         return metaData.getSchemas();
     }
-
-    protected ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {
-        // DM only need schema
-        return metaData.getTables(null, schema, null, TABLE_TYPES);
-    }
-
-    protected ResultSet getMetadataColumns(DatabaseMetaData metaData,
-                                           String catalog, String schema,
-                                           String tableName, String columnName) throws SQLException {
-        // DM only need schema
-        return metaData.getColumns(null, schema, tableName, columnName);
-    }
-
-    protected ResultSet getPrimaryKeys(DatabaseMetaData metaData,String catalog, String schema, String tableName) throws SQLException {
-        // DM only need schema
-        return metaData.getPrimaryKeys(null, schema, tableName);
-    }
 }
