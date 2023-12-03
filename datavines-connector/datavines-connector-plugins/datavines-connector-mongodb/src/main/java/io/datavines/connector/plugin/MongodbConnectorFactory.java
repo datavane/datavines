@@ -42,7 +42,7 @@ public class MongodbConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new MongodbExecutor();
+        return new MongodbExecutor(new JdbcDataSourceClient());
     }
 
     @Override

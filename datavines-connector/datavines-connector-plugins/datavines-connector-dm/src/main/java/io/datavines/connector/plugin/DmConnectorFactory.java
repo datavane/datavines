@@ -36,7 +36,7 @@ public class DmConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new DmExecutor();
+        return new DmExecutor(new JdbcDataSourceClient());
     }
 
     @Override

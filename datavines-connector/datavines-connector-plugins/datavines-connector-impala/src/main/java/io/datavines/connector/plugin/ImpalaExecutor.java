@@ -21,6 +21,10 @@ import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
 public class ImpalaExecutor extends BaseJdbcExecutor {
 
+    public ImpalaExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
+        super(jdbcDataSourceClient);
+    }
+
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         return new ImpalaDataSourceInfo(jdbcConnectionInfo);

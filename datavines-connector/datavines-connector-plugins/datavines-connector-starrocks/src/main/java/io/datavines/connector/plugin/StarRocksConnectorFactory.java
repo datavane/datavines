@@ -37,7 +37,7 @@ public class StarRocksConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new StarRocksExecutor();
+        return new StarRocksExecutor(new JdbcDataSourceClient());
     }
 
     @Override

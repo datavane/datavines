@@ -37,7 +37,7 @@ public class DatabendConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new DatabendExecutor();
+        return new DatabendExecutor(new JdbcDataSourceClient());
     }
 
     @Override

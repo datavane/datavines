@@ -26,7 +26,7 @@ import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
 public class TargetTableTotalRows implements ExpectedValue {
 
     private final StringBuilder sql =
-            new StringBuilder("select count(1) as expected_value from ${target_table}");
+            new StringBuilder("select count(1) as expected_value from ${table2}");
 
     @Override
     public String getName() {

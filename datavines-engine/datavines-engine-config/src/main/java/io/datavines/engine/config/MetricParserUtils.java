@@ -22,6 +22,7 @@ import io.datavines.common.utils.Md5Utils;
 import io.datavines.common.utils.ParameterUtils;
 import io.datavines.common.utils.StringUtils;
 
+import io.datavines.engine.common.utils.QuoteIdentifier;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.spi.PluginLoader;
 import org.apache.commons.collections4.MapUtils;
@@ -37,8 +38,6 @@ import io.datavines.common.entity.ExecuteSql;
 import io.datavines.metric.api.SqlMetric;
 
 import static io.datavines.common.CommonConstants.AND;
-import static io.datavines.common.CommonConstants.TABLE;
-import static io.datavines.common.CommonConstants.TABLE2;
 import static io.datavines.common.ConfigConstants.*;
 
 public class MetricParserUtils {
@@ -149,9 +148,9 @@ public class MetricParserUtils {
         String[] columnList = new String[mappingColumnList.size()];
         for (int i = 0; i < mappingColumnList.size(); i++) {
             MappingColumn column = mappingColumnList.get(i);
-            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE_ALIAS),column.getColumn())
+            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE_ALIAS), column.getColumn())
                     + column.getOperator()
-                    + getCoalesceString(inputParameterValueResult.get(TABLE2_ALIAS),column.getColumn2());
+                    + getCoalesceString(inputParameterValueResult.get(TABLE2_ALIAS), column.getColumn2());
         }
 
         return String.join(AND,columnList);
@@ -162,9 +161,9 @@ public class MetricParserUtils {
         for (int i = 0; i < mappingColumnList.size(); i++) {
             MappingColumn column = mappingColumnList.get(i);
             if (index == 1) {
-                columnList[i] = tableAlias + "." + column.getColumn() + " AS " +  column.getColumn() + "_" + index;;
+                columnList[i] = tableAlias + "." + QuoteIdentifier.quote(column.getColumn()) + " AS " +  QuoteIdentifier.quote(column.getColumn() + "_" + index);;
             } else if (index == 2){
-                columnList[i] = tableAlias + "." + column.getColumn2() + " AS " +  column.getColumn2() + "_" + index;;
+                columnList[i] = tableAlias + "." + QuoteIdentifier.quote(column.getColumn2()) + " AS " +  QuoteIdentifier.quote(column.getColumn2() + "_" + index);;
             }
         }
 
@@ -179,14 +178,14 @@ public class MetricParserUtils {
     }
 
     public static String getCoalesceString(String table, String column) {
-        return "coalesce(" + table + "." + column + ", '')";
+        return "coalesce(" + table + "." + QuoteIdentifier.quote(column) + ", '')";
     }
 
     public static String getColumnIsNullStr(String table, List<String> columns) {
         String[] columnList = new String[columns.size()];
         for (int i = 0; i < columns.size(); i++) {
             String column = columns.get(i);
-            columnList[i] = table + "." + column + " IS NULL";
+            columnList[i] = table + "." + QuoteIdentifier.quote(column) + " IS NULL";
         }
         return  String.join(AND, columnList);
     }

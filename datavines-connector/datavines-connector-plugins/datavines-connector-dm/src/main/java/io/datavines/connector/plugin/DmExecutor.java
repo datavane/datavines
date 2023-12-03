@@ -21,6 +21,10 @@ import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
 public class DmExecutor extends BaseJdbcExecutor{
 
+    public DmExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
+        super(jdbcDataSourceClient);
+    }
+
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         return new DmDataSourceInfo(jdbcConnectionInfo);

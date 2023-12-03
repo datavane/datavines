@@ -21,6 +21,10 @@ import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
 public class DorisExecutor extends MysqlExecutor {
 
+    public DorisExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
+        super(jdbcDataSourceClient);
+    }
+
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         return new DorisDataSourceInfo(jdbcConnectionInfo);

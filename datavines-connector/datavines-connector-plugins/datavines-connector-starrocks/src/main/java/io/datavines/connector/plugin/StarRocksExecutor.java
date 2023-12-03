@@ -21,6 +21,9 @@ import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
 public class StarRocksExecutor extends MysqlExecutor {
 
+    public StarRocksExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
+        super(jdbcDataSourceClient);
+    }
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         return new StarRocksDataSourceInfo(jdbcConnectionInfo);

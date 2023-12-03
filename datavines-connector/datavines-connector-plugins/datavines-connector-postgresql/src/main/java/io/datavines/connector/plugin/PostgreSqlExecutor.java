@@ -21,6 +21,10 @@ import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
 public class PostgreSqlExecutor extends BaseJdbcExecutor {
 
+    public PostgreSqlExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
+        super(jdbcDataSourceClient);
+    }
+
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         return new PostgreSqlDataSourceInfo(jdbcConnectionInfo);

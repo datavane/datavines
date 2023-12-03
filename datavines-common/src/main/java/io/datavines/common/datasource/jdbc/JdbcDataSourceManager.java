@@ -55,7 +55,7 @@ public class JdbcDataSourceManager {
             DruidDataSource druidDataSource = new DruidDataSource();
             druidDataSource.setUrl(baseJdbcDataSourceInfo.getJdbcUrl());
             druidDataSource.setUsername(baseJdbcDataSourceInfo.getUser());
-            druidDataSource.setPassword(StringUtils.isEmpty(baseJdbcDataSourceInfo.getPassword()) ? null : baseJdbcDataSourceInfo.getPassword());
+            druidDataSource.setPassword(StringUtils.isEmptyOrNullStr(baseJdbcDataSourceInfo.getPassword()) ? null : baseJdbcDataSourceInfo.getPassword());
             druidDataSource.setDriverClassName(baseJdbcDataSourceInfo.getDriverClass());
 
             druidDataSource.setMaxActive(10);
@@ -93,7 +93,7 @@ public class JdbcDataSourceManager {
             DruidDataSource druidDataSource = new DruidDataSource();
             druidDataSource.setUrl(url);
             druidDataSource.setUsername(username);
-            druidDataSource.setPassword(StringUtils.isEmpty(password) ? null : password);
+            druidDataSource.setPassword(StringUtils.isEmptyOrNullStr(password) ? null : password);
             druidDataSource.setDriverClassName(driver);
 
             druidDataSource.setMaxActive(10);
@@ -136,7 +136,7 @@ public class JdbcDataSourceManager {
             DruidDataSource druidDataSource = new DruidDataSource();
             druidDataSource.setUrl(url);
             druidDataSource.setUsername(username);
-            druidDataSource.setPassword(StringUtils.isEmpty(password) ? null : password);
+            druidDataSource.setPassword(StringUtils.isEmptyOrNullStr(password) ? null : password);
             druidDataSource.setDriverClassName(driver);
 
             druidDataSource.setMaxActive(10);

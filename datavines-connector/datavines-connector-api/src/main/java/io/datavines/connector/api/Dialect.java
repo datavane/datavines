@@ -17,6 +17,7 @@
 package io.datavines.connector.api;
 
 import io.datavines.common.enums.DataType;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.entity.StructField;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -39,6 +40,20 @@ public interface Dialect {
 
     List<String> getExcludeDatabases();
 
+    default String getFullQualifiedTableName(String database, String schema, String table) {
+        table = quoteIdentifier(table);
+
+        if (!StringUtils.isEmptyOrNullStr(schema)) {
+            table = quoteIdentifier(schema) + "." + table;
+        }
+
+        if (!StringUtils.isEmptyOrNullStr(database)) {
+            table = quoteIdentifier(database) + "." + table;
+        }
+
+        return table;
+    }
+
     default boolean invalidateItemCanOutput(){
         return true;
     }
@@ -59,8 +74,8 @@ public interface Dialect {
         return DataType.valueOf(jdbcType);
     }
 
-    default String quoteIdentifier(String column) {
-        return "`" + column + "`";
+    default String quoteIdentifier(String entity) {
+        return "`" + entity + "`";
     }
 
     default String getTableExistsQuery(String table) {

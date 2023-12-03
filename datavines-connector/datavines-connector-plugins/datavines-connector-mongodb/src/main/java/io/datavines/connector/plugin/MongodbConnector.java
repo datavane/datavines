@@ -62,18 +62,27 @@ public class MongodbConnector implements Connector {
     public ConnectorResponse getDatabases(GetDatabasesRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+        if (jdbcConnectionInfo == null) {
+            throw new SQLException("jdbc datasource param is no validate");
+        }
 
+        List<DatabaseInfo> databaseInfoList = new ArrayList<>();
         MongoClient mongoClient = getMongoClient(dataSourceParam);
+        try {
+            MongoIterable<String> mongoIterable = mongoClient.listDatabases()
+                    .nameOnly(true)
+                    .authorizedDatabasesOnly(true)
+                    .map(result -> result.getString("name"));
 
-        MongoIterable<String> mongoIterable = mongoClient.listDatabases()
-                .nameOnly(true)
-                .authorizedDatabasesOnly(true)
-                .map(result -> result.getString("name"));
-
-        List<DatabaseInfo> databaseInfoList = Streams.stream(mongoIterable)
-                .filter(db -> !SYSTEM_DATABASE.contains(db))
-                .map(db -> new DatabaseInfo(db, DATABASE))
-                .collect(Collectors.toList());
+            databaseInfoList = Streams.stream(mongoIterable)
+                    .filter(db -> !SYSTEM_DATABASE.contains(db))
+                    .map(db -> new DatabaseInfo(db, DATABASE))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            logger.warn("get mongodb databases error: ", e);
+            databaseInfoList.add(new DatabaseInfo(jdbcConnectionInfo.getDatabase(), DATABASE));
+        }
 
         builder.result(databaseInfoList);
 
@@ -105,16 +114,14 @@ public class MongodbConnector implements Connector {
 
         MongoClient mongoClient = getMongoClient(jdbcConnectionInfo);
         MongoDatabase database = mongoClient.getDatabase(dataBase);
-        Document cursor = database.runCommand(new Document(AUTHORIZED_LIST_COLLECTIONS_COMMAND)
-                .get("cursor", Document.class));
-
-        List<Document> firstBatch = cursor.get("firstBatch", List.class);
-        List<TableInfo> tableInfos = firstBatch.stream()
-                .map(document -> document.getString("name"))
-                .filter(name -> !name.equals(dataBase))
-                .filter(name -> !SYSTEM_TABLE.contains(name))
-                .map(name -> new TableInfo(dataBase, name, "", ""))
-                .collect(Collectors.toList());
+        MongoIterable<String> collectionList = database.listCollectionNames();
+        List<TableInfo> tableInfos = new ArrayList<>();
+        for (String collection : collectionList) {
+            TableInfo tableInfo = new TableInfo();
+            tableInfo.setName(collection);
+            tableInfo.setType("TABLE");
+            tableInfos.add(tableInfo);
+        }
 
         return builder.result(tableInfos).build();
     }

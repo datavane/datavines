@@ -24,6 +24,10 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 public class HiveExecutor extends BaseJdbcExecutor {
 
+    public HiveExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
+        super(jdbcDataSourceClient);
+    }
+
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         return new HiveDataSourceInfo(jdbcConnectionInfo);

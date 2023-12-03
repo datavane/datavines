@@ -21,6 +21,10 @@ import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
 public class ClickHouseExecutor extends BaseJdbcExecutor {
 
+    public ClickHouseExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
+        super(jdbcDataSourceClient);
+    }
+
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         return new ClickHouseDataSourceInfo(jdbcConnectionInfo);

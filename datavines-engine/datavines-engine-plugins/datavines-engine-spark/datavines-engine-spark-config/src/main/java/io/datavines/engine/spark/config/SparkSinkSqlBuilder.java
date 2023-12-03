@@ -34,7 +34,6 @@ public class SparkSinkSqlBuilder {
             } else {
                 columnList.add("${"+columnInfo.getParameterName()+"}" + " as " + columnInfo.getName());
             }
-
         }
 
         return "select " + String.join(", ", columnList) + " from ${actual_table}";
