@@ -66,6 +66,10 @@ public abstract class BaseJdbcDataSourceInfo {
         return jdbcConnectionInfo.getDatabase();
     }
 
+    public String getSchema() {
+        return jdbcConnectionInfo.getSchema();
+    }
+
     public String getProperties() {
         return jdbcConnectionInfo.getProperties();
     }

@@ -37,7 +37,7 @@ public class TrinoConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new TrinoExecutor();
+        return new TrinoExecutor(new JdbcDataSourceClient());
     }
 
     @Override

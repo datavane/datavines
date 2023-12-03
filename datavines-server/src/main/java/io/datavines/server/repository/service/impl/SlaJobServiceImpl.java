@@ -22,9 +22,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.enums.JobType;
-import io.datavines.common.exception.DataVinesException;
-import io.datavines.core.enums.Status;
-import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.sla.SlaJobCreateOrUpdate;
 import io.datavines.server.api.dto.vo.SlaJobVO;
 import io.datavines.server.repository.entity.SlaJob;
@@ -38,7 +35,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -71,34 +67,17 @@ public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> impleme
 
     @Override
     public boolean createOrUpdateSlaJob(SlaJobCreateOrUpdate createOrUpdate) {
-        SlaJob slaJob = null;
-        if (createOrUpdate.getId() != null) {
-            slaJob = getById(createOrUpdate.getId());
-            if (slaJob != null) {
-                BeanUtils.copyProperties(createOrUpdate, slaJob);
-                slaJob.setUpdateBy(ContextHolder.getUserId());
-                slaJob.setUpdateTime(LocalDateTime.now());
-                return updateById(slaJob);
-            } else {
-                throw new DataVinesServerException(Status.SLA_JOB_IS_NOT_EXIST_ERROR, createOrUpdate.getId());
-            }
-        } else {
-            LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
-            wrapper.eq(SlaJob::getJobId,createOrUpdate.getJobId());
-            wrapper.eq(SlaJob::getWorkspaceId, createOrUpdate.getWorkspaceId());
-            SlaJob one = getOne(wrapper);
-            if (Objects.nonNull(one)){
-                log.info("SlaJob has been create {}", createOrUpdate);
-                throw new DataVinesException("SlaJob has been create");
-            }
+        LambdaQueryWrapper<SlaJob> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(SlaJob::getJobId,createOrUpdate.getJobId());
+        wrapper.eq(SlaJob::getWorkspaceId, createOrUpdate.getWorkspaceId());
+        remove(wrapper);
 
-            slaJob = new SlaJob();
-            BeanUtils.copyProperties(createOrUpdate, slaJob);
-            slaJob.setCreateBy(ContextHolder.getUserId());
-            slaJob.setUpdateBy(ContextHolder.getUserId());
-            slaJob.setUpdateTime(LocalDateTime.now());
-            return save(slaJob);
-        }
+        SlaJob slaJob = new SlaJob();
+        BeanUtils.copyProperties(createOrUpdate, slaJob);
+        slaJob.setCreateBy(ContextHolder.getUserId());
+        slaJob.setUpdateBy(ContextHolder.getUserId());
+        slaJob.setUpdateTime(LocalDateTime.now());
+        return save(slaJob);
     }
 
     @Override

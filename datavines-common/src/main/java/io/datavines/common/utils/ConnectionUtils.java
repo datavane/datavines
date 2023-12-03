@@ -16,8 +16,6 @@
  */
 package io.datavines.common.utils;
 
-import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.pool.DruidPooledConnection;
 import io.datavines.common.config.Config;
 import io.datavines.common.datasource.jdbc.JdbcDataSourceManager;
 import io.datavines.common.exception.DataVinesException;

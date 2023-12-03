@@ -91,7 +91,7 @@ public abstract class BaseDataSinkExecutor implements ISinkExecutor {
     }
 
     private void createTable(LocalRuntimeEnvironment env, String createTableSql) throws SQLException{
-        Statement statement =  env.getMetadataConnection().getConnection().createStatement();
+        Statement statement = env.getMetadataConnection().getConnection().createStatement();
         statement.execute(createTableSql);
         statement.close();
     }

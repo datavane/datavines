@@ -40,6 +40,6 @@ public class ImpalaConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new ImpalaExecutor();
+        return new ImpalaExecutor(new JdbcDataSourceClient());
     }
 }

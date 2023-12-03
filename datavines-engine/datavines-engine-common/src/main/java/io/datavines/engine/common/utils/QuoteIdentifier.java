@@ -14,28 +14,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.api;
+package io.datavines.engine.common.utils;
 
-import io.datavines.spi.SPI;;
+public class QuoteIdentifier {
 
-@SPI
-public interface ConnectorFactory {
-
-    String getCategory();
-
-    Connector getConnector();
-
-    ResponseConverter getResponseConverter();
-
-    Dialect getDialect();
-
-    ConnectorParameterConverter getConnectorParameterConverter();
-
-    Executor getExecutor();
-
-    TypeConverter getTypeConverter();
-
-    ConfigBuilder getConfigBuilder();
-
-    DataSourceClient getDataSourceClient();
+    public static String quote(String entity) {
+        return "`" + entity + "`";
+    }
 }

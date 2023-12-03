@@ -39,4 +39,9 @@ public abstract class AbstractJdbcConnectorFactory implements ConnectorFactory {
     public ConfigBuilder getConfigBuilder() {
         return new JdbcConfigBuilder();
     }
+
+    @Override
+    public DataSourceClient getDataSourceClient() {
+        return new JdbcDataSourceClient();
+    }
 }

@@ -37,7 +37,7 @@ public class SqlServerConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new SqlServerExecutor();
+        return new SqlServerExecutor(new JdbcDataSourceClient());
     }
 
     @Override

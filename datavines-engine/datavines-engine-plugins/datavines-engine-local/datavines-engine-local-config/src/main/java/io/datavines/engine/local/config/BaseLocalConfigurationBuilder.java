@@ -70,15 +70,22 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 
+                    String table = connectorFactory.getDialect()
+                            .getFullQualifiedTableName(metricInputParameter.get(DATABASE),metricInputParameter.get(SCHEMA),metricInputParameter.get(TABLE));
+                    connectorParameterMap.put(TABLE, table);
+
                     String outputTable = metricInputParameter.get(TABLE);
-                    connectorParameterMap.put(DATABASE, metricInputParameter.get(DATABASE));
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
+
+                    connectorParameterMap.put(DATABASE, metricInputParameter.get(DATABASE));
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                     connectorParameterMap.put(PRE_SQL, metricInputParameter.get(PRE_SQL));
                     connectorParameterMap.put(POST_SQL, metricInputParameter.get(POST_SQL));
+
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
+                    metricInputParameter.put(TABLE, table);
                     if (connectorParameter.getParameters().get(SCHEMA) != null) {
                         metricInputParameter.put(SCHEMA, (String)connectorParameter.getParameters().get(SCHEMA));
                     }
@@ -109,6 +116,14 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                             .getPluginLoader(ConnectorFactory.class)
                             .getNewPlugin(connectorParameter2.getType());
 
+                    if (connectorParameter2.getParameters().get(SCHEMA) != null) {
+                        metricInputParameter.put(SCHEMA2, (String)connectorParameter2.getParameters().get(SCHEMA));
+                    }
+
+                    String table = connectorFactory.getDialect()
+                            .getFullQualifiedTableName(metricInputParameter.get(DATABASE2),metricInputParameter.get(SCHEMA2),metricInputParameter.get(TABLE2));
+                    connectorParameterMap.put(TABLE, table);
+
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 
@@ -120,9 +135,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(POST_SQL, metricInputParameter.get(POST_SQL));
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
-                    if (connectorParameter2.getParameters().get(SCHEMA) != null) {
-                        metricInputParameter.put(SCHEMA2, (String)connectorParameter2.getParameters().get(SCHEMA));
-                    }
+                    metricInputParameter.put(TABLE, table);
                     boolean invalidateItemCanOutput = Boolean.parseBoolean(metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
                     invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
@@ -165,26 +178,6 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
-                String table = metricInputParameter.get(TABLE);
-                if (!StringUtils.isEmptyOrNullStr(metricInputParameter.get(SCHEMA))) {
-                    table = metricInputParameter.get(SCHEMA) + "." + table;
-                }
-
-                if (!StringUtils.isEmptyOrNullStr(metricInputParameter.get(DATABASE))) {
-                    table = metricInputParameter.get(DATABASE) + "." + table;
-                }
-
-                String table2 = metricInputParameter.get(TABLE2);
-                if (!StringUtils.isEmptyOrNullStr(metricInputParameter.get(SCHEMA2))) {
-                    table2 = metricInputParameter.get(SCHEMA2) + "." + table2;
-                }
-
-                if (!StringUtils.isEmptyOrNullStr(metricInputParameter.get(DATABASE2))) {
-                    table2 = metricInputParameter.get(DATABASE2) + "." + table2;
-                }
-
-                metricInputParameter.put(TABLE, table);
-                metricInputParameter.put(TABLE2, table2);
                 String metricType = parameter.getMetricType();
                 SqlMetric sqlMetric = PluginLoader
                         .getPluginLoader(SqlMetric.class)

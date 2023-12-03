@@ -49,9 +49,14 @@ public class JdbcConnectionInfo {
     private String catalog;
 
     /**
-     * database(schema) name
+     * database name
      */
     private String database;
+
+    /**
+     * schema name
+     */
+    private String schema;
 
     /**
      * properties

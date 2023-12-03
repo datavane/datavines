@@ -109,7 +109,6 @@ public class LocalMultiTableAccuracyMetricBuilder extends BaseLocalConfiguration
                     errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
 
                     Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, Object.class));
-                    ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
                             .getNewPlugin(jobExecutionInfo.getErrorDataStorageType());

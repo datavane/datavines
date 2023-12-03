@@ -59,4 +59,9 @@ public class FileConnectorFactory implements ConnectorFactory {
     public ConfigBuilder getConfigBuilder() {
         return null;
     }
+
+    @Override
+    public DataSourceClient getDataSourceClient() {
+        return null;
+    }
 }

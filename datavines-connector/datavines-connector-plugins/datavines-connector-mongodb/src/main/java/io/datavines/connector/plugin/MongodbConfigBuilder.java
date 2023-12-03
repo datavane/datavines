@@ -22,14 +22,6 @@ import io.datavines.common.param.form.type.InputParam;
 public class MongodbConfigBuilder extends JdbcConfigBuilder {
 
     @Override
-    protected InputParam getPropertiesInput(boolean isEn) {
-        return getInputParam("properties",
-                isEn ? "properties" : "参数",
-                isEn ? "please enter properties,like key=value&key1=value1" : "请填入参数，格式为key=value&key1=value1", 2, null,
-                "authSource=admin&readPreference=secondary");
-    }
-
-    @Override
     protected InputParam getPortInput(boolean isEn) {
         return getInputParam("port",
                 isEn ? "port" : "端口",
