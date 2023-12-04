@@ -26,4 +26,9 @@ public class DmDialect extends JdbcDialect{
     public boolean invalidateItemCanOutput() {
         return false;
     }
+
+    @Override
+    public String quoteIdentifier(String entity) {
+        return "\"" + entity + "\"";
+    }
 }

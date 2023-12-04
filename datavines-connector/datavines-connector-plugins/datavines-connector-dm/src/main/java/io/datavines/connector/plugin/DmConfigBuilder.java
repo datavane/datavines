@@ -22,8 +22,8 @@ import io.datavines.common.param.form.type.InputParam;
 public class DmConfigBuilder extends JdbcConfigBuilder{
 
     @Override
-    protected InputParam getSchemaInput(boolean isEn) {
-        return getInputParam("schema",
+    protected InputParam getDatabaseInput(boolean isEn) {
+        return getInputParam("database",
                 isEn ? "schema" : "模式",
                 isEn ? "please enter schema, which is usually the same as the username" : "请填入模式, 一般和用户名相同", 1,
                 Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter schema" : "请填入模式").build(),
