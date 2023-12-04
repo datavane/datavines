@@ -19,6 +19,8 @@ package io.datavines.engine.spark.executor;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Base64;
+import java.util.Objects;
 
 import io.datavines.common.entity.JobExecutionRequest;
 import io.datavines.common.utils.FileUtils;
@@ -127,7 +129,7 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
                 JSONUtils.parseObject(jobExecutionRequest.getApplicationParameter(), DataVinesJobConfig.class);
 
         sparkParameters.setMainArgs("\""
-                + StringUtils.replaceDoubleBrackets(StringUtils.escapeJava(JSONUtils.toJsonString(configuration))) + "\"");
+                + Base64.getEncoder().encodeToString(Objects.requireNonNull(JSONUtils.toJsonString(configuration)).getBytes()) + "\"");
 
         sparkParameters.setMainClass("io.datavines.engine.spark.core.SparkDataVinesBootstrap");
 

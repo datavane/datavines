@@ -70,6 +70,10 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
                     String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 
+                    metricInputParameter.put(DATABASE_NAME,metricInputParameter.get(DATABASE));
+                    metricInputParameter.put(TABLE_NAME,metricInputParameter.get(TABLE));
+                    metricInputParameter.put(COLUMN_NAME,metricInputParameter.get(COLUMN));
+
                     String table = connectorFactory.getDialect()
                             .getFullQualifiedTableName(metricInputParameter.get(DATABASE),metricInputParameter.get(SCHEMA),metricInputParameter.get(TABLE));
                     connectorParameterMap.put(TABLE, table);

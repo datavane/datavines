@@ -18,10 +18,16 @@ package io.datavines.engine.spark.core;
 
 import io.datavines.engine.core.BaseDataVinesBootstrap;
 
+import java.util.Base64;
+
 public class SparkDataVinesBootstrap extends BaseDataVinesBootstrap {
 
     public static void main(String[] args) {
         SparkDataVinesBootstrap bootstrap = new SparkDataVinesBootstrap();
-        bootstrap.execute(args);
+        if (args.length == 1) {
+            String arg = args[0];
+            args[0] = new String(Base64.getDecoder().decode(arg));
+            bootstrap.execute(args);
+        }
     }
 }

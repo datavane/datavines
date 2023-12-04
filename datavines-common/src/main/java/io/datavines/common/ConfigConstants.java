@@ -75,6 +75,10 @@ public class ConfigConstants {
     public static final String INVALIDATE_ITEM_CAN_OUTPUT = "invalidate_item_can_output";
     public static final String ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE = "error_data_output_to_datasource_database";
     public static final String DATABASE = "database";
+
+    public static final String DATABASE_NAME = "database_name";
+    public static final String TABLE_NAME = "table_name";
+    public static final String COLUMN_NAME = "column_name";
     public static final String SCHEMA = "schema";
     public static final String SCHEMA2 = "schema2";
     public static final String USER = "user";
