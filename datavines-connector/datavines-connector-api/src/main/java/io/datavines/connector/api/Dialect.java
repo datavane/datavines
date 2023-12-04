@@ -54,6 +54,20 @@ public interface Dialect {
         return table;
     }
 
+    default String getFullQualifiedTableNameForSpark(String database, String schema, String table) {
+        table = "`" + table + "`";
+
+        if (!StringUtils.isEmptyOrNullStr(schema)) {
+            table = "`" + schema + "`." + table ;
+        }
+
+        if (!StringUtils.isEmptyOrNullStr(database)) {
+            table = "`" + database + "`." + table;
+        }
+
+        return table;
+    }
+
     default boolean invalidateItemCanOutput(){
         return true;
     }

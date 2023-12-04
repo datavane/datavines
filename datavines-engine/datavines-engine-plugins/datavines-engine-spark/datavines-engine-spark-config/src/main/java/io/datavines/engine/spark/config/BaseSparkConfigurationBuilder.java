@@ -72,11 +72,16 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                         metricInputParameter.put(SCHEMA, (String)connectorParameter.getParameters().get(SCHEMA));
                     }
 
+                    metricInputParameter.put(DATABASE_NAME,metricInputParameter.get(DATABASE));
+                    metricInputParameter.put(TABLE_NAME,metricInputParameter.get(TABLE));
+                    metricInputParameter.put(COLUMN_NAME,metricInputParameter.get(COLUMN));
+
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
                             .getNewPlugin(connectorParameter.getType());
                     String table = connectorFactory.getDialect()
-                            .getFullQualifiedTableName(metricInputParameter.get(DATABASE),metricInputParameter.get(SCHEMA),metricInputParameter.get(TABLE));
+                            .getFullQualifiedTableNameForSpark(metricInputParameter.get(DATABASE),
+                                    metricInputParameter.get(SCHEMA),metricInputParameter.get(TABLE));
 
                     connectorParameterMap.put(TABLE, table);
                     connectorParameterMap.put(DATABASE, metricInputParameter.get(DATABASE));
@@ -126,7 +131,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
                             .getNewPlugin(connectorParameter2.getType());
-                    String table = connectorFactory.getDialect().getFullQualifiedTableName(metricInputParameter.get(DATABASE2),
+                    String table = connectorFactory.getDialect().getFullQualifiedTableNameForSpark(metricInputParameter.get(DATABASE2),
                                                                                            metricInputParameter.get(SCHEMA2),
                                                                                            metricInputParameter.get(TABLE2));
 
