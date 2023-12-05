@@ -73,7 +73,9 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     metricInputParameter.put(DATABASE_NAME,metricInputParameter.get(DATABASE));
                     metricInputParameter.put(TABLE_NAME,metricInputParameter.get(TABLE));
                     metricInputParameter.put(COLUMN_NAME,metricInputParameter.get(COLUMN));
-
+                    if (connectorParameter.getParameters().get(SCHEMA) != null) {
+                        metricInputParameter.put(SCHEMA, (String)connectorParameter.getParameters().get(SCHEMA));
+                    }
                     String table = connectorFactory.getDialect()
                             .getFullQualifiedTableName(metricInputParameter.get(DATABASE),metricInputParameter.get(SCHEMA),metricInputParameter.get(TABLE));
                     connectorParameterMap.put(TABLE, table);
@@ -90,9 +92,6 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                     metricInputParameter.put(TABLE, table);
-                    if (connectorParameter.getParameters().get(SCHEMA) != null) {
-                        metricInputParameter.put(SCHEMA, (String)connectorParameter.getParameters().get(SCHEMA));
-                    }
 
                     boolean invalidateItemCanOutput = Boolean.parseBoolean(metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
                     invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();

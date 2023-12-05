@@ -47,4 +47,9 @@ public class SqlServerDialect extends JdbcDialect {
     public boolean supportToBeErrorDataStorage() {
         return true;
     }
+
+    @Override
+    public String quoteIdentifier(String entity) {
+        return entity;
+    }
 }
