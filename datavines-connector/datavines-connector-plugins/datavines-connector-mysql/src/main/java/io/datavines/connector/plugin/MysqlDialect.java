@@ -43,9 +43,4 @@ public class MysqlDialect extends JdbcDialect {
     public boolean supportToBeErrorDataStorage() {
         return true;
     }
-
-    @Override
-    public String quoteIdentifier(String entity) {
-        return "`" + entity + "`";
-    }
 }

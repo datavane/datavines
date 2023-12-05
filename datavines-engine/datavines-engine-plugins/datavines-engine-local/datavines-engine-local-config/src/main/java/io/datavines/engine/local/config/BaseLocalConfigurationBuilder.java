@@ -68,16 +68,21 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter.getParameters());
                     connectorParameterMap.putAll(metricInputParameter);
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
-                    String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 
-                    metricInputParameter.put(DATABASE_NAME,metricInputParameter.get(DATABASE));
-                    metricInputParameter.put(TABLE_NAME,metricInputParameter.get(TABLE));
-                    metricInputParameter.put(COLUMN_NAME,metricInputParameter.get(COLUMN));
+
+                    metricInputParameter.put(DATABASE_NAME, metricInputParameter.get(DATABASE));
+                    metricInputParameter.put(TABLE_NAME, metricInputParameter.get(TABLE));
+                    metricInputParameter.put(COLUMN_NAME, metricInputParameter.get(COLUMN));
                     if (connectorParameter.getParameters().get(SCHEMA) != null) {
                         metricInputParameter.put(SCHEMA, (String)connectorParameter.getParameters().get(SCHEMA));
                     }
-                    String table = connectorFactory.getDialect()
-                            .getFullQualifiedTableName(metricInputParameter.get(DATABASE),metricInputParameter.get(SCHEMA),metricInputParameter.get(TABLE));
+
+                    metricInputParameter.put(TABLE_ALIAS, metricInputParameter.get(DATABASE) + "_" + metricInputParameter.get(TABLE) + "_1");
+
+                    String table = connectorFactory.getDialect().getFullQualifiedTableName(
+                                                        metricInputParameter.get(DATABASE),
+                                                        metricInputParameter.get(SCHEMA),
+                                                        metricInputParameter.get(TABLE), true);
                     connectorParameterMap.put(TABLE, table);
 
                     String outputTable = metricInputParameter.get(TABLE);
@@ -97,6 +102,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
 
+                    String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
                     if (sourceConnectorSet.contains(connectorUUID)) {
                         continue;
                     }
@@ -113,8 +119,8 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     ConnectorParameter connectorParameter2 = jobExecutionParameter.getConnectorParameter2();
                     Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter2.getParameters());
                     connectorParameterMap.putAll(metricInputParameter);
-                    connectorParameterMap.put(TABLE,metricInputParameter.get(TABLE2));
-                    connectorParameterMap.put(DATABASE,metricInputParameter.get(DATABASE2));
+                    connectorParameterMap.put(TABLE, metricInputParameter.get(TABLE2));
+                    connectorParameterMap.put(DATABASE, metricInputParameter.get(DATABASE2));
                     ConnectorFactory connectorFactory = PluginLoader
                             .getPluginLoader(ConnectorFactory.class)
                             .getNewPlugin(connectorParameter2.getType());
@@ -123,12 +129,15 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                         metricInputParameter.put(SCHEMA2, (String)connectorParameter2.getParameters().get(SCHEMA));
                     }
 
-                    String table = connectorFactory.getDialect()
-                            .getFullQualifiedTableName(metricInputParameter.get(DATABASE2),metricInputParameter.get(SCHEMA2),metricInputParameter.get(TABLE2));
-                    connectorParameterMap.put(TABLE, table);
+                    metricInputParameter.put(TABLE2_ALIAS, metricInputParameter.get(DATABASE2) + "_" + metricInputParameter.get(TABLE2) + "_2");
 
+                    String table = connectorFactory.getDialect().getFullQualifiedTableName(
+                                                                    metricInputParameter.get(DATABASE2),
+                                                                    metricInputParameter.get(SCHEMA2),
+                                                                    metricInputParameter.get(TABLE2), true);
+                    connectorParameterMap.put(TABLE, table);
                     connectorParameterMap = connectorFactory.getConnectorParameterConverter().converter(connectorParameterMap);
-                    String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
+
 
                     String outputTable = metricInputParameter.get(TABLE2);
                     connectorParameterMap.put(OUTPUT_TABLE, outputTable);
@@ -138,10 +147,12 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.put(POST_SQL, metricInputParameter.get(POST_SQL));
                     metricInputParameter.putAll(connectorFactory.getDialect().getDialectKeyMap());
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter2.getType());
-                    metricInputParameter.put(TABLE, table);
+                    metricInputParameter.put(TABLE2, table);
                     boolean invalidateItemCanOutput = Boolean.parseBoolean(metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
                     invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
+
+                    String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
                     if (targetConnectorSet.contains(connectorUUID)) {
                         continue;
                     }
