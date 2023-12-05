@@ -40,29 +40,28 @@ public interface Dialect {
 
     List<String> getExcludeDatabases();
 
-    default String getFullQualifiedTableName(String database, String schema, String table) {
-        table = quoteIdentifier(table);
+    default String getFullQualifiedTableName(String database, String schema, String table, boolean needQuote) {
 
-        if (!StringUtils.isEmptyOrNullStr(schema)) {
-            table = quoteIdentifier(schema) + "." + table;
-        }
+        if (needQuote) {
+            table = quoteIdentifier(table);
 
-        if (!StringUtils.isEmptyOrNullStr(database)) {
-            table = quoteIdentifier(database) + "." + table;
-        }
+            if (!StringUtils.isEmptyOrNullStr(schema)) {
+                table = quoteIdentifier(schema) + "." + table;
+            }
 
-        return table;
-    }
+            if (!StringUtils.isEmptyOrNullStr(database)) {
+                table = quoteIdentifier(database) + "." + table;
+            }
 
-    default String getFullQualifiedTableNameForSpark(String database, String schema, String table) {
-        table = "`" + table + "`";
+        } else {
 
-        if (!StringUtils.isEmptyOrNullStr(schema)) {
-            table = "`" + schema + "`." + table ;
-        }
+            if (!StringUtils.isEmptyOrNullStr(schema)) {
+                table = schema + "." + table;
+            }
 
-        if (!StringUtils.isEmptyOrNullStr(database)) {
-            table = "`" + database + "`." + table;
+            if (!StringUtils.isEmptyOrNullStr(database)) {
+                table = database + "." + table;
+            }
         }
 
         return table;

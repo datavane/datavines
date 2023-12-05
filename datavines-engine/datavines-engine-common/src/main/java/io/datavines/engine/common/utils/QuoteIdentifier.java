@@ -18,6 +18,14 @@ package io.datavines.engine.common.utils;
 
 public class QuoteIdentifier {
 
+    public static String quote(String entity, boolean force) {
+        if (force) {
+            return "`" + entity + "`";
+        }
+
+        return entity;
+    }
+
     public static String quote(String entity) {
         return "`" + entity + "`";
     }

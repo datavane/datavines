@@ -54,13 +54,11 @@ public class LocalMultiTableAccuracyMetricBuilder extends BaseLocalConfiguration
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
                 metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
-                metricInputParameter.put(TABLE_ALIAS, metricInputParameter.get(DATABASE)+"_"+metricInputParameter.get(TABLE) + "_1");
-                metricInputParameter.put(TABLE2_ALIAS, metricInputParameter.get(DATABASE2)+"_"+metricInputParameter.get(TABLE2) + "_2");
                 List<MappingColumn> mappingColumns = JSONUtils.toList(metricInputParameter.get(MAPPING_COLUMNS),MappingColumn.class);
-                metricInputParameter.put(TABLE_ALIAS_COLUMNS, MetricParserUtils.getTableAliasColumns(mappingColumns,metricInputParameter.get(TABLE_ALIAS),1));
-                metricInputParameter.put(TABLE2_ALIAS_COLUMNS, MetricParserUtils.getTableAliasColumns(mappingColumns,metricInputParameter.get(TABLE2_ALIAS),2));
-                metricInputParameter.put(ON_CLAUSE, MetricParserUtils.getOnClause(mappingColumns, metricInputParameter));
-                metricInputParameter.put(WHERE_CLAUSE, MetricParserUtils.getWhereClause(mappingColumns, metricInputParameter));
+                metricInputParameter.put(TABLE_ALIAS_COLUMNS, MetricParserUtils.getTableAliasColumns(mappingColumns,metricInputParameter.get(TABLE_ALIAS),1, false));
+                metricInputParameter.put(TABLE2_ALIAS_COLUMNS, MetricParserUtils.getTableAliasColumns(mappingColumns,metricInputParameter.get(TABLE2_ALIAS),2, false));
+                metricInputParameter.put(ON_CLAUSE, MetricParserUtils.getOnClause(mappingColumns, metricInputParameter, false));
+                metricInputParameter.put(WHERE_CLAUSE, MetricParserUtils.getWhereClause(mappingColumns, metricInputParameter,false));
 
                 metric2InputParameter.put(metricUniqueKey, metricInputParameter);
             }
