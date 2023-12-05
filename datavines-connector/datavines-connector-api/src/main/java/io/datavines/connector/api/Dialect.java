@@ -89,7 +89,7 @@ public interface Dialect {
     }
 
     default String quoteIdentifier(String entity) {
-        return "`" + entity + "`";
+        return entity;
     }
 
     default String getTableExistsQuery(String table) {
