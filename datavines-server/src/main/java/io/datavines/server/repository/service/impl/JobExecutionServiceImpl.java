@@ -79,6 +79,7 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 
     @Override
     public int update(JobExecution jobExecution) {
+        jobExecution.setUpdateTime(LocalDateTime.now());
         return baseMapper.updateById(jobExecution);
     }
 
