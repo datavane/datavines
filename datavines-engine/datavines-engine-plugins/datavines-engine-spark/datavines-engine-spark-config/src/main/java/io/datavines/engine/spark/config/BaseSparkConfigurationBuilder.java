@@ -90,7 +90,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
 
                     String outputTable = getOutputTable(metricInputParameter.get(DATABASE), metricInputParameter.get(SCHEMA), metricInputParameter.get(TABLE));
                     String tableAlias = getTableAlias(metricInputParameter.get(DATABASE), metricInputParameter.get(SCHEMA), metricInputParameter.get(TABLE), "1");
-                    connectorParameterMap.put(OUTPUT_TABLE, outputTable);
+                    connectorParameterMap.put(OUTPUT_TABLE, QuoteIdentifier.quote(outputTable));
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
 
                     metricInputParameter.put(TABLE, QuoteIdentifier.quote(outputTable));
@@ -146,7 +146,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     String tableAlias2 = getTableAlias(metricInputParameter.get(DATABASE2),
                                                         metricInputParameter.get(SCHEMA2),
                                                         metricInputParameter.get(TABLE2) ,"2");
-                    connectorParameterMap.put(OUTPUT_TABLE, outputTable);
+                    connectorParameterMap.put(OUTPUT_TABLE, QuoteIdentifier.quote(outputTable));
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     metricInputParameter.put(TABLE2, QuoteIdentifier.quote(outputTable));
                     metricInputParameter.put(TABLE2_ALIAS, QuoteIdentifier.quote(tableAlias2));
@@ -248,6 +248,6 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
             table = database + "_" + table;
         }
 
-        return table+ "_" + order;
+        return table + "_" + order;
     }
 }
