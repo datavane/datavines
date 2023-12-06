@@ -98,12 +98,19 @@ public abstract class BaseCommandProcess {
 
             String appId = YarnUtils.getYarnAppId(jobExecutionRequest.getTenantCode(), jobExecutionRequest.getJobExecutionUniqueId());
             result.setApplicationId(appId);
-
-            // if yarn job , yarn state is final state
-            if (exitValue == 0){
-                exitStatusCode = YarnUtils.isSuccessOfYarnState(appId) ? ExecutionStatus.SUCCESS.getCode() : ExecutionStatus.FAILURE.getCode();
+            if (StringUtils.isEmpty(appId)) {
+                if (exitValue == 0){
+                    exitStatusCode = ExecutionStatus.SUCCESS.getCode();
+                } else {
+                    exitStatusCode = ExecutionStatus.FAILURE.getCode();
+                }
             } else {
-                exitStatusCode = ExecutionStatus.FAILURE.getCode();
+                // if yarn job , yarn state is final state
+                if (exitValue == 0){
+                    exitStatusCode = YarnUtils.isSuccessOfYarnState(appId) ? ExecutionStatus.SUCCESS.getCode() : ExecutionStatus.FAILURE.getCode();
+                } else {
+                    exitStatusCode = ExecutionStatus.FAILURE.getCode();
+                }
             }
 
             result.setExitStatusCode(exitStatusCode);
