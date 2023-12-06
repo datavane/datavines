@@ -178,9 +178,9 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
 
                 ResultList resultList = SqlUtils.getPageFromResultSet(errorDataResultSet, SqlUtils.getQueryFromsAndJoins("select * from " + sourceTable), start, end);
                 for (Map<String, Object> row: resultList.getResultList()) {
-                    for (int j=0 ;j<columns.size();j++) {
+                    for (int j=0; j<columns.size(); j++) {
                         StructField field = columns.get(j);
-                        String value = String.valueOf(row.get(field.getName()));
+                        String value = String.valueOf(row.get(field.getName().toLowerCase()));
                         String rowContent = "null".equalsIgnoreCase(value) ? null : value;
                         if (rowContent != null) {
                             rowContent = rowContent.replaceAll("\"","");
@@ -198,51 +198,61 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                                     if (StringUtils.isNotEmpty(rowContent)) {
                                         errorDataPreparedStatement.setByte(j+1, Byte.parseByte(rowContent));
                                     } else {
-                                        errorDataPreparedStatement.setByte(j+1,Byte.parseByte(""));
+                                        errorDataPreparedStatement.setNull(j+1, Types.TINYINT);
                                     }
                                     break;
                                 case SHORT_TYPE:
                                     if (StringUtils.isNotEmpty(rowContent)) {
                                         errorDataPreparedStatement.setShort(j+1, Short.parseShort(rowContent));
                                     } else {
-                                        errorDataPreparedStatement.setShort(j+1, Short.parseShort("0"));
+                                        errorDataPreparedStatement.setNull(j+1, Types.SMALLINT);
                                     }
                                     break;
                                 case INT_TYPE :
                                     if (StringUtils.isNotEmpty(rowContent)) {
                                         errorDataPreparedStatement.setInt(j+1, Integer.parseInt(rowContent));
                                     } else {
-                                        errorDataPreparedStatement.setInt(j+1, 0);
+                                        errorDataPreparedStatement.setNull(j+1, Types.INTEGER);
                                     }
                                     break;
                                 case LONG_TYPE:
                                     if (StringUtils.isNotEmpty(rowContent)) {
                                         errorDataPreparedStatement.setLong(j+1, Long.parseLong(rowContent));
                                     } else {
-                                        errorDataPreparedStatement.setLong(j+1, 0);
+                                        errorDataPreparedStatement.setNull(j+1, Types.BIGINT);
                                     }
                                     break;
                                 case FLOAT_TYPE:
                                     if (StringUtils.isNotEmpty(rowContent)) {
                                         errorDataPreparedStatement.setFloat(j+1, Float.parseFloat(rowContent));
                                     } else {
-                                        errorDataPreparedStatement.setFloat(j+1, 0);
+                                        errorDataPreparedStatement.setNull(j+1, Types.FLOAT);
                                     }
                                     break;
                                 case DOUBLE_TYPE:
                                     if (StringUtils.isNotEmpty(rowContent)) {
                                         errorDataPreparedStatement.setDouble(j+1, Double.parseDouble(rowContent));
                                     } else {
-                                        errorDataPreparedStatement.setDouble(j+1, 0);
+                                        errorDataPreparedStatement.setNull(j+1, Types.DOUBLE);
                                     }
                                     break;
                                 case TIME_TYPE:
+                                    if (StringUtils.isNotEmpty(rowContent)) {
+                                        errorDataPreparedStatement.setString(j+1, rowContent);
+                                    } else {
+                                        errorDataPreparedStatement.setNull(j+1, Types.TIME);
+                                    }
                                 case DATE_TYPE:
+                                    if (StringUtils.isNotEmpty(rowContent)) {
+                                        errorDataPreparedStatement.setString(j+1, rowContent);
+                                    } else {
+                                        errorDataPreparedStatement.setNull(j+1, Types.DATE);
+                                    }
                                 case TIMESTAMP_TYPE:
                                     if (StringUtils.isNotEmpty(rowContent)) {
-                                        errorDataPreparedStatement.setString(j+1,rowContent);
+                                        errorDataPreparedStatement.setString(j+1, rowContent);
                                     } else {
-                                        errorDataPreparedStatement.setString(j+1,null);
+                                        errorDataPreparedStatement.setNull(j+1, Types.TIMESTAMP);
                                     }
                                     break;
                                 case STRING_TYPE :
@@ -255,7 +265,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                                     if (StringUtils.isNotEmpty(rowContent)) {
                                         errorDataPreparedStatement.setBigDecimal(j+1, new BigDecimal(rowContent));
                                     } else {
-                                        errorDataPreparedStatement.setBigDecimal(j+1, null);
+                                        errorDataPreparedStatement.setNull(j+1, Types.DECIMAL);
                                     }
                                     break;
                                 case OBJECT:

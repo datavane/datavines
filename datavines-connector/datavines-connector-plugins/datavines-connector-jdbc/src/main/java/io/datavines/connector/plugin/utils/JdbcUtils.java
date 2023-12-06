@@ -101,7 +101,7 @@ public class JdbcUtils {
             boolean isNullable = metaData.isNullable(i + 1) != ResultSetMetaData.columnNoNulls;
 
             StructField field = new StructField();
-            field.setName(columnName);
+            field.setName(columnName.toLowerCase());
             field.setDataType(typeConverter.convert(typeName));
             field.setNullable(isNullable);
             field.setComment("");
