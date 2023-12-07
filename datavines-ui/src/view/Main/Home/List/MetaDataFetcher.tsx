@@ -47,10 +47,6 @@ const Index: React.FC<IndexProps> = ({datasourceId, onSavaEnd}) => {
         getData();
     });
 
-    useEffect(() =>{
-        getData();
-    })
-
     const onChange = ({ current, pageSize }: any) => {
         setPageParams({
             pageNumber: current,
