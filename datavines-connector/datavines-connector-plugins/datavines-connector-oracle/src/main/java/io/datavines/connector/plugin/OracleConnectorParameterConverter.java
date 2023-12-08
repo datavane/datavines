@@ -20,7 +20,10 @@ import io.datavines.common.utils.StringUtils;
 
 import java.util.Map;
 
-import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.HOST;
+import static io.datavines.common.ConfigConstants.PORT;
+import static io.datavines.common.ConfigConstants.DATABASE;
+import static io.datavines.common.ConfigConstants.PROPERTIES;
 
 public class OracleConnectorParameterConverter extends JdbcConnectorParameterConverter{
 
