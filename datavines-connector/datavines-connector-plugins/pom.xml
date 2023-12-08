@@ -47,6 +47,7 @@
         <module>datavines-connector-mongodb</module>
         <module>datavines-connector-sqlserver</module>
         <module>datavines-connector-dm</module>
+        <module>datavines-connector-oracle</module>
     </modules>
 
 
