@@ -107,6 +107,9 @@
                 <include>com.facebook.presto:presto-jdbc</include>
                 <include>io.trino:trino-jdbc</include>
                 <include>com.dameng:DmJdbcDriver18</include>
+                <include>com.oracle.ojdbc:ojdbc8</include>
+                <include>cn.easyproject:orai18n</include>
+                <include>com.microsoft.sqlserver:mssql-jdbc</include>
             </includes>
         </dependencySet>
     </dependencySets>
