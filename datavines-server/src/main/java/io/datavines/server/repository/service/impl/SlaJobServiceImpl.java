@@ -73,7 +73,9 @@ public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> impleme
         remove(wrapper);
 
         SlaJob slaJob = new SlaJob();
-        BeanUtils.copyProperties(createOrUpdate, slaJob);
+        slaJob.setJobId(createOrUpdate.getJobId());
+        slaJob.setWorkspaceId(createOrUpdate.getWorkspaceId());
+        slaJob.setSlaId(createOrUpdate.getSlaId());
         slaJob.setCreateBy(ContextHolder.getUserId());
         slaJob.setUpdateBy(ContextHolder.getUserId());
         slaJob.setUpdateTime(LocalDateTime.now());
