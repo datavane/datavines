@@ -21,8 +21,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.entity.ConnectionInfo;
+import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.entity.JobExecutionParameter;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.entity.job.NotificationParameter;
@@ -37,6 +39,7 @@ import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.core.utils.LanguageUtils;
+import io.datavines.engine.config.DataVinesConfigurationManager;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.api.dto.bo.job.DataProfileJobCreateOrUpdate;
@@ -75,6 +78,7 @@ import java.util.Map;
 import static io.datavines.common.CommonConstants.LOCAL;
 import static io.datavines.common.ConfigConstants.ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE;
 import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
+import static io.datavines.server.utils.DefaultDataSourceInfoUtils.getDefaultConnectionInfo;
 
 @Slf4j
 @Service("jobService")
@@ -492,6 +496,27 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         return true;
     }
+
+    @Override
+    public String getJobExecutionConfig(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException {
+        Job job = baseMapper.selectById(jobId);
+        if (job == null) {
+            throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobId);
+        }
+        JobExecution jobExecution = getJobExecution(job, scheduleTime);
+        Map<String, String> inputParameter = new HashMap<>();
+        JobExecutionParameter jobExecutionParameter = JSONUtils.parseObject(jobExecution.getParameter(), JobExecutionParameter.class);
+        JobExecutionInfo jobExecutionInfo = new JobExecutionInfo(
+                jobExecution.getId(), jobExecution.getName(),
+                jobExecution.getEngineType(), jobExecution.getEngineParameter(),
+                jobExecution.getErrorDataStorageType(), jobExecution.getErrorDataStorageParameter(), jobExecution.getErrorDataFileName(),
+                getDefaultConnectionInfo().getType(), JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
+                jobExecutionParameter);
+        DataVinesJobConfig dataVinesJobConfig =
+                DataVinesConfigurationManager.generateConfiguration(jobExecution.getJobType(), inputParameter, jobExecutionInfo);
+        return PasswordFilterUtils.convertPassword(PWD_PATTERN_1, JSONUtils.toJsonString(dataVinesJobConfig));
+    }
+
 
     private void executeJob(Job job, LocalDateTime scheduleTime) {
 

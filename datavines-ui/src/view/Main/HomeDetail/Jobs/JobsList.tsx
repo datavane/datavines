@@ -10,6 +10,7 @@ import {$http} from '@/http';
 import {defaultRender} from '@/utils/helper';
 import {useAddEditJobsModal} from './useAddEditJobsModal';
 import {useSelectSLAsModal} from './useSelectSLAsModal';
+import { useJobExecutionConfigPreview } from '@/view/Main/HomeDetail/Jobs/useJobExecutionConfigPreview';
 import store from '@/store';
 import dayjs from "dayjs";
 
@@ -24,6 +25,11 @@ const Jobs = ({ datasourceId }: TJobs) => {
     const history = useHistory();
     const match = useRouteMatch();
     const [addType, setAddType] = useState('');
+    const { Render: RenderJobPreviewModal, show: showJobPreviewModal } = useJobExecutionConfigPreview({
+        afterClose() {
+            getData();
+        }
+    });
     const { Render: RenderJobsModal, show: showJobsModal } = useAddEditJobsModal({
         title: intl.formatMessage({ id: addType === 'quality' ? 'jobs_tabs_title' : 'jobs_tabs_comparison_title' }),
         afterClose() {
@@ -165,6 +171,9 @@ const Jobs = ({ datasourceId }: TJobs) => {
     const onViewInstance = (record: TJobsTableItem) => {
         history.push(`${match.url}/instance?jobId=${record.id}`);
     };
+    const onPreviewInstance = async (record: TJobsTableItem) => {
+        showJobPreviewModal(record);
+    };
     // @ts-ignore
     const columns: ColumnsType<TJobsTableItem> = [
         {
@@ -261,6 +270,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
                         {editComp}
                         {deleteComp}
                         {/* <a style={{ marginLeft: 5 }} onClick={() => { onSLAs(record); }}>SLAs</a> */}
+                        <a style={{ marginLeft: 5 }} onClick={() => { onPreviewInstance(record); }}>{intl.formatMessage({ id: 'jobs_preview' })}</a>
                         <a style={{ marginLeft: 5 }} onClick={() => { onViewInstance(record); }}>{intl.formatMessage({ id: 'jobs_view' })}</a>
                     </div>
                 );
@@ -401,6 +411,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
             />
             <RenderJobsModal />
             <RenderSLAsModal />
+            <RenderJobPreviewModal />
         </div>
     );
 };

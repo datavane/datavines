@@ -95,6 +95,7 @@ export default {
     jobs_update_time: 'Update time',
     jobs_run: 'Run',
     jobs_view: 'View JobExecution',
+    jobs_preview: 'JobExecution Preview',
     jobs_task_title: 'JobExecution List',
     jobs_task_name: 'JobExecution Name',
     jobs_task_type: 'Job Type',

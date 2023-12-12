@@ -96,6 +96,12 @@ public class JobController {
         return jobService.execute(jobId, null);
     }
 
+    @ApiOperation(value = "get job execute config")
+    @GetMapping(value = "/execute/config/{id}")
+    public Object getJobExecutionConfig(@PathVariable("id") Long jobId) throws DataVinesServerException {
+        return jobService.getJobExecutionConfig(jobId, null);
+    }
+
     @ApiOperation(value = "get job config")
     @GetMapping(value = "/config/{id}")
     public Object getJobConfig(@PathVariable("id") Long jobId) throws DataVinesServerException {
