@@ -132,6 +132,7 @@ export default {
     jobs_tabs_comparison_title: '数据比对作业',
     jobs_tabs_config: '作业配置',
     jobs_save_run: '保存并运行',
+    jobs_save_preview: '保存并预览',
     jobs_tabs_schedule: '定时任务配置',
     jobs_tabs_SLA: 'SLA配置',
     jobs_add_metric: '添加作业',

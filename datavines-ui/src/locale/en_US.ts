@@ -132,6 +132,7 @@ export default {
     jobs_tabs_comparison_title: 'Data Reconciliation Job',
     jobs_tabs_config: 'Job Configuration',
     jobs_save_run: 'Save and Run',
+    jobs_save_preview: 'Save and Preview',
     jobs_tabs_schedule: 'Schedule Configuration',
     jobs_tabs_SLA: 'SLA Configuration',
     jobs_add_metric: 'Add Metric',

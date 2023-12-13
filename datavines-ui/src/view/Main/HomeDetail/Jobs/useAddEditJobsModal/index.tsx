@@ -14,7 +14,7 @@ import { $http } from '@/http';
 import Schedule from '../components/Schedule';
 import PageContainer from './PageContainer';
 import { SelectSLAsComponent } from '../useSelectSLAsModal';
-
+import { useJobExecutionConfigPreview } from '../useJobExecutionConfigPreview';
 const { TabPane } = Tabs;
 
 type InnerProps = {
@@ -123,6 +123,9 @@ export const Inner = ({
             if (jobId) {
                 await $http.put('/job', { ...params, jobName: jobName, id: jobId, runningNow });
                 getConfig(jobId);
+                if(runningNow == 2){
+                    showJobPreviewModal(jobId)
+                }
             } else {
                 let resData = {};
                 let url = '/job';
@@ -138,9 +141,12 @@ export const Inner = ({
                 const res = await $http.post(url, resData);
                 setJobId(res);
                 getConfig(res);
+                if(runningNow == 2){
+                    showJobPreviewModal(res)
+                }
             }
             message.success('Success!');
-            if (runningNow) {
+            if (runningNow == 1) {
                 // eslint-disable-next-line no-unused-expressions
                 hide && hide();
             }
@@ -150,6 +156,7 @@ export const Inner = ({
             setLoading(false);
         }
     });
+    const { Render: RenderJobPreviewModal, show: showJobPreviewModal } = useJobExecutionConfigPreview({});
     const onCopy = async () => {
         const tempInputDOM = document.createElement('input');
         tempInputDOM.value = jsonData;
@@ -187,6 +194,7 @@ export const Inner = ({
 
                                 </Button>
                                 <Button style={{ marginLeft: 10 }} type="primary" onClick={() => onJob(1)}>{intl.formatMessage({ id: 'jobs_save_run' })}</Button>
+                                <Button style={{ marginLeft: 10 }} type="primary" onClick={() => onJob(2)}>{intl.formatMessage({ id: 'jobs_save_preview' })}</Button>
                             </>
                         )}
                     >
@@ -231,6 +239,7 @@ export const Inner = ({
                     </IF>
                 </TabPane>
             </Tabs>
+            <RenderJobPreviewModal />
         </div>
     );
 };

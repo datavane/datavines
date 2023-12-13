@@ -20,14 +20,18 @@ const Inner = ({ innerRef }: InnerProps) => {
     const getData = async () => {
         try {
             setLoading(true);
-            const res = (await $http.get(`/job/execute/config/${data.id}`)) || "";
-            const json = JSON.stringify(JSON.parse(res), null, 4);
-            setJobExecutionConfig(json);
+            await getJobExecutionConfig(data)
         } catch (error) {
         } finally {
             setLoading(false);
         }
     };
+
+    const getJobExecutionConfig = async (id: string) =>{
+        const res = (await $http.get(`/job/execute/config/${id}`)) || "";
+        setJobExecutionConfig(JSON.stringify(JSON.parse(res), null, 4));
+    }
+
     useMount(async () => {
         getData();
     });
@@ -89,10 +93,10 @@ export const useJobExecutionConfigPreview = (options: ModalProps) => {
         onOk,
     });
     return {
-        Render: useImmutable(() => (<Render><Inner innerRef={innerRef} /></Render>)),
-        show(record: any) {
-            recordRef.current = record;
-            show(record);
+        Render: useImmutable(() => (<Render><Inner innerRef={innerRef}/></Render>)),
+        show(id: any) {
+            recordRef.current = id;
+            show(id);
         },
         ...rest,
     };

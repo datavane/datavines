@@ -172,7 +172,7 @@ const Jobs = ({ datasourceId }: TJobs) => {
         history.push(`${match.url}/instance?jobId=${record.id}`);
     };
     const onPreviewInstance = async (record: TJobsTableItem) => {
-        showJobPreviewModal(record);
+        showJobPreviewModal(record.id);
     };
     // @ts-ignore
     const columns: ColumnsType<TJobsTableItem> = [
