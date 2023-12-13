@@ -58,6 +58,8 @@ public interface JobService extends IService<Job> {
 
     boolean execute(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException;
 
+    String getJobExecutionConfig(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException;
+
     String getJobName(String jobType, String parameter);
 
     String getJobConfig(Long jobId);
