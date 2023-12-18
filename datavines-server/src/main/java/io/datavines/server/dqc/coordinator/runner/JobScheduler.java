@@ -59,7 +59,9 @@ public class JobScheduler extends Thread {
         while (Stopper.isRunning()) {
             Command command = null;
             try {
-                boolean runCheckFlag = true;
+                boolean runCheckFlag = OSUtils.checkResource(
+                        CommonPropertyUtils.getDouble(MAX_CPU_LOAD_AVG, MAX_CPU_LOAD_AVG_DEFAULT),
+                        CommonPropertyUtils.getDouble(RESERVED_MEMORY, RESERVED_MEMORY_DEFAULT));
                 if (!runCheckFlag) {
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS*10);
                     continue;
