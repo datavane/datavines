@@ -15,9 +15,10 @@ import {defaultRender} from "utils/helper";
 type IndexProps = {
     datasourceId: number | string,
     onSavaEnd: any,
+    refreshKey: number,
 }
 
-const Index: React.FC<IndexProps> = ({datasourceId, onSavaEnd}) => {
+const Index: React.FC<IndexProps> = ({datasourceId, onSavaEnd, refreshKey}) => {
     const intl = useIntl();
     const [loading, setLoading] = useState(false);
     const [tableData, setTableData] = useState<TJobsInstanceTableData>({ list: [], total: 0 });
@@ -46,6 +47,9 @@ const Index: React.FC<IndexProps> = ({datasourceId, onSavaEnd}) => {
     useMount(() => {
         getData();
     });
+    useEffect(() =>{
+        getData();
+    }, [refreshKey])
 
     const onChange = ({ current, pageSize }: any) => {
         setPageParams({
