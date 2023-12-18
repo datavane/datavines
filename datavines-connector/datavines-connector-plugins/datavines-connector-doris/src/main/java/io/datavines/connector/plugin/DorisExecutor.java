@@ -18,11 +18,12 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.connector.api.DataSourceClient;
 
 public class DorisExecutor extends MysqlExecutor {
 
-    public DorisExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
-        super(jdbcDataSourceClient);
+    public DorisExecutor(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
     }
 
     @Override

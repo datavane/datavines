@@ -47,6 +47,7 @@ public class DefaultDataSourceInfoUtils {
         ConnectionInfo connectionInfo = getDefaultConnectionInfo();
 
         Map<String,Object> configMap = new HashMap<>();
+        configMap.put(SRC_CONNECTOR_TYPE, connectionInfo.getType());
         configMap.put(URL, connectionInfo.getUrl());
         configMap.put(USER, connectionInfo.getUser());
         configMap.put(PASSWORD, connectionInfo.getPassword());

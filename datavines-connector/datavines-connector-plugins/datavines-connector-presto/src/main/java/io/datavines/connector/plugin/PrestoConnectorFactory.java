@@ -27,7 +27,7 @@ public class PrestoConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Connector getConnector() {
-        return new PrestoConnector();
+        return new PrestoConnector(getDataSourceClient());
     }
 
     @Override
@@ -37,11 +37,16 @@ public class PrestoConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new PrestoExecutor(new JdbcDataSourceClient());
+        return new PrestoExecutor(getDataSourceClient());
     }
 
     @Override
     public ConfigBuilder getConfigBuilder() {
         return new PrestoConfigBuilder();
+    }
+
+    @Override
+    public DataSourceClient getDataSourceClient() {
+        return new PrestoDataSourceClient();
     }
 }

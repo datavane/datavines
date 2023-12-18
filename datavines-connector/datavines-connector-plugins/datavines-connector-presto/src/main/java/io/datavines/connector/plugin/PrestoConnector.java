@@ -24,12 +24,17 @@ import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.type.InputParam;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
+import io.datavines.connector.api.DataSourceClient;
 
 import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
 
 public class PrestoConnector extends JdbcConnector {
+
+    public PrestoConnector(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
+    }
 
     @Override
     protected ResultSet getPrimaryKeys(DatabaseMetaData metaData, String catalog, String schema, String tableName) throws SQLException {

@@ -35,12 +35,12 @@ public class OracleConnectorFactory extends AbstractJdbcConnectorFactory{
 
     @Override
     public Connector getConnector() {
-        return new OracleConnector();
+        return new OracleConnector(getDataSourceClient());
     }
 
     @Override
     public Executor getExecutor() {
-        return new OracleExecutor(new JdbcDataSourceClient());
+        return new OracleExecutor(getDataSourceClient());
     }
 
     @Override

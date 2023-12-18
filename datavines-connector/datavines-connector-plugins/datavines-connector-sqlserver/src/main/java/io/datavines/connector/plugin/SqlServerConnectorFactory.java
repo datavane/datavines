@@ -32,12 +32,12 @@ public class SqlServerConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Connector getConnector() {
-        return new SqlServerConnector();
+        return new SqlServerConnector(getDataSourceClient());
     }
 
     @Override
     public Executor getExecutor() {
-        return new SqlServerExecutor(new JdbcDataSourceClient());
+        return new SqlServerExecutor(getDataSourceClient());
     }
 
     @Override

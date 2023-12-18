@@ -26,6 +26,7 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.Connector;
 import io.datavines.common.datasource.jdbc.utils.JdbcDataSourceUtils;
+import io.datavines.connector.api.DataSourceClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,35 +54,41 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
     protected static final String TABLE_TYPE = "TABLE_TYPE";
 
-    private final JdbcExecutorClientManager jdbcExecutorClientManager = JdbcExecutorClientManager.getInstance();
+    private final DataSourceClient dataSourceClient;
+
+    public JdbcConnector(DataSourceClient dataSourceClient) {
+        this.dataSourceClient = dataSourceClient;
+    }
+
+    private Connection getConnection(String dataSourceParam, JdbcConnectionInfo jdbcConnectionInfo) throws SQLException {
+        return dataSourceClient.getConnection(JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
+    }
 
     @Override
     public ConnectorResponse getDatabases(GetDatabasesRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
-        JdbcExecutorClient executorClient = getJdbcExecutorClient(dataSourceParam);
-        Connection connection = executorClient.getConnection();
-
-        ResultSet rs = getMetadataDatabases(connection);
-        List<DatabaseInfo> databaseList = new ArrayList<>();
-        while (rs.next()) {
-            databaseList.add(new DatabaseInfo(rs.getString(1), DATABASE));
+        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+        if (jdbcConnectionInfo == null) {
+            throw new SQLException("jdbc datasource param is no validate");
         }
-        JdbcDataSourceUtils.releaseConnection(connection);
+
+        List<DatabaseInfo> databaseList = new ArrayList<>();
+        if (StringUtils.isEmptyOrNullStr(jdbcConnectionInfo.getDatabase())) {
+            Connection connection = getConnection(dataSourceParam, jdbcConnectionInfo);
+            ResultSet rs = getMetadataDatabases(connection);
+
+            while (rs.next()) {
+                databaseList.add(new DatabaseInfo(rs.getString(1), DATABASE));
+            }
+            JdbcDataSourceUtils.releaseConnection(connection);
+        } else {
+            databaseList.add(new DatabaseInfo(jdbcConnectionInfo.getDatabase(), DATABASE));
+        }
+
         builder.result(databaseList);
 
         return builder.build();
-    }
-
-    private JdbcExecutorClient getJdbcExecutorClient(String dataSourceParam) {
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-        return jdbcExecutorClientManager.getExecutorClient(
-                JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
-    }
-
-    private JdbcExecutorClient getJdbcExecutorClient(String dataSourceParam, JdbcConnectionInfo jdbcConnectionInfo) {
-        return jdbcExecutorClientManager.getExecutorClient(
-                JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
     }
 
     @Override
@@ -94,8 +101,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
             throw new SQLException("jdbc datasource param is no validate");
         }
 
-        JdbcExecutorClient executorClient = getJdbcExecutorClient(dataSourceParam, jdbcConnectionInfo);
-        Connection connection = executorClient.getConnection();
+        Connection connection = getConnection(dataSourceParam, jdbcConnectionInfo);
 
         List<TableInfo> tableList = null;
         ResultSet tables;
@@ -151,8 +157,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
             throw new SQLException("jdbc datasource param is no validate");
         }
 
-        JdbcExecutorClient executorClient = getJdbcExecutorClient(dataSourceParam, jdbcConnectionInfo);
-        Connection connection = executorClient.getConnection();
+        Connection connection = getConnection(dataSourceParam, jdbcConnectionInfo);
 
         TableColumnInfo tableColumnInfo = null;
         try {
@@ -199,7 +204,6 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
             if (result) {
                 con.close();
             }
-
             return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(result).build();
         } catch (SQLException e) {
             logger.error("test connect error, param is {} :", JSONUtils.toJsonString(param), e);
@@ -212,13 +216,10 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         ResultSet rs = null;
         List<String> primaryKeys = new ArrayList<>();
         try {
-
             rs = getPrimaryKeys(metaData, catalog, schema, tableName);
-
             if (rs == null) {
                 return primaryKeys;
             }
-
             while (rs.next()) {
                 primaryKeys.add(rs.getString("COLUMN_NAME"));
             }

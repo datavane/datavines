@@ -35,11 +35,11 @@ public class ClickHouseConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Connector getConnector() {
-        return new ClickHouseConnector();
+        return new ClickHouseConnector(getDataSourceClient());
     }
 
     @Override
     public Executor getExecutor() {
-        return new ClickHouseExecutor(new JdbcDataSourceClient());
+        return new ClickHouseExecutor(getDataSourceClient());
     }
 }

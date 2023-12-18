@@ -22,6 +22,7 @@ import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
+import io.datavines.connector.api.DataSourceClient;
 
 import java.sql.*;
 
@@ -30,6 +31,10 @@ public class DatabendConnector extends JdbcConnector {
     protected static final String TABLE = "BASE TABLE";
 
     protected static final String[] TABLE_TYPES = new String[]{TABLE};
+
+    public DatabendConnector(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
+    }
 
     @Override
     public ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {

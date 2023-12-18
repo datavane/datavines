@@ -20,12 +20,13 @@ import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.common.datasource.jdbc.utils.HiveSqlUtils;
 import io.datavines.common.entity.ListWithQueryColumn;
+import io.datavines.connector.api.DataSourceClient;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 public class HiveExecutor extends BaseJdbcExecutor {
 
-    public HiveExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
-        super(jdbcDataSourceClient);
+    public HiveExecutor(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
     }
 
     @Override

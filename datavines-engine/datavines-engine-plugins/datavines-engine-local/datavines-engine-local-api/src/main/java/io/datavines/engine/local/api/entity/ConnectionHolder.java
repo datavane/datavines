@@ -16,14 +16,16 @@
  */
 package io.datavines.engine.local.api.entity;
 
-import com.alibaba.druid.pool.DruidPooledConnection;
 import io.datavines.common.config.Config;
-import io.datavines.common.utils.ConnectionUtils;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.local.api.utils.LoggerFactory;
+import io.datavines.spi.PluginLoader;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import static io.datavines.common.ConfigConstants.SRC_CONNECTOR_TYPE;
 
 public class ConnectionHolder {
 
@@ -43,7 +45,10 @@ public class ConnectionHolder {
 
     public Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed() || !connection.isValid(10)) {
-            connection = ConnectionUtils.getConnection(config, logger);
+            ConnectorFactory connectorFactory = PluginLoader
+                    .getPluginLoader(ConnectorFactory.class)
+                    .getNewPlugin(config.getString(SRC_CONNECTOR_TYPE));
+            connection = connectorFactory.getDataSourceClient().getConnection(config.configMap(), logger);
         }
         return connection;
     }

@@ -17,6 +17,8 @@
 package io.datavines.connector.api;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.exception.DataVinesException;
+import org.slf4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -36,6 +38,8 @@ public interface DataSourceClient {
     Connection getConnection(BaseJdbcDataSourceInfo baseJdbcDataSourceInfo) throws SQLException;
 
     Connection getConnection(Map<String,Object> configMap) throws SQLException;
+
+    Connection getConnection(Map<String,Object> configMap, Logger logger) throws DataVinesException;
 
     Connection getConnection(Properties properties) throws SQLException;
 
