@@ -94,8 +94,7 @@ public class JdbcConfigBuilder implements ConfigBuilder {
         return getInputParam("database",
                 isEn ? "database" : "数据库",
                 isEn ? "please enter database" : "请填入数据库", 1,
-                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter database" : "请填入数据库").build(),
-                null);
+                null, null);
     }
 
     protected InputParam getUserInput(boolean isEn) {

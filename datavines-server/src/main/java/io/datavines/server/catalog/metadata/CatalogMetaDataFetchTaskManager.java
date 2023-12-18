@@ -124,16 +124,21 @@ public class CatalogMetaDataFetchTaskManager {
 
         CatalogMetaDataFetchRequest catalogMetaDataFetchRequest = new CatalogMetaDataFetchRequest();
         catalogMetaDataFetchRequest.setDataSource(dataSource);
-        catalogMetaDataFetchRequest.setFetchType(FetchType.DATASOURCE);
-
-        String parameter = catalogMetaDataFetchTask.getParameter();
-        if (StringUtils.isNotEmpty(parameter)) {
+        catalogMetaDataFetchRequest.setFetchType(catalogMetaDataFetchTask.getType());
+        if (StringUtils.isNotEmpty(catalogMetaDataFetchTask.getDatabaseName())) {
+            catalogMetaDataFetchRequest.setDatabase(catalogMetaDataFetchTask.getDatabaseName());
+        }
+        if (StringUtils.isNotEmpty(catalogMetaDataFetchTask.getTableName())) {
+            catalogMetaDataFetchRequest.setTable(catalogMetaDataFetchTask.getTableName());
+        }
+//        String parameter = catalogMetaDataFetchTask.getParameter();
+       /* if (StringUtils.isNotEmpty(parameter)) {
             Map<String, String> parameterMap = JSONUtils.toMap(parameter);
-            if (parameterMap != null) {
+            if (parameterMap != null ) {
                 String database = parameterMap.get("database");
                 if (StringUtils.isNotEmpty(database)) {
                     catalogMetaDataFetchRequest.setDatabase(database);
-                    catalogMetaDataFetchRequest.setFetchType(FetchType.DATABASE);
+                    catalogMetaDataFetchRequest.setFetchType(FetchType.DATASOURCE);
                 }
 
                 String table = parameterMap.get("table");
@@ -142,7 +147,7 @@ public class CatalogMetaDataFetchTaskManager {
                     catalogMetaDataFetchRequest.setFetchType(FetchType.TABLE);
                 }
             }
-        }
+        }*/
 
         CatalogTaskContext catalogTaskContext = new CatalogTaskContext(catalogMetaDataFetchRequest, catalogMetaDataFetchTask.getId());
         taskQueue.put(catalogTaskContext);

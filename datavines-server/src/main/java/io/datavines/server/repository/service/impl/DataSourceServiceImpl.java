@@ -123,6 +123,11 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
         CatalogRefresh catalogRefresh = new CatalogRefresh();
         catalogRefresh.setDatasourceId(dataSource.getId());
+        if(StringUtils.isNotEmpty(dataSource.getName())){
+            // 将param 转换为 jsonObject
+            Map<String, String> paramDbMap = JSONUtils.toMap(dataSourceCreate.getParam());
+            catalogRefresh.setDatabase(paramDbMap.get("database"));
+        }
         catalogMetaDataFetchTaskService.refreshCatalog(catalogRefresh);
         return dataSource.getId();
     }
@@ -173,7 +178,14 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         dataSource.setParamCode(paramCode);
         dataSource.setUpdateTime(LocalDateTime.now());
         dataSource.setUpdateBy(ContextHolder.getUserId());
-
+        // 抓取源数据
+        CatalogRefresh catalogRefresh = new CatalogRefresh();
+        catalogRefresh.setDatasourceId(dataSource.getId());
+        if(StringUtils.isNotEmpty(dataSource.getName())){
+            Map<String, String> paramDbMap = JSONUtils.toMap(dataSourceUpdate.getParam());
+            catalogRefresh.setDatabase(paramDbMap.get("database"));
+        }
+        catalogMetaDataFetchTaskService.refreshCatalog(catalogRefresh);
         return baseMapper.updateById(dataSource);
     }
 

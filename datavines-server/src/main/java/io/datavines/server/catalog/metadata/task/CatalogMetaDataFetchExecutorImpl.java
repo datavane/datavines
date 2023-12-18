@@ -89,7 +89,12 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
     public void execute() throws SQLException {
         switch (request.getFetchType()) {
             case DATASOURCE:
-                executeFetchDataSource();
+                if(StringUtils.isNotEmpty(request.getDatabase())){
+                    // 处理传入库名的逻辑
+                    executeFetchDataSource(request.getDatabase());
+                }else {
+                    executeFetchDataSource();
+                }
                 break;
             case DATABASE:
                 executeFetchDatabase(request.getDatabase());
@@ -101,6 +106,96 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
                 break;
         }
     }
+
+    /**
+     *  指定了数据库的数据源采集
+     * @param database 库名
+     * @throws SQLException
+     */
+    private void executeFetchDataSource(String database) throws SQLException {
+        List<String> createDatabaseEntityList = new ArrayList<>();
+        List<String> databaseListFromDataSource = new ArrayList<>();
+        Map<String, DatabaseInfo> databaseInfoMap = new HashMap<>();
+        long startTime = System.currentTimeMillis(); // 方法开始时间
+        log.info("开始执行 executeFetchDataSource 方法，读取 {} ", database);
+
+        GetDatabasesRequestParam param = new GetDatabasesRequestParam();
+        param.setType(dataSource.getType());
+        param.setDataSourceParam(dataSource.getParam());
+        ConnectorResponse connectorResponse =
+                connectorFactory.getConnector().getDatabases(param);
+
+        if (connectorResponse == null || connectorResponse.getResult() == null) {
+            return;
+        }
+
+        Long datasourceId = dataSource.getId();
+
+        List<DatabaseInfo> databaseInfoList = (List<DatabaseInfo>)connectorResponse.getResult();
+        if (CollectionUtils.isEmpty(databaseInfoList)) {
+            return;
+        }
+
+        // 获取数据库信息
+        for (DatabaseInfo databaseInfo : databaseInfoList) {
+            databaseListFromDataSource.add(dataSource.getId() + "@@" + databaseInfo.getName());
+            databaseInfoMap.put(databaseInfo.getName(), databaseInfo);
+        }
+
+        //获取数据库中的表列表
+        List<String> databaseListFromDb = new ArrayList<>();
+        Map<String, CatalogEntityInstance> databaseListFromDbMap = new HashMap<>();
+        List<CatalogEntityRel> databaseEntityRelList =
+                relService.list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", dataSource.getUuid()));
+        getEntityListFromDb(databaseListFromDb, databaseListFromDbMap, databaseEntityRelList);
+        long endTime = System.currentTimeMillis(); // 方法结束时间
+        log.info(" executeFetchDataSource 读取数据库清单, 执行时间: {} 毫秒", endTime - startTime);
+
+        if (CollectionUtils.isEmpty(databaseListFromDb) || !databaseListFromDb.contains(dataSource.getId() + "@@" +database) ) {
+            createDatabaseEntityList = databaseListFromDataSource;
+        }
+
+        if (databaseListFromDb.size() > 1 || (databaseListFromDb.size() == 1 && !databaseListFromDb.contains(dataSource.getId() + "@@" + database))){
+            List<String> databaseNameList = new ArrayList<>(databaseInfoMap.keySet());
+            databaseNameList.remove(database);
+            Map<Long,List<String>> deleteMap = new HashMap<>();
+            deleteMap.put(datasourceId, databaseNameList);
+            instanceService.deleteEntityByDataSourceBatch(deleteMap);
+            long deleteTime = System.currentTimeMillis(); // 方法结束时间
+            log.info(" executeFetchDataSource 删除不需要的数据库, 执行时间: {} 毫秒",deleteTime -  endTime);
+        }
+
+        if (CollectionUtils.isNotEmpty(createDatabaseEntityList) ) {
+            String databaseUUID = null;
+            String fqn = database;
+
+            CatalogEntityInstance databaseEntityInstance = new CatalogEntityInstance();
+            databaseEntityInstance.setType("database");
+            databaseEntityInstance.setDisplayName(database);
+            databaseEntityInstance.setFullyQualifiedName(database);
+            databaseEntityInstance.setUpdateTime(LocalDateTime.now());
+            databaseEntityInstance.setUpdateBy(0L);
+            databaseEntityInstance.setStatus("active");
+            databaseEntityInstance.setDatasourceId(datasourceId);
+
+            CatalogEntityInstance databaseEntityInstanceOld = instanceService.getByDataSourceAndFQN(datasourceId, fqn);
+            databaseUUID = createOrUpdateCatalogEntityInstance(databaseEntityInstance, databaseEntityInstanceOld);
+
+            CatalogEntityRel dataSource2databaseRel = new CatalogEntityRel();
+            dataSource2databaseRel.setEntity1Uuid(dataSource.getUuid());
+            dataSource2databaseRel.setEntity2Uuid(databaseUUID);
+            dataSource2databaseRel.setType(EntityRelType.CHILD.getDescription());
+            dataSource2databaseRel.setUpdateTime(LocalDateTime.now());
+            dataSource2databaseRel.setUpdateBy(0L);
+            relService.save(dataSource2databaseRel);
+        }
+
+        long datebaseFetchStartTime = System.currentTimeMillis(); // 方法结束时间
+        executeFetchDatabase(database);
+        long datebaseFetchEndTime = System.currentTimeMillis(); // 方法结束时间
+        log.info(" executeFetchDataSource 更新数据库, 执行时间: {} 毫秒",datebaseFetchEndTime -  datebaseFetchStartTime);
+    }
+
 
     private void executeFetchDataSource() throws SQLException {
 

@@ -97,6 +97,7 @@ public class CatalogMetaDataFetchTaskServiceImpl
                     catalogMetaDataFetchTask.setType(FetchType.DATASOURCE);
                 }
 
+
                 if (StringUtils.isEmpty(database) && StringUtils.isNotEmpty(table)) {
                     throw new DataVinesServerException(Status.CATALOG_FETCH_METADATA_PARAMETER_ERROR);
                 }
@@ -104,6 +105,10 @@ public class CatalogMetaDataFetchTaskServiceImpl
                 if (StringUtils.isNotEmpty(database) && StringUtils.isEmpty(table)) {
                     catalogMetaDataFetchTask.setDatabaseName(database);
                     catalogMetaDataFetchTask.setType(FetchType.DATABASE);
+                }
+                if (StringUtils.isNotEmpty(database) && table == null ) {
+                    catalogMetaDataFetchTask.setDatabaseName(database);
+                    catalogMetaDataFetchTask.setType(FetchType.DATASOURCE);
                 }
 
                 if (StringUtils.isNotEmpty(database) && StringUtils.isNotEmpty(table)) {

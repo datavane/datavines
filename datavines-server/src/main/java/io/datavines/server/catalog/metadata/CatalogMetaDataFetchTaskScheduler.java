@@ -52,10 +52,7 @@ public class CatalogMetaDataFetchTaskScheduler extends Thread {
         while (Stopper.isRunning()) {
             CatalogMetaDataFetchCommand command = null;
             try {
-                boolean runCheckFlag = OSUtils.checkResource(
-                        CommonPropertyUtils.getDouble(MAX_CPU_LOAD_AVG, MAX_CPU_LOAD_AVG_DEFAULT),
-                        CommonPropertyUtils.getDouble(RESERVED_MEMORY, RESERVED_MEMORY_DEFAULT));
-
+                boolean runCheckFlag = true;
                 if (!runCheckFlag) {
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS);
                     continue;

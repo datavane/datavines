@@ -27,6 +27,7 @@ import io.datavines.server.api.dto.vo.catalog.*;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 
 import java.util.List;
+import java.util.Map;
 
 public interface CatalogEntityInstanceService extends IService<CatalogEntityInstance> {
 
@@ -87,4 +88,6 @@ public interface CatalogEntityInstanceService extends IService<CatalogEntityInst
     boolean deleteInstanceByDataSourceId(Long datasourceId);
 
     IPage<JobExecutionVO> profileJobExecutionPage(String uuid, Integer pageNumber, Integer pageSize);
+
+    void deleteEntityByDataSourceBatch(Map<Long, List<String>> deleteMap);
 }

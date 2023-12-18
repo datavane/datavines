@@ -1043,6 +1043,41 @@ public class CatalogEntityInstanceServiceImpl
     }
 
     @Override
+    public void deleteEntityByDataSourceBatch(Map<Long, List<String>> dataSourceFqnMap) {
+        if (dataSourceFqnMap == null || dataSourceFqnMap.isEmpty()) {
+            return ;
+        }
+
+        List<String> allUuids = new ArrayList<>();
+        dataSourceFqnMap.forEach((dataSourceId, fqns) -> {
+            List<CatalogEntityInstance> entityInstances = fqns.stream()
+                    .map(fqn -> getByDataSourceAndFQN(dataSourceId, fqn))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+
+            List<String> uuids = entityInstances.stream()
+                    .map(CatalogEntityInstance::getUuid)
+                    .collect(Collectors.toList());
+
+            allUuids.addAll(uuids);
+        });
+        deleteEntityInstances(allUuids);
+    }
+
+    private void deleteEntityInstances(List<String> uuids) {
+        if (CollectionUtils.isEmpty(uuids)) {
+            return;
+        }
+
+        // 使用事务确保删除操作的原子性
+        uuids.forEach(uuid -> {
+            remove(new QueryWrapper<CatalogEntityInstance>().eq("uuid", uuid));
+            entityRelService.remove(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", uuid));
+            catalogEntityMetricJobRelService.deleteByEntityUUID(Collections.singletonList(uuid));
+        });
+    }
+
+    @Override
     public String getProfileJobFilter(String uuid) {
         CatalogEntityMetricJobRel rel = catalogEntityMetricJobRelService.getOne(new QueryWrapper<CatalogEntityMetricJobRel>().eq("entity_uuid", uuid).eq("metric_job_type", DATA_PROFILE.getDescription()));
         String filter = "";
