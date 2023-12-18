@@ -32,12 +32,12 @@ public class DorisConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Connector getConnector() {
-        return new DorisConnector();
+        return new DorisConnector(getDataSourceClient());
     }
 
     @Override
     public Executor getExecutor() {
-        return new DorisExecutor(new JdbcDataSourceClient());
+        return new DorisExecutor(getDataSourceClient());
     }
 
     @Override

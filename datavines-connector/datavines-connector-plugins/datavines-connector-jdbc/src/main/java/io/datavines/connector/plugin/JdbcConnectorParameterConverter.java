@@ -28,6 +28,7 @@ public abstract class JdbcConnectorParameterConverter implements ConnectorParame
     @Override
     public Map<String, Object> converter(Map<String, Object> parameter) {
         Map<String,Object> config = new HashMap<>();
+        config.put(SRC_CONNECTOR_TYPE, parameter.get(SRC_CONNECTOR_TYPE));
         config.put(TABLE,parameter.get(TABLE));
         config.put(USER,parameter.get(USER));
         config.put(PASSWORD, parameter.get(PASSWORD));

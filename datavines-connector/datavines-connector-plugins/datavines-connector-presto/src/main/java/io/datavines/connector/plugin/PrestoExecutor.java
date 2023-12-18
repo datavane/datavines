@@ -21,8 +21,8 @@ import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 
 public class PrestoExecutor extends BaseJdbcExecutor {
 
-    public PrestoExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
-        super(jdbcDataSourceClient);
+    public PrestoExecutor(PrestoDataSourceClient dataSourceClient) {
+        super(dataSourceClient);
     }
 
     @Override

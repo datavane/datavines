@@ -32,12 +32,12 @@ public class PostgreSqlConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Connector getConnector() {
-        return new PostgreSqlConnector();
+        return new PostgreSqlConnector(getDataSourceClient());
     }
 
     @Override
     public Executor getExecutor() {
-        return new PostgreSqlExecutor(new JdbcDataSourceClient());
+        return new PostgreSqlExecutor(getDataSourceClient());
     }
 
     @Override

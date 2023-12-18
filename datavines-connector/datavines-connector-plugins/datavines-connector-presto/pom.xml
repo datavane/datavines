@@ -39,10 +39,17 @@
             <artifactId>datavines-connector-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.facebook.presto</groupId>
             <artifactId>presto-jdbc</artifactId>
             <version>${presto.jdbc.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.11.0</version>
         </dependency>
     </dependencies>
 

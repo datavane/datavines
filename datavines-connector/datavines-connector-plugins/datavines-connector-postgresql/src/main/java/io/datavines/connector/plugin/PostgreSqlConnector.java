@@ -18,6 +18,7 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.connector.api.DataSourceClient;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -25,6 +26,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class PostgreSqlConnector extends JdbcConnector {
+
+    public PostgreSqlConnector(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
+    }
 
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {

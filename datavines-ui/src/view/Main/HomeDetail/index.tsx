@@ -113,26 +113,44 @@ const DetailMain = () => {
                 display: location.pathname.includes('dashboard') ? 'block' : 'none',
             }}
             >
-                <Dashboard />
+                {
+                    location.pathname.includes('dashboard') ? <div>
+                        <Dashboard />
+                    </div>: ''
+                }
             </div>
 
             <div style={{
                 display: location.pathname.includes('editor') ? 'block' : 'none',
             }}
             >
-                <EditorData />
+                {
+                    location.pathname.includes('editor') ? <div>
+                        <EditorData />
+                    </div>: ''
+                }
             </div>
+
             <div style={{
                 display: location.pathname.includes('jobs') ? 'block' : 'none',
             }}
             >
-                <Jobs />
+                {
+                    location.pathname.includes('jobs') ? <div>
+                        <Jobs />
+                    </div>: ''
+                }
             </div>
+
             <div style={{
                 display: location.pathname.includes('jobExecutionLogs') ? 'block' : 'none',
             }}
             >
-                <JobExecutionLogs />
+                {
+                    location.pathname.includes('jobExecutionLogs') ? <div>
+                        <JobExecutionLogs />
+                    </div>: ''
+                }
             </div>
         </MenuLayout>
 

@@ -32,12 +32,12 @@ public class MysqlConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Connector getConnector() {
-        return new MysqlConnector();
+        return new MysqlConnector(getDataSourceClient());
     }
 
     @Override
     public Executor getExecutor() {
-        return new MysqlExecutor(new JdbcDataSourceClient());
+        return new MysqlExecutor(getDataSourceClient());
     }
 
     @Override

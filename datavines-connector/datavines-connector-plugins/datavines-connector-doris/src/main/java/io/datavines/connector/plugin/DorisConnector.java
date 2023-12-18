@@ -16,6 +16,11 @@
  */
 package io.datavines.connector.plugin;
 
+import io.datavines.connector.api.DataSourceClient;
+
 public class DorisConnector extends MysqlConnector {
 
+    public DorisConnector(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
+    }
 }
