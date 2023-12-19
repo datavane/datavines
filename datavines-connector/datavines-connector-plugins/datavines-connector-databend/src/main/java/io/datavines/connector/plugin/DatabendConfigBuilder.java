@@ -37,6 +37,4 @@ public class DatabendConfigBuilder extends JdbcConfigBuilder {
                 isEn ? "please enter database" : "请填入数据库", 1,
                 null, null);
     }
-
-
 }

@@ -20,8 +20,6 @@ import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.TestConnectionRequestParam;
-import io.datavines.common.param.form.Validate;
-import io.datavines.common.param.form.type.InputParam;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.DataSourceClient;
@@ -29,6 +27,10 @@ import io.datavines.connector.api.DataSourceClient;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
+
+import static io.datavines.common.ConfigConstants.PASSWORD;
+import static io.datavines.common.ConfigConstants.USER;
 
 public class TrinoConnector extends JdbcConnector {
 
@@ -58,8 +60,23 @@ public class TrinoConnector extends JdbcConnector {
         BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(jdbcConnectionInfo);
         dataSourceInfo.loadClass();
 
-        try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(),
-                dataSourceInfo.getUser(), StringUtils.isEmpty(dataSourceInfo.getPassword()) ? null : dataSourceInfo.getPassword())) {
+        Properties properties = new Properties();
+        properties.setProperty(USER, dataSourceInfo.getUser());
+        if (StringUtils.isNotEmpty(dataSourceInfo.getPassword())) {
+            properties.setProperty(PASSWORD, dataSourceInfo.getUser());
+        }
+
+        String[] url2Array = dataSourceInfo.getJdbcUrl().split("\\?");
+        String url = url2Array[0];
+        if (url2Array.length > 1) {
+            String[] keyArray =  url2Array[1].split("&");
+            for (String prop : keyArray) {
+                String[] values = prop.split("=");
+                properties.setProperty(values[0], values[1]);
+            }
+        }
+
+        try (Connection con = DriverManager.getConnection(url, properties)) {
             boolean result = (con!=null);
             if (result) {
                 try {
