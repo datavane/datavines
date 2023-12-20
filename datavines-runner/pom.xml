@@ -124,6 +124,12 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-notification-plugin-dingtalk</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-notification-plugin-wecombot</artifactId>
             <version>${project.version}</version>
         </dependency>
