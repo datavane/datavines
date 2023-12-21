@@ -18,11 +18,12 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.connector.api.DataSourceClient;
 
 public class ImpalaExecutor extends BaseJdbcExecutor {
 
-    public ImpalaExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
-        super(jdbcDataSourceClient);
+    public ImpalaExecutor(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
     }
 
     @Override

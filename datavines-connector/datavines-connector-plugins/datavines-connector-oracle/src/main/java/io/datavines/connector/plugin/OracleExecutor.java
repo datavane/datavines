@@ -18,11 +18,12 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.connector.api.DataSourceClient;
 
-public class OracleExecutor extends BaseJdbcExecutor{
+public class OracleExecutor extends BaseJdbcExecutor {
 
-    public OracleExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
-        super(jdbcDataSourceClient);
+    public OracleExecutor(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
     }
 
     @Override

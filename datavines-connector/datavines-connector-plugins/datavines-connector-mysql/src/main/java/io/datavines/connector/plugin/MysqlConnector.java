@@ -18,7 +18,7 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
-import io.datavines.common.param.form.type.InputParam;
+import io.datavines.connector.api.DataSourceClient;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -27,6 +27,9 @@ import java.sql.SQLException;
 
 public class MysqlConnector extends JdbcConnector {
 
+    public MysqlConnector(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
+    }
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         return new MysqlDataSourceInfo(jdbcConnectionInfo);

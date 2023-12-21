@@ -19,9 +19,10 @@ package io.datavines.connector.plugin;
 import io.datavines.connector.api.*;
 
 public class DmConnectorFactory extends AbstractJdbcConnectorFactory {
+
     @Override
     public Connector getConnector() {
-        return new DmConnector();
+        return new DmConnector(getDataSourceClient());
     }
 
     @Override
@@ -36,7 +37,7 @@ public class DmConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new DmExecutor(new JdbcDataSourceClient());
+        return new DmExecutor(getDataSourceClient());
     }
 
     @Override

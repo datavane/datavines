@@ -31,19 +31,19 @@ public class PrestoConfigBuilder extends JdbcConfigBuilder {
     }
 
     @Override
-    protected InputParam getDatabaseInput(boolean isEn) {
-        return getInputParam("database",
-                isEn ? "database" : "数据库",
-                isEn ? "please enter database" : "请填入数据库", 1,
-                null, null);
-    }
-
-    @Override
     protected InputParam getPasswordInput(boolean isEn) {
         return getInputParam("password",
                 isEn ? "password" : "密码",
                 isEn ? "please enter password" : "请填入密码", 1,
                 null,
+                null);
+    }
+
+    @Override
+    protected InputParam getDatabaseInput(boolean isEn) {
+        return getInputParam("database",
+                isEn ? "database" : "数据库",
+                isEn ? "please enter database" : "请填入数据库", 1, null,
                 null);
     }
 }

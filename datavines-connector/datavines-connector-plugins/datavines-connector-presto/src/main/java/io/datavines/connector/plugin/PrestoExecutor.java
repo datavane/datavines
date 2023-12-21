@@ -18,11 +18,12 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.connector.api.DataSourceClient;
 
 public class PrestoExecutor extends BaseJdbcExecutor {
 
-    public PrestoExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
-        super(jdbcDataSourceClient);
+    public PrestoExecutor(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
     }
 
     @Override

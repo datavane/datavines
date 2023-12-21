@@ -33,6 +33,8 @@
         <module>datavines-notification-plugin-email</module>
         <module>datavines-notification-plugin-lark</module>
         <module>datavines-notification-plugin-wecombot</module>
+        <module>datavines-notification-plugin-dingtalk</module>
+
     </modules>
 
     <properties>

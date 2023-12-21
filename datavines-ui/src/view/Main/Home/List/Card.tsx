@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Pagination, Dropdown, Menu, Popconfirm, Row, Col, Tag, Modal, Table
 } from 'antd';
@@ -132,6 +132,14 @@ const Index: React.FC<IndexProps> = ({
             </Col>
         </React.Fragment>
     );
+
+    const [refresh, setRefresh] = useState(0);
+
+    useEffect(() => {
+        if(isScheduleOpen) {
+            setRefresh(prev => prev + 1);
+        }
+    }, [isScheduleOpen])
     return (
         <>
             <div
@@ -167,6 +175,7 @@ const Index: React.FC<IndexProps> = ({
             >
                 <MetaDataFetcher
                     datasourceId={uuid}
+                    refreshKey={refresh}
                     onSavaEnd={() => {
                         setisScheduleOpen(false);
                     }}

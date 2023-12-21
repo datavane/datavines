@@ -18,7 +18,6 @@ type TJobExecutionLogs = {
     datasourceId?: any,
 }
 
-
 const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
 
     const intl = useIntl();

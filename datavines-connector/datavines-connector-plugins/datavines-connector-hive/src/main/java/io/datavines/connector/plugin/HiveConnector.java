@@ -18,13 +18,17 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
-import io.datavines.common.param.form.type.InputParam;
+import io.datavines.connector.api.DataSourceClient;
 
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class HiveConnector extends JdbcConnector {
+
+    public HiveConnector(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
+    }
 
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {

@@ -18,7 +18,9 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcDataSourceManager;
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.connector.api.DataSourceClient;
+import org.slf4j.Logger;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -52,6 +54,24 @@ public class JdbcDataSourceClient implements DataSourceClient {
     @Override
     public Connection getConnection(Map<String, Object> configMap) throws SQLException {
         return JdbcDataSourceManager.getInstance().getDataSource(configMap).getConnection();
+    }
+
+    @Override
+    public Connection getConnection(Map<String,Object> configMap, Logger logger) throws DataVinesException {
+        try {
+            DataSource dataSource = getDataSource(configMap);
+            if (dataSource != null) {
+                Connection connection = dataSource.getConnection();
+                logger.info("get connection success : {}",  configMap.get("url") + "[username=" + configMap.get("user") + "]");
+                return connection;
+            } else {
+                logger.error("get datasource error");
+                throw new DataVinesException("can not get datasource");
+            }
+        } catch (SQLException exception) {
+            logger.error("get connection error :", exception);
+            throw new DataVinesException(exception);
+        }
     }
 
     @Override

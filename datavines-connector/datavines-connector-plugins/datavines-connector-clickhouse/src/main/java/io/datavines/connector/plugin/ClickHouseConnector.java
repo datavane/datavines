@@ -18,9 +18,13 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.connector.api.DataSourceClient;
 
 public class ClickHouseConnector extends JdbcConnector {
 
+    public ClickHouseConnector(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
+    }
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
         return new ClickHouseDataSourceInfo(jdbcConnectionInfo);

@@ -18,11 +18,12 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.connector.api.DataSourceClient;
 
 public class StarRocksExecutor extends MysqlExecutor {
 
-    public StarRocksExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
-        super(jdbcDataSourceClient);
+    public StarRocksExecutor(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
     }
     @Override
     public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {

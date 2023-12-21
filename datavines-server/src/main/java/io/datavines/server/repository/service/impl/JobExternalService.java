@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.SRC_CONNECTOR_TYPE;
+
 @Slf4j
 @Component
 public class JobExternalService {
@@ -147,12 +149,12 @@ public class JobExternalService {
         jobExecutionRequest.setEngineType(jobExecution.getEngineType());
         jobExecutionRequest.setEngineParameter(jobExecution.getEngineParameter());
         Map<String,String> inputParameter = new HashMap<>();
-
+        Map<String, Object> defaultDataSourceMap = DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap();
         JobExecutionInfo jobExecutionInfo = new JobExecutionInfo(
                 jobExecution.getId(), jobExecution.getName(),
                 jobExecution.getEngineType(), jobExecution.getEngineParameter(),
                 jobExecution.getErrorDataStorageType(), jobExecution.getErrorDataStorageParameter(), jobExecution.getErrorDataFileName(),
-                "mysql", JSONUtils.toJsonString(DefaultDataSourceInfoUtils.getDefaultDataSourceConfigMap()),
+                String.valueOf(defaultDataSourceMap.get(SRC_CONNECTOR_TYPE)), JSONUtils.toJsonString(defaultDataSourceMap),
                 jobExecutionParameter);
         DataVinesJobConfig qualityConfig =
                 DataVinesConfigurationManager.generateConfiguration(jobExecution.getJobType(), inputParameter, jobExecutionInfo);

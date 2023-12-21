@@ -16,6 +16,11 @@
  */
 package io.datavines.connector.plugin;
 
+import io.datavines.connector.api.DataSourceClient;
+
 public class StarRocksConnector extends MysqlConnector {
 
+    public StarRocksConnector(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
+    }
 }

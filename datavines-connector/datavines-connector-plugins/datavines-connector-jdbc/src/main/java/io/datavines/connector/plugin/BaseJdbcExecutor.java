@@ -22,6 +22,7 @@ import io.datavines.common.entity.ListWithQueryColumn;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.common.utils.JSONUtils;
+import io.datavines.connector.api.DataSourceClient;
 import io.datavines.connector.api.Executor;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -30,10 +31,10 @@ import java.sql.SQLException;
 
 public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo {
 
-    private final JdbcDataSourceClient jdbcDataSourceClient;
+    private final DataSourceClient dataSourceClient;
 
-    public BaseJdbcExecutor(JdbcDataSourceClient jdbcDataSourceClient) {
-        this.jdbcDataSourceClient = jdbcDataSourceClient;
+    public BaseJdbcExecutor(DataSourceClient dataSourceClient) {
+        this.dataSourceClient = dataSourceClient;
     }
 
     protected ListWithQueryColumn query(JdbcTemplate jdbcTemplate, String sql, int limit) {
@@ -47,7 +48,7 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
 
         JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
 
-        JdbcTemplate jdbcTemplate = jdbcDataSourceClient.getJdbcTemplate(
+        JdbcTemplate jdbcTemplate = dataSourceClient.getJdbcTemplate(
                 JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
 
         String sql = param.getScript();
@@ -68,7 +69,7 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
         String dataSourceParam = param.getDataSourceParam();
 
         JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-        JdbcTemplate jdbcTemplate = jdbcDataSourceClient.getJdbcTemplate(
+        JdbcTemplate jdbcTemplate = dataSourceClient.getJdbcTemplate(
                 JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
 
         String sql = param.getScript() + " limit 1";
@@ -89,7 +90,7 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
         String dataSourceParam = param.getDataSourceParam();
         JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
 
-        JdbcTemplate jdbcTemplate = jdbcDataSourceClient.getJdbcTemplate(
+        JdbcTemplate jdbcTemplate = dataSourceClient.getJdbcTemplate(
                 JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
 
         String sql = param.getScript();

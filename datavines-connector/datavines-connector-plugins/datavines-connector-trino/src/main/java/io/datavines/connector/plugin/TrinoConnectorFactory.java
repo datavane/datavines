@@ -27,7 +27,7 @@ public class TrinoConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Connector getConnector() {
-        return new TrinoConnector();
+        return new TrinoConnector(getDataSourceClient());
     }
 
     @Override
@@ -37,11 +37,16 @@ public class TrinoConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public Executor getExecutor() {
-        return new TrinoExecutor(new JdbcDataSourceClient());
+        return new TrinoExecutor(getDataSourceClient());
     }
 
     @Override
     public ConfigBuilder getConfigBuilder() {
         return new TrinoConfigBuilder();
+    }
+
+    @Override
+    public DataSourceClient getDataSourceClient() {
+        return new TrinoDataSourceClient();
     }
 }
