@@ -42,6 +42,11 @@ public class PrestoConnectorParameterConverter extends JdbcConnectorParameterCon
                     parameter.get(PORT),
                     parameter.get(CATALOG));
         }
+
+        String properties = (String)parameter.get(PROPERTIES);
+        if (StringUtils.isNotEmpty(properties)) {
+            url += "?" + properties;
+        }
         return url;
     }
 }
