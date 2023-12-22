@@ -90,7 +90,7 @@ public class TrinoDataSourceClient implements DataSourceClient {
 
     @Override
     public JdbcTemplate getJdbcTemplate(BaseJdbcDataSourceInfo baseJdbcDataSourceInfo) throws SQLException {
-        JdbcTemplate jdbcTemplate = new JdbcTemplate(JdbcDataSourceManager.getInstance().getDataSource(baseJdbcDataSourceInfo));
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(getDataSource(baseJdbcDataSourceInfo));
         jdbcTemplate.setFetchSize(500);
         return jdbcTemplate;
     }
