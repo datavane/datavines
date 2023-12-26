@@ -17,11 +17,14 @@
 
 package io.datavines.server.repository.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageCreate;
+import io.datavines.server.api.dto.bo.storage.ErrorDataStoragePageParam;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageUpdate;
+import io.datavines.server.api.dto.vo.ErrorDataStorageVO;
 import io.datavines.server.repository.entity.ErrorDataStorage;
 
 import java.util.List;
@@ -39,6 +42,8 @@ public interface ErrorDataStorageService extends IService<ErrorDataStorage> {
     ErrorDataStorage getById(long id);
 
     List<ErrorDataStorage> listByWorkspaceId(long workspaceId);
+
+    IPage<ErrorDataStorageVO> getErrorDataStoragePage(ErrorDataStoragePageParam errorDataStoragePageParam);
 
     String getConfigJson(String type);
 }

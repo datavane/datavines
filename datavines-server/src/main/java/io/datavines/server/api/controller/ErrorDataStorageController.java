@@ -21,7 +21,9 @@ import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageCreate;
+import io.datavines.server.api.dto.bo.storage.ErrorDataStoragePageParam;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageUpdate;
+import io.datavines.server.api.dto.vo.ErrorDataStorageVO;
 import io.datavines.server.api.dto.vo.Item;
 import io.datavines.server.repository.service.ErrorDataStorageService;
 import io.datavines.spi.PluginLoader;
@@ -75,6 +77,12 @@ public class ErrorDataStorageController {
     @GetMapping(value = "list/{workspaceId}")
     public Object listByUserId(@PathVariable Long workspaceId) {
         return errorDataStorageService.listByWorkspaceId(workspaceId);
+    }
+
+    @ApiOperation(value = "get error data storage page", response = ErrorDataStorageVO.class, responseContainer = "page")
+    @PostMapping(value = "page")
+    public Object page(@Valid @RequestBody ErrorDataStoragePageParam errorDataStoragePageParam) {
+        return errorDataStorageService.getErrorDataStoragePage(errorDataStoragePageParam);
     }
 
     @ApiOperation(value = "get storage config json")
