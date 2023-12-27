@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Table, Button, message,
 } from 'antd';
@@ -35,10 +35,13 @@ const Index = () => {
     const getData = async () => {
         try {
             setLoading(true);
-            const res = (await $http.get(`/errorDataStorage/list/${workspaceId}`)) || [];
+            const res = (await $http.post(`/errorDataStorage/page`, {
+                workspaceId: workspaceId,
+                ...pageParams
+            })) || [];
             setTableData({
-                list: res || [],
-                total: (res || []).length,
+                list: res?.records || [],
+                total: res?.total || 0,
             });
         } catch (error) {
         } finally {
@@ -48,13 +51,16 @@ const Index = () => {
     useMount(() => {
         getData();
     });
+    useEffect(() => {
+        getData();
+    }, [pageParams]);
     const onEdit = (record: TWarnTableItem) => {
         show(record);
     };
     const onDelete = async (id: any) => {
         try {
             setLoading(true);
-            const res = await $http.delete(`sla/sender/${id}`);
+            const res = await $http.delete(`errorDataStorage/${id}`);
             if (res) {
                 getData();
                 message.success(intl.formatMessage({ id: 'common_success' }));
@@ -81,8 +87,8 @@ const Index = () => {
         },
         {
             title: intl.formatMessage({ id: 'common_updater' }),
-            dataIndex: 'updateBy',
-            key: 'updateBy',
+            dataIndex: 'updater',
+            key: 'updater',
             render: (text: string) => <div>{text || '--'}</div>,
         },
         {

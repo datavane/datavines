@@ -14,13 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package io.datavines.server.repository.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import io.datavines.server.api.dto.vo.ErrorDataStorageVO;
 import io.datavines.server.repository.entity.ErrorDataStorage;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface ErrorDataStorageMapper extends BaseMapper<ErrorDataStorage> {
+
+    IPage<ErrorDataStorageVO> getErrorDataStoragePage(Page<ErrorDataStorageVO> page,
+                                                      @Param("workspaceId") Long workspaceId,
+                                                      @Param("searchVal") String searchVal,
+                                                      @Param("type") String type,
+                                                      @Param("startTime") String startTime,
+                                                      @Param("endTime") String endTime);
+
 }

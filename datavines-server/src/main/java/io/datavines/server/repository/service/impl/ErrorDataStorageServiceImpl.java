@@ -17,6 +17,8 @@
 package io.datavines.server.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.TestConnectionRequestParam;
@@ -26,7 +28,9 @@ import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.core.utils.LanguageUtils;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageCreate;
+import io.datavines.server.api.dto.bo.storage.ErrorDataStoragePageParam;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageUpdate;
+import io.datavines.server.api.dto.vo.ErrorDataStorageVO;
 import io.datavines.server.repository.entity.ErrorDataStorage;
 import io.datavines.server.repository.mapper.ErrorDataStorageMapper;
 import io.datavines.server.repository.service.ErrorDataStorageService;
@@ -108,6 +112,22 @@ public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMap
         }
 
         return list;
+    }
+
+    @Override
+    public IPage<ErrorDataStorageVO> getErrorDataStoragePage(ErrorDataStoragePageParam errorDataStoragePageParam) {
+        Page<ErrorDataStorageVO> page = new Page<>(errorDataStoragePageParam.getPageNumber(), errorDataStoragePageParam.getPageSize());
+        IPage<ErrorDataStorageVO> errorDataStoragePage = baseMapper.getErrorDataStoragePage(page,
+                errorDataStoragePageParam.getWorkspaceId(),
+                errorDataStoragePageParam.getSearchVal(),
+                errorDataStoragePageParam.getType(),
+                errorDataStoragePageParam.getStartTime(),
+                errorDataStoragePageParam.getEndTime());
+        List<ErrorDataStorageVO> errorDataStoragePageRecordList = errorDataStoragePage.getRecords();
+        for (ErrorDataStorageVO errorDataStorageVO : errorDataStoragePageRecordList) {
+            errorDataStorageVO.setParam(PasswordFilterUtils.convertPasswordToNULL(PWD_PATTERN_1, errorDataStorageVO.getParam()));
+        }
+        return errorDataStoragePage;
     }
 
     @Override
