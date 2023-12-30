@@ -1,0 +1,111 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations: {}
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: datavines
+  name: datavines
+  namespace: bigdata
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      k8s.kuboard.cn/layer: svc
+      k8s.kuboard.cn/name: datavines
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        k8s.kuboard.cn/layer: svc
+        k8s.kuboard.cn/name: datavines
+    spec:
+      containers:
+        - args:
+            - start_container
+            - ''
+          command:
+            - datavines-1.0.0-SNAPSHOT-bin/bin/datavines-daemon.sh
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: mysql
+            - name: SPRING_DATASOURCE_URL
+              value: >-
+                jdbc:mysql://mysql:3306/datavines?useSSL=false&useUnicode=true&characterEncoding=UTF-8&allowPublicKeyRetrieval=false&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=GMT%2B8
+            - name: SPRING_DATASOURCE_USERNAME
+              value: root
+            - name: SPRING_DATASOURCE_PASSWORD
+              value: 123456
+          image: 'registry.cn-shanghai.aliyuncs.com/luckydata/datavines:dev'
+          imagePullPolicy: IfNotPresent
+          name: datavines
+          resources: {}
+          securityContext:
+            allowPrivilegeEscalation: true
+            privileged: true
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations: {}
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: datavines
+  name: datavines
+  namespace: bigdata
+spec:
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: web
+      port: 5600
+      protocol: TCP
+      targetPort: 5600
+  selector:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: datavines
+  sessionAffinity: None
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations: {}
+  labels:
+    k8s.kuboard.cn/layer: svc
+    k8s.kuboard.cn/name: datavines
+  name: datavines
+  namespace: bigdata
+spec:
+  ingressClassName: datavines
+  rules:
+    - host: www.datavines.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: datavines
+                port:
+                  number: 5600
+            path: /
+            pathType: Prefix
+
