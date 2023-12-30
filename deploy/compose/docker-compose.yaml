@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  datavines:
+    image: datavines:dev
+    container_name: datavines
+    ports:
+      - 5600:5600
+    env_file: .env
+    privileged: true
+    restart: unless-stopped
+    networks:
+      - datavines
+
+networks:
+  datavines:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.18.0.0/24

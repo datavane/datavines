@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-usage="Usage: datavines-daemon.sh (start|stop) <''|mysql>"
+usage="Usage: datavines-daemon.sh (start|start_container|stop) <''|mysql>"
 
 # if no args specified, show usage
 if [ $# -le 0 ]; then
@@ -88,6 +88,25 @@ case $startStop in
 
     echo "nohup $JAVA_HOME/bin/java $exec_command > $log 2>&1 &"
     nohup $JAVA_HOME/bin/java $exec_command > $log 2>&1 &
+    echo $! > $pid
+    ;;
+
+  (start_container)
+    [ -w "$DATAVINES_PID_DIR" ] ||  mkdir -p "$DATAVINES_PID_DIR"
+
+    if [ -f $pid ]; then
+      if kill -0 `cat $pid` > /dev/null 2>&1; then
+        echo DataVinesServer running as process `cat $pid`.  Stop it first.
+        exit 1
+      fi
+    fi
+
+    echo starting DataVinesServer, logging to $log
+
+    exec_command="$LOG_FILE $DATAVINES_OPTS -classpath $DATAVINES_CONF_DIR:$DATAVINES_LIB_JARS $CLASS"
+
+    echo "$JAVA_HOME/bin/java $exec_command"
+    $JAVA_HOME/bin/java $exec_command
     echo $! > $pid
     ;;
 
