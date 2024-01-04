@@ -85,8 +85,8 @@ const Index = () => {
         },
         {
             title: intl.formatMessage({ id: 'phone_text' }),
-            dataIndex: 'phonne',
-            key: 'phonne',
+            dataIndex: 'phone',
+            key: 'phone',
             render: (text: string) => <div>{text || '--'}</div>,
         },
         {
