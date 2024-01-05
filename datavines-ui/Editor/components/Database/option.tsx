@@ -35,6 +35,11 @@ export const dataBaseCol:Col[][] = [[{
     render: (_: any, { name }: any) => <span className="text-underline">{name}</span>,
 },
 {
+    title: <FormattedMessage id="job_comment" />,
+    dataIndex: 'comment',
+    key: 'comment',
+},
+{
     title: <FormattedMessage id="job_last_refresh_time" />,
     dataIndex: 'updateTime',
     key: 'updateTime',
