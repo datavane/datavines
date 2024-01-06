@@ -24,6 +24,8 @@ import io.datavines.engine.local.api.entity.ConnectionHolder;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import org.slf4j.Logger;
 
+import java.sql.Statement;
+
 public class LocalRuntimeEnvironment implements RuntimeEnvironment {
 
     protected Logger log = LoggerFactory.getLogger(LocalRuntimeEnvironment.class);
@@ -33,6 +35,8 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
     private ConnectionHolder targetConnection;
 
     private ConnectionHolder metadataConnection;
+
+    private Statement currentStatement;
 
     @Override
     public void prepare() {
@@ -84,6 +88,10 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
     }
 
     public void close() throws Exception {
+        if (currentStatement != null) {
+            currentStatement.close();
+        }
+
         if (sourceConnection != null) {
             sourceConnection.close();
         }
@@ -95,5 +103,9 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
         if (metadataConnection != null) {
             metadataConnection.close();
         }
+    }
+
+    public void setCurrentStatement(Statement statement) {
+        this.currentStatement = statement;
     }
 }

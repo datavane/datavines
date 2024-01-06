@@ -17,6 +17,7 @@
 package io.datavines.engine.local.transform.sql;
 
 import io.datavines.common.config.Config;
+import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,15 +31,20 @@ import static io.datavines.common.ConfigConstants.*;
 public class InvalidateItemsExecutor implements ITransformExecutor {
 
     @Override
-    public ResultList execute(Connection connection, Config config) throws Exception {
+    public ResultList execute(Connection connection, Config config, LocalRuntimeEnvironment env) throws Exception {
 
         String outputTable = config.getString(INVALIDATE_ITEMS_TABLE);
         String sql = config.getString(SQL);
-
-        Statement statement = connection.createStatement();
-        SqlUtils.dropView(outputTable, statement);
-        statement.execute("CREATE VIEW " + outputTable + " AS " + sql);
-        statement.close();
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            env.setCurrentStatement(statement);
+            SqlUtils.dropView(outputTable, statement);
+            statement.execute("CREATE VIEW " + outputTable + " AS " + sql);
+        } finally {
+            SqlUtils.closeStatement(statement);
+            env.setCurrentStatement(null);
+        }
         return null;
     }
 }

@@ -21,6 +21,7 @@ import io.datavines.server.api.dto.bo.user.UserRegister;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
+import io.datavines.server.api.dto.bo.user.UserResetPassword;
 import io.datavines.server.repository.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,8 +48,8 @@ public class UserController {
 
     @ApiOperation(value = "reset password")
     @PostMapping(value = "/resetPassword", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object resetPassword(@Valid @RequestBody UserRegister userRegister) throws DataVinesException {
-        return null;
+    public Object resetPassword(@Valid @RequestBody UserResetPassword userResetPassword) throws DataVinesException {
+        return userService.resetPassword(userResetPassword);
     }
 
 }

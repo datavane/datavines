@@ -65,7 +65,7 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
                     res['startTime'] = startDay.format(format)
                     console.log("start " + startDay.format(format))
                 }
-                if(endDay.isValid()){
+                if (endDay.isValid()) {
                     res['endTime'] = endDay.format(format)
                     console.log("end " + endDay.format(format))
                 }
@@ -88,63 +88,63 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
             title: intl.formatMessage({ id: 'jobs_task_schema_name' }),
             dataIndex: 'schemaName',
             key: 'schemaName',
-            width: 120,
+            width: 150,
             render: (text) => defaultRender(text, 300),
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_table_name' }),
             dataIndex: 'tableName',
             key: 'tableName',
-            width: 200,
+            width: 150,
             render: (text) => defaultRender(text, 300),
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_column_name' }),
             dataIndex: 'columnName',
             key: 'columnName',
-            width: 200,
+            width: 150,
             render: (text) => defaultRender(text, 300),
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_metric_type' }),
             dataIndex: 'metricType',
             key: 'metricType',
-            width: 220,
+            width: 150,
             render: (text) => defaultRender(text, 300),
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_type' }),
             dataIndex: 'jobType',
             key: 'jobType',
-            width: 180,
+            width: 150,
             render: (text: string) => <div>{text}</div>,
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_status' }),
             dataIndex: 'status',
             key: 'status',
-            width: 160,
+            width: 150,
             render: (text: string) => <div>{text}</div>,
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_start_time' }),
             dataIndex: 'startTime',
             key: 'startTime',
-            width: 160,
+            width: 200,
             render: (text: string) => <div>{text || '--'}</div>,
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_end_time' }),
             dataIndex: 'endTime',
             key: 'endTime',
-            width: 160,
+            width: 200,
             render: (text: string) => <div>{text || '--'}</div>,
         },
         {
             title: intl.formatMessage({ id: 'jobs_update_time' }),
             dataIndex: 'updateTime',
             key: 'updateTime',
-            width: 160,
+            width: 200,
             render: (text: string) => <div>{text || '--'}</div>
         },
         {
@@ -202,7 +202,7 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
 
     return (
         <div className="dv-page-padding" style={{ height: 'calc(100vh - 73px)' }}>
-            <div style={{ paddingTop: '0px' }}>
+            <div style={{ paddingTop: '20px' }}>
                 <div className="dv-flex-between">
                     <div className="dv-datasource__search">
                         <Form form={form}>

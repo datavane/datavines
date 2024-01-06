@@ -90,19 +90,19 @@ public class SqlTransform implements LocalTransform {
             logger.info("transform sql is: {}, transform_type is : {}", sql, pluginType);
             switch (TransformType.of(pluginType)){
                 case INVALIDATE_ITEMS :
-                    resultList = new InvalidateItemsExecutor().execute(env.getSourceConnection().getConnection(), config);
+                    resultList = new InvalidateItemsExecutor().execute(env.getSourceConnection().getConnection(), config, env);
                     break;
                 case ACTUAL_VALUE :
-                    resultList = new ActualValueExecutor().execute(env.getSourceConnection().getConnection(), config);
+                    resultList = new ActualValueExecutor().execute(env.getSourceConnection().getConnection(), config, env);
                     break;
                 case EXPECTED_VALUE_FROM_METADATA_SOURCE :
-                    resultList = new ExpectedValueExecutor().execute(env.getMetadataConnection().getConnection(), config);
+                    resultList = new ExpectedValueExecutor().execute(env.getMetadataConnection().getConnection(), config, env);
                     break;
                 case EXPECTED_VALUE_FROM_SOURCE :
-                    resultList = new ExpectedValueExecutor().execute(env.getSourceConnection().getConnection(), config);
+                    resultList = new ExpectedValueExecutor().execute(env.getSourceConnection().getConnection(), config, env);
                     break;
                 case EXPECTED_VALUE_FROM_TARGET_SOURCE:
-                    resultList = new ExpectedValueExecutor().execute(env.getTargetConnection().getConnection(), config);
+                    resultList = new ExpectedValueExecutor().execute(env.getTargetConnection().getConnection(), config, env);
                     break;
                 default:
                     break;

@@ -47,7 +47,7 @@ public abstract class BaseDataSinkExecutor implements ISinkExecutor {
         this.env = env;
     }
 
-    protected void innerExecute(Map<String, String> inputParameter) throws SQLException{
+    protected void innerExecute(Map<String, String> inputParameter) throws SQLException {
         executeDataSink(env, inputParameter);
     }
 
@@ -71,9 +71,16 @@ public abstract class BaseDataSinkExecutor implements ISinkExecutor {
     }
 
     private void executeInsert(String sql, LocalRuntimeEnvironment env) throws SQLException {
-        Statement statement =  env.getMetadataConnection().getConnection().createStatement();
-        statement.execute(sql);
-        statement.close();
+
+        Statement statement = null;
+        try {
+            statement =  env.getMetadataConnection().getConnection().createStatement();
+            env.setCurrentStatement(statement);
+            statement.execute(sql);
+        } finally {
+            SqlUtils.closeStatement(statement);
+            env.setCurrentStatement(null);
+        }
     }
 
     private boolean checkTableExist(LocalRuntimeEnvironment env, String tableName) throws SQLException {
@@ -90,7 +97,7 @@ public abstract class BaseDataSinkExecutor implements ISinkExecutor {
         return flag;
     }
 
-    private void createTable(LocalRuntimeEnvironment env, String createTableSql) throws SQLException{
+    private void createTable(LocalRuntimeEnvironment env, String createTableSql) throws SQLException {
         Statement statement = env.getMetadataConnection().getConnection().createStatement();
         statement.execute(createTableSql);
         statement.close();

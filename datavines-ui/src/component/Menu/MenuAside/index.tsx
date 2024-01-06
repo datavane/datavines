@@ -6,16 +6,16 @@ import {
 } from 'react-router-dom';
 import useWatch from '@Editor/common/useWatch';
 import logoPng from 'assets/images/logo-light.png';
-import EscapePng from 'assets/images/escape.svg';
 import EhPng from 'assets/images/en.svg';
 import ChPng from 'assets/images/ch.svg';
 import './index.less';
-import { LogoutOutlined, PlusOutlined } from '@ant-design/icons';
+import { LogoutOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { useIntl } from 'react-intl';
 import { useSelector, useCommonActions, useWorkSpaceActions } from '@/store';
 import shareData from '@/utils/shareData';
 import { DV_LANGUAGE, DV_STORAGE_LOGIN, DV_WORKSPACE_ID } from '@/utils/constants';
 import { useAddSpace } from '../../Header/WorkSpaceSwitch/useAddSpace';
+import { useResetPassword } from '../../Header/WorkSpaceSwitch/useResetPassword';
 
 const Logo = memo(({ style }:any) => <img style={style} className="logo" src={logoPng} />);
 const Eh = memo(({ style, onClick }:any) => <img style={style} className="escape" src={EhPng} onClick={onClick} />);
@@ -40,7 +40,9 @@ const MenuAside: React.FC<TMenuAside> = ({ menus, history }) => {
     const { workspaceId, spaceList } = useSelector((r) => r.workSpaceReducer);
     const { loginInfo } = useSelector((r) => r.userReducer);
     const intl = useIntl();
-    const { Render: RenderSpace, show } = useAddSpace({});
+    const { Render: RenderCreateSpace, show } = useAddSpace({});
+
+    const { Render: RenderResetPassword, show1 } = useResetPassword({});
     const setActiveKeyRedirect = (redirect = false) => {
         const url = window.location.href;
         const match = menus.find((item) => {
@@ -84,6 +86,11 @@ const MenuAside: React.FC<TMenuAside> = ({ menus, history }) => {
     const onShowSpace = (val: any) => {
         show(val);
     };
+
+    const onShowResetPassword = (val: any) => {
+        show1(val);
+    };
+
     const content = (
         <div className="dv-user-Popover">
             <div className="dv-user">AD</div>
@@ -128,18 +135,17 @@ const MenuAside: React.FC<TMenuAside> = ({ menus, history }) => {
                                 }
                             }
                         />
-                        {/* <span>mysql</span>
-                        <SwapOutlined /> */}
-                        {/* <RightOutlined /> */}
                     </div>
                 </li>
-                {/* <li style={{
-                    cursor: 'pointer',
-                }}
+                <li
+                    style={{
+                        cursor: 'pointer',
+                    }}
+                    onClick={()=>onShowResetPassword(loginInfo.id)}
                 >
-                    <LogoutOutlined style={{ marginRight: '10px' }} />
-                    退出空间
-                </li> */}
+                    <EditOutlined style={{ marginRight: '10px' }} />
+                    {intl.formatMessage({ id: 'common_reset_password' })}
+                </li>
                 <li
                     style={{
                         cursor: 'pointer',
@@ -216,21 +222,13 @@ const MenuAside: React.FC<TMenuAside> = ({ menus, history }) => {
                     />
                 )
             }
-            {/* <Escape
-                style={{
-                    position: 'absolute',
-                    bottom: '70px',
-                    marginLeft: '10px',
-                    cursor: 'pointer',
-                }}
-                onClick={swichFn}
-            /> */}
             <Popover placement="rightBottom" content={content} trigger="click">
                 <span className="dv-user">
                     AD
                 </span>
             </Popover>
-            <RenderSpace />
+            <RenderCreateSpace />
+            <RenderResetPassword />
         </div>
     );
 };

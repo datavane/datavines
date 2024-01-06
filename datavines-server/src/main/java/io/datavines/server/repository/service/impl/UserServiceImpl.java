@@ -131,7 +131,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public Boolean resetPassword(UserResetPassword userResetPassword) {
-        return null;
+        User user = getById(userResetPassword.getId());
+        if (user == null) {
+            log.info("User({}) not exist", userResetPassword.getId());
+            throw new DataVinesServerException(Status.USER_IS_NOT_EXIST_ERROR);
+        }
+
+        boolean checkPassword = BCrypt.checkpw(userResetPassword.getOldPassword(), user.getPassword());
+        if (checkPassword) {
+            if (!userResetPassword.getNewPassword().equals(userResetPassword.getNewPasswordConfirm())) {
+                throw new DataVinesServerException(Status.NEW_PASSWORD_CONFIRM_IS_INCORRECT_ERROR);
+            }
+
+            user.setPassword(BCrypt.hashpw(userResetPassword.getNewPassword(), BCrypt.gensalt()));
+            user.setUpdateTime(LocalDateTime.now());
+            updateById(user);
+            return true;
+        } else {
+            throw new DataVinesServerException(Status.OLD_PASSWORD_IS_INCORRECT_ERROR);
+        }
     }
 
     private boolean isUserExist(String username) {

@@ -46,6 +46,8 @@ public enum Status {
     CREATE_VERIFICATION_IMAGE_ERROR(10020005, "create verification image error", "创建验证码错误"),
     EXPIRED_VERIFICATION_CODE(10020006, "expired verification code", "验证码已过期，请重新刷新"),
     INVALID_VERIFICATION_CODE(10020007, "invalid verification code", "错误的验证码，请重新输入"),
+    OLD_PASSWORD_IS_INCORRECT_ERROR(10020004, "Old Password is Incorrect", "旧密码错误"),
+    NEW_PASSWORD_CONFIRM_IS_INCORRECT_ERROR(10020004, "New Password Confirm is Incorrect", "新密码确认错误"),
 
     WORKSPACE_EXIST_ERROR(11010001, "WorkSpace {0} is Exist error", "工作空间 {0} 已存在错误"),
     CREATE_WORKSPACE_ERROR(11010002, "Create WorkSpace {0} Error", "创建工作空间 {0} 错误"),

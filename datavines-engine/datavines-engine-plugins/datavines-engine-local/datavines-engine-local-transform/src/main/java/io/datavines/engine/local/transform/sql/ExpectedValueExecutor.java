@@ -17,6 +17,7 @@
 package io.datavines.engine.local.transform.sql;
 
 import io.datavines.common.config.Config;
+import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.SqlUtils;
 
@@ -29,14 +30,20 @@ import static io.datavines.common.ConfigConstants.SQL;
 public class ExpectedValueExecutor implements ITransformExecutor {
 
     @Override
-    public ResultList execute(Connection connection, Config config) throws Exception {
+    public ResultList execute(Connection connection, Config config, LocalRuntimeEnvironment env) throws Exception {
         String sql = config.getString(SQL);
-
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery(sql);
-        ResultList resultList = SqlUtils.getListFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
-        resultSet.close();
-        statement.close();
-        return resultList;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            statement = connection.createStatement();
+            env.setCurrentStatement(statement);
+            resultSet = statement.executeQuery(sql);
+            ResultList resultList = SqlUtils.getListFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
+            return resultList;
+        } finally {
+            SqlUtils.closeResultSet(resultSet);
+            SqlUtils.closeStatement(statement);
+            env.setCurrentStatement(null);
+        }
     }
 }
