@@ -37,4 +37,8 @@ public class UserResetPassword implements Serializable {
     @NotBlank(message = "new password must not be null")
     @Pattern(regexp = CommonConstants.REG_USER_PASSWORD, message = "password length must between 6-20")
     private String newPassword;
+
+    @NotBlank(message = "new password comfirm must not be null")
+    @Pattern(regexp = CommonConstants.REG_USER_PASSWORD, message = "password length must between 6-20")
+    private String newPasswordConfirm;
 }

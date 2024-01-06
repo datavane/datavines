@@ -17,10 +17,11 @@
 package io.datavines.engine.local.transform.sql;
 
 import io.datavines.common.config.Config;
+import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.entity.ResultList;
 
 import java.sql.Connection;
 
 public interface ITransformExecutor {
-    ResultList execute(Connection connection, Config config) throws Exception;
+    ResultList execute(Connection connection, Config config, LocalRuntimeEnvironment env) throws Exception;
 }

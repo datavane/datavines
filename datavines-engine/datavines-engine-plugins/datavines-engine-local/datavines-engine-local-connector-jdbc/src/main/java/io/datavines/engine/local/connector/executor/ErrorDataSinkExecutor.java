@@ -137,6 +137,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
 
         try {
             sourceConnectionStatement = env.getSourceConnection().getConnection().createStatement();
+            env.setCurrentStatement(sourceConnectionStatement);
             String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
             ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
 
@@ -172,6 +173,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
             }
 
             errorDataPreparedStatement = errorDataStorageConnection.prepareStatement(insertStatement);
+            env.setCurrentStatement(errorDataPreparedStatement);
             for (int i=0; i<totalPage; i++) {
                 int start = i * pageSize;
                 int end = (i+1) * pageSize;
@@ -296,6 +298,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
             SqlUtils.closeResultSet(errorDataResultSet);
             SqlUtils.closeStatement(errorDataPreparedStatement);
             SqlUtils.closeConnection(errorDataStorageConnection);
+            env.setCurrentStatement(null);
         }
 
     }
