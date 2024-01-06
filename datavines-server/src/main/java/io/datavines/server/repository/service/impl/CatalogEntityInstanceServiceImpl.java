@@ -169,7 +169,9 @@ public class CatalogEntityInstanceServiceImpl
             queryWrapper.lambda()
                     .in(CatalogEntityInstance::getUuid, uuidList)
                     .eq(CatalogEntityInstance::getStatus, CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE)
-                    .like(StringUtils.isNotEmpty(name), CatalogEntityInstance::getDisplayName, name)
+                    .and(qw ->  qw.like(StringUtils.isNotEmpty(name), CatalogEntityInstance::getDisplayName, name)
+                                    .or()
+                                    .like(StringUtils.isNotEmpty(name), CatalogEntityInstance::getDescription, name))
                     .orderBy(true, true, CatalogEntityInstance::getId);
             return page(page, queryWrapper);
         }
@@ -261,6 +263,7 @@ public class CatalogEntityInstanceServiceImpl
                 CatalogTableDetailVO table = new CatalogTableDetailVO();
                 table.setName(item.getDisplayName());
                 table.setUuid(item.getUuid());
+                table.setComment(item.getDescription());
                 table.setUpdateTime(item.getUpdateTime());
                 List<CatalogEntityInstance> columnList = getCatalogEntityInstances(item.getUuid());
                 table.setColumns((long)(CollectionUtils.isEmpty(columnList)? 0 : columnList.size()));
