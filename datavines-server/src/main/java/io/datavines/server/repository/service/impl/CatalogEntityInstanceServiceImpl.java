@@ -169,9 +169,9 @@ public class CatalogEntityInstanceServiceImpl
             queryWrapper.lambda()
                     .in(CatalogEntityInstance::getUuid, uuidList)
                     .eq(CatalogEntityInstance::getStatus, CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE)
-                    .and(qw ->  qw.like(StringUtils.isNotEmpty(name), CatalogEntityInstance::getDisplayName, name)
+                    .and(StringUtils.isNotEmpty(name), qw ->  qw.like(CatalogEntityInstance::getDisplayName, name)
                                     .or()
-                                    .like(StringUtils.isNotEmpty(name), CatalogEntityInstance::getDescription, name))
+                                    .like(CatalogEntityInstance::getDescription, name))
                     .orderBy(true, true, CatalogEntityInstance::getId);
             return page(page, queryWrapper);
         }
