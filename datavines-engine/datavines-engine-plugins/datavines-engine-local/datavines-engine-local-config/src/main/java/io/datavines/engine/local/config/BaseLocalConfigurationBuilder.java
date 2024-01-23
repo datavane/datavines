@@ -98,6 +98,8 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                     metricInputParameter.put(TABLE, table);
 
+                    metricInputParameter.put(COLUMN, connectorFactory.getDialect().quoteIdentifier(metricInputParameter.get(COLUMN)));
+
                     boolean invalidateItemCanOutput = Boolean.parseBoolean(metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
                     invalidateItemCanOutput &= connectorFactory.getDialect().invalidateItemCanOutput();
                     metricInputParameter.put(INVALIDATE_ITEM_CAN_OUTPUT, String.valueOf(invalidateItemCanOutput));
