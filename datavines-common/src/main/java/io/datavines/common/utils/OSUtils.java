@@ -66,7 +66,7 @@ public class OSUtils {
    */
   public static double memoryUsage() {
     GlobalMemory memory = hal.getMemory();
-    double memoryUsage = (memory.getTotal() - memory.getAvailable() - memory.getSwapUsed()) * 0.1 / memory.getTotal() * 10;
+    double memoryUsage = (memory.getTotal() - memory.getAvailable() - memory.getVirtualMemory().getSwapUsed()) * 0.1 / memory.getTotal() * 10;
 
     DecimalFormat df = new DecimalFormat(TWO_DECIMAL);
     df.setRoundingMode(RoundingMode.HALF_UP);
@@ -88,7 +88,7 @@ public class OSUtils {
       availablePhysicalMemorySize = freeMemory /1024.0/1024/1024;
     } else {
       GlobalMemory memory = hal.getMemory();
-      availablePhysicalMemorySize = (memory.getAvailable() + memory.getSwapUsed()) /1024.0/1024/1024;
+      availablePhysicalMemorySize = (memory.getAvailable() + memory.getVirtualMemory().getSwapUsed()) /1024.0/1024/1024;
     }
 
     DecimalFormat df = new DecimalFormat(TWO_DECIMAL);
@@ -124,7 +124,10 @@ public class OSUtils {
       OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
       loadAverage = operatingSystemMXBean.getSystemLoadAverage();
     } else {
-      loadAverage =  hal.getProcessor().getSystemLoadAverage();
+      // 0: setCpuLoadAvg 1 min
+      // 1: setCpuLoadAvg 5 min
+      // 2: setCpuLoadAvg 15 min
+      loadAverage =  hal.getProcessor().getSystemLoadAverage(3)[2];
     }
 
     DecimalFormat df = new DecimalFormat(TWO_DECIMAL);
@@ -140,7 +143,7 @@ public class OSUtils {
    */
   public static double cpuUsage() {
     CentralProcessor processor = hal.getProcessor();
-    double cpuUsage = processor.getSystemCpuLoad();
+    double cpuUsage = processor.getSystemLoadAverage(3)[2];
 
     DecimalFormat df = new DecimalFormat(TWO_DECIMAL);
     df.setRoundingMode(RoundingMode.HALF_UP);
