@@ -90,6 +90,14 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
     }
 
     @Override
+    public List<JobExecutionResult> listByErrorJobExecutionId(long jobExecutionId) {
+        return baseMapper.selectList(new QueryWrapper<JobExecutionResult>()
+                .eq("job_execution_id", jobExecutionId)
+                .eq("state", DqJobExecutionState.FAILURE.getCode())
+                .orderByDesc("update_time"));
+    }
+
+    @Override
     public JobExecutionResultVO getResultVOByJobExecutionId(long jobExecutionId) {
 
         JobExecutionResult jobExecutionResult = baseMapper.getOne(jobExecutionId);

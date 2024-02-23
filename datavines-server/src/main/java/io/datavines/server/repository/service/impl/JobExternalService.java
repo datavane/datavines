@@ -172,6 +172,10 @@ public class JobExternalService {
         return jobExecutionResultService.getByJobExecutionId(jobExecutionId);
     }
 
+    public List<JobExecutionResult> listErrorJobExecutionResultByJobExecutionId(long jobExecutionId) {
+        return jobExecutionResultService.listByErrorJobExecutionId(jobExecutionId);
+    }
+
     public List<JobExecutionResult> listJobExecutionResultByJobExecutionId(long jobExecutionId) {
         return jobExecutionResultService.listByJobExecutionId(jobExecutionId);
     }

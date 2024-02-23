@@ -128,27 +128,27 @@ public class JobResultValidator {
         DataSource dataSource = jobExternalService.getDataSourceService().getDataSourceById(dataSourceId);
         String dataSourceName = dataSource.getName();
         String dataSourceType = dataSource.getType();
-        JobExecutionResult jobExecutionResult = jobExternalService.getJobExecutionResultByJobExecutionId(jobExecution.getId());
+        List<JobExecutionResult> errorJobExecutionResultList = jobExternalService.listErrorJobExecutionResultByJobExecutionId(jobExecution.getId());
         boolean isEn = !LanguageUtils.isZhContext();
-        if (jobExecutionResult != null) {
-            MetricExecutionResult metricExecutionResult = new MetricExecutionResult();
-            BeanUtils.copyProperties(jobExecutionResult, metricExecutionResult);
-            List<String> messages = new ArrayList<>();
-            messages.add((isEn ? "Job Name : ": "作业名称: ") + jobName);
-            messages.add(String.format((isEn ? "Datasource : %s [%s] : ": "数据源 : %s [%s]: ") ,dataSourceType.toUpperCase(), dataSourceName));
-            String title = buildAlertSubject(metricExecutionResult, isEn);
-            String content = buildAlertMessage(messages, metricExecutionResult, jobExecution.getEngineType(), isEn);
-            message.setSubject(title);
-            message.setMessage(content);
-
-            saveIssue(jobId, title, content);
-
-            Map<SlaSenderMessage, Set<SlaConfigMessage>> config = slaNotificationService.getSlasNotificationConfigurationByJobId(jobId);
-            if (config.isEmpty()){
-                return;
+        if (CollectionUtils.isNotEmpty(errorJobExecutionResultList)) {
+            for(JobExecutionResult errorJobExecutionResult : errorJobExecutionResultList){
+                MetricExecutionResult metricExecutionResult = new MetricExecutionResult();
+                BeanUtils.copyProperties(errorJobExecutionResult, metricExecutionResult);
+                List<String> messages = new ArrayList<>();
+                messages.add((isEn ? "Job Name : ": "作业名称: ") + jobName);
+                messages.add(String.format((isEn ? "Datasource : %s [%s] : ": "数据源 : %s [%s]: ") ,dataSourceType.toUpperCase(), dataSourceName));
+                String title = buildAlertSubject(metricExecutionResult, isEn);
+                String content = buildAlertMessage(messages, metricExecutionResult, jobExecution.getEngineType(), isEn);
+                message.setSubject(title);
+                message.setMessage(content);
+                saveIssue(jobId, title, content);
+                Map<SlaSenderMessage, Set<SlaConfigMessage>> config = slaNotificationService.getSlasNotificationConfigurationByJobId(jobId);
+                if (config.isEmpty()){
+                    return;
+                }
+                notificationClient.notify(message, config);
             }
 
-            notificationClient.notify(message, config);
         }
     }
 

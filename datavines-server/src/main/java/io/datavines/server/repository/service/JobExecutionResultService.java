@@ -34,6 +34,8 @@ public interface JobExecutionResultService extends IService<JobExecutionResult> 
 
     JobExecutionResult getByJobExecutionId(long jobExecutionId);
 
+    List<JobExecutionResult> listByErrorJobExecutionId(long jobExecutionId);
+
     List<JobExecutionResult> listByJobExecutionId(long jobExecutionId);
 
     JobExecutionResultVO getResultVOByJobExecutionId(long jobExecutionId);
