@@ -72,7 +72,7 @@ const Index = () => {
     const onDelete = async (record: TWarnMetricTableItem) => {
         try {
             setLoading(true);
-            await $http.delete(`/job/${record.id}`);
+            await $http.delete(`/sla/job/${record.id}`);
             message.success('Delete Success');
             getData();
         } catch (error) {
