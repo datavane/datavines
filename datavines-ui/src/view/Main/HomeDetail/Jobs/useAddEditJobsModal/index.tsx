@@ -42,6 +42,7 @@ export const Inner = ({
     const { locale } = useSelector((r) => r.commonReducer);
     const { entityUuid } = useSelector((r) => r.datasourceReducer);
     const [jsonData, setJsonData] = useState('');
+    const [slaId, setSlaId] = useState((data?.record?.slaList || [])[0]?.id);
     const editorParams = useMemo(() => ({
         baseURL: '/api/v1',
         workspaceId,
@@ -62,6 +63,12 @@ export const Inner = ({
     const getData = async (id: string, showLoading = true) => {
         if (showLoading) {
             setLoading(true);
+        }
+        const slaRes = await $http.get(`/sla/job/${id}`);
+        try {
+            setSlaId((slaRes || [])[0]?.id)
+        } catch (error){
+            console.log(error);
         }
         const res = await $http.get(`/job/${id}`);
         try {
@@ -169,7 +176,7 @@ export const Inner = ({
     if (loading) {
         return <Spin spinning={loading} />;
     }
-    const slaId = (data?.record?.slaList || [])[0]?.id;
+
     return (
         <div style={style}>
             <Tabs

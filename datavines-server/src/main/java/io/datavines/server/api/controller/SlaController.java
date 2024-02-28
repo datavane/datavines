@@ -127,6 +127,12 @@ public class SlaController {
         return slaService.getById(slaId);
     }
 
+    @ApiOperation(value = "get sla")
+    @GetMapping(value = "/job/{jobId}")
+    public Object getSlaByJobId(@PathVariable Long jobId) {
+        return slaService.getSlaByJobId(jobId);
+    }
+
     @ApiOperation(value = "delete sla")
     @DeleteMapping(value = "/{id}")
     public Object deleteSla(@PathVariable("id") Long id) {

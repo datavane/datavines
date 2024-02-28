@@ -62,7 +62,7 @@ const SelectSLAs = ({ innerRef, jobId, id }: InnerProps) => {
                 name: 'slaId',
                 rules: [
                     {
-                        required: false,
+                        required: true,
                         message: intl.formatMessage({ id: 'common_required' }),
                     },
                 ],
