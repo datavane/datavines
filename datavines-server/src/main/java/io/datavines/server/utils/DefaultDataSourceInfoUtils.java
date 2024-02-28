@@ -52,7 +52,12 @@ public class DefaultDataSourceInfoUtils {
         configMap.put(USER, connectionInfo.getUser());
         configMap.put(PASSWORD, connectionInfo.getPassword());
         configMap.put(DRIVER, connectionInfo.getDriverName());
-
+        configMap.put(HOST, connectionInfo.getHost());
+        configMap.put(PORT, connectionInfo.getPort());
+        configMap.put(CATALOG, connectionInfo.getCatalog());
+        configMap.put(DATABASE, connectionInfo.getDatabase());
+        configMap.put(SCHEMA, connectionInfo.getSchema());
+        configMap.put(PROPERTIES, connectionInfo.getProperties());
         return configMap;
     }
 }

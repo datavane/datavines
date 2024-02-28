@@ -18,6 +18,7 @@ package io.datavines.metric.api;
 
 import io.datavines.common.enums.OperatorType;
 import io.datavines.spi.PluginLoader;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 
@@ -34,7 +35,7 @@ public class MetricValidator {
         Double actualValue = executionResult.getActualValue();
         Double expectedValue = executionResult.getExpectedValue();
 
-        OperatorType operatorType = OperatorType.of(executionResult.getOperator());
+        OperatorType operatorType = OperatorType.of(StringUtils.trim(executionResult.getOperator()));
         ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class)
                 .getOrCreatePlugin(executionResult.getResultFormula());
 
