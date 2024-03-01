@@ -82,6 +82,8 @@ public enum Status {
     ENTITY_TYPE_NOT_EXIST(14010008, "The Column Type is not Exist", "列类型不存在"),
     METRIC_IS_NOT_EXIST(14010009, "The Metric {0} is not exist", "规则 {0} 不存在"),
     MULTI_TABLE_ACCURACY_NOT_SUPPORT_LOCAL_ENGINE(14010010, "Local Engine not support multi table accuracy in one datasource", "Local引擎不支持跨表准确性检查"),
+    JOB_PARAMETER_CONTAIN_DUPLICATE_METRIC_ERROR(14010011, "Job {0} Parameter Contain Duplicate Metric", "作业中存在重复的检查规则"),
+
     JOB_SCHEDULE_EXIST_ERROR(14020001, "Job Schedule is Exist error, id must be not null", "作业定时任务已存在,ID 不能为空"),
     CREATE_JOB_SCHEDULE_ERROR(14020002, "Create Job Schedule {0} Error", "创建作业定时任务 {0} 错误"),
     JOB_SCHEDULE_NOT_EXIST_ERROR(14020003, "Job Schedule {0} is not Exist error", "作业定时任务 {0} 不存在错误"),

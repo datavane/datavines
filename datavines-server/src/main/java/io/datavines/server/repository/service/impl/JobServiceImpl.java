@@ -62,6 +62,7 @@ import io.datavines.server.utils.DefaultDataSourceInfoUtils;
 import io.datavines.server.utils.JobParameterUtils;
 import io.datavines.spi.PluginLoader;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
@@ -76,7 +77,8 @@ import java.util.List;
 import java.util.Map;
 
 import static io.datavines.common.CommonConstants.LOCAL;
-import static io.datavines.common.ConfigConstants.ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE;
+import static io.datavines.common.CommonConstants.TABLE;
+import static io.datavines.common.ConfigConstants.*;
 import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
 import static io.datavines.server.utils.DefaultDataSourceInfoUtils.getDefaultConnectionInfo;
 
@@ -144,17 +146,20 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         BeanUtils.copyProperties(jobCreate, job);
         List<BaseJobParameter> jobParameters = JSONUtils.toList(parameter, BaseJobParameter.class);
         jobParameters = JobParameterUtils.regenerateJobParameterList(jobParameters);
-
+        checkDuplicateMetricInJob(jobParameters);
         isMetricSuitable(jobCreate.getDataSourceId(), jobCreate.getDataSourceId2(), jobCreate.getEngineType(), jobParameters);
         List<String> fqnList = setJobAttribute(job, jobParameters);
-        if(StringUtils.isEmpty(jobCreate.getJobName())){
+
+        if (StringUtils.isEmpty(jobCreate.getJobName())) {
             job.setName(getJobName(jobCreate.getType(), jobCreate.getParameter()));
-        }else {
+        } else {
             job.setName(jobCreate.getJobName());
         }
+
         if (getByKeyAttribute(job)) {
             throw new DataVinesServerException(Status.JOB_EXIST_ERROR, job.getName());
         }
+
         job.setType(JobType.of(jobCreate.getType()));
         job.setCreateBy(ContextHolder.getUserId());
         job.setCreateTime(LocalDateTime.now());
@@ -211,11 +216,12 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         BeanUtils.copyProperties(jobUpdate, job);
         List<BaseJobParameter> jobParameters = JSONUtils.toList(jobUpdate.getParameter(), BaseJobParameter.class);
+        checkDuplicateMetricInJob(jobParameters);
         isMetricSuitable(jobUpdate.getDataSourceId(), jobUpdate.getDataSourceId2(), jobUpdate.getEngineType(), jobParameters);
         List<String> fqnList = setJobAttribute(job, jobParameters);
-        if(StringUtils.isEmpty(jobUpdate.getJobName())){
+        if (StringUtils.isEmpty(jobUpdate.getJobName())) {
             job.setName(getJobName(jobUpdate.getType(), jobUpdate.getParameter()));
-        }else {
+        } else {
             job.setName(jobUpdate.getJobName());
         }
         // add check if the name has changed
@@ -469,11 +475,11 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         IPage<JobVO> jobs = baseMapper.getJobPageSelect(page, searchVal, schemaSearch, tableSearch, columnSearch, startTime, endTime, dataSourceId, type);
         List<JobVO> jobList = jobs.getRecords();
         if (CollectionUtils.isNotEmpty(jobList)) {
-            for(JobVO jobVO: jobList) {
+            for (JobVO jobVO: jobList) {
                 List<SlaVO> slaList = slaService.getSlaByJobId(jobVO.getId());
                 jobVO.setSlaList(slaList);
                 JobExecutionStat jobExecutionStat = jobExecutionService.getJobExecutionStat(jobVO.getId());
-                if(jobExecutionStat != null){
+                if (jobExecutionStat != null) {
                     jobVO.setTotalCount(jobExecutionStat.getTotalCount());
                     jobVO.setSuccessCount(jobExecutionStat.getSuccessCount());
                     jobVO.setFailCount(jobExecutionStat.getFailCount());
@@ -488,7 +494,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     @Override
     public boolean execute(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException {
         Job job = baseMapper.selectById(jobId);
-        if  (job == null) {
+        if (job == null) {
             throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobId);
         }
 
@@ -702,5 +708,32 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         return JobExecutionParameterBuilderFactory.builder(job.getType())
                 .buildJobExecutionParameter(job.getParameter(), srcConnectionInfo, targetConnectionInfo);
+    }
+
+    public void checkDuplicateMetricInJob(List<BaseJobParameter> jobParameters) {
+        Map<String,Integer> metricKey2Count = new HashMap<>();
+        for (BaseJobParameter baseJobParameter : jobParameters) {
+            String metricKey = getMetricUniqueKey(baseJobParameter);
+            Integer count = metricKey2Count.get(metricKey);
+            if (count != null) {
+                metricKey2Count.put(metricKey, ++count);
+            } else {
+                metricKey2Count.put(metricKey, 1);
+            }
+        }
+
+        for (Map.Entry<String,Integer> countEntry : metricKey2Count.entrySet()) {
+            if (countEntry.getValue() > 1) {
+                throw new DataVinesServerException(Status.JOB_PARAMETER_CONTAIN_DUPLICATE_METRIC_ERROR);
+            }
+        }
+
+    }
+    protected String getMetricUniqueKey(BaseJobParameter parameter) {
+        return DigestUtils.md5Hex(String.format("%s_%s_%s_%s",
+                parameter.getMetricType(),
+                parameter.getMetricParameter().get(DATABASE),
+                parameter.getMetricParameter().get(TABLE),
+                parameter.getMetricParameter().get(COLUMN)));
     }
 }
