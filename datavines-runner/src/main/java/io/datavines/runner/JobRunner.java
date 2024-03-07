@@ -99,46 +99,50 @@ public class JobRunner {
                 Map<String,String> scriptConfigMap = new HashMap<>();
                 scriptConfigMap.put("execution_id", String.valueOf(jobExecutionId));
                 executeRequestParam.setScript(validateResultStorageFactory.getDialect().getValidateResultDataScript(scriptConfigMap));
-                ConnectorResponse response = validateResultStorageFactory.getExecutor().queryForOne(executeRequestParam);
+                ConnectorResponse response = validateResultStorageFactory.getExecutor().queryForList(executeRequestParam);
                 if (response != null && response.getResult()!= null) {
-                    ListWithQueryColumn validateResultDataList = (ListWithQueryColumn)response.getResult();
-                    Map<String, Object> validateResultData = validateResultDataList.getResultList().get(0);
-                    MetricExecutionResult metricExecutionResult = new MetricExecutionResult(validateResultData);
-                    if (!MetricValidator.isSuccess(metricExecutionResult)) {
-                        if (StringUtils.isEmpty(jobExecutionRequest.getNotificationParameters())) {
-                            log.warn("notification parameter is null");
-                            return;
-                        }
+                    ListWithQueryColumn validateResult = (ListWithQueryColumn)response.getResult();
+                    List<Map<String, Object>> validateResultDataList = validateResult.getResultList();
+                    if(validateResultDataList != null){
+                        for(Map<String, Object> validateResultData : validateResultDataList){
+                            MetricExecutionResult metricExecutionResult = new MetricExecutionResult(validateResultData);
+                            if (!MetricValidator.isSuccess(metricExecutionResult)) {
+                                if (StringUtils.isEmpty(jobExecutionRequest.getNotificationParameters())) {
+                                    log.warn("notification parameter is null");
+                                    return;
+                                }
 
-                        List<NotificationParameter> notificationParameters =
-                                JSONUtils.toList(jobExecutionRequest.getNotificationParameters(), NotificationParameter.class);
+                                List<NotificationParameter> notificationParameters =
+                                        JSONUtils.toList(jobExecutionRequest.getNotificationParameters(), NotificationParameter.class);
 
-                        if (CollectionUtils.isEmpty(notificationParameters)) {
-                            log.error("parse notification parameter error");
-                            return;
-                        }
+                                if (CollectionUtils.isEmpty(notificationParameters)) {
+                                    log.error("parse notification parameter error");
+                                    return;
+                                }
 
-                        SlaNotificationMessage notificationMessage = new SlaNotificationMessage();
-                        notificationMessage.setMessage(buildAlertMessage(metricExecutionResult, jobExecutionRequest.getEngineType(), jobExecutionRequest.isEn()));
-                        notificationMessage.setSubject(buildAlertSubject(metricExecutionResult, jobExecutionRequest.isEn()));
-                        Map<SlaSenderMessage, Set<SlaConfigMessage>> configMap = new HashMap<>();
-                        for (NotificationParameter notificationParameter : notificationParameters) {
-                            SlaSenderMessage slaSenderMessage = new SlaSenderMessage();
-                            slaSenderMessage.setType(notificationParameter.getType());
-                            slaSenderMessage.setConfig(JSONUtils.toJsonString(notificationParameter.getConfig()));
+                                SlaNotificationMessage notificationMessage = new SlaNotificationMessage();
+                                notificationMessage.setMessage(buildAlertMessage(metricExecutionResult, jobExecutionRequest.getEngineType(), jobExecutionRequest.isEn()));
+                                notificationMessage.setSubject(buildAlertSubject(metricExecutionResult, jobExecutionRequest.isEn()));
+                                Map<SlaSenderMessage, Set<SlaConfigMessage>> configMap = new HashMap<>();
+                                for (NotificationParameter notificationParameter : notificationParameters) {
+                                    SlaSenderMessage slaSenderMessage = new SlaSenderMessage();
+                                    slaSenderMessage.setType(notificationParameter.getType());
+                                    slaSenderMessage.setConfig(JSONUtils.toJsonString(notificationParameter.getConfig()));
 
-                            Set<SlaConfigMessage> set = new HashSet<>();
-                            if (MapUtils.isNotEmpty(notificationParameter.getReceiver())) {
-                                SlaConfigMessage slaConfigMessage = new SlaConfigMessage();
-                                slaConfigMessage.setType(notificationParameter.getType());
-                                slaConfigMessage.setConfig(JSONUtils.toJsonString(notificationParameter.getReceiver()));
-                                set.add(slaConfigMessage);
+                                    Set<SlaConfigMessage> set = new HashSet<>();
+                                    if (MapUtils.isNotEmpty(notificationParameter.getReceiver())) {
+                                        SlaConfigMessage slaConfigMessage = new SlaConfigMessage();
+                                        slaConfigMessage.setType(notificationParameter.getType());
+                                        slaConfigMessage.setConfig(JSONUtils.toJsonString(notificationParameter.getReceiver()));
+                                        set.add(slaConfigMessage);
+                                    }
+                                    configMap.put(slaSenderMessage, set);
+                                }
+
+                                NotificationManager notificationManager = new NotificationManager();
+                                notificationManager.notify(notificationMessage, configMap);
                             }
-                            configMap.put(slaSenderMessage, set);
                         }
-
-                        NotificationManager notificationManager = new NotificationManager();
-                        notificationManager.notify(notificationMessage, configMap);
                     }
                 }
             }
