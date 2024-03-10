@@ -42,6 +42,6 @@ public class StarRocksConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
     public ConfigBuilder getConfigBuilder() {
-        return new MysqlConfigBuilder();
+        return new StarRocksConfigBuilder();
     }
 }

@@ -34,6 +34,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Api(value = "metric", tags = "metric", produces = MediaType.APPLICATION_JSON_VALUE)
 @RestController
@@ -150,19 +151,33 @@ public class MetricController {
     }
 
     @ApiOperation(value = "get expected value list")
-    @GetMapping(value = "/expectedValue/list")
-    public Object getExpectedTypeList() {
+    @GetMapping(value = "/expectedValue/list/{type}")
+    public Object getExpectedTypeList(@PathVariable("type") String type) {
         Set<String> expectedValueList = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
         Set<String> afterFilterSet = new HashSet<>();
-        expectedValueList.forEach(it -> {
-            afterFilterSet.add(it
-                    .replace("local_", "")
-                    .replace("spark_","")
-                    .replace("livy_","")
-            );
-        });
+        afterFilterSet = expectedValueList.stream()
+                .map(it ->it.replace("local_", "")
+                            .replace("spark_","")
+                            .replace("livy_",""))
+                .collect(Collectors.toSet());
 
         List<Item> items = new ArrayList<>();
+        JobType jobType = JobType.of(type);
+        if (jobType == null) {
+            throw new DataVinesServerException(type + "type is not validate");
+        }
+
+        switch (jobType) {
+            case DATA_QUALITY:
+                afterFilterSet = afterFilterSet.stream().filter(it -> !it.contains("target_table_total_rows")).collect(Collectors.toSet());
+                break;
+            case DATA_RECONCILIATION:
+                // NOTHING TO DO
+                break;
+            default:
+                break;
+        }
+
         afterFilterSet.forEach(it -> {
             ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin("local_" + it);
             if (expectedValue != null) {

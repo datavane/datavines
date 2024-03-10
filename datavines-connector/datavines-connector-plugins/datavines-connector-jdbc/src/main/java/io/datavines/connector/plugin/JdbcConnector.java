@@ -60,7 +60,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         this.dataSourceClient = dataSourceClient;
     }
 
-    private Connection getConnection(String dataSourceParam, JdbcConnectionInfo jdbcConnectionInfo) throws SQLException {
+    protected Connection getConnection(String dataSourceParam, JdbcConnectionInfo jdbcConnectionInfo) throws SQLException {
         return dataSourceClient.getConnection(JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
     }
 
@@ -113,9 +113,9 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
             if (StringUtils.isNotEmpty(jdbcConnectionInfo.getCatalog())) {
                 catalog = jdbcConnectionInfo.getCatalog();
-                schema = param.getDataBase();
+                schema = param.getDatabase();
             } else {
-                catalog = param.getDataBase();
+                catalog = param.getDatabase();
                 schema = StringUtils.isEmptyOrNullStr(jdbcConnectionInfo.getSchema())  ? null : jdbcConnectionInfo.getSchema();
             }
 

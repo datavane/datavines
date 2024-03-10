@@ -16,7 +16,9 @@
  */
 package io.datavines.server.enums;
 
+import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Getter;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,21 +42,16 @@ public enum DqJobExecutionState {
         this.zhDescription = zhDescription;
     }
 
+    @Getter
+    @EnumValue
     private final int code;
     private final String description;
+    @Getter
     private final String zhDescription;
-
-    public int getCode() {
-        return code;
-    }
 
     @JsonValue
     public String getDescription() {
         return description;
-    }
-
-    public String getZhDescription() {
-        return zhDescription;
     }
 
     public String getDescription(boolean isEn) {

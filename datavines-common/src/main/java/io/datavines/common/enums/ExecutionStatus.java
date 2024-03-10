@@ -19,6 +19,7 @@ package io.datavines.common.enums;
 import java.util.HashMap;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import lombok.Getter;
 
 /**
  * running status for workflow and task nodes
@@ -41,27 +42,32 @@ public enum ExecutionStatus {
      * 10 waiting thread
      * 11 waiting depend node complete
      */
-    SUBMITTED_SUCCESS(0, "submitted"),
-    RUNNING_EXECUTION(1, "running"),
-    READY_PAUSE(2, "ready pause"),
-    PAUSE(3, "pause"),
-    READY_STOP(4, "ready stop"),
-    STOP(5, "stop"),
-    FAILURE(6, "failure"),
-    SUCCESS(7, "success"),
-    NEED_FAULT_TOLERANCE(8, "need fault tolerance"),
-    KILL(9, "kill"),
-    WAITING_THREAD(10, "waiting thread"),
-    WAITING_DEPEND(11, "waiting depend node complete");
+    SUBMITTED_SUCCESS(0, "submitted", "已提交"),
+    RUNNING_EXECUTION(1, "running", "执行中"),
+    READY_PAUSE(2, "ready pause", "准备暂停"),
+    PAUSE(3, "pause", "暂停"),
+    READY_STOP(4, "ready stop", "准备停止"),
+    STOP(5, "stop", "停止"),
+    FAILURE(6, "failure", "失败"),
+    SUCCESS(7, "success", "成功"),
+    NEED_FAULT_TOLERANCE(8, "need fault tolerance","需要容错"),
+    KILL(9, "kill", "强制终止"),
+    WAITING_THREAD(10, "waiting thread", "等待线程"),
+    WAITING_DEPEND(11, "waiting depend node complete","");
 
-    ExecutionStatus(int code, String description){
+    ExecutionStatus(int code, String description,String zhDescription){
         this.code = code;
         this.description = description;
+        this.zhDescription = zhDescription;
     }
 
+    @Getter
     @EnumValue
-    int code;
-    String description;
+    private final int code;
+    @Getter
+    private final String description;
+    @Getter
+    private final String zhDescription;
 
     private static final HashMap<Integer, ExecutionStatus> EXECUTION_STATUS_MAP = new HashMap<>();
 
@@ -71,37 +77,37 @@ public enum ExecutionStatus {
        }
     }
 
- /**
-  * status is success
-  * @return status
-  */
-   public boolean typeIsSuccess(){
+    /**
+    * status is success
+    * @return status
+    */
+    public boolean typeIsSuccess(){
      return this == SUCCESS;
    }
 
- /**
-  * status is failure
-  * @return status
-  */
-   public boolean typeIsFailure(){
+    /**
+    * status is failure
+    * @return status
+    */
+    public boolean typeIsFailure(){
      return this == FAILURE || this == NEED_FAULT_TOLERANCE || this == KILL;
    }
 
- /**
-  * status is finished
-  * @return status
-  */
-   public boolean typeIsFinished(){
+    /**
+    * status is finished
+    * @return status
+    */
+    public boolean typeIsFinished(){
 
-       return typeIsSuccess() || typeIsFailure() || typeIsCancel() || typeIsPause()
+        return typeIsSuccess() || typeIsFailure() || typeIsCancel() || typeIsPause()
                || typeIsStop();
-   }
+    }
 
     /**
      * status is waiting thread
      * @return status
      */
-   public boolean typeIsWaitingThread(){
+    public boolean typeIsWaitingThread(){
        return this == WAITING_THREAD;
    }
 
@@ -109,7 +115,7 @@ public enum ExecutionStatus {
      * status is pause
      * @return status
      */
-   public boolean typeIsPause(){
+    public boolean typeIsPause(){
        return this == PAUSE;
    }
     /**
@@ -124,7 +130,7 @@ public enum ExecutionStatus {
      * status is running
      * @return status
      */
-   public boolean typeIsRunning(){
+    public boolean typeIsRunning(){
        return this == RUNNING_EXECUTION || this == WAITING_DEPEND;
    }
 
@@ -147,11 +153,4 @@ public enum ExecutionStatus {
         return this == SUBMITTED_SUCCESS || this == READY_PAUSE;
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public String getDescription() {
-        return description;
-    }
 }

@@ -16,30 +16,25 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
-import io.datavines.connector.api.DataSourceClient;
+import io.datavines.common.param.form.type.InputParam;
+import lombok.extern.slf4j.Slf4j;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+@Slf4j
+public class StarRocksConfigBuilder extends JdbcConfigBuilder {
 
-public class MysqlConnector extends JdbcConnector {
-
-    public MysqlConnector(DataSourceClient dataSourceClient) {
-        super(dataSourceClient);
+    @Override
+    protected InputParam getPropertiesInput(boolean isEn) {
+        return getInputParam("properties",
+                isEn ? "properties" : "参数",
+                isEn ? "please enter properties,like key=value&key1=value1" : "请填入参数，格式为key=value&key1=value1", 2, null,
+                "useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai&useInformationSchema=true");
     }
 
     @Override
-    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        return new MysqlDataSourceInfo(jdbcConnectionInfo);
+    protected InputParam getDatabaseInput(boolean isEn) {
+        return getInputParam("database",
+                isEn ? "database" : "数据库",
+                isEn ? "please enter database" : "请填入数据库", 1, null,
+                null);
     }
-
-    @Override
-    public ResultSet getMetadataDatabases(Connection connection) throws SQLException {
-        DatabaseMetaData metaData = connection.getMetaData();
-        return metaData.getCatalogs();
-    }
-
 }

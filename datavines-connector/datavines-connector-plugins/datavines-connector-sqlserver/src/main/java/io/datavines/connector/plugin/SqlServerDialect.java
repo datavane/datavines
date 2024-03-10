@@ -45,6 +45,6 @@ public class SqlServerDialect extends JdbcDialect {
 
     @Override
     public boolean supportToBeErrorDataStorage() {
-        return true;
+        return false;
     }
 }

@@ -104,7 +104,7 @@ public class MongodbConnector implements Connector {
     public ConnectorResponse getTables(GetTablesRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
-        String dataBase = param.getDataBase();
+        String dataBase = param.getDatabase();
 
         JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
         if (jdbcConnectionInfo == null) {

@@ -61,17 +61,52 @@ public class MetricExecutionResult implements Serializable {
             throw new DataVinesException("data map is empty");
         }
 
-        actualValue = Double.valueOf(String.valueOf(dataMap.get("actual_value")));
-        expectedValue = Double.valueOf(String.valueOf(dataMap.get("expected_value")));
-        resultFormula = String.valueOf(dataMap.get("result_formula"));
-        operator = String.valueOf(dataMap.get("operator"));
-        threshold = Double.valueOf(String.valueOf(dataMap.get("threshold")));
-        metricName = String.valueOf(dataMap.get("metric_name"));
-        metricDimension = String.valueOf(dataMap.get("metric_dimension"));
-        metricType = String.valueOf(dataMap.get("metric_type"));
-        databaseName = String.valueOf(dataMap.get("database_name"));
-        tableName = String.valueOf(dataMap.get("table_name"));
-        columnName = String.valueOf(dataMap.get("column_name"));
-        expectedType = String.valueOf(dataMap.get("expected_type"));
+        if (dataMap.get("actual_value") != null) {
+            actualValue = Double.valueOf(String.valueOf(dataMap.get("actual_value")).trim());
+        }
+
+        if (dataMap.get("expected_value") != null) {
+            expectedValue = Double.valueOf(String.valueOf(dataMap.get("expected_value")).trim());
+        }
+
+        if (dataMap.get("result_formula") != null) {
+            resultFormula = String.valueOf(dataMap.get("result_formula")).trim();
+        }
+
+        if (dataMap.get("operator") != null) {
+            operator = String.valueOf(dataMap.get("operator")).trim();
+        }
+
+        if (dataMap.get("threshold") != null) {
+            threshold = Double.valueOf(String.valueOf(dataMap.get("threshold")).trim());
+        }
+
+        if (dataMap.get("metric_name") != null) {
+            metricName = String.valueOf(dataMap.get("metric_name")).trim();
+        }
+
+        if (dataMap.get("metric_dimension") != null) {
+            metricDimension = String.valueOf(dataMap.get("metric_dimension")).trim();
+        }
+
+        if (dataMap.get("metric_type") != null) {
+            metricType = String.valueOf(dataMap.get("metric_type")).trim();
+        }
+
+        if (dataMap.get("database_name") != null) {
+            databaseName = String.valueOf(dataMap.get("database_name")).trim();
+        }
+
+        if (dataMap.get("table_name") != null) {
+            tableName = String.valueOf(dataMap.get("table_name")).trim();
+        }
+
+        if (dataMap.get("column_name") != null) {
+            columnName = String.valueOf(dataMap.get("column_name")).trim();
+        }
+
+        if (dataMap.get("expected_type") != null) {
+            expectedType = String.valueOf(dataMap.get("expected_type")).trim();
+        }
     }
 }
