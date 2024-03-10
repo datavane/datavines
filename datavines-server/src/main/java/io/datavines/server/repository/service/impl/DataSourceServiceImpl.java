@@ -273,7 +273,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         GetTablesRequestParam param = new GetTablesRequestParam();
         param.setType(dataSource.getType());
         param.setDataSourceParam(dataSource.getParam());
-        param.setDataBase(database);
+        param.setDatabase(database);
 
         Object result = null;
         ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());

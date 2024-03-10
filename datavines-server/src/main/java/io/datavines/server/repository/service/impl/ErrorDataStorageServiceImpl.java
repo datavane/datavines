@@ -137,7 +137,7 @@ public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMap
 
     @Override
     public String getConfigJson(String type) {
-        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConfigBuilder().build(!LanguageUtils.isZhContext());
+        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConfigBuilder().buildErrorDataStorage(!LanguageUtils.isZhContext());
     }
 
     private boolean isErrorDataStorageExist(String name) {

@@ -88,12 +88,9 @@ public class JobResultValidator {
             }
 
             if (!isSuccess) {
-                jobExternalService.updateJobExecutionStatus(jobExecutionId, ExecutionStatus.FAILURE);
                 sendErrorEmail(jobExecutionId);
             }
         }
-
-
     }
 
     /**
@@ -131,7 +128,7 @@ public class JobResultValidator {
         List<JobExecutionResult> errorJobExecutionResultList = jobExternalService.listErrorJobExecutionResultByJobExecutionId(jobExecution.getId());
         boolean isEn = !LanguageUtils.isZhContext();
         if (CollectionUtils.isNotEmpty(errorJobExecutionResultList)) {
-            for(JobExecutionResult errorJobExecutionResult : errorJobExecutionResultList){
+            for (JobExecutionResult errorJobExecutionResult : errorJobExecutionResultList) {
                 MetricExecutionResult metricExecutionResult = new MetricExecutionResult();
                 BeanUtils.copyProperties(errorJobExecutionResult, metricExecutionResult);
                 List<String> messages = new ArrayList<>();
@@ -148,7 +145,6 @@ public class JobResultValidator {
                 }
                 notificationClient.notify(message, config);
             }
-
         }
     }
 

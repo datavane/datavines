@@ -284,7 +284,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         GetTablesRequestParam getTablesRequestParam = new GetTablesRequestParam();
         getTablesRequestParam.setType(dataSource.getType());
         getTablesRequestParam.setDataSourceParam(dataSource.getParam());
-        getTablesRequestParam.setDataBase(database);
+        getTablesRequestParam.setDatabase(database);
         ConnectorResponse connectorResponse = null;
         List<String> tableListFromDataSource = new ArrayList<>();
         Map<String, TableInfo> tableInfoMap = new HashMap<>();

@@ -127,6 +127,13 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
             render: (text: string) => <div>{text}</div>,
         },
         {
+            title: intl.formatMessage({ id: 'jobs_task_check_status' }),
+            dataIndex: 'checkState',
+            key: 'checkState',
+            width: 150,
+            render: (text: string) => <div>{text}</div>,
+        },
+        {
             title: intl.formatMessage({ id: 'jobs_task_start_time' }),
             dataIndex: 'startTime',
             key: 'startTime',
@@ -139,13 +146,6 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
             key: 'endTime',
             width: 200,
             render: (text: string) => <div>{text || '--'}</div>,
-        },
-        {
-            title: intl.formatMessage({ id: 'jobs_update_time' }),
-            dataIndex: 'updateTime',
-            key: 'updateTime',
-            width: 200,
-            render: (text: string) => <div>{text || '--'}</div>
         },
         {
             title: intl.formatMessage({ id: 'common_action' }),

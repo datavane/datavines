@@ -44,7 +44,7 @@ public class OracleDialect extends JdbcDialect{
 
     @Override
     public boolean supportToBeErrorDataStorage() {
-        return true;
+        return false;
     }
 
     @Override

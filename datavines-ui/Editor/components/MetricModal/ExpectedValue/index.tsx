@@ -10,6 +10,7 @@ import { layoutItem } from '../helper';
 import useRequest from '../../../hooks/useRequest';
 import useRequiredRule from '../../../hooks/useRequiredRule';
 import { TDetail, TParameterItem } from '../type';
+import store, {RootReducer} from "@/store";
 
 type InnerProps = {
     form: FormInstance,
@@ -21,9 +22,11 @@ const Index = ({ form, detail }: InnerProps) => {
     const { $http } = useRequest();
     const [expectedTypeList, setExpectedTypeList] = useState([]);
     const requiredRules = useRequiredRule();
+    const { datasourceReducer } = store.getState() as RootReducer;
     useMount(async () => {
         try {
-            const res = await $http.get('metric/expectedValue/list');
+            const modeType = datasourceReducer.modeType === 'comparison' ? 'DATA_RECONCILIATION' : 'DATA_QUALITY'
+            const res = await $http.get('metric/expectedValue/list/'+modeType);
             setExpectedTypeList(res || []);
             if (detail && detail.id) {
                 const {

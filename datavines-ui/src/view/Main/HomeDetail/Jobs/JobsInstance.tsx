@@ -115,7 +115,7 @@ const JobsInstance = () => {
             title: intl.formatMessage({ id: 'jobs_task_metric_type' }),
             dataIndex: 'metricType',
             key: 'metricType',
-            width: 300,
+            width: 200,
             render: (text) => defaultRender(text, 300),
         },
         {
@@ -133,17 +133,24 @@ const JobsInstance = () => {
             render: (text: string) => <div>{text}</div>,
         },
         {
+            title: intl.formatMessage({ id: 'jobs_task_check_status' }),
+            dataIndex: 'checkState',
+            key: 'checkState',
+            width: 140,
+            render: (text: string) => <div>{text}</div>,
+        },
+        {
             title: intl.formatMessage({ id: 'jobs_task_start_time' }),
             dataIndex: 'startTime',
             key: 'startTime',
-            width: 160,
+            width: 180,
             render: (text: string) => <div>{text || '--'}</div>,
         },
         {
             title: intl.formatMessage({ id: 'jobs_task_end_time' }),
             dataIndex: 'endTime',
             key: 'endTime',
-            width: 160,
+            width: 180,
             render: (text: string) => <div>{text || '--'}</div>,
         },
         {
@@ -151,7 +158,7 @@ const JobsInstance = () => {
             fixed: 'right',
             key: 'right',
             dataIndex: 'right',
-            width: 240,
+            width: 200,
             render: (text: string, record: TJobsInstanceTableItem) => (
                 <>
                     <IF visible={record.status === 'submitted' || record.status === 'running'}>
