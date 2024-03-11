@@ -66,6 +66,6 @@ public class ColumnBlank extends BaseSingleTableColumn {
 
     @Override
     public List<DataVinesDataType> suitableType() {
-        return Arrays.asList(DataVinesDataType.NUMERIC_TYPE, DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
+        return Arrays.asList(DataVinesDataType.STRING_TYPE);
     }
 }
