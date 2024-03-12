@@ -40,6 +40,7 @@ import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.core.utils.LanguageUtils;
 import io.datavines.engine.config.DataVinesConfigurationManager;
+import io.datavines.metric.api.MetricType;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.server.api.dto.bo.job.DataProfileJobCreateOrUpdate;
@@ -184,13 +185,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     private boolean getByKeyAttribute(Job job) {
-        List<Job> list = baseMapper.selectList(new QueryWrapper<Job>()
-                .eq("name",job.getName())
-                .eq("schema_name",job.getSchemaName())
-                .eq("table_name",job.getTableName())
-                .eq("datasource_id",job.getDataSourceId())
-                .eq(job.getDataSourceId2() != 0, "datasource_id_2", job.getDataSourceId2())
-                .eq(StringUtils.isNotEmpty(job.getColumnName()), "column_name",job.getColumnName())
+        List<Job> list = baseMapper.selectList(new QueryWrapper<Job>().lambda()
+                .eq(Job::getName,job.getName())
+                .eq(Job::getSchemaName,job.getSchemaName())
+                .eq(Job::getTableName,job.getTableName())
+                .eq(Job::getDataSourceId,job.getDataSourceId())
+                .eq(job.getDataSourceId2() != 0, Job::getDataSourceId2, job.getDataSourceId2())
+                .eq(StringUtils.isNotEmpty(job.getColumnName()), Job::getColumnName,job.getColumnName())
         );
         return CollectionUtils.isNotEmpty(list);
     }
@@ -246,13 +247,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     private void saveOrUpdateMetricJobEntityRel(Job job, List<String> fqnList) {
-        List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
-                .eq("metric_job_id", job.getId())
-                .eq("metric_job_type", "DATA_QUALITY"));
+        List<CatalogEntityMetricJobRel>  listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>().lambda()
+                .eq(CatalogEntityMetricJobRel::getMetricJobId, job.getId())
+                .eq(CatalogEntityMetricJobRel::getMetricJobType, JobType.DATA_QUALITY.getDescription()));
         if (!listRel.isEmpty()) {
-            catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>()
-                    .eq("metric_job_id", job.getId())
-                    .eq("metric_job_type", "DATA_QUALITY"));
+            catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>().lambda()
+                    .eq(CatalogEntityMetricJobRel::getMetricJobId, job.getId())
+                    .eq(CatalogEntityMetricJobRel::getMetricJobType, JobType.DATA_QUALITY.getDescription()));
         }
 
         if (CollectionUtils.isNotEmpty(fqnList)) {
@@ -266,7 +267,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
                 CatalogEntityMetricJobRel entityMetricJobRel = new CatalogEntityMetricJobRel();
                 entityMetricJobRel.setEntityUuid(instance.getUuid());
                 entityMetricJobRel.setMetricJobId(job.getId());
-                entityMetricJobRel.setMetricJobType("DATA_QUALITY");
+                entityMetricJobRel.setMetricJobType(JobType.DATA_QUALITY.getDescription());
                 entityMetricJobRel.setCreateBy(ContextHolder.getUserId());
                 entityMetricJobRel.setCreateTime(LocalDateTime.now());
                 entityMetricJobRel.setUpdateBy(ContextHolder.getUserId());
@@ -287,11 +288,11 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         Job job = new Job();
         BeanUtils.copyProperties(dataProfileJobCreateOrUpdate, job);
-        job.setName(String.format("%s(%s.%s)", "DATA_PROFILE", job.getSchemaName(), job.getTableName()));
+        job.setName(String.format("%s(%s.%s)", JobType.DATA_PROFILE.getDescription(), job.getSchemaName(), job.getTableName()));
 
-        List<Job> list = baseMapper.selectList(new QueryWrapper<Job>()
-                .eq("name",job.getName())
-                .eq("datasource_id",job.getDataSourceId())
+        List<Job> list = baseMapper.selectList(new QueryWrapper<Job>().lambda()
+                .eq(Job::getName,job.getName())
+                .eq(Job::getDataSourceId,job.getDataSourceId())
         );
 
         if (CollectionUtils.isNotEmpty(list)) {
@@ -331,7 +332,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         for (BaseJobParameter jobParameter : jobParameters) {
 
             if (datasourceId2 !=0 && LOCAL.equalsIgnoreCase(engine) ) {
-                if ("multi_table_accuracy".equalsIgnoreCase(jobParameter.getMetricType()) && datasourceId != datasourceId2)  {
+                if (MetricType.MULTI_TABLE_ACCURACY.getDescription().equalsIgnoreCase(jobParameter.getMetricType()) && datasourceId != datasourceId2)  {
                     throw new DataVinesServerException(Status.MULTI_TABLE_ACCURACY_NOT_SUPPORT_LOCAL_ENGINE);
                 }
             }
@@ -376,15 +377,15 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     private boolean isColumn(BaseJobParameter jobParameter) {
-        String column = (String)jobParameter.getMetricParameter().get("column");
+        String column = (String)jobParameter.getMetricParameter().get(COLUMN);
         return StringUtils.isNotEmpty(column);
     }
 
     private String getFQN(BaseJobParameter jobParameter) {
         String fqn = "";
-        String schema = (String)jobParameter.getMetricParameter().get("database");
-        String table = (String)jobParameter.getMetricParameter().get("table");
-        String column = (String)jobParameter.getMetricParameter().get("column");
+        String schema = (String)jobParameter.getMetricParameter().get(DATABASE);
+        String table = (String)jobParameter.getMetricParameter().get(TABLE);
+        String column = (String)jobParameter.getMetricParameter().get(COLUMN);
         if (StringUtils.isEmpty(schema)) {
             return null;
         }
@@ -406,9 +407,9 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         List<String> fqnList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(jobParameters)) {
             BaseJobParameter jobParameter = jobParameters.get(0);
-            job.setSchemaName((String)jobParameter.getMetricParameter().get("database"));
-            job.setTableName((String)jobParameter.getMetricParameter().get("table"));
-            job.setColumnName((String)jobParameter.getMetricParameter().get("column"));
+            job.setSchemaName((String)jobParameter.getMetricParameter().get(DATABASE));
+            job.setTableName((String)jobParameter.getMetricParameter().get(TABLE));
+            job.setColumnName((String)jobParameter.getMetricParameter().get(COLUMN));
             job.setMetricType(jobParameter.getMetricType());
             fqnList.add(getFQN(jobParameter));
         }
@@ -610,16 +611,16 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
         ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(baseJobParameter.getResultFormula());
 
-        String database = (String)metricParameter.get("database");
-        String table = (String)metricParameter.get("table");
-        String column = (String)metricParameter.get("column");
+        String database = (String)metricParameter.get(DATABASE);
+        String table = (String)metricParameter.get(TABLE);
+        String column = (String)metricParameter.get(COLUMN);
         String metric = baseJobParameter.getMetricType();
 
         switch (JobType.of(jobType)) {
             case DATA_QUALITY:
                 return String.format("%s(%s)", metric.toUpperCase(), resultFormula.getSymbol());
             case DATA_PROFILE:
-                return String.format("%s(%s.%s)", "DATA_PROFILE", database, table);
+                return String.format("%s(%s.%s)", JobType.DATA_PROFILE.getDescription(), database, table);
             case DATA_RECONCILIATION:
                 return String.format("%s(%s)", metric.toUpperCase(), resultFormula.getSymbol());
             default:
@@ -682,7 +683,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             throw new DataVinesServerException(Status.JOB_PARAMETER_IS_NULL_ERROR);
         }
 
-        String column = (String)metricParameter.get("column");
+        String column = (String)metricParameter.get(COLUMN);
         String metric = baseJobParameter.getMetricType();
         if (StringUtils.isEmpty(column)) {
             return String.format("%s_%s", metric.toLowerCase(), System.currentTimeMillis());

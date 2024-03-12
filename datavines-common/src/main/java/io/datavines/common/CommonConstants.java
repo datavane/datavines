@@ -291,6 +291,8 @@ public class CommonConstants {
 
     public static final String SPARK = "spark";
 
+    public static final String LIVY = "livy";
+
     public static final String ENGINE = "engine";
 
     public static final String CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE = "active";

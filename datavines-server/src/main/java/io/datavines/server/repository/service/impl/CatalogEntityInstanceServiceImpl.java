@@ -93,15 +93,15 @@ public class CatalogEntityInstanceServiceImpl
 
     @Override
     public CatalogEntityInstance getByTypeAndFQN(String type, String fqn) {
-        return baseMapper.selectOne(new QueryWrapper<CatalogEntityInstance>().eq("type", type).eq("fully_qualified_name", fqn));
+        return baseMapper.selectOne(new QueryWrapper<CatalogEntityInstance>().lambda().eq(CatalogEntityInstance::getType, type).eq(CatalogEntityInstance::getFullyQualifiedName, fqn));
     }
 
     @Override
     public CatalogEntityInstance getByDataSourceAndFQN(Long dataSourceId, String fqn) {
-        return baseMapper.selectOne(new QueryWrapper<CatalogEntityInstance>()
-                .eq("datasource_id", dataSourceId)
-                .eq("fully_qualified_name", fqn)
-                .eq("status",CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE));
+        return baseMapper.selectOne(new QueryWrapper<CatalogEntityInstance>().lambda()
+                .eq(CatalogEntityInstance::getDatasourceId, dataSourceId)
+                .eq(CatalogEntityInstance::getFullyQualifiedName, fqn)
+                .eq(CatalogEntityInstance::getStatus,CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE));
     }
 
     @Override
@@ -136,8 +136,8 @@ public class CatalogEntityInstanceServiceImpl
     }
 
     private List<CatalogEntityInstance> getCatalogEntityInstances(String upstreamId) {
-        List<CatalogEntityRel> entityRelList = entityRelService.list(new QueryWrapper<CatalogEntityRel>()
-                .eq("entity1_uuid", upstreamId).eq("type",EntityRelType.CHILD.getDescription()));
+        List<CatalogEntityRel> entityRelList = entityRelService.list(new QueryWrapper<CatalogEntityRel>().lambda()
+                .eq(CatalogEntityRel::getEntity1Uuid, upstreamId).eq(CatalogEntityRel::getType,EntityRelType.CHILD.getDescription()));
         List<String> uuidList = new ArrayList<>();
         entityRelList.forEach(x->{
             uuidList.add(x.getEntity2Uuid());
@@ -145,18 +145,18 @@ public class CatalogEntityInstanceServiceImpl
 
         List<CatalogEntityInstance> entityInstanceList = null;
         if (CollectionUtils.isNotEmpty(uuidList)) {
-            entityInstanceList = baseMapper.selectList(new QueryWrapper<CatalogEntityInstance>()
-                    .in("uuid", uuidList)
-                    .eq("status", CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE)
-                    .orderBy(true, true, "id"));
+            entityInstanceList = baseMapper.selectList(new QueryWrapper<CatalogEntityInstance>().lambda()
+                    .in(CatalogEntityInstance::getUuid, uuidList)
+                    .eq(CatalogEntityInstance::getStatus, CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE)
+                    .orderBy(true, true, CatalogEntityInstance::getId));
         }
 
         return entityInstanceList;
     }
 
     private IPage<CatalogEntityInstance> getCatalogEntityInstancePage(String upstreamId, String name, Integer pageNumber, Integer pageSize) {
-        List<CatalogEntityRel> entityRelList = entityRelService.list(new QueryWrapper<CatalogEntityRel>()
-                .eq("entity1_uuid", upstreamId).eq("type",EntityRelType.CHILD.getDescription()));
+        List<CatalogEntityRel> entityRelList = entityRelService.list(new QueryWrapper<CatalogEntityRel>().lambda()
+                .eq(CatalogEntityRel::getEntity1Uuid, upstreamId).eq(CatalogEntityRel::getType,EntityRelType.CHILD.getDescription()));
         List<String> uuidList = new ArrayList<>();
         entityRelList.forEach(x->{
             uuidList.add(x.getEntity2Uuid());
@@ -214,13 +214,13 @@ public class CatalogEntityInstanceServiceImpl
 
         for (String upstreamId: upstreamIds) {
             List<String> entityRelList = entityRelService
-                    .list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid",upstreamId))
+                    .list(new QueryWrapper<CatalogEntityRel>().lambda().eq(CatalogEntityRel::getEntity1Uuid,upstreamId))
                     .stream()
                     .map(CatalogEntityRel::getEntity2Uuid)
                     .collect(Collectors.toList());
 
-            remove(new QueryWrapper<CatalogEntityInstance>().eq("uuid",upstreamId));
-            entityRelService.remove(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid",upstreamId));
+            remove(new QueryWrapper<CatalogEntityInstance>().lambda().eq(CatalogEntityInstance::getUuid,upstreamId));
+            entityRelService.remove(new QueryWrapper<CatalogEntityRel>().lambda().eq(CatalogEntityRel::getEntity1Uuid,upstreamId));
             catalogEntityMetricJobRelService.deleteByEntityUUID(Collections.singletonList(upstreamId));
 
             deleteEntityInstance(entityRelList);
@@ -375,7 +375,7 @@ public class CatalogEntityInstanceServiceImpl
 
     private CatalogEntityInstance getCatalogEntityInstance(String uuid) {
 
-        return getOne(new QueryWrapper<CatalogEntityInstance>().eq("uuid", uuid));
+        return getOne(new QueryWrapper<CatalogEntityInstance>().lambda().eq(CatalogEntityInstance::getUuid, uuid));
     }
 
     @Override
@@ -547,8 +547,7 @@ public class CatalogEntityInstanceServiceImpl
         for (CatalogEntityProfile entityProfile : columnProfileList) {
             String metricName = entityProfile.getMetricName();
             if (StringUtils.isEmpty(metricName)
-                    || StringUtils.isEmpty(entityProfile.getActualValue())
-                    || "null".equalsIgnoreCase(entityProfile.getActualValue())) {
+                    || StringUtils.isEmptyOrNullStr(entityProfile.getActualValue())) {
                 continue;
             }
             switch (metricName) {
@@ -630,8 +629,7 @@ public class CatalogEntityInstanceServiceImpl
         for (CatalogEntityProfile entityProfile : columnProfileList) {
             String metricName = entityProfile.getMetricName();
             if (StringUtils.isEmpty(metricName)
-                    || StringUtils.isEmpty(entityProfile.getActualValue())
-                    || "null".equalsIgnoreCase(entityProfile.getActualValue())) {
+                    || StringUtils.isEmptyOrNullStr(entityProfile.getActualValue())) {
                 continue;
             }
 
@@ -699,8 +697,7 @@ public class CatalogEntityInstanceServiceImpl
         for (CatalogEntityProfile entityProfile : columnProfileList) {
             String metricName = entityProfile.getMetricName();
             if (StringUtils.isEmpty(metricName)
-                    || StringUtils.isEmpty(entityProfile.getActualValue())
-                    || "null".equalsIgnoreCase(entityProfile.getActualValue())) {
+                    || StringUtils.isEmptyOrNullStr(entityProfile.getActualValue())) {
                 continue;
             }
 
@@ -805,7 +802,8 @@ public class CatalogEntityInstanceServiceImpl
 
     @Override
     public List<String> getProfileJobSelectedColumns(String uuid) {
-        CatalogEntityMetricJobRel rel = catalogEntityMetricJobRelService.getOne(new QueryWrapper<CatalogEntityMetricJobRel>().eq("entity_uuid", uuid).eq("metric_job_type", DATA_PROFILE.getDescription()));
+        CatalogEntityMetricJobRel rel = catalogEntityMetricJobRelService.getOne(new QueryWrapper<CatalogEntityMetricJobRel>()
+                .lambda().eq(CatalogEntityMetricJobRel::getEntityUuid, uuid).eq(CatalogEntityMetricJobRel::getMetricJobType, DATA_PROFILE.getDescription()));
         if (rel == null) {
             return Collections.emptyList();
         }
@@ -938,21 +936,21 @@ public class CatalogEntityInstanceServiceImpl
         long jobId = jobService.createOrUpdateDataProfileJob(createOrUpdate);
 
         if (jobId != -1L) {
-            List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
-                    .eq("entity_uuid", uuid)
-                    .eq("metric_job_id", jobId)
-                    .eq("metric_job_type", "DATA_PROFILE"));
+            List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>().lambda()
+                    .eq(CatalogEntityMetricJobRel::getEntityUuid, uuid)
+                    .eq(CatalogEntityMetricJobRel::getMetricJobId, jobId)
+                    .eq(CatalogEntityMetricJobRel::getMetricJobType, DATA_PROFILE.getDescription()));
             if (listRel.size() >= 1) {
-                catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>()
-                        .eq("entity_uuid", uuid)
-                        .eq("metric_job_id", jobId)
-                        .eq("metric_job_type", "DATA_PROFILE"));
+                catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>().lambda()
+                        .eq(CatalogEntityMetricJobRel::getEntityUuid, uuid)
+                        .eq(CatalogEntityMetricJobRel::getMetricJobId, jobId)
+                        .eq(CatalogEntityMetricJobRel::getMetricJobType, DATA_PROFILE.getDescription()));
             }
 
             CatalogEntityMetricJobRel entityMetricJobRel = new CatalogEntityMetricJobRel();
             entityMetricJobRel.setEntityUuid(uuid);
             entityMetricJobRel.setMetricJobId(jobId);
-            entityMetricJobRel.setMetricJobType("DATA_PROFILE");
+            entityMetricJobRel.setMetricJobType(DATA_PROFILE.getDescription());
             entityMetricJobRel.setCreateBy(ContextHolder.getUserId());
             entityMetricJobRel.setCreateTime(LocalDateTime.now());
             entityMetricJobRel.setUpdateBy(ContextHolder.getUserId());
@@ -965,9 +963,9 @@ public class CatalogEntityInstanceServiceImpl
 
     private void engineParameter(DataProfileJobCreateOrUpdate createOrUpdate) {
         String profileEngine = CommonPropertyUtils.getString("profile.execute.engine");
-        if ("livy".equalsIgnoreCase(profileEngine)) {
+        if (CommonConstants.LIVY.equalsIgnoreCase(profileEngine)) {
 
-            createOrUpdate.setEngineType("livy");
+            createOrUpdate.setEngineType(CommonConstants.LIVY);
             String deployMode = CommonPropertyUtils.getString("livy.engine.parameter.deploy.mode", "cluster");
             int numExecutors = CommonPropertyUtils.getInt("livy.engine.parameter.num.executors", 1);
             int driverCores = CommonPropertyUtils.getInt("livy.engine.parameter.driver.cores", 1);
@@ -980,9 +978,9 @@ public class CatalogEntityInstanceServiceImpl
                     numExecutors, executorCores, executorMemory, others);
 
             createOrUpdate.setEngineParameter(JSONUtils.toJsonString(engineParameter));
-        } else if ("spark".equalsIgnoreCase(profileEngine)) {
+        } else if (CommonConstants.SPARK.equalsIgnoreCase(profileEngine)) {
 
-            createOrUpdate.setEngineType("spark");
+            createOrUpdate.setEngineType(CommonConstants.SPARK);
             String deployMode = CommonPropertyUtils.getString("spark.engine.parameter.deploy.mode", "cluster");
             int numExecutors = CommonPropertyUtils.getInt("spark.engine.parameter.num.executors", 1);
             int driverCores = CommonPropertyUtils.getInt("spark.engine.parameter.driver.cores", 1);
@@ -1003,16 +1001,16 @@ public class CatalogEntityInstanceServiceImpl
     }
 
     private long getEntityTagCount(String uuid) {
-        return catalogEntityTagRelService.count(new QueryWrapper<CatalogEntityTagRel>().eq("entity_uuid", uuid));
+        return catalogEntityTagRelService.count(new QueryWrapper<CatalogEntityTagRel>().lambda().eq(CatalogEntityTagRel::getEntityUuid, uuid));
     }
 
     private long getEntityMetricCount(String uuid) {
-        return catalogEntityMetricJobRelService.count(new QueryWrapper<CatalogEntityMetricJobRel>().eq("entity_uuid", uuid));
+        return catalogEntityMetricJobRelService.count(new QueryWrapper<CatalogEntityMetricJobRel>().lambda().eq(CatalogEntityMetricJobRel::getEntityUuid, uuid));
     }
 
     private CatalogEntityInstance getParentEntity(String uuid) {
-        List<CatalogEntityRel> entityRelList = entityRelService.list(new QueryWrapper<CatalogEntityRel>()
-                .eq("entity2_uuid", uuid).eq("type", EntityRelType.CHILD.getDescription()));
+        List<CatalogEntityRel> entityRelList = entityRelService.list(new QueryWrapper<CatalogEntityRel>().lambda()
+                .eq(CatalogEntityRel::getEntity2Uuid, uuid).eq(CatalogEntityRel::getType, EntityRelType.CHILD.getDescription()));
 
         if (CollectionUtils.isEmpty(entityRelList)) {
             return null;
@@ -1030,7 +1028,7 @@ public class CatalogEntityInstanceServiceImpl
 
     @Override
     public IPage<JobExecutionVO> profileJobExecutionPage(String uuid, Integer pageNumber, Integer pageSize) {
-        List<CatalogEntityMetricJobRel> list = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>().eq("entity_uuid", uuid));
+        List<CatalogEntityMetricJobRel> list = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>().lambda().eq(CatalogEntityMetricJobRel::getEntityUuid, uuid));
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
@@ -1047,7 +1045,7 @@ public class CatalogEntityInstanceServiceImpl
 
     @Override
     public String getProfileJobFilter(String uuid) {
-        CatalogEntityMetricJobRel rel = catalogEntityMetricJobRelService.getOne(new QueryWrapper<CatalogEntityMetricJobRel>().eq("entity_uuid", uuid).eq("metric_job_type", DATA_PROFILE.getDescription()));
+        CatalogEntityMetricJobRel rel = catalogEntityMetricJobRelService.getOne(new QueryWrapper<CatalogEntityMetricJobRel>().lambda().eq(CatalogEntityMetricJobRel::getEntityUuid, uuid).eq(CatalogEntityMetricJobRel::getMetricJobType, DATA_PROFILE.getDescription()));
         String filter = "";
         if (rel == null) {
             return filter;

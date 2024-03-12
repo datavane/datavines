@@ -18,6 +18,7 @@ package io.datavines.server.repository.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import io.datavines.common.enums.JobType;
 import io.datavines.common.utils.DateUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.core.exception.DataVinesServerException;
@@ -51,26 +52,26 @@ public class CatalogEntityProfileServiceImpl extends ServiceImpl<CatalogEntityPr
 
     @Override
     public List<CatalogEntityProfile> getEntityProfileByUUID(String uuid, String dataDate) {
-        return baseMapper.selectList(new QueryWrapper<CatalogEntityProfile>()
-                .eq("entity_uuid", uuid)
-                .eq("data_date", dataDate));
+        return baseMapper.selectList(new QueryWrapper<CatalogEntityProfile>().lambda()
+                .eq(CatalogEntityProfile::getEntityUuid, uuid)
+                .eq(CatalogEntityProfile::getDataDate, dataDate));
     }
 
     @Override
     public List<CatalogEntityProfile> getEntityProfileByUUIDAndMetric(String uuid, String metricName, String dataDate) {
-        return baseMapper.selectList(new QueryWrapper<CatalogEntityProfile>()
-                .eq("entity_uuid", uuid)
-                .eq("metric_name", metricName)
-                .eq("data_date", dataDate));
+        return baseMapper.selectList(new QueryWrapper<CatalogEntityProfile>().lambda()
+                .eq(CatalogEntityProfile::getEntityUuid, uuid)
+                .eq(CatalogEntityProfile::getMetricName, metricName)
+                .eq(CatalogEntityProfile::getDataDate, dataDate));
     }
 
     @Override
     public DataTime2ValueItem getCurrentTableRecords(String uuid) {
 
-        List<CatalogEntityProfile> tableRowCounts = baseMapper.selectList(new QueryWrapper<CatalogEntityProfile>()
-                .eq("entity_uuid", uuid)
-                .eq("metric_name", "table_row_count")
-                .orderByDesc("data_date"));
+        List<CatalogEntityProfile> tableRowCounts = baseMapper.selectList(new QueryWrapper<CatalogEntityProfile>().lambda()
+                .eq(CatalogEntityProfile::getEntityUuid, uuid)
+                .eq(CatalogEntityProfile::getMetricName, "table_row_count")
+                .orderByDesc(CatalogEntityProfile::getDataDate));
 
         if (CollectionUtils.isEmpty(tableRowCounts)) {
             return null;
@@ -87,12 +88,12 @@ public class CatalogEntityProfileServiceImpl extends ServiceImpl<CatalogEntityPr
             endTime = DateUtils.dateToString(DateUtils.getSomeDay(new Date(), 1));
         }
 
-        List<CatalogEntityProfile> tableRowCounts = baseMapper.selectList(new QueryWrapper<CatalogEntityProfile>()
-                .eq("entity_uuid", uuid)
-                .eq("metric_name", "table_row_count")
-                .ge("data_date", starTime)
-                .le("data_date", endTime)
-                .orderByAsc("data_date"));
+        List<CatalogEntityProfile> tableRowCounts = baseMapper.selectList(new QueryWrapper<CatalogEntityProfile>().lambda()
+                .eq(CatalogEntityProfile::getEntityUuid, uuid)
+                .eq(CatalogEntityProfile::getMetricName, "table_row_count")
+                .ge(CatalogEntityProfile::getDataDate, starTime)
+                .le(CatalogEntityProfile::getDataDate, endTime)
+                .orderByAsc(CatalogEntityProfile::getDataDate));
 
         return tableRowCounts.stream().map(item -> {
             return new DataTime2ValueItem(item.getDataDate(), item.getActualValue());
@@ -101,10 +102,10 @@ public class CatalogEntityProfileServiceImpl extends ServiceImpl<CatalogEntityPr
 
     @Override
     public Double getColumnUniqueCount(String uuid, String dataDate) {
-        List<CatalogEntityProfile> distinctCount = baseMapper.selectList(new QueryWrapper<CatalogEntityProfile>()
-                .eq("entity_uuid", uuid)
-                .eq("metric_name", "column_unique")
-                .eq("data_date", dataDate));
+        List<CatalogEntityProfile> distinctCount = baseMapper.selectList(new QueryWrapper<CatalogEntityProfile>().lambda()
+                .eq(CatalogEntityProfile::getEntityUuid, uuid)
+                .eq(CatalogEntityProfile::getMetricName, "column_unique")
+                .eq(CatalogEntityProfile::getDataDate, dataDate));
 
         if (CollectionUtils.isEmpty(distinctCount)) {
             return null;
@@ -120,9 +121,9 @@ public class CatalogEntityProfileServiceImpl extends ServiceImpl<CatalogEntityPr
 
         String entityUUID = createOrUpdate.getEntityUUID();
 
-        List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
-                .eq("entity_uuid", entityUUID)
-                .eq("metric_job_type", "DATA_PROFILE"));
+        List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>().lambda()
+                .eq(CatalogEntityMetricJobRel::getEntityUuid, entityUUID)
+                .eq(CatalogEntityMetricJobRel::getMetricJobType, JobType.DATA_PROFILE.getDescription()));
 
         if (CollectionUtils.isNotEmpty(listRel)) {
             jobScheduleCreateOrUpdate.setJobId(listRel.get(0).getMetricJobId());
@@ -138,9 +139,9 @@ public class CatalogEntityProfileServiceImpl extends ServiceImpl<CatalogEntityPr
 
     @Override
     public JobSchedule getByEntityUUID(String entityUUID) {
-        List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>()
-                .eq("entity_uuid", entityUUID)
-                .eq("metric_job_type", "DATA_PROFILE"));
+        List<CatalogEntityMetricJobRel> listRel = catalogEntityMetricJobRelService.list(new QueryWrapper<CatalogEntityMetricJobRel>().lambda()
+                .eq(CatalogEntityMetricJobRel::getEntityUuid, entityUUID)
+                .eq(CatalogEntityMetricJobRel::getMetricJobType, JobType.DATA_PROFILE.getDescription()));
 
         if (CollectionUtils.isNotEmpty(listRel)) {
             return jobScheduleService.getByJobId(listRel.get(0).getMetricJobId());

@@ -238,12 +238,12 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
     @Override
     public List<DataSource> listByWorkSpaceId(long workspaceId) {
-        return baseMapper.selectList(new QueryWrapper<DataSource>().eq("workspace_id", workspaceId));
+        return baseMapper.selectList(new QueryWrapper<DataSource>().lambda().eq(DataSource::getWorkspaceId, workspaceId));
     }
 
     @Override
     public List<DataSource> listByWorkSpaceIdAndType(long workspaceId, String type) {
-        return baseMapper.selectList(new QueryWrapper<DataSource>().eq("workspace_id", workspaceId).eq("type", type));
+        return baseMapper.selectList(new QueryWrapper<DataSource>().lambda().eq(DataSource::getWorkspaceId, workspaceId).eq(DataSource::getType, type));
     }
 
     @Override

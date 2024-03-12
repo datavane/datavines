@@ -255,7 +255,7 @@ public class SqlUtils {
 
     public static void dropView(String viewName, Connection connection) {
         try (Statement statement = connection.createStatement()){
-            if (StringUtils.isNotEmpty(viewName) && !"null".equals(viewName)) {
+            if (!StringUtils.isEmptyOrNullStr(viewName)) {
                 statement.execute("DROP VIEW " + viewName);
             }
         } catch (Exception e) {
@@ -265,7 +265,7 @@ public class SqlUtils {
 
     public static void dropView(String viewName, Statement statement) {
         try {
-            if (StringUtils.isNotEmpty(viewName) && !"null".equals(viewName)) {
+            if (!StringUtils.isEmptyOrNullStr(viewName)) {
                 statement.execute("DROP VIEW " + viewName);
             }
         } catch (Exception e) {
