@@ -32,7 +32,7 @@ public class CatalogSchemaChangeServiceImpl extends ServiceImpl<CatalogSchemaCha
 
     @Override
     public List<CatalogSchemaChange> getSchemaChangeList(String uuid) {
-        return list(new QueryWrapper<CatalogSchemaChange>().eq("entity_uuid", uuid).or().eq("parent_uuid", uuid));
+        return list(new QueryWrapper<CatalogSchemaChange>().lambda().eq(CatalogSchemaChange::getEntityUuid, uuid).or().eq(CatalogSchemaChange::getParentUuid, uuid));
     }
 
     @Override

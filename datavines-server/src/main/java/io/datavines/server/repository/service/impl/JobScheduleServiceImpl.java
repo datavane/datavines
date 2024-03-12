@@ -73,7 +73,7 @@ public class JobScheduleServiceImpl extends ServiceImpl<JobScheduleMapper, JobSc
     private JobSchedule create(JobScheduleCreateOrUpdate jobScheduleCreate) throws DataVinesServerException {
 
         Long jobId = jobScheduleCreate.getJobId();
-        JobSchedule jobSchedule = baseMapper.selectOne(new QueryWrapper<JobSchedule>().eq("job_id", jobId));
+        JobSchedule jobSchedule = baseMapper.selectOne(new QueryWrapper<JobSchedule>().lambda().eq(JobSchedule::getJobId, jobId));
         if (jobSchedule != null) {
             throw new DataVinesServerException(Status.JOB_SCHEDULE_EXIST_ERROR, jobSchedule.getId());
         }

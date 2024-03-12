@@ -114,10 +114,10 @@ public class IssueServiceImpl extends ServiceImpl<IssueMapper, Issue> implements
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteByJobId(long jobId) {
-        List<JobIssueRel> relList = jobIssueRelMapper.selectList(new QueryWrapper<JobIssueRel>().eq("job_id", jobId));
+        List<JobIssueRel> relList = jobIssueRelMapper.selectList(new QueryWrapper<JobIssueRel>().lambda().eq(JobIssueRel::getJobId, jobId));
         if (CollectionUtils.isNotEmpty(relList)) {
-            remove(new QueryWrapper<Issue>().in("id", relList.stream().map(JobIssueRel::getIssueId).collect(Collectors.toList())));
-            jobIssueRelMapper.delete(new QueryWrapper<JobIssueRel>().eq("job_id", jobId));
+            remove(new QueryWrapper<Issue>().lambda().in(Issue::getId, relList.stream().map(JobIssueRel::getIssueId).collect(Collectors.toList())));
+            jobIssueRelMapper.delete(new QueryWrapper<JobIssueRel>().lambda().eq(JobIssueRel::getJobId, jobId));
             return true;
         }
         return false;

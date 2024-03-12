@@ -84,7 +84,7 @@ public class SlaJobServiceImpl extends ServiceImpl<SlaJobMapper, SlaJob> impleme
 
     @Override
     public int deleteByJobId(Long id) {
-        List<SlaJob> slaJobs = baseMapper.selectList(new QueryWrapper<SlaJob>().eq("job_id", id));
+        List<SlaJob> slaJobs = baseMapper.selectList(new QueryWrapper<SlaJob>().lambda().eq(SlaJob::getJobId, id));
         if (CollectionUtils.isNotEmpty(slaJobs)) {
             List<Long> ids = slaJobs.stream()
                     .map(SlaJob::getId)

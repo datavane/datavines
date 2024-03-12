@@ -63,19 +63,19 @@ public class CatalogTagCategoryServiceImpl extends ServiceImpl<CatalogTagCategor
 
     @Override
     public boolean delete(String uuid) {
-        if (remove(new QueryWrapper<CatalogTagCategory>().eq("uuid", uuid))) {
-            return tagService.remove(new QueryWrapper<CatalogTag>().eq("category_uuid", uuid));
+        if (remove(new QueryWrapper<CatalogTagCategory>().lambda().eq(CatalogTagCategory::getUuid, uuid))) {
+            return tagService.remove(new QueryWrapper<CatalogTag>().lambda().eq(CatalogTag::getCategoryUuid, uuid));
         }
         return true;
     }
 
     @Override
     public List<CatalogTagCategory> listByWorkSpaceId(Long workSpaceId) {
-        return list(new QueryWrapper<CatalogTagCategory>().eq("workspace_id", workSpaceId));
+        return list(new QueryWrapper<CatalogTagCategory>().lambda().eq(CatalogTagCategory::getWorkspaceId, workSpaceId));
     }
 
     private boolean isExist(String name) {
-        CatalogTagCategory tagCategory = baseMapper.selectOne(new QueryWrapper<CatalogTagCategory>().eq("name", name));
+        CatalogTagCategory tagCategory = baseMapper.selectOne(new QueryWrapper<CatalogTagCategory>().lambda().eq(CatalogTagCategory::getName, name));
         return tagCategory != null;
     }
 }

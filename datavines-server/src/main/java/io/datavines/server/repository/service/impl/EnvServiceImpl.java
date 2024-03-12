@@ -84,7 +84,7 @@ public class EnvServiceImpl extends ServiceImpl<EnvMapper, Env> implements EnvSe
 
     @Override
     public List<Env> listByWorkspaceId(long workspaceId) {
-        return baseMapper.selectList(new QueryWrapper<Env>().eq("workspace_id", workspaceId));
+        return baseMapper.selectList(new QueryWrapper<Env>().lambda().eq(Env::getWorkspaceId, workspaceId));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class EnvServiceImpl extends ServiceImpl<EnvMapper, Env> implements EnvSe
     }
 
     private boolean isEnvExist(String name) {
-        Env user = baseMapper.selectOne(new QueryWrapper<Env>().eq("name", name));
+        Env user = baseMapper.selectOne(new QueryWrapper<Env>().lambda().eq(Env::getName, name));
         return user != null;
     }
 }

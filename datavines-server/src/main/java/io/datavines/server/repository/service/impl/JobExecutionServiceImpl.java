@@ -192,16 +192,16 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 
     @Override
     public List<JobExecution> listNeedFailover(String host) {
-        return baseMapper.selectList(new QueryWrapper<JobExecution>()
-                .eq("execute_host", host)
-                .in("status", ExecutionStatus.RUNNING_EXECUTION.getCode(), ExecutionStatus.SUBMITTED_SUCCESS.getCode()));
+        return baseMapper.selectList(new QueryWrapper<JobExecution>().lambda()
+                .eq(JobExecution::getExecuteHost, host)
+                .in(JobExecution::getStatus, ExecutionStatus.RUNNING_EXECUTION.getCode(), ExecutionStatus.SUBMITTED_SUCCESS.getCode()));
     }
 
     @Override
     public List<JobExecution> listJobExecutionNotInServerList(List<String> hostList) {
-        return baseMapper.selectList(new QueryWrapper<JobExecution>()
-                .notIn("execute_host", hostList)
-                .in("status",ExecutionStatus.RUNNING_EXECUTION.getCode(), ExecutionStatus.SUBMITTED_SUCCESS.getCode()));
+        return baseMapper.selectList(new QueryWrapper<JobExecution>().lambda()
+                .notIn(JobExecution::getExecuteHost, hostList)
+                .in(JobExecution::getStatus,ExecutionStatus.RUNNING_EXECUTION.getCode(), ExecutionStatus.SUBMITTED_SUCCESS.getCode()));
     }
 
     private void checkJobExecutionParameter(JobExecutionParameter jobExecutionParameter, String engineType) throws DataVinesServerException {

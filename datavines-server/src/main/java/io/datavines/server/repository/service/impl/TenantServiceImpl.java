@@ -84,7 +84,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
 
     @Override
     public List<Tenant> listByWorkspaceId(long workspaceId) {
-        return baseMapper.selectList(new QueryWrapper<Tenant>().eq("workspace_id", workspaceId));
+        return baseMapper.selectList(new QueryWrapper<Tenant>().lambda().eq(Tenant::getWorkspaceId, workspaceId));
     }
 
     @Override
@@ -93,7 +93,7 @@ public class TenantServiceImpl extends ServiceImpl<TenantMapper, Tenant> impleme
     }
 
     private boolean isTenantExist(String name) {
-        Tenant user = baseMapper.selectOne(new QueryWrapper<Tenant>().eq("tenant", name));
+        Tenant user = baseMapper.selectOne(new QueryWrapper<Tenant>().lambda().eq(Tenant::getTenant, name));
         return user != null;
     }
 }

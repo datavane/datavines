@@ -67,7 +67,7 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
 
     @Override
     public int deleteByJobExecutionId(long jobExecutionId) {
-        return baseMapper.delete(new QueryWrapper<JobExecutionResult>().eq("job_execution_id",jobExecutionId));
+        return baseMapper.delete(new QueryWrapper<JobExecutionResult>().lambda().eq(JobExecutionResult::getJobExecutionId,jobExecutionId));
     }
 
     @Override
@@ -77,7 +77,7 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
 
     @Override
     public JobExecutionResult getByJobExecutionId(long jobExecutionId) {
-        List<JobExecutionResult> list = baseMapper.selectList(new QueryWrapper<JobExecutionResult>().eq("job_execution_id", jobExecutionId).orderByDesc("update_time"));
+        List<JobExecutionResult> list = baseMapper.selectList(new QueryWrapper<JobExecutionResult>().lambda().eq(JobExecutionResult::getJobExecutionId, jobExecutionId).orderByDesc(JobExecutionResult::getUpdateTime));
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }

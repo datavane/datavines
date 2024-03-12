@@ -67,32 +67,32 @@ public class CatalogTagServiceImpl extends ServiceImpl<CatalogTagMapper, Catalog
 
     @Override
     public boolean delete(String uuid) {
-        return remove(new QueryWrapper<CatalogTag>().eq("uuid", uuid));
+        return remove(new QueryWrapper<CatalogTag>().lambda().eq(CatalogTag::getUuid, uuid));
     }
 
     @Override
     public List<CatalogTag> listByCategoryUUID(String categoryUUID) {
-        return list(new QueryWrapper<CatalogTag>().eq("category_uuid", categoryUUID));
+        return list(new QueryWrapper<CatalogTag>().lambda().eq(CatalogTag::getCategoryUuid, categoryUUID));
     }
 
     @Override
     public List<CatalogTag> listByEntityUUID(String entityUUID) {
         List<CatalogEntityTagRel> relList = catalogEntityTagRelService
-                .list(new QueryWrapper<CatalogEntityTagRel>().eq("entity_uuid", entityUUID));
+                .list(new QueryWrapper<CatalogEntityTagRel>().lambda().eq(CatalogEntityTagRel::getEntityUuid, entityUUID));
 
         if (CollectionUtils.isEmpty(relList)) {
             return null;
         }
 
-        return list(new QueryWrapper<CatalogTag>().in("uuid", relList.stream().map(CatalogEntityTagRel::getTagUuid).collect(Collectors.toList())));
+        return list(new QueryWrapper<CatalogTag>().lambda().in(CatalogTag::getUuid, relList.stream().map(CatalogEntityTagRel::getTagUuid).collect(Collectors.toList())));
     }
 
     @Override
     public boolean addEntityTagRel(String entityUUID, String tagUUID) {
         CatalogEntityTagRel rel = new CatalogEntityTagRel();
-        List<CatalogEntityTagRel> list = catalogEntityTagRelService.list(new QueryWrapper<CatalogEntityTagRel>()
-                .eq("entity_uuid", entityUUID)
-                .eq("tag_uuid", tagUUID));
+        List<CatalogEntityTagRel> list = catalogEntityTagRelService.list(new QueryWrapper<CatalogEntityTagRel>().lambda()
+                .eq(CatalogEntityTagRel::getEntityUuid, entityUUID)
+                .eq(CatalogEntityTagRel::getTagUuid, tagUUID));
         if (CollectionUtils.isNotEmpty(list)) {
             throw new DataVinesServerException(CATALOG_ENTITY_TAG_EXIST_ERROR);
         }
@@ -107,9 +107,9 @@ public class CatalogTagServiceImpl extends ServiceImpl<CatalogTagMapper, Catalog
 
     @Override
     public boolean deleteEntityTagRel(String entityUUID, String tagUUID) {
-        return catalogEntityTagRelService.remove(new QueryWrapper<CatalogEntityTagRel>()
-                .eq("entity_uuid", entityUUID)
-                .eq("tag_uuid", tagUUID));
+        return catalogEntityTagRelService.remove(new QueryWrapper<CatalogEntityTagRel>().lambda()
+                .eq(CatalogEntityTagRel::getEntityUuid, entityUUID)
+                .eq(CatalogEntityTagRel::getTagUuid, tagUUID));
     }
 
     @Override
@@ -118,7 +118,7 @@ public class CatalogTagServiceImpl extends ServiceImpl<CatalogTagMapper, Catalog
     }
 
     private boolean isExist(String name) {
-        CatalogTag tag = baseMapper.selectOne(new QueryWrapper<CatalogTag>().eq("name", name));
+        CatalogTag tag = baseMapper.selectOne(new QueryWrapper<CatalogTag>().lambda().eq(CatalogTag::getName, name));
         return tag != null;
     }
 

@@ -71,7 +71,7 @@ public class CatalogMetaDataFetchTaskScheduleServiceImpl extends ServiceImpl<Cat
     private CatalogMetaDataFetchTaskSchedule create(CatalogMetaDataFetchTaskScheduleCreateOrUpdate scheduleCreateOrUpdate) throws DataVinesServerException {
 
         Long dataSourceId = scheduleCreateOrUpdate.getDataSourceId();
-        CatalogMetaDataFetchTaskSchedule catalogMetaDataFetchTaskSchedule = baseMapper.selectOne(new QueryWrapper<CatalogMetaDataFetchTaskSchedule>().eq("datasource_id", dataSourceId));
+        CatalogMetaDataFetchTaskSchedule catalogMetaDataFetchTaskSchedule = baseMapper.selectOne(new QueryWrapper<CatalogMetaDataFetchTaskSchedule>().lambda().eq(CatalogMetaDataFetchTaskSchedule::getDataSourceId, dataSourceId));
         if (catalogMetaDataFetchTaskSchedule != null) {
             throw new DataVinesServerException(Status.CATALOG_TASK_SCHEDULE_EXIST_ERROR, catalogMetaDataFetchTaskSchedule.getId());
         }
