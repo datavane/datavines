@@ -149,7 +149,7 @@ public class MongodbConnector implements Connector {
             for (String key : doc.keySet()) {
 
                 Object value = doc.get(key);
-                if (!key.equals("_id")) {
+                if (!"_id".equals(key)) {
                     String fieldType = guessFieldType(value);
                     if (StringUtils.isNotEmpty(fieldType)) {
                         columnInfos.add(new ColumnInfo(key, fieldType));
