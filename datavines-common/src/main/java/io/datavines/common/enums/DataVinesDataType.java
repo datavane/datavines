@@ -125,7 +125,7 @@ public enum DataVinesDataType {
             return NUMERIC_TYPE;
         } else if (type.contains("char") || "blob".equalsIgnoreCase(type) || type.contains("text")) {
             return STRING_TYPE;
-        } else if (type.contains("time")) {
+        } else if (type.contains("time") || type.contains("date")) {
             return DATE_TIME_TYPE;
         } else {
             return STRING_TYPE;
