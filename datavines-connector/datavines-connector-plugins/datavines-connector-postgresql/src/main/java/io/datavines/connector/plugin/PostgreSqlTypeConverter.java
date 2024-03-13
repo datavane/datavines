@@ -29,15 +29,27 @@ public class PostgreSqlTypeConverter extends JdbcTypeConverter{
             case "INT8":
             case "INT4":
             case "INT2":
+            case "OID":
+            case "SERIAL":
                 return DataType.INT_TYPE;
+            case "BIGSERIAL":
+                return DataType.LONG_TYPE;
+            case "BOOL":
+                return DataType.BOOLEAN_TYPE;
             case "FLOAT8":
             case "FLOAT4":
+            case "REAL":
                 return DataType.FLOAT_TYPE;
             case "NUMBER":
+            case "MONEY":
                 return DataType.DOUBLE_TYPE;
             case "TIMESTAMPTZ":
                 return DataType.TIMESTAMP_TYPE;
+            case "TIMEZ":
+                return DataType.TIME_TYPE;
             case "BPCHAR":
+            case "UUID":
+            case "JSONB":
                 return DataType.STRING_TYPE;
             case "NUMERIC":
                 return DataType.BIG_DECIMAL_TYPE;
