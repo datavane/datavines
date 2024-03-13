@@ -26,13 +26,13 @@ public class PostgreSqlTypeConverter extends JdbcTypeConverter{
             throw new UnsupportedOperationException("sql type id null error");
         }
         switch (originType.toUpperCase()) {
-            case "INT8":
             case "INT4":
             case "INT2":
             case "OID":
             case "SERIAL":
                 return DataType.INT_TYPE;
             case "BIGSERIAL":
+            case "INT8":
                 return DataType.LONG_TYPE;
             case "BOOL":
                 return DataType.BOOLEAN_TYPE;
@@ -45,14 +45,27 @@ public class PostgreSqlTypeConverter extends JdbcTypeConverter{
                 return DataType.DOUBLE_TYPE;
             case "TIMESTAMPTZ":
                 return DataType.TIMESTAMP_TYPE;
-            case "TIMEZ":
+            case "TIMETZ":
                 return DataType.TIME_TYPE;
             case "BPCHAR":
             case "UUID":
             case "JSONB":
+            case "XML":
                 return DataType.STRING_TYPE;
             case "NUMERIC":
                 return DataType.BIG_DECIMAL_TYPE;
+            case "CIDR":
+            case "INET":
+            case "JSONPATH":
+            case "CIRCLE":
+            case "POINT":
+            case "LINE":
+            case "BOX":
+            case "PATH":
+            case "POLYGON":
+            case "LSEG":
+            case "VARBIT":
+                return DataType.OBJECT;
             default:
                 return super.convert(originType);
         }

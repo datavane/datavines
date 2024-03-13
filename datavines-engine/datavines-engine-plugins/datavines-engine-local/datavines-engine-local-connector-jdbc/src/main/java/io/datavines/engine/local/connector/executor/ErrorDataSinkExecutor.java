@@ -271,6 +271,11 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                                     }
                                     break;
                                 case OBJECT:
+                                    if (StringUtils.isNotEmpty(rowContent)) {
+                                        errorDataPreparedStatement.setObject(j+1, rowContent);
+                                    } else {
+                                        errorDataPreparedStatement.setNull(j+1, Types.JAVA_OBJECT);
+                                    }
                                     break;
                                 default:
                                     break;
