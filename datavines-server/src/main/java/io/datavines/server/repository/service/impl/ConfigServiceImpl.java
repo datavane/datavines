@@ -116,7 +116,7 @@ public class ConfigServiceImpl extends ServiceImpl<ConfigMapper, Config> impleme
     }
 
     private boolean isConfigExist(String name) {
-        Config user = baseMapper.selectOne(new QueryWrapper<Config>().eq("var_key", name));
+        Config user = baseMapper.selectOne(new QueryWrapper<Config>().lambda().eq(Config::getVarKey, name));
         return user != null;
     }
 

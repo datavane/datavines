@@ -50,6 +50,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static io.datavines.common.ConfigConstants.DATABASE;
+import static io.datavines.common.ConfigConstants.TABLE;
 import static io.datavines.core.enums.Status.CATALOG_FETCH_DATASOURCE_NULL_ERROR;
 
 @Slf4j
@@ -136,7 +138,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         List<String> databaseListFromDb = new ArrayList<>();
         Map<String, CatalogEntityInstance> databaseListFromDbMap = new HashMap<>();
         List<CatalogEntityRel> databaseEntityRelList =
-                relService.list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", dataSource.getUuid()));
+                relService.list(new QueryWrapper<CatalogEntityRel>().lambda().eq(CatalogEntityRel::getEntity1Uuid, dataSource.getUuid()));
         getEntityListFromDb(databaseListFromDb, databaseListFromDbMap, databaseEntityRelList);
 
         List<CatalogEntityInstance> databaseList = new ArrayList<>();
@@ -234,7 +236,9 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         if (CollectionUtils.isNotEmpty(databaseEntityRelList)) {
             databaseEntityRelList.forEach(item -> {
                 CatalogEntityInstance entityInstance = instanceService.getOne(
-                        new QueryWrapper<CatalogEntityInstance>().eq("uuid", item.getEntity2Uuid()).eq("status",CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE));
+                        new QueryWrapper<CatalogEntityInstance>().lambda()
+                                .eq(CatalogEntityInstance::getUuid, item.getEntity2Uuid())
+                                .eq(CatalogEntityInstance::getStatus,CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE));
 
                 if (entityInstance != null) {
                     entityListFromDb.add(dataSource.getId()+"@@"+entityInstance.getFullyQualifiedName());
@@ -268,7 +272,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
                 instanceService.getByDataSourceAndFQN(datasourceId, database);
         if (oldDatabaseInstance == null) {
             oldDatabaseInstance = new CatalogEntityInstance();
-            oldDatabaseInstance.setType("database");
+            oldDatabaseInstance.setType(DATABASE);
             oldDatabaseInstance.setDisplayName(database);
             oldDatabaseInstance.setFullyQualifiedName(database);
             oldDatabaseInstance.setUuid(UUID.randomUUID().toString());
@@ -308,7 +312,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         //获取数据库中的表列表
         List<String> tableListFromDb = new ArrayList<>();
         List<CatalogEntityRel> tableEntityRelList =
-                relService.list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", databaseUUID));
+                relService.list(new QueryWrapper<CatalogEntityRel>().lambda().eq(CatalogEntityRel::getEntity1Uuid, databaseUUID));
         Map<String, CatalogEntityInstance> tableMapFromDb = new HashMap<>();
         getEntityListFromDb(tableListFromDb, tableMapFromDb, tableEntityRelList);
 
@@ -392,7 +396,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
 
                 String fqn = database + "." + tableInfo.getName();
                 CatalogEntityInstance tableEntityInstance = new CatalogEntityInstance();
-                tableEntityInstance.setType("table");
+                tableEntityInstance.setType(TABLE);
                 tableEntityInstance.setDisplayName(tableInfo.getName());
                 tableEntityInstance.setFullyQualifiedName(database + "." + tableInfo.getName());
                 tableEntityInstance.setDescription(tableInfo.getComment());
@@ -504,13 +508,13 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         List<String> columnListFromDb = new ArrayList<>();
         //获取数据库中的列列表
         List<CatalogEntityRel> columnEntityRelList = relService
-                .list(new QueryWrapper<CatalogEntityRel>().eq("entity1_uuid", tableUUID));
+                .list(new QueryWrapper<CatalogEntityRel>().lambda().eq(CatalogEntityRel::getEntity1Uuid, tableUUID));
 
         Map<String, CatalogEntityInstance> columnMapFromDb = new HashMap<>();
         if (CollectionUtils.isNotEmpty(columnEntityRelList)) {
             columnEntityRelList.forEach(item -> {
                 CatalogEntityInstance entityInstance = instanceService
-                        .getOne(new QueryWrapper<CatalogEntityInstance>().eq("uuid", item.getEntity2Uuid()).eq("status",CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE));
+                        .getOne(new QueryWrapper<CatalogEntityInstance>().lambda().eq(CatalogEntityInstance::getUuid, item.getEntity2Uuid()).eq(CatalogEntityInstance::getStatus,CommonConstants.CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE));
 
                 if (entityInstance != null) {
                     columnListFromDb.add(datasourceId + "@@" + entityInstance.getFullyQualifiedName());

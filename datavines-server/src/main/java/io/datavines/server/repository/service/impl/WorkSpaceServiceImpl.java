@@ -128,24 +128,24 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper, WorkSpace
     }
 
     private boolean isWorkSpaceExist(String name) {
-        WorkSpace user = baseMapper.selectOne(new QueryWrapper<WorkSpace>().eq("name", name));
+        WorkSpace user = baseMapper.selectOne(new QueryWrapper<WorkSpace>().lambda().eq(WorkSpace::getName, name));
         return user != null;
     }
 
     @Override
     public long inviteUserIntoWorkspace(InviteUserIntoWorkspace inviteUserIntoWorkspace) {
 
-        User user = userService.getOne(new QueryWrapper<User>()
-                .eq("username",inviteUserIntoWorkspace.getUsername())
-                .eq("email",inviteUserIntoWorkspace.getEmail()));
+        User user = userService.getOne(new QueryWrapper<User>().lambda()
+                .eq(User::getUsername,inviteUserIntoWorkspace.getUsername())
+                .eq(User::getEmail,inviteUserIntoWorkspace.getEmail()));
 
         if (user == null) {
             throw new DataVinesServerException(Status.USER_IS_NOT_EXIST_ERROR);
         }
 
-        UserWorkSpace userWorkSpace = userWorkSpaceService.getOne(new QueryWrapper<UserWorkSpace>()
-                .eq("user_id",user.getId())
-                .eq("workspace_id",inviteUserIntoWorkspace.getWorkspaceId()));
+        UserWorkSpace userWorkSpace = userWorkSpaceService.getOne(new QueryWrapper<UserWorkSpace>().lambda()
+                .eq(UserWorkSpace::getUserId,user.getId())
+                .eq(UserWorkSpace::getWorkspaceId,inviteUserIntoWorkspace.getWorkspaceId()));
 
         if (userWorkSpace != null) {
             throw new DataVinesServerException(Status.USER_IS_IN_WORKSPACE_ERROR);
@@ -166,20 +166,20 @@ public class WorkSpaceServiceImpl extends ServiceImpl<WorkSpaceMapper, WorkSpace
 
     @Override
     public boolean removeUser(RemoveUserOutWorkspace removeUserOutWorkspace) {
-        List<UserWorkSpace> userWorkSpaceList = userWorkSpaceService.list(new QueryWrapper<UserWorkSpace>().eq("user_id", removeUserOutWorkspace.getUserId()));
+        List<UserWorkSpace> userWorkSpaceList = userWorkSpaceService.list(new QueryWrapper<UserWorkSpace>().lambda().eq(UserWorkSpace::getUserId, removeUserOutWorkspace.getUserId()));
 
         if (CollectionUtils.isNotEmpty(userWorkSpaceList) && userWorkSpaceList.size() == 1) {
             throw new DataVinesServerException(Status.USER_HAS_ONLY_ONE_WORKSPACE);
         }
 
-        UserWorkSpace userWorkSpace = userWorkSpaceService.getOne(new QueryWrapper<UserWorkSpace>()
-                .eq("user_id",ContextHolder.getUserId()).eq("workspace_id", removeUserOutWorkspace.getWorkspaceId()));
+        UserWorkSpace userWorkSpace = userWorkSpaceService.getOne(new QueryWrapper<UserWorkSpace>().lambda()
+                .eq(UserWorkSpace::getUserId,ContextHolder.getUserId()).eq(UserWorkSpace::getWorkspaceId, removeUserOutWorkspace.getWorkspaceId()));
 
         if (userWorkSpace != null &&
                 ( (userWorkSpace.getRoleId() != null && userWorkSpace.getRoleId() == 1)
                         || removeUserOutWorkspace.getUserId().equals(ContextHolder.getUserId()))) {
-            return userWorkSpaceService.remove(new QueryWrapper<UserWorkSpace>()
-                    .eq("user_id",removeUserOutWorkspace.getUserId()).eq("workspace_id", removeUserOutWorkspace.getWorkspaceId()));
+            return userWorkSpaceService.remove(new QueryWrapper<UserWorkSpace>().lambda()
+                    .eq(UserWorkSpace::getUserId,removeUserOutWorkspace.getUserId()).eq(UserWorkSpace::getWorkspaceId, removeUserOutWorkspace.getWorkspaceId()));
         }
 
         throw new DataVinesServerException(Status.USER_HAS_NO_AUTHORIZE_TO_REMOVE);

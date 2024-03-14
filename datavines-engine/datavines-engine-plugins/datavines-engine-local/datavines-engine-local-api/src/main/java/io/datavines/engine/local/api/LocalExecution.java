@@ -198,7 +198,7 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
     }
 
     private void executeScript(String script, Connection connection) {
-        if (StringUtils.isNotEmpty(script) && !"null".equalsIgnoreCase(script)) {
+        if (!StringUtils.isEmptyOrNullStr(script)) {
             try (Statement statement = connection.createStatement()) {
                 log.info("execute script: {}", script);
                 statement.execute(script);

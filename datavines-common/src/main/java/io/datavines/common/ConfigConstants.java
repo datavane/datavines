@@ -154,4 +154,6 @@ public class ConfigConstants {
     public static final String PRE_SQL = "pre_sql";
 
     public static final String POST_SQL = "post_sql";
+
+    public static final String SAVE_MODE = "save_mode";
 }

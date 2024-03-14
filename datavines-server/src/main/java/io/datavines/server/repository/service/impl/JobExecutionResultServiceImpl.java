@@ -43,6 +43,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 
 import java.util.*;
 
+import static io.datavines.common.ConfigConstants.*;
+
 @Service("jobExecutionResultService")
 public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResultMapper, JobExecutionResult>  implements JobExecutionResultService {
 
@@ -65,7 +67,7 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
 
     @Override
     public int deleteByJobExecutionId(long jobExecutionId) {
-        return baseMapper.delete(new QueryWrapper<JobExecutionResult>().eq("job_execution_id",jobExecutionId));
+        return baseMapper.delete(new QueryWrapper<JobExecutionResult>().lambda().eq(JobExecutionResult::getJobExecutionId,jobExecutionId));
     }
 
     @Override
@@ -75,7 +77,7 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
 
     @Override
     public JobExecutionResult getByJobExecutionId(long jobExecutionId) {
-        List<JobExecutionResult> list = baseMapper.selectList(new QueryWrapper<JobExecutionResult>().eq("job_execution_id", jobExecutionId).orderByDesc("update_time"));
+        List<JobExecutionResult> list = baseMapper.selectList(new QueryWrapper<JobExecutionResult>().lambda().eq(JobExecutionResult::getJobExecutionId, jobExecutionId).orderByDesc(JobExecutionResult::getUpdateTime));
         if (CollectionUtils.isEmpty(list)) {
             return null;
         }
@@ -84,17 +86,17 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
 
     @Override
     public List<JobExecutionResult> listByJobExecutionId(long jobExecutionId) {
-        return baseMapper.selectList(new QueryWrapper<JobExecutionResult>()
-                .eq("job_execution_id", jobExecutionId)
-                .orderByDesc("update_time"));
+        return baseMapper.selectList(new QueryWrapper<JobExecutionResult>().lambda()
+                .eq(JobExecutionResult::getJobExecutionId, jobExecutionId)
+                .orderByDesc(JobExecutionResult::getUpdateTime));
     }
 
     @Override
     public List<JobExecutionResult> listByErrorJobExecutionId(long jobExecutionId) {
-        return baseMapper.selectList(new QueryWrapper<JobExecutionResult>()
-                .eq("job_execution_id", jobExecutionId)
-                .eq("state", DqJobExecutionState.FAILURE.getCode())
-                .orderByDesc("update_time"));
+        return baseMapper.selectList(new QueryWrapper<JobExecutionResult>().lambda()
+                .eq(JobExecutionResult::getJobExecutionId, jobExecutionId)
+                .eq(JobExecutionResult::getState, DqJobExecutionState.FAILURE.getCode())
+                .orderByDesc(JobExecutionResult::getUpdateTime));
     }
 
     @Override
@@ -111,10 +113,10 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
     private JobExecutionResultVO generateJobExecutionResultVO(long jobExecutionId, JobExecutionResult jobExecutionResult) {
         JobExecutionResultVO jobExecutionResultVO = new JobExecutionResultVO();
         Map<String,String> parameters = new HashMap<>();
-        parameters.put("actual_value", String.valueOf(jobExecutionResult.getActualValue()));
-        parameters.put("expected_value", String.valueOf(jobExecutionResult.getExpectedValue()));
-        parameters.put("threshold", String.valueOf(jobExecutionResult.getThreshold()));
-        parameters.put("operator",OperatorType.of(jobExecutionResult.getOperator()).getSymbol());
+        parameters.put(ACTUAL_VALUE, String.valueOf(jobExecutionResult.getActualValue()));
+        parameters.put(EXPECTED_VALUE, String.valueOf(jobExecutionResult.getExpectedValue()));
+        parameters.put(THRESHOLD, String.valueOf(jobExecutionResult.getThreshold()));
+        parameters.put(OPERATOR,OperatorType.of(jobExecutionResult.getOperator()).getSymbol());
 
         JobExecution jobExecution = jobExecutionService.getById(jobExecutionId);
         if (!Objects.isNull(jobExecution)) {
@@ -126,9 +128,9 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
                     Map<String,ConfigItem> configMap = sqlMetric.getConfigMap();
                     Map<String,Object> paramMap = new HashMap<>();
                     String uniqueName = jobParameter.getMetricType() + "."
-                            + jobParameter.getMetricParameter().get("database")+ "."
-                            + jobParameter.getMetricParameter().get("table")+ "."
-                            + jobParameter.getMetricParameter().get("column");
+                            + jobParameter.getMetricParameter().get(DATABASE)+ "."
+                            + jobParameter.getMetricParameter().get(TABLE)+ "."
+                            + jobParameter.getMetricParameter().get(COLUMN);
 
                     String taskResultUniqueName = jobExecutionResult.getMetricName()+ "."
                             + jobExecutionResult.getDatabaseName() + "."
@@ -137,7 +139,7 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
 
                     if (uniqueName.equalsIgnoreCase(taskResultUniqueName)) {
                         configMap.entrySet().stream().filter(
-                                        x-> !("column".equalsIgnoreCase(x.getKey()) || "table".equalsIgnoreCase(x.getKey()) || "filter".equalsIgnoreCase(x.getKey())))
+                                        x-> !(COLUMN.equalsIgnoreCase(x.getKey()) || TABLE.equalsIgnoreCase(x.getKey()) || FILTER.equalsIgnoreCase(x.getKey())))
                                 .forEach(config -> {
                                     paramMap.put(config.getValue().getLabel(!LanguageUtils.isZhContext()), jobParameter.getMetricParameter().get(config.getKey()));
                                 });
@@ -154,7 +156,7 @@ public class JobExecutionResultServiceImpl extends ServiceImpl<JobExecutionResul
         jobExecutionResultVO.setCheckSubject(jobExecutionResult.getDatabaseName() + "." + jobExecutionResult.getTableName() + "." + jobExecutionResult.getColumnName());
         jobExecutionResultVO.setCheckResult(DqJobExecutionState.of(jobExecutionResult.getState()).getDescription(!LanguageUtils.isZhContext()));
         SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobExecutionResult.getMetricName());
-        if (!sqlMetric.getName().equalsIgnoreCase("multi_table_value_comparison")) {
+        if (!"multi_table_value_comparison".equalsIgnoreCase(sqlMetric.getName())) {
             ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(jobExecution.getEngineType() + "_" + jobExecutionResult.getExpectedType());
             jobExecutionResultVO.setExpectedType(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()));
         }

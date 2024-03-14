@@ -16,7 +16,7 @@
  */
 package io.datavines.engine.spark.jdbc.sink;
 
-import org.apache.commons.lang3.StringUtils;
+import io.datavines.common.utils.StringUtils;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
@@ -74,9 +74,8 @@ public class MongodbSink implements SparkBatchSink {
 
     @Override
     public void prepare(RuntimeEnvironment prepareEnv) {
-        if (StringUtils.isEmpty(config.getString("save_mode"))
-                || "null".equals(config.getString("save_mode"))) {
-            config.put("save_mode", SaveMode.Append);
+        if (StringUtils.isEmptyOrNullStr(config.getString(SAVE_MODE))) {
+            config.put(SAVE_MODE, SaveMode.Append);
         }
     }
 
@@ -87,7 +86,7 @@ public class MongodbSink implements SparkBatchSink {
             data = environment.sparkSession().sql(config.getString(SQL));
         }
 
-        String saveMode = config.getString("save_mode");
+        String saveMode = config.getString(SAVE_MODE);
 
         data.write().format("mongo")
                 .mode(saveMode)

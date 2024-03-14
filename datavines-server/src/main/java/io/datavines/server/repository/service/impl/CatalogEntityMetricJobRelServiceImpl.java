@@ -53,13 +53,13 @@ public class CatalogEntityMetricJobRelServiceImpl
 
     @Override
     public boolean deleteByJobId(long jobId) {
-        return remove(new QueryWrapper<CatalogEntityMetricJobRel>().eq("metric_job_id", jobId));
+        return remove(new QueryWrapper<CatalogEntityMetricJobRel>().lambda().eq(CatalogEntityMetricJobRel::getMetricJobId, jobId));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteByEntityUUID(List<String> uuidList) {
-        List<CatalogEntityMetricJobRel> relList = list(new QueryWrapper<CatalogEntityMetricJobRel>().in("entity_uuid",uuidList));
+        List<CatalogEntityMetricJobRel> relList = list(new QueryWrapper<CatalogEntityMetricJobRel>().lambda().in(CatalogEntityMetricJobRel::getEntityUuid,uuidList));
         if (CollectionUtils.isEmpty(relList)) {
             return true;
         }

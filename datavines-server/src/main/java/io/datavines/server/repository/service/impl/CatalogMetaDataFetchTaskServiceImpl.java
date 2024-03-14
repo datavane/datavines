@@ -46,6 +46,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.common.ConfigConstants.DATABASE;
+import static io.datavines.common.ConfigConstants.TABLE;
+
 @Service("catalogMetaDataFetchTaskService")
 public class CatalogMetaDataFetchTaskServiceImpl
         extends ServiceImpl<CatalogMetaDataFetchTaskMapper, CatalogMetaDataFetchTask>
@@ -90,8 +93,8 @@ public class CatalogMetaDataFetchTaskServiceImpl
         if (StringUtils.isNotEmpty(parameter)) {
             Map<String, String> parameterMap = JSONUtils.toMap(parameter);
             if (parameterMap != null) {
-                String database = parameterMap.get("database");
-                String table = parameterMap.get("table");
+                String database = parameterMap.get(DATABASE);
+                String table = parameterMap.get(TABLE);
 
                 if (StringUtils.isEmpty(database) && StringUtils.isEmpty(table)) {
                     catalogMetaDataFetchTask.setType(FetchType.DATASOURCE);
@@ -148,16 +151,16 @@ public class CatalogMetaDataFetchTaskServiceImpl
 
     @Override
     public List<CatalogMetaDataFetchTask> listNeedFailover(String host) {
-        return baseMapper.selectList(new QueryWrapper<CatalogMetaDataFetchTask>()
-                .eq("execute_host", host)
-                .in("status", ExecutionStatus.RUNNING_EXECUTION.getCode(), ExecutionStatus.SUBMITTED_SUCCESS.getCode()));
+        return baseMapper.selectList(new QueryWrapper<CatalogMetaDataFetchTask>().lambda()
+                .eq(CatalogMetaDataFetchTask::getExecuteHost, host)
+                .in(CatalogMetaDataFetchTask::getStatus, ExecutionStatus.RUNNING_EXECUTION.getCode(), ExecutionStatus.SUBMITTED_SUCCESS.getCode()));
     }
 
     @Override
     public List<CatalogMetaDataFetchTask> listTaskNotInServerList(List<String> hostList) {
-        return baseMapper.selectList(new QueryWrapper<CatalogMetaDataFetchTask>()
-                .notIn("execute_host", hostList)
-                .in("status",ExecutionStatus.RUNNING_EXECUTION.getCode(), ExecutionStatus.SUBMITTED_SUCCESS.getCode()));
+        return baseMapper.selectList(new QueryWrapper<CatalogMetaDataFetchTask>().lambda()
+                .notIn(CatalogMetaDataFetchTask::getExecuteHost, hostList)
+                .in(CatalogMetaDataFetchTask::getStatus,ExecutionStatus.RUNNING_EXECUTION.getCode(), ExecutionStatus.SUBMITTED_SUCCESS.getCode()));
     }
 
     @Override
@@ -168,7 +171,7 @@ public class CatalogMetaDataFetchTaskServiceImpl
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteByDataSourceId(long dataSourceId) {
-        remove(new QueryWrapper<CatalogMetaDataFetchTask>().eq("datasource_id", dataSourceId));
+        remove(new QueryWrapper<CatalogMetaDataFetchTask>().lambda().eq(CatalogMetaDataFetchTask::getDataSourceId, dataSourceId));
         catalogMetaDataFetchTaskScheduleService.deleteByDataSourceId(dataSourceId);
         return false;
     }
