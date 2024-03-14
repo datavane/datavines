@@ -44,4 +44,9 @@ public class PostgreSqlConnectorFactory extends AbstractJdbcConnectorFactory {
     public ConfigBuilder getConfigBuilder() {
         return new PostgreSqlConfigBuilder();
     }
+
+    @Override
+    public TypeConverter getTypeConverter() {
+        return new PostgreSqlTypeConverter();
+    }
 }
