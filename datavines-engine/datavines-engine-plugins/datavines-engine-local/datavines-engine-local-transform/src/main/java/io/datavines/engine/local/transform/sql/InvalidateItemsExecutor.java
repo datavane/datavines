@@ -36,11 +36,14 @@ public class InvalidateItemsExecutor implements ITransformExecutor {
         String outputTable = config.getString(INVALIDATE_ITEMS_TABLE);
         String sql = config.getString(SQL);
         Statement statement = null;
+        String executeSql = "CREATE VIEW " + outputTable + " AS " + sql;
         try {
             statement = connection.createStatement();
             env.setCurrentStatement(statement);
             SqlUtils.dropView(outputTable, statement);
-            statement.execute("CREATE VIEW " + outputTable + " AS " + sql);
+            statement.execute(executeSql);
+        } catch (Exception e){
+            log.error("create invalidate_items_table view error, create sql is {} ", executeSql, e);
         } finally {
             SqlUtils.closeStatement(statement);
             env.setCurrentStatement(null);
