@@ -16,10 +16,24 @@
  */
 package io.datavines.connector.plugin;
 
+import java.util.Map;
+
+import static io.datavines.common.ConfigConstants.STD_DEV_KEY;
+import static io.datavines.common.ConfigConstants.VARIANCE_KEY;
+
 public class ClickHouseDialect extends JdbcDialect {
 
     @Override
     public String getDriver() {
         return "ru.yandex.clickhouse.ClickHouseDriver";
+    }
+
+    @Override
+    public Map<String, String> getDialectKeyMap() {
+        super.getDialectKeyMap();
+        dialectKeyMap.put(STD_DEV_KEY, "STDDEV_POP");
+        dialectKeyMap.put(VARIANCE_KEY, "VAR_POP");
+        return dialectKeyMap;
+
     }
 }

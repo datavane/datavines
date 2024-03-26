@@ -70,7 +70,7 @@ public class ColumnStdDev extends BaseSingleTableColumn {
         ExecuteSql executeSql = new ExecuteSql();
         executeSql.setResultTable("invalidate_count_" + uniqueKey);
         StringBuilder actualValueSql = new StringBuilder();
-        actualValueSql.append("select stddev(${column}) as actual_value_").append(uniqueKey).append(" from ${table}");
+        actualValueSql.append("select ${std_dev_key}(${column}) as actual_value_").append(uniqueKey).append(" from ${table}");
         if (filters.size() > 0) {
             actualValueSql.append(" where ").append(String.join(" and ", filters));
         }

@@ -135,6 +135,10 @@ public class ConfigConstants {
 
     public static final String LENGTH_KEY = "length_key";
 
+    public static final String STD_DEV_KEY = "std_dev_key";
+
+    public static final String VARIANCE_KEY = "variance_key";
+
     public static final String INVALIDATE_ITEMS_TABLE = "invalidate_items_table";
 
     /**
