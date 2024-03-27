@@ -38,4 +38,9 @@ public class ClickHouseConnector extends JdbcConnector {
     protected ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {
         return metaData.getTables(null, catalog, null, TABLE_TYPES);
     }
+
+    @Override
+    protected ResultSet getMetadataColumns(DatabaseMetaData metaData, String catalog, String schema, String tableName, String columnName) throws SQLException {
+        return metaData.getColumns(null, catalog, tableName, columnName);
+    }
 }
