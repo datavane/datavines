@@ -21,8 +21,8 @@ import io.datavines.connector.api.*;
 public class StarRocksConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new StarRocksConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new StarRocksParameterConverter();
     }
 
     @Override

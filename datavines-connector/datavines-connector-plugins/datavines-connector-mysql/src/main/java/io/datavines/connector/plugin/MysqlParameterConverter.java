@@ -16,17 +16,16 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.utils.StringUtils;
-
 import java.util.Map;
 
+import io.datavines.common.utils.StringUtils;
 import static io.datavines.common.ConfigConstants.*;
 
-public class PostgreSqlConnectorParameterConverter extends JdbcConnectorParameterConverter {
+public class MysqlParameterConverter extends JdbcParameterConverter {
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
-        String url = String.format("jdbc:postgresql://%s:%s/%s",
+        String url = String.format("jdbc:mysql://%s:%s/%s",
                 parameter.get(HOST),
                 parameter.get(PORT),
                 parameter.get(DATABASE));

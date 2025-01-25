@@ -16,16 +16,13 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.connector.api.Connector;
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Dialect;
-import io.datavines.connector.api.Executor;
+import io.datavines.connector.api.*;
 
 public class ClickHouseConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new ClickHouseConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new ClickHouseParameterConverter();
     }
 
     @Override
@@ -41,5 +38,10 @@ public class ClickHouseConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public Executor getExecutor() {
         return new ClickHouseExecutor(getDataSourceClient());
+    }
+
+    @Override
+    public MetricScript getMetricScript() {
+        return new ClickHouseMetricScript();
     }
 }

@@ -22,7 +22,7 @@ import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumnNotUseView;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -67,13 +67,13 @@ public class Freshness extends BaseSingleTableColumnNotUseView {
     public void prepare(Map<String, String> config) {
 
         if (config.containsKey("column") && config.containsKey("datetime_format") && config.containsKey("deadline_time") && config.containsKey("begin_time")) {
-            filters.add("  (DATE_FORMAT(${column}, '${datetime_format}') <= DATE_FORMAT('${deadline_time}', '${datetime_format}') ) AND (DATE_FORMAT(${column}, '${datetime_format}') >= DATE_FORMAT('${begin_time}', '${datetime_format}')) ");
+            filters.add(getConnectorFactory(config).getMetricScript().timeBetweenWithFormat());
         }
         super.prepare(config);
     }
 
     @Override
     public List<DataVinesDataType> suitableType() {
-        return Collections.singletonList(DataVinesDataType.DATE_TIME_TYPE);
+        return Arrays.asList(DataVinesDataType.NUMERIC_TYPE, DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
     }
 }

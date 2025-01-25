@@ -64,7 +64,7 @@ public class ColumnMatchRegex extends BaseSingleTableColumnNotUseView {
     public void prepare(Map<String, String> config) {
 
         if (config.containsKey("table") && config.containsKey("column") && config.containsKey("regexp") ) {
-            filters.add(" ${regex_key} ");
+            filters.add(getConnectorFactory(config).getMetricScript().columnMatchRegex());
         }
         super.prepare(config);
     }

@@ -48,6 +48,7 @@
         <module>datavines-connector-sqlserver</module>
         <module>datavines-connector-dm</module>
         <module>datavines-connector-oracle</module>
+        <module>datavines-connector-spark</module>
     </modules>
 
 

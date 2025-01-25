@@ -16,25 +16,8 @@
  */
 package io.datavines.connector.plugin;
 
-import java.util.Map;
+import io.datavines.connector.api.MetricScript;
 
-import io.datavines.common.utils.StringUtils;
-import static io.datavines.common.ConfigConstants.*;
-
-public class MysqlConnectorParameterConverter extends JdbcConnectorParameterConverter {
-
-    @Override
-    protected String getUrl(Map<String, Object> parameter) {
-        String url = String.format("jdbc:mysql://%s:%s/%s",
-                parameter.get(HOST),
-                parameter.get(PORT),
-                parameter.get(DATABASE));
-        String properties = (String)parameter.get(PROPERTIES);
-        if (StringUtils.isNotEmpty(properties)) {
-            url += "?" + properties;
-        }
-
-        return url;
-    }
+public class JdbcMetricScript implements MetricScript {
 
 }

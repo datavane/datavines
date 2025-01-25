@@ -33,22 +33,6 @@ import static io.datavines.common.ConfigConstants.*;
 
 public abstract class JdbcDialect implements Dialect {
 
-    protected final HashMap<String,String> dialectKeyMap = new HashMap<>();
-
-    @Override
-    public Map<String, String> getDialectKeyMap() {
-        dialectKeyMap.put(REGEX_KEY, "${column} regexp '${regexp}'");
-        dialectKeyMap.put(NOT_REGEX_KEY, "${column} not regexp '${regexp}'");
-        dialectKeyMap.put(STRING_TYPE, "varchar");
-        dialectKeyMap.put(IF_FUNCTION_KEY, "if");
-        dialectKeyMap.put(LIMIT_TOP_50_KEY, " limit 50");
-        dialectKeyMap.put(LENGTH_KEY, "length(${column})");
-        dialectKeyMap.put(IF_CASE_KEY, "if(${column} is null, 'NULL', cast(${column} as ${string_type}))");
-        dialectKeyMap.put(STD_DEV_KEY, "stddev");
-        dialectKeyMap.put(VARIANCE_KEY, "variance");
-        return dialectKeyMap;
-    }
-
     @Override
     public String getColumnPrefix() {
         return "`";

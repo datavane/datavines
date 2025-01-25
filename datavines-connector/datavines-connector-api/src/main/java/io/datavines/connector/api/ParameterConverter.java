@@ -14,19 +14,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.plugin;
+package io.datavines.connector.api;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
 
-public class ClickHouseConnectorParameterConverter extends JdbcConnectorParameterConverter {
+public interface ParameterConverter {
 
-    @Override
-    protected String getUrl(Map<String, Object> parameter) {
-         return String.format("jdbc:clickhouse://%s:%s/%s",
-                parameter.get(HOST),
-                parameter.get(PORT),
-                parameter.get(DATABASE));
+    Map<String,Object> converter(Map<String,Object> parameter);
+
+    default String getConnectorUUID(Map<String,Object> parameter) {
+        Map<String, Object> convertResult = converter(parameter);
+        return DigestUtils.md5Hex(
+                String.valueOf(convertResult.get(URL)) +
+                convertResult.get(TABLE) +
+                convertResult.get(USER) +
+                convertResult.get(PASSWORD));
     }
 }

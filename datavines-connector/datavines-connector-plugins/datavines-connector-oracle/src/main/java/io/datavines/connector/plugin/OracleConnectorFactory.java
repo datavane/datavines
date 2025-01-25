@@ -16,16 +16,13 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.connector.api.ConnectorParameterConverter;
-import io.datavines.connector.api.Dialect;
-import io.datavines.connector.api.Connector;
-import io.datavines.connector.api.Executor;
-import io.datavines.connector.api.ConfigBuilder;
-import io.datavines.connector.api.TypeConverter;
+import io.datavines.connector.api.*;
+
 public class OracleConnectorFactory extends AbstractJdbcConnectorFactory{
+
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new OracleConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new OracleParameterConverter();
     }
 
     @Override
@@ -51,5 +48,10 @@ public class OracleConnectorFactory extends AbstractJdbcConnectorFactory{
     @Override
     public TypeConverter getTypeConverter() {
         return new OracleTypeConverter();
+    }
+
+    @Override
+    public MetricScript getMetricScript() {
+        return new OracleMetricScript();
     }
 }

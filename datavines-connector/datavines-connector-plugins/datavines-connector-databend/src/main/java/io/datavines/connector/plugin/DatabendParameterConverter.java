@@ -22,25 +22,28 @@ import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
 
-public class ImpalaConnectorParameterConverter extends JdbcConnectorParameterConverter {
+public class DatabendParameterConverter extends JdbcParameterConverter {
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
-
-        StringBuilder address = new StringBuilder();
-        address.append("jdbc:hive2://");
-        Object port = parameter.get(PORT);
-        for (String host : parameter.get(HOST).toString().split(",")) {
-            address.append(String.format("%s:%s,", host, port));
+        String database = (String)parameter.get(DATABASE);
+        String url = "";
+        if (StringUtils.isNotEmpty(database)) {
+            url = String.format("jdbc:databend://%s:%s/%s",
+                    parameter.get(HOST),
+                    parameter.get(PORT),
+                    parameter.get(DATABASE));
+        } else {
+            url = String.format("jdbc:databend://%s:%s",
+                    parameter.get(HOST),
+                    parameter.get(PORT));
         }
-        address.deleteCharAt(address.length() - 1);
-        address.append("/").append(parameter.get(DATABASE));
-        String properties = (String) parameter.get(PROPERTIES);
+
+        String properties = (String)parameter.get(PROPERTIES);
         if (StringUtils.isNotEmpty(properties)) {
-            address.append(";").append(properties);
+            url += "?" + properties;
         }
-
-        address.append(";auth=noSasl");
-        return address.toString();
+        return url;
     }
+
 }

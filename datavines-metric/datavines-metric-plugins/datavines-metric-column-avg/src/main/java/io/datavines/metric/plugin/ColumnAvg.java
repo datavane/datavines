@@ -21,6 +21,8 @@ import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
@@ -29,6 +31,8 @@ import java.util.Map;
 import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
 
 public class ColumnAvg extends BaseSingleTableColumn {
+
+    private static final Logger log = LoggerFactory.getLogger(ColumnAvg.class);
 
     public ColumnAvg(){
         super();
@@ -70,7 +74,7 @@ public class ColumnAvg extends BaseSingleTableColumn {
         ExecuteSql executeSql = new ExecuteSql();
         executeSql.setResultTable("invalidate_count_"+uniqueKey);
         StringBuilder actualValueSql = new StringBuilder();
-        actualValueSql.append("select avg(${column}) as actual_value_").append(uniqueKey).append(" from ${table}");
+        actualValueSql.append(getConnectorFactory(inputParameter).getMetricScript().avgActualValue(uniqueKey));
         if (!filters.isEmpty()) {
             actualValueSql.append(" where ").append(String.join(" and ", filters));
         }

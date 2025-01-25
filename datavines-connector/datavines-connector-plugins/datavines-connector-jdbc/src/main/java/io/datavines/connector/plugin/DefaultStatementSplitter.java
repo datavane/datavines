@@ -26,8 +26,6 @@ public class DefaultStatementSplitter implements StatementSplitter {
 
     @Override
     public List<String> splitStatements(String body) {
-
-        String DELIMITER = ";";
-        return StringUtils.isEmpty(body) ? null : Arrays.asList(body.split(DELIMITER));
+        return StringUtils.isEmpty(body) ? null : Arrays.asList(body.split(";"));
     }
 }

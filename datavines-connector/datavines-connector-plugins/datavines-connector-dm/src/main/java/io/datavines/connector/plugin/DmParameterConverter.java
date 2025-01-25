@@ -14,24 +14,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.connector.api;
+package io.datavines.connector.plugin;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
+import io.datavines.common.utils.StringUtils;
 import java.util.Map;
-
 import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.PROPERTIES;
 
-public interface ConnectorParameterConverter {
-
-    Map<String,Object> converter(Map<String,Object> parameter);
-
-    default String getConnectorUUID(Map<String,Object> parameter) {
-        Map<String, Object> convertResult = converter(parameter);
-        return DigestUtils.md5Hex(
-                String.valueOf(convertResult.get(URL)) +
-                convertResult.get(TABLE) +
-                convertResult.get(USER) +
-                convertResult.get(PASSWORD));
+public class DmParameterConverter extends JdbcParameterConverter {
+    @Override
+    protected String getUrl(Map<String, Object> parameter) {
+        // in dm jdbc url, the database is not need.
+        String url = String.format("jdbc:dm://%s:%s?schema=%s",
+                parameter.get(HOST),
+                parameter.get(PORT),
+                parameter.get(DATABASE));
+        String properties = (String)parameter.get(PROPERTIES);
+        if (StringUtils.isNotEmpty(properties)) {
+            url += "&" + properties;
+        }
+        return url;
     }
 }

@@ -21,8 +21,8 @@ import io.datavines.connector.api.*;
 public class PrestoConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new PrestoConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new PrestoParameterConverter();
     }
 
     @Override

@@ -19,17 +19,19 @@ package io.datavines.engine.local.connector.executor;
 import io.datavines.common.config.Config;
 import io.datavines.common.utils.ParameterUtils;
 import io.datavines.common.utils.StringUtils;
+import io.datavines.common.utils.ThreadUtils;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import io.datavines.connector.plugin.utils.SqlUtils;
+
 import org.slf4j.Logger;
 
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
-import static io.datavines.common.ConfigConstants.INVALIDATE_ITEMS_TABLE;
-import static io.datavines.common.ConfigConstants.SQL;
+import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.TABLE;
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 import static io.datavines.engine.local.connector.BaseJdbcSink.CREATE_TABLE_SQL;
 import static io.datavines.engine.local.connector.BaseJdbcSink.SINK_TABLE_NAME;
@@ -84,15 +86,25 @@ public abstract class BaseDataSinkExecutor implements ISinkExecutor {
     }
 
     private boolean checkTableExist(LocalRuntimeEnvironment env, String tableName) throws SQLException {
-        //定义一个变量标示
+        int retryTimes = 3;
         boolean flag = false ;
-        //一个查询该表所有的语句。
-        String sql = "SELECT 1 FROM "+ tableName ;
-        try (Statement statement = env.getMetadataConnection().getConnection().createStatement()) {
-            statement.executeQuery(sql);
-            flag = true;
-        } catch (Exception e) {
-            log.warn("table {} is not exist", tableName);
+
+        while (retryTimes > 0 && !flag) {
+            try {
+                log.info("start check table {} exists", config.getString(TABLE));
+                //一个查询该表所有的语句。
+                String sql = "SELECT 1 FROM "+ tableName ;
+                try (Statement statement = env.getMetadataConnection().getConnection().createStatement()) {
+                    statement.executeQuery(sql);
+                    flag = true;
+                } catch (Exception e) {
+                    log.warn("table {} is not exist", tableName);
+                }
+            } catch (Exception e) {
+                log.error("check table {} exists error :", config.getString(TABLE), e);
+                retryTimes--;
+                ThreadUtils.sleep(2000);
+            }
         }
         return flag;
     }

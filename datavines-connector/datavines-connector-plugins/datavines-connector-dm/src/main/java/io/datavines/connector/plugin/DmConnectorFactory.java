@@ -31,8 +31,8 @@ public class DmConnectorFactory extends AbstractJdbcConnectorFactory {
     }
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new DmConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new DmParameterConverter();
     }
 
     @Override

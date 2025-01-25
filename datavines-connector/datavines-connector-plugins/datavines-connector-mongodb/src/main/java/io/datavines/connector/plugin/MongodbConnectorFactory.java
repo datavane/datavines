@@ -26,8 +26,8 @@ public class MongodbConnectorFactory extends AbstractJdbcConnectorFactory {
     }
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new MongodbConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new MongodbParameterConverter();
     }
 
     @Override

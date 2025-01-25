@@ -22,28 +22,24 @@ import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
 
-public class DatabendConnectorParameterConverter extends JdbcConnectorParameterConverter {
+public class HiveParameterConverter extends JdbcParameterConverter {
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
-        String database = (String)parameter.get(DATABASE);
-        String url = "";
-        if (StringUtils.isNotEmpty(database)) {
-            url = String.format("jdbc:databend://%s:%s/%s",
-                    parameter.get(HOST),
-                    parameter.get(PORT),
-                    parameter.get(DATABASE));
-        } else {
-            url = String.format("jdbc:databend://%s:%s",
-                    parameter.get(HOST),
-                    parameter.get(PORT));
-        }
 
-        String properties = (String)parameter.get(PROPERTIES);
-        if (StringUtils.isNotEmpty(properties)) {
-            url += "?" + properties;
+        StringBuilder address = new StringBuilder();
+        address.append("jdbc:hive2://");
+        Object port = parameter.get(PORT);
+        for (String host : parameter.get(HOST).toString().split(",")) {
+            address.append(String.format("%s:%s,", host, port));
         }
-        return url;
+        address.deleteCharAt(address.length() - 1);
+        address.append("/").append(parameter.get(DATABASE));
+        String properties = (String) parameter.get(PROPERTIES);
+        if (StringUtils.isNotEmpty(properties)) {
+            address.append(";").append(properties);
+        }
+        return address.toString();
     }
 
 }

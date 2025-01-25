@@ -24,7 +24,7 @@ import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
 
-public class MongodbConnectorParameterConverter extends JdbcConnectorParameterConverter {
+public class MongodbParameterConverter extends JdbcParameterConverter {
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {

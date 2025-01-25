@@ -16,30 +16,14 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.utils.StringUtils;
+import io.datavines.connector.api.ParameterConverter;
 
 import java.util.Map;
 
-import static io.datavines.common.ConfigConstants.*;
-
-public class OracleConnectorParameterConverter extends JdbcConnectorParameterConverter{
-
-    @Override
-    protected String getUrl(Map<String, Object> parameter) {
-        String url = String.format("jdbc:oracle:thin:@//%s:%s/%s",
-                parameter.get(HOST),
-                parameter.get(PORT),
-                parameter.get(SID));
-        String properties = (String)parameter.get(PROPERTIES);
-        if (StringUtils.isNotEmpty(properties)) {
-            url += "?" + properties;
-        }
-
-        return url;
-    }
+public class FileParameterConverter implements ParameterConverter {
 
     @Override
     public Map<String, Object> converter(Map<String, Object> parameter) {
-        return super.converter(parameter);
+        return parameter;
     }
 }

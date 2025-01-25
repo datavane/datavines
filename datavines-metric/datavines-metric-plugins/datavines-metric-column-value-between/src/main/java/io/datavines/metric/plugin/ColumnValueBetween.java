@@ -65,11 +65,11 @@ public class ColumnValueBetween extends BaseSingleTableColumnNotUseView {
     public void prepare(Map<String, String> config) {
 
         if (config.containsKey("min")) {
-            filters.add("${column} >= ${min}");
+            filters.add(getConnectorFactory(config).getMetricScript().columnGteMin());
         }
 
         if (config.containsKey("max")) {
-            filters.add("${column} <= ${max}");
+            filters.add(getConnectorFactory(config).getMetricScript().columnLteMax());
         }
 
         super.prepare(config);

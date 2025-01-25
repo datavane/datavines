@@ -21,8 +21,8 @@ import io.datavines.connector.api.*;
 public class HiveConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new HiveConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new HiveParameterConverter();
     }
 
     @Override
@@ -43,5 +43,10 @@ public class HiveConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public ConfigBuilder getConfigBuilder() {
         return new HiveConfigBuilder();
+    }
+
+    @Override
+    public MetricScript getMetricScript() {
+        return new HiveMetricScript();
     }
 }

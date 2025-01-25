@@ -21,8 +21,8 @@ import io.datavines.connector.api.*;
 public class PostgreSqlConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new PostgreSqlConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new PostgreSqlParameterConverter();
     }
 
     @Override
@@ -48,5 +48,10 @@ public class PostgreSqlConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public TypeConverter getTypeConverter() {
         return new PostgreSqlTypeConverter();
+    }
+
+    @Override
+    public MetricScript getMetricScript() {
+        return new PostgreSqlMetricScript();
     }
 }

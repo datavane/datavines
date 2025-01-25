@@ -16,22 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
-import java.util.Map;
-
-import static io.datavines.common.ConfigConstants.*;
-
 public class SqlServerDialect extends JdbcDialect {
-
-    @Override
-    public Map<String, String> getDialectKeyMap() {
-        super.getDialectKeyMap();
-        dialectKeyMap.put(STRING_TYPE, "char");
-        dialectKeyMap.put(LENGTH_KEY, "len(${column})");
-        dialectKeyMap.put(IF_FUNCTION_KEY, "iif");
-        dialectKeyMap.put(LIMIT_TOP_50_KEY, " OFFSET 0 ROWS FETCH NEXT 50 ROWS ONLY");
-        dialectKeyMap.put(IF_CASE_KEY, "iif(${column} is null, 'NULL', cast(${column} as ${string_type}))");
-        return dialectKeyMap;
-    }
 
     @Override
     public String getDriver() {
@@ -43,8 +28,4 @@ public class SqlServerDialect extends JdbcDialect {
         return true;
     }
 
-    @Override
-    public boolean supportToBeErrorDataStorage() {
-        return false;
-    }
 }

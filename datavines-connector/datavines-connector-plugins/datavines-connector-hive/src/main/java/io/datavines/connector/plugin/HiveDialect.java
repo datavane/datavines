@@ -28,17 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.common.ConfigConstants.STRING_TYPE;
-
 @Slf4j
 public class HiveDialect extends JdbcDialect {
-
-    @Override
-    public Map<String, String> getDialectKeyMap() {
-        super.getDialectKeyMap();
-        dialectKeyMap.put(STRING_TYPE, "string");
-        return dialectKeyMap;
-    }
 
     @Override
     public String getDriver() {

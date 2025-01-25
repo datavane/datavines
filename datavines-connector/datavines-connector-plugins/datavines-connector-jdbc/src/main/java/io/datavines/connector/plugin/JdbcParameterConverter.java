@@ -16,23 +16,27 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.utils.StringUtils;
+import java.util.HashMap;
 import java.util.Map;
-import static io.datavines.common.ConfigConstants.*;
-import static io.datavines.common.ConfigConstants.PROPERTIES;
 
-public class DmConnectorParameterConverter extends JdbcConnectorParameterConverter {
+import io.datavines.connector.api.ParameterConverter;
+import static io.datavines.common.ConfigConstants.*;
+
+public abstract class JdbcParameterConverter implements ParameterConverter {
+
     @Override
-    protected String getUrl(Map<String, Object> parameter) {
-        // in dm jdbc url, the database is not need.
-        String url = String.format("jdbc:dm://%s:%s?schema=%s",
-                parameter.get(HOST),
-                parameter.get(PORT),
-                parameter.get(DATABASE));
-        String properties = (String)parameter.get(PROPERTIES);
-        if (StringUtils.isNotEmpty(properties)) {
-            url += "&" + properties;
-        }
-        return url;
+    public Map<String, Object> converter(Map<String, Object> parameter) {
+        Map<String,Object> config = new HashMap<>();
+        config.put(SRC_CONNECTOR_TYPE, parameter.get(SRC_CONNECTOR_TYPE));
+        config.put(TABLE,parameter.get(TABLE));
+        config.put(USER,parameter.get(USER));
+        config.put(PASSWORD, parameter.get(PASSWORD));
+        config.put(DATABASE, parameter.get(DATABASE));
+        config.put(CATALOG, parameter.get(CATALOG));
+        config.put(SCHEMA, parameter.get(SCHEMA));
+        config.put(URL, parameter.get(URL) == null ? getUrl(parameter) : parameter.get(URL));
+        return config;
     }
+
+    protected abstract String getUrl(Map<String, Object> parameter);
 }

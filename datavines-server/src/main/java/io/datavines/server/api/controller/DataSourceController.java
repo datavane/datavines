@@ -149,7 +149,8 @@ public class DataSourceController {
         List<Item> items = new ArrayList<>();
 
         connectorList.forEach(it -> {
-            if (!"file".equalsIgnoreCase(it)) {
+            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(it);
+            if (connectorFactory.showInFrontend()) {
                 Item item = new Item(it,it);
                 items.add(item);
             }

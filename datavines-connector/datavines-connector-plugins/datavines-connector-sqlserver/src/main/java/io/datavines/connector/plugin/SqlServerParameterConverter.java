@@ -16,30 +16,25 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.utils.StringUtils;
-
 import java.util.Map;
 
+import io.datavines.common.utils.StringUtils;
 import static io.datavines.common.ConfigConstants.*;
 
-public class HiveConnectorParameterConverter extends JdbcConnectorParameterConverter {
+public class SqlServerParameterConverter extends JdbcParameterConverter {
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
-
-        StringBuilder address = new StringBuilder();
-        address.append("jdbc:hive2://");
-        Object port = parameter.get(PORT);
-        for (String host : parameter.get(HOST).toString().split(",")) {
-            address.append(String.format("%s:%s,", host, port));
-        }
-        address.deleteCharAt(address.length() - 1);
-        address.append("/").append(parameter.get(DATABASE));
-        String properties = (String) parameter.get(PROPERTIES);
+        String url = String.format("jdbc:sqlserver://%s:%s;databaseName=%s",
+                parameter.get(HOST),
+                parameter.get(PORT),
+                parameter.get(DATABASE));
+        String properties = (String)parameter.get(PROPERTIES);
         if (StringUtils.isNotEmpty(properties)) {
-            address.append(";").append(properties);
+            url += ";" + properties;
         }
-        return address.toString();
+
+        return url;
     }
 
 }

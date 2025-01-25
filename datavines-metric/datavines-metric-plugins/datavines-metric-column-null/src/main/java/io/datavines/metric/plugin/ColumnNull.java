@@ -60,7 +60,7 @@ public class ColumnNull extends BaseSingleTableColumnNotUseView {
     @Override
     public void prepare(Map<String, String> config) {
         if (config.containsKey("column")) {
-            filters.add("(${column} is null )");
+            filters.add(getConnectorFactory(config).getMetricScript().columnIsNull());
         }
         super.prepare(config);
     }

@@ -16,28 +16,31 @@
  */
 package io.datavines.connector.plugin;
 
-import java.util.HashMap;
+import io.datavines.common.utils.StringUtils;
+
 import java.util.Map;
 
-import io.datavines.common.utils.StringUtils;
-import io.datavines.connector.api.ConnectorParameterConverter;
 import static io.datavines.common.ConfigConstants.*;
 
-public abstract class JdbcConnectorParameterConverter implements ConnectorParameterConverter {
+public class ImpalaParameterConverter extends JdbcParameterConverter {
 
     @Override
-    public Map<String, Object> converter(Map<String, Object> parameter) {
-        Map<String,Object> config = new HashMap<>();
-        config.put(SRC_CONNECTOR_TYPE, parameter.get(SRC_CONNECTOR_TYPE));
-        config.put(TABLE,parameter.get(TABLE));
-        config.put(USER,parameter.get(USER));
-        config.put(PASSWORD, parameter.get(PASSWORD));
-        config.put(DATABASE, parameter.get(DATABASE));
-        config.put(CATALOG, parameter.get(CATALOG));
-        config.put(SCHEMA, parameter.get(SCHEMA));
-        config.put(URL, parameter.get(URL) == null ? getUrl(parameter) : parameter.get(URL));
-        return config;
-    }
+    protected String getUrl(Map<String, Object> parameter) {
 
-    protected abstract String getUrl(Map<String, Object> parameter);
+        StringBuilder address = new StringBuilder();
+        address.append("jdbc:hive2://");
+        Object port = parameter.get(PORT);
+        for (String host : parameter.get(HOST).toString().split(",")) {
+            address.append(String.format("%s:%s,", host, port));
+        }
+        address.deleteCharAt(address.length() - 1);
+        address.append("/").append(parameter.get(DATABASE));
+        String properties = (String) parameter.get(PROPERTIES);
+        if (StringUtils.isNotEmpty(properties)) {
+            address.append(";").append(properties);
+        }
+
+        address.append(";auth=noSasl");
+        return address.toString();
+    }
 }

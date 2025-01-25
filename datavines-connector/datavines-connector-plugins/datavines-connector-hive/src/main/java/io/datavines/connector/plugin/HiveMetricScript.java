@@ -16,14 +16,12 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.connector.api.ConnectorParameterConverter;
-
-import java.util.Map;
-
-public class FileConnectorParameterConverter implements ConnectorParameterConverter {
+public class HiveMetricScript extends JdbcMetricScript {
 
     @Override
-    public Map<String, Object> converter(Map<String, Object> parameter) {
-        return parameter;
+    public String histogramActualValue(String uniqueKey, String where) {
+        return "select concat(k, '\001', cast(count as string)) as actual_value_" + uniqueKey
+                + " from (select if(${column} is null, 'NULL', cast(${column} as string)) as k, count(1) as count from ${table} "
+                + where + " group by ${column} order by count desc limit 50) T";
     }
 }

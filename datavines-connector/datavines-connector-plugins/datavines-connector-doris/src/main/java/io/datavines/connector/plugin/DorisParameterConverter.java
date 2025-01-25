@@ -17,30 +17,28 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.utils.StringUtils;
-import io.datavines.connector.api.ConnectorParameterConverter;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
 
-public class TrinoConnectorParameterConverter extends JdbcConnectorParameterConverter {
+public class DorisParameterConverter extends MysqlParameterConverter {
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
-        String database = (String)parameter.get(DATABASE);
+        String catalog = (String)parameter.get(CATALOG);
         String url = "";
-        if (StringUtils.isNotEmpty(database)) {
-            url = String.format("jdbc:trino://%s:%s/%s/%s",
+        if (StringUtils.isNotEmpty(catalog)) {
+            url = String.format("jdbc:mysql://%s:%s/%s.%s",
                     parameter.get(HOST),
                     parameter.get(PORT),
                     parameter.get(CATALOG),
                     parameter.get(DATABASE));
         } else {
-            url = String.format("jdbc:trino://%s:%s/%s",
+            url = String.format("jdbc:mysql://%s:%s/%s",
                     parameter.get(HOST),
                     parameter.get(PORT),
-                    parameter.get(CATALOG));
+                    parameter.get(DATABASE));
         }
 
         String properties = (String)parameter.get(PROPERTIES);

@@ -16,37 +16,17 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.utils.StringUtils;
-import io.datavines.connector.api.ConnectorParameterConverter;
-
-import java.util.HashMap;
 import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
 
-public class PrestoConnectorParameterConverter extends JdbcConnectorParameterConverter {
+public class ClickHouseParameterConverter extends JdbcParameterConverter {
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
-        String database = (String)parameter.get(DATABASE);
-        String url = "";
-        if (StringUtils.isNotEmpty(database)) {
-            url = String.format("jdbc:presto://%s:%s/%s/%s",
-                    parameter.get(HOST),
-                    parameter.get(PORT),
-                    parameter.get(CATALOG),
-                    parameter.get(DATABASE));
-        } else {
-            url = String.format("jdbc:presto://%s:%s/%s",
-                    parameter.get(HOST),
-                    parameter.get(PORT),
-                    parameter.get(CATALOG));
-        }
-
-        String properties = (String)parameter.get(PROPERTIES);
-        if (StringUtils.isNotEmpty(properties)) {
-            url += "?" + properties;
-        }
-        return url;
+         return String.format("jdbc:clickhouse://%s:%s/%s",
+                parameter.get(HOST),
+                parameter.get(PORT),
+                parameter.get(DATABASE));
     }
 }

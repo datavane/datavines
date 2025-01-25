@@ -23,13 +23,6 @@ import static io.datavines.common.ConfigConstants.STRING_TYPE;
 public class MysqlDialect extends JdbcDialect {
 
     @Override
-    public Map<String, String> getDialectKeyMap() {
-        super.getDialectKeyMap();
-        dialectKeyMap.put(STRING_TYPE, "char");
-        return dialectKeyMap;
-    }
-
-    @Override
     public String getDriver() {
         return "com.mysql.cj.jdbc.Driver";
     }

@@ -22,29 +22,20 @@ import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
 
-public class StarRocksConnectorParameterConverter extends MysqlConnectorParameterConverter {
+public class PostgreSqlParameterConverter extends JdbcParameterConverter {
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
-        String catalog = (String)parameter.get(CATALOG);
-        String url = "";
-        if (StringUtils.isNotEmpty(catalog)) {
-            url = String.format("jdbc:mysql://%s:%s/%s.%s",
-                    parameter.get(HOST),
-                    parameter.get(PORT),
-                    parameter.get(CATALOG),
-                    parameter.get(DATABASE));
-        } else {
-            url = String.format("jdbc:mysql://%s:%s/%s",
-                    parameter.get(HOST),
-                    parameter.get(PORT),
-                    parameter.get(DATABASE));
-        }
-
+        String url = String.format("jdbc:postgresql://%s:%s/%s",
+                parameter.get(HOST),
+                parameter.get(PORT),
+                parameter.get(DATABASE));
         String properties = (String)parameter.get(PROPERTIES);
         if (StringUtils.isNotEmpty(properties)) {
             url += "?" + properties;
         }
+
         return url;
     }
+
 }

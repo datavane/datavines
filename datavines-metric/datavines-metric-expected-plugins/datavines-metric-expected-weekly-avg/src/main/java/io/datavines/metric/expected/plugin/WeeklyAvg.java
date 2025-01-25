@@ -16,13 +16,13 @@
  */
 package io.datavines.metric.expected.plugin;
 
-import io.datavines.metric.api.ExpectedValue;
+import io.datavines.common.exception.DataVinesException;
 
 import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
 
-public class WeeklyAvg implements ExpectedValue {
+public class WeeklyAvg extends AbstractExpectedValue {
 
     @Override
     public String getName() {
@@ -43,9 +43,15 @@ public class WeeklyAvg implements ExpectedValue {
     @Override
     public String getExecuteSql(Map<String,String> inputParameter) {
         String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
-        return "select round(avg(actual_value),2) as expected_value_" + uniqueKey +
-                " from dv_actual_values where data_time >= date_sub(${data_time},interval weekday(${data_time}) + 0 day)" +
-                " and data_time < date_add(date_format(${data_time},'%Y-%m-%d'),interval 1 DAY) and unique_code = ${unique_code}";
+        String engineType = inputParameter.get("engine_type");
+        switch (engineType){
+            case "spark":
+                return getConnectorFactory("spark").getMetricScript().weeklyAvg(uniqueKey);
+            case "local":
+                return getConnectorFactory(inputParameter).getMetricScript().weeklyAvg(uniqueKey);
+            default:
+                throw new DataVinesException(String.format("engine type %s is not supported", engineType));
+        }
     }
 
     @Override

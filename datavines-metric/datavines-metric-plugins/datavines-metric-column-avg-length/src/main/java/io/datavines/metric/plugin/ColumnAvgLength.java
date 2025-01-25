@@ -68,9 +68,9 @@ public class ColumnAvgLength extends BaseSingleTableColumn {
     public ExecuteSql getActualValue(Map<String,String> inputParameter) {
         String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
         ExecuteSql executeSql = new ExecuteSql();
-        executeSql.setResultTable("invalidate_count_"+uniqueKey);
+        executeSql.setResultTable("invalidate_count_" + uniqueKey);
         StringBuilder actualValueSql = new StringBuilder();
-        actualValueSql.append("select avg(${length_key}) as actual_value_").append(uniqueKey).append(" from ${table}");
+        actualValueSql.append(getConnectorFactory(inputParameter).getMetricScript().avgLengthActualValue(uniqueKey));
         if (!filters.isEmpty()) {
             actualValueSql.append(" where ").append(String.join(" and ", filters));
         }
