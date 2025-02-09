@@ -42,7 +42,6 @@
         <module>datavines-registry</module>
         <module>datavines-core</module>
         <module>datavines-runner</module>
-        <module>datavines-connector/datavines-connector-plugins/datavines-connector-flink</module>
     </modules>
 
     <properties>
