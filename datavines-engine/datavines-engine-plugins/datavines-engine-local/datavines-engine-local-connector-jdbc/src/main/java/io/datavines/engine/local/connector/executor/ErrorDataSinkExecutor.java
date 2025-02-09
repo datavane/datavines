@@ -25,12 +25,12 @@ import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.TypeConverter;
 import io.datavines.connector.api.entity.JdbcOptions;
 import io.datavines.connector.api.entity.StructField;
-import io.datavines.connector.plugin.utils.JdbcUtils;
+import io.datavines.connector.api.utils.JdbcUtils;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.entity.ConnectionHolder;
 import io.datavines.connector.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.LoggerFactory;
-import io.datavines.connector.plugin.utils.SqlUtils;
+import io.datavines.connector.api.utils.SqlUtils;
 import io.datavines.spi.PluginLoader;
 import org.slf4j.Logger;
 

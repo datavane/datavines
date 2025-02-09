@@ -42,6 +42,7 @@
         <module>datavines-registry</module>
         <module>datavines-core</module>
         <module>datavines-runner</module>
+        <module>datavines-connector/datavines-connector-plugins/datavines-connector-flink</module>
     </modules>
 
     <properties>
@@ -90,7 +91,7 @@
         <lombok.version>1.18.34</lombok.version>
         <postgresql.version>42.2.6</postgresql.version>
         <javax-validation.version>2.0.1.Final</javax-validation.version>
-        <jsqlparser.version>4.8</jsqlparser.version>
+        <jsqlparser.version>4.9</jsqlparser.version>
         <jjwt.version>0.9.1</jjwt.version>
         <jbcrypt.version>0.3m</jbcrypt.version>
         <curator.version>4.3.0</curator.version>
@@ -189,12 +190,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.api.version}</version>
-            </dependency>
-
-            <dependency>
                 <groupId>javax.validation</groupId>
                 <artifactId>validation-api</artifactId>
                 <version>${javax-validation.version}</version>
@@ -239,6 +234,18 @@
             <dependency>
                 <groupId>io.datavines</groupId>
                 <artifactId>datavines-engine-spark-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-flink-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-flink-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -846,13 +853,24 @@
     </build>
 
     <repositories>
+<!--        <repository>-->
+<!--            <id>public</id>-->
+<!--            <name>aliyun nexus</name>-->
+<!--            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>-->
+<!--            <releases>-->
+<!--                <enabled>true</enabled>-->
+<!--            </releases>-->
+<!--        </repository>-->
         <repository>
-            <id>public</id>
-            <name>aliyun nexus</name>
-            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
             <releases>
                 <enabled>true</enabled>
             </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 

@@ -18,7 +18,7 @@ package io.datavines.common.utils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Base64;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +46,8 @@ public class Md5Utils {
 
         if (isUpper) {
             md5 = md5.toUpperCase();
+        } else {
+            md5 = md5.toLowerCase();
         }
 
         return md5;

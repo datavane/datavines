@@ -30,7 +30,7 @@ import io.datavines.connector.api.entity.ResultList;
 import io.datavines.connector.api.entity.ResultListWithColumns;
 import io.datavines.engine.local.api.utils.FileUtils;
 import io.datavines.engine.local.api.utils.LoggerFactory;
-import io.datavines.connector.plugin.utils.SqlUtils;
+import io.datavines.connector.api.utils.SqlUtils;
 import io.datavines.spi.PluginLoader;
 
 import org.slf4j.Logger;

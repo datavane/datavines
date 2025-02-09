@@ -64,7 +64,6 @@ public abstract class BaseDataVinesBootstrap {
     }
 
     private void parseConfigAndExecute(String configFile) throws Exception {
-
         ConfigParser configParser = new ConfigParser(configFile);
         List<Component> sources = configParser.getSourcePlugins();
         List<Component> transforms = configParser.getTransformPlugins();

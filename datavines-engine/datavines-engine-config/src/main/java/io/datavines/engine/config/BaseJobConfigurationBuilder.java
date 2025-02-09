@@ -228,6 +228,19 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
         return actualValueSourceConfig;
     }
 
+    protected SourceConfig getValidateResultDataSourceConfig(String outputTable) throws DataVinesException {
+
+        SourceConfig actualValueSourceConfig = new SourceConfig();
+        ConnectorFactory storageFactory =
+                PluginLoader.getPluginLoader(ConnectorFactory.class)
+                        .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
+
+        actualValueSourceConfig.setPlugin(storageFactory.getCategory());
+        actualValueSourceConfig.setType(SourceType.METADATA.getDescription());
+        actualValueSourceConfig.setConfig(getValidateResultSourceConfigMap(null,"dv_actual_values", outputTable));
+        return actualValueSourceConfig;
+    }
+
     protected SinkConfig getValidateResultDataSinkConfig(ExpectedValue expectedValue, String sql, String dbTable, Map<String, String> inputParameter) throws DataVinesException {
 
         SinkConfig validateResultDataStorageConfig = new SinkConfig();
@@ -261,6 +274,27 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
 
         configMap.put(TABLE, dbTable);
         configMap.put(OUTPUT_TABLE, dbTable);
+        if (StringUtils.isNotEmpty(sql)) {
+            configMap.put(SQL, sql);
+        }
+
+        return configMap;
+    }
+
+    private Map<String,Object> getValidateResultSourceConfigMap(String sql, String dbTable,String outputTable) {
+        Map<String, Object> configMap = new HashMap<>();
+        ConnectorFactory storageFactory =
+                PluginLoader.getPluginLoader(ConnectorFactory.class)
+                        .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
+        if (storageFactory != null) {
+            if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {
+                configMap = storageFactory.getConnectorParameterConverter().converter(JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class));
+                configMap.put(DRIVER, storageFactory.getDialect().getDriver());
+            }
+        }
+
+        configMap.put(TABLE, dbTable);
+        configMap.put(OUTPUT_TABLE, outputTable);
         if (StringUtils.isNotEmpty(sql)) {
             configMap.put(SQL, sql);
         }

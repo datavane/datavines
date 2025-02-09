@@ -41,4 +41,9 @@ public class MysqlDialect extends JdbcDialect {
     public String quoteIdentifier(String entity) {
         return "`" + entity + "`";
     }
+
+    @Override
+    public String getQuoteIdentifier() {
+        return "`";
+    }
 }

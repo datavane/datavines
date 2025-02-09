@@ -28,36 +28,36 @@ public class MetricConstants {
     public static final List<ColumnInfo> PROFILE_COLUMN_LIST = new ArrayList<>();
 
     static {
-        RESULT_COLUMN_LIST.add(new ColumnInfo("job_execution_id",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("metric_unique_key",true));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("metric_type",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("metric_name",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("metric_dimension",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("database_name",true));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("table_name",true));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("column_name",true));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("actual_value",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("expected_value",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("expected_type",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("result_formula",true));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("operator",true));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("threshold",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("create_time",false));
-        RESULT_COLUMN_LIST.add(new ColumnInfo("update_time",false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("job_execution_id",false, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("metric_unique_key",true, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("metric_type",false, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("metric_name",false, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("metric_dimension",false, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("database_name",true, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("table_name",true, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("column_name",true, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("actual_value",false, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("expected_value",false, true));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("expected_type",false, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("result_formula",true, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("operator",true, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("threshold",false, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("create_time",false, false));
+        RESULT_COLUMN_LIST.add(new ColumnInfo("update_time",false, false));
 
-        ACTUAL_COLUMN_LIST.add(new ColumnInfo("job_execution_id",false));
-        ACTUAL_COLUMN_LIST.add(new ColumnInfo("metric_name",false));
-        ACTUAL_COLUMN_LIST.add(new ColumnInfo("unique_code",false));
-        ACTUAL_COLUMN_LIST.add(new ColumnInfo("actual_value",false));
-        ACTUAL_COLUMN_LIST.add(new ColumnInfo("data_time",false));
-        ACTUAL_COLUMN_LIST.add(new ColumnInfo("create_time",false));
-        ACTUAL_COLUMN_LIST.add(new ColumnInfo("update_time",false));
+        ACTUAL_COLUMN_LIST.add(new ColumnInfo("job_execution_id",false, false));
+        ACTUAL_COLUMN_LIST.add(new ColumnInfo("metric_name",false, false));
+        ACTUAL_COLUMN_LIST.add(new ColumnInfo("unique_code",false, false));
+        ACTUAL_COLUMN_LIST.add(new ColumnInfo("actual_value",false, false));
+        ACTUAL_COLUMN_LIST.add(new ColumnInfo("data_time",false, false));
+        ACTUAL_COLUMN_LIST.add(new ColumnInfo("create_time",false, false));
+        ACTUAL_COLUMN_LIST.add(new ColumnInfo("update_time",false, false));
 
-        PROFILE_COLUMN_LIST.add(new ColumnInfo("entity_uuid",true));
-        PROFILE_COLUMN_LIST.add(new ColumnInfo("metric_name",false));
-        PROFILE_COLUMN_LIST.add(new ColumnInfo("actual_value",true));
-        PROFILE_COLUMN_LIST.add(new ColumnInfo("actual_value_type",true));
-        PROFILE_COLUMN_LIST.add(new ColumnInfo("data_date",false));
-        PROFILE_COLUMN_LIST.add(new ColumnInfo("update_time",false));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("entity_uuid",true, false));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("metric_name",false, false));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("actual_value",true, false));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("actual_value_type",true, false));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("data_date",false, false));
+        PROFILE_COLUMN_LIST.add(new ColumnInfo("update_time",false, false));
     }
 }

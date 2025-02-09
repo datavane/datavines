@@ -16,6 +16,8 @@
  */
 package io.datavines.engine.flink.executor.parameter;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,26 +38,27 @@ public class FlinkArgsUtils {
         // Add run command based on deployment mode
         String deployMode = param.getDeployMode();
         if (deployMode == null || deployMode.isEmpty()) {
-            deployMode = FLINK_LOCAL; // Default to local mode
+            deployMode = FLINK_LOCAL;
         }
 
         switch (deployMode.toLowerCase()) {
-            case "yarn-session":
+            case FLINK_YARN_SESSION:
                 args.add("run");
-                args.add("-m");
+                args.add("-t");
                 args.add("yarn-session");
                 break;
-            case "yarn-per-job":
+            case FLINK_YARN_PER_JOB:
                 args.add("run");
-                args.add("-m");
+                args.add("-t");
                 args.add("yarn-per-job");
+                args.add("--detached");
                 break;
-            case "yarn-application":
+            case FLINK_YARN_APPLICATION:
                 args.add("run-application");
                 args.add("-t");
                 args.add("yarn-application");
                 break;
-            case "local":
+            case FLINK_LOCAL:
             default:
                 args.add("run");
                 break;
@@ -68,13 +71,28 @@ public class FlinkArgsUtils {
         }
 
         // Add job name if specified (only for YARN modes)
-        if (!FLINK_LOCAL.equals(deployMode) && param.getJobName() != null && !param.getJobName().isEmpty()) {
+        if (!FLINK_LOCAL.equals(deployMode)
+                && StringUtils.isNotEmpty(param.getJobName())) {
             args.add("-Dyarn.application.name=" + param.getJobName());
         }
 
         // Add yarn queue if specified (only for YARN modes)
-        if (!FLINK_LOCAL.equals(deployMode) && param.getYarnQueue() != null && !param.getYarnQueue().isEmpty()) {
+        if (!FLINK_LOCAL.equals(deployMode)
+                && StringUtils.isNotEmpty(param.getYarnQueue())) {
             args.add("-Dyarn.application.queue=" + param.getYarnQueue());
+        }
+
+        if (StringUtils.isNotEmpty(param.getJobManagerMemory())) {
+            args.add("-Djobmanager.memory.process.size=" + param.getJobManagerMemory());
+        }
+
+        if (StringUtils.isNotEmpty(param.getTaskManagerMemory())) {
+            args.add("-Dtaskmanager.memory.process.size=" + param.getTaskManagerMemory());
+        }
+
+        if (!FLINK_LOCAL.equals(deployMode)
+                && StringUtils.isNotEmpty(param.getTags())) {
+            args.add("-Dyarn.tags=" + param.getTags());
         }
 
         // Add main class
@@ -83,14 +101,24 @@ public class FlinkArgsUtils {
             args.add(param.getMainClass());
         }
 
-        // Add jar file
-        args.add(param.getMainJar());
-
-        // Add program arguments if any
-        if (param.getMainArgs() != null && !param.getMainArgs().isEmpty()) {
-            args.add(param.getMainArgs());
+        String mainJar = param.getMainJar();
+        if (StringUtils.isNotEmpty(mainJar)) {
+            args.add(mainJar);
         }
 
+        String jars = param.getJars();
+        if (StringUtils.isNotEmpty(jars)) {
+            args.add(jars);
+        }
+
+        if (StringUtils.isNotEmpty(param.getFlinkOthers())) {
+            args.add(param.getFlinkOthers());
+        }
+
+        String mainArgs = param.getMainArgs();
+        if (StringUtils.isNotEmpty(mainArgs)) {
+            args.add(mainArgs);
+        }
         return args;
     }
 }

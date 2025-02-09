@@ -19,11 +19,14 @@ package io.datavines.engine.flink.core;
 import java.util.Base64;
 
 import io.datavines.engine.core.BaseDataVinesBootstrap;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class FlinkDataVinesBootstrap extends BaseDataVinesBootstrap {
 
     public static void main(String[] args) {
         FlinkDataVinesBootstrap bootstrap = new FlinkDataVinesBootstrap();
+
         if (args.length == 1) {
             String arg = args[0];
             args[0] = new String(Base64.getDecoder().decode(arg));

@@ -33,16 +33,9 @@ import java.util.List;
 import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public class FlinkSingleTableConfigurationBuilder extends BaseFlinkConfigurationBuilder {
-
-
-    @Override
-    public void buildEnvConfig() {
-        EnvConfig envConfig = new EnvConfig();
-        envConfig.setEngine("flink");
-        configuration.setEnvConfig(envConfig);
-    }
 
     @Override
     public void buildSinkConfigs() throws DataVinesException {
@@ -53,88 +46,43 @@ public class FlinkSingleTableConfigurationBuilder extends BaseFlinkConfiguration
             for (BaseJobParameter parameter : metricJobParameterList) {
                 String metricUniqueKey = getMetricUniqueKey(parameter);
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
-                if (metricInputParameter == null) {
-                    continue;
-                }
-                
-                // 确保必要的参数存在
-                if (!metricInputParameter.containsKey(METRIC_NAME) && parameter.getMetricType() != null) {
-                    metricInputParameter.put(METRIC_NAME, parameter.getMetricType());
-                }
-                
                 metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
-                String expectedType = "local_" + parameter.getExpectedType();
+                String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
                 ExpectedValue expectedValue = PluginLoader
                         .getPluginLoader(ExpectedValue.class)
                         .getNewPlugin(expectedType);
 
-                // 只有在确保必要参数存在的情况下才生成 uniqueCode
-                if (metricInputParameter.containsKey(METRIC_NAME)) {
-                    metricInputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(MetricParserUtils.generateUniqueCode(metricInputParameter)));
-                }
+                metricInputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(metricInputParameter)));
 
-                // Get the actual value storage parameter
-                String actualValueSinkSql = FlinkSinkSqlBuilder.getActualValueSql()
-                        .replace("${actual_value}", "${actual_value_" + metricUniqueKey + "}");
+                //get the actual value storage parameter
                 SinkConfig actualValueSinkConfig = getValidateResultDataSinkConfig(
-                        expectedValue, actualValueSinkSql, "dv_actual_values", metricInputParameter);
-                
-                if (actualValueSinkConfig != null) {
-                    actualValueSinkConfig.setType(SinkType.ACTUAL_VALUE.getDescription());
-                    sinkConfigs.add(actualValueSinkConfig);
+                        expectedValue, FlinkSinkSqlBuilder.getActualValueSql(), "dv_actual_values", metricInputParameter);
+                sinkConfigs.add(actualValueSinkConfig);
+
+                String taskSinkSql = FlinkSinkSqlBuilder.getDefaultSinkSql();
+                if (StringUtils.isEmpty(expectedValue.getOutputTable(metricInputParameter))) {
+                    if (("expected_value_" + metricUniqueKey).equals(metricInputParameter.get(EXPECTED_VALUE))) {
+                        metricInputParameter.put(EXPECTED_VALUE, "-1");
+                    }
+                    taskSinkSql = taskSinkSql.replaceAll("cross join \\$\\{expected_table}","");
+                } else {
+                    metricInputParameter.put(EXPECTED_VALUE, "COALESCE(expected_value_" + metricUniqueKey + ", -1)");
                 }
 
-                String taskSinkSql = FlinkSinkSqlBuilder.getDefaultSinkSql()
-                        .replace("${actual_value}", "${actual_value_" + metricUniqueKey + "}")
-                        .replace("${expected_value}", "${expected_value_" + metricUniqueKey + "}");
-                
-                // Get the task data storage parameter
+                //get the task data storage parameter
                 SinkConfig taskResultSinkConfig = getValidateResultDataSinkConfig(
                         expectedValue, taskSinkSql, "dv_job_execution_result", metricInputParameter);
-                if (taskResultSinkConfig != null) {
-                    taskResultSinkConfig.setType(SinkType.VALIDATE_RESULT.getDescription());
-                    // 设置默认状态为未知（NONE）
-                    taskResultSinkConfig.getConfig().put("default_state", "0");
-                    // 添加其他必要参数
-                    taskResultSinkConfig.getConfig().put("metric_type", "single_table");
-                    taskResultSinkConfig.getConfig().put("metric_name", metricInputParameter.get(METRIC_NAME));
-                    taskResultSinkConfig.getConfig().put("metric_dimension", metricInputParameter.get(METRIC_DIMENSION));
-                    taskResultSinkConfig.getConfig().put("database_name", metricInputParameter.get(DATABASE));
-                    taskResultSinkConfig.getConfig().put("table_name", metricInputParameter.get(TABLE));
-                    taskResultSinkConfig.getConfig().put("column_name", metricInputParameter.get(COLUMN));
-                    taskResultSinkConfig.getConfig().put("expected_type", metricInputParameter.get(EXPECTED_TYPE));
-                    taskResultSinkConfig.getConfig().put("result_formula", metricInputParameter.get(RESULT_FORMULA));
-                    sinkConfigs.add(taskResultSinkConfig);
-                }
+                sinkConfigs.add(taskResultSinkConfig);
 
-                // Get the error data storage parameter if needed
-                if (StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageType())
-                        && StringUtils.isNotEmpty(jobExecutionInfo.getErrorDataStorageParameter())) {
-                    SinkConfig errorDataSinkConfig = getErrorSinkConfig(metricInputParameter);
-                    if (errorDataSinkConfig != null) {
-                        errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
-                        sinkConfigs.add(errorDataSinkConfig);
-                    }
+                //get the error data storage parameter
+                //support file(hdfs/minio/s3)/es
+                SinkConfig errorDataSinkConfig = getErrorSinkConfig(metricInputParameter);
+                if (errorDataSinkConfig != null) {
+                    sinkConfigs.add(errorDataSinkConfig);
                 }
             }
         }
 
         configuration.setSinkParameters(sinkConfigs);
-    }
-
-    @Override
-    public void buildTransformConfigs() {
-        // No transform configs needed for single table configuration
-    }
-
-    @Override
-    public void buildSourceConfigs() throws DataVinesException {
-        List<SourceConfig> sourceConfigs = getSourceConfigs();
-        configuration.setSourceParameters(sourceConfigs);
-    }
-
-    @Override
-    public void buildName() {
-        // Use default name from base implementation
     }
 }

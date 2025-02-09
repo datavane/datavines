@@ -95,6 +95,10 @@ public interface Dialect {
         return entity;
     }
 
+    default String getQuoteIdentifier() {
+        return "";
+    }
+
     default String getTableExistsQuery(String table) {
         return String.format("SELECT * FROM %s WHERE 1=0", table);
     }
@@ -121,9 +125,8 @@ public interface Dialect {
 
     default String getCreateTableStatement(String table, List<StructField> fields, TypeConverter typeConverter) {
         if (CollectionUtils.isNotEmpty(fields)) {
-            String columns = fields.stream().map(field -> {
-                return quoteIdentifier(field.getName()) + " " + typeConverter.convertToOriginType(field.getDataType());
-            }).collect(Collectors.joining(","));
+            String columns = fields.stream().map(field -> quoteIdentifier(field.getName()) + " " + typeConverter.convertToOriginType(field.getDataType()))
+                    .collect(Collectors.joining(","));
 
             return String.format("CREATE TABLE IF NOT EXISTS %s (%s)", table, columns);
         }

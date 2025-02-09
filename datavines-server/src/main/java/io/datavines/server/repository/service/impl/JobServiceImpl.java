@@ -32,10 +32,12 @@ import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.JobType;
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.PasswordFilterUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.connector.api.utils.SqlUtils;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.core.utils.LanguageUtils;
@@ -383,17 +385,22 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     private String getFQN(BaseJobParameter jobParameter) {
         String fqn = "";
-        String schema = (String)jobParameter.getMetricParameter().get(DATABASE);
+        String database = (String)jobParameter.getMetricParameter().get(DATABASE);
         String table = (String)jobParameter.getMetricParameter().get(TABLE);
         String column = (String)jobParameter.getMetricParameter().get(COLUMN);
-        if (StringUtils.isEmpty(schema)) {
+
+        if (StringUtils.isEmpty(database)) {
             return null;
         }
 
         if (StringUtils.isEmpty(table)) {
-            return null;
+            List<String> tables = SqlUtils.extractTablesFromSelect((String) jobParameter.getMetricParameter().get(ACTUAL_AGGREGATE_SQL));
+            if (CollectionUtils.isEmpty(tables)) {
+                throw new DataVinesException("custom sql must have table");
+            }
+            fqn = database + "." + tables.get(0);
         } else {
-            fqn = schema + "." + table;
+            fqn = database + "." + table;
         }
 
         if (StringUtils.isEmpty(column)) {

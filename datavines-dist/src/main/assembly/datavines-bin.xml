@@ -88,7 +88,7 @@
         </dependencySet>
 
         <dependencySet>
-            <outputDirectory>plugins</outputDirectory>
+            <outputDirectory>plugins/spark</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <includes>
                 <include>io.datavines:datavines-common</include>
@@ -111,6 +111,37 @@
                 <include>com.oracle.ojdbc:ojdbc8</include>
                 <include>cn.easyproject:orai18n</include>
                 <include>com.microsoft.sqlserver:mssql-jdbc</include>
+            </includes>
+        </dependencySet>
+
+        <dependencySet>
+            <outputDirectory>plugins/flink</outputDirectory>
+            <useProjectArtifact>true</useProjectArtifact>
+            <includes>
+                <include>io.datavines:datavines-common</include>
+                <include>io.datavines:datavines-spi</include>
+                <include>io.datavines:datavines-engine-flink-api</include>
+                <include>io.datavines:datavines-engine-flink-connector-jdbc</include>
+<!--                <include>io.datavines:datavines-engine-flink-connector-mongodb</include>-->
+                <include>io.datavines:datavines-engine-core</include>
+                <include>io.datavines:datavines-engine-common</include>
+                <include>io.datavines:datavines-engine-flink-transform-sql</include>
+                <include>io.datavines:datavines-engine-api</include>
+                <include>com.mysql:mysql-connector-j</include>
+                <include>org.apache.httpcomponents:httpclient</include>
+                <include>org.apache.httpcomponents:httpcore</include>
+                <include>ru.yandex.clickhouse:clickhouse-jdbc</include>
+                <include>org.postgresql:postgresql</include>
+                <include>com.facebook.presto:presto-jdbc</include>
+                <include>io.trino:trino-jdbc</include>
+                <include>com.dameng:DmJdbcDriver18</include>
+                <include>com.oracle.ojdbc:ojdbc8</include>
+                <include>cn.easyproject:orai18n</include>
+                <include>com.microsoft.sqlserver:mssql-jdbc</include>
+                <include>com.fasterxml.jackson.core:jackson-annotations</include>
+                <include>com.fasterxml.jackson.core:jackson-databind</include>
+                <include>com.fasterxml.jackson.core:jackson-core</include>
+                <include>com.fasterxml.jackson.datatype:jackson-datatype-jsr310</include>
             </includes>
         </dependencySet>
     </dependencySets>

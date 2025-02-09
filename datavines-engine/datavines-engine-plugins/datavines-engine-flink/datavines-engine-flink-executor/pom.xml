@@ -33,26 +33,49 @@
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-executor</artifactId>
-            <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-core</artifactId>
-            <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-flink-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
+
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-common</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-flink-connector-jdbc</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+<!--        <dependency>-->
+<!--            <groupId>io.datavines</groupId>-->
+<!--            <artifactId>datavines-engine-flink-connector-mongodb</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
+
+<!--        <dependency>-->
+<!--            <groupId>io.datavines</groupId>-->
+<!--            <artifactId>datavines-engine-flink-connector-file</artifactId>-->
+<!--            <version>${project.version}</version>-->
+<!--        </dependency>-->
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-flink-transform-sql</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

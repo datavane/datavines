@@ -27,14 +27,17 @@ public class ColumnInfo {
 
     private boolean needSingleQuotation;
 
-    public ColumnInfo(String name, boolean needSingleQuotation) {
-        this(name,needSingleQuotation,name);
+    private boolean needCaseNull;
+
+    public ColumnInfo(String name, boolean needSingleQuotation,boolean needCaseNull) {
+        this(name,needSingleQuotation,name,needCaseNull);
     }
 
-    public ColumnInfo(String name, boolean needSingleQuotation,String parameterName) {
+    public ColumnInfo(String name, boolean needSingleQuotation,String parameterName,boolean needCaseNull) {
         this.name = name;
         this.needSingleQuotation = needSingleQuotation;
         this.parameterName = parameterName;
+        this.needCaseNull = needCaseNull;
     }
 
 }

@@ -45,7 +45,10 @@ public class MonthlyAvg extends AbstractExpectedValue {
         String engineType = inputParameter.get("engine_type");
         switch (engineType){
             case "spark":
+            case "livy":
                 return getConnectorFactory("spark").getMetricScript().monthlyAvg(uniqueKey);
+            case "flink":
+                return getConnectorFactory("flink").getMetricScript().monthlyAvg(uniqueKey);
             case "local":
                 return getConnectorFactory(inputParameter).getMetricScript().monthlyAvg(uniqueKey);
             default:

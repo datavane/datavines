@@ -21,7 +21,7 @@ import io.datavines.common.config.Config;
 import io.datavines.common.utils.ThreadUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.connector.api.entity.JdbcOptions;
-import io.datavines.connector.plugin.utils.JdbcUtils;
+import io.datavines.connector.api.utils.JdbcUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSource;

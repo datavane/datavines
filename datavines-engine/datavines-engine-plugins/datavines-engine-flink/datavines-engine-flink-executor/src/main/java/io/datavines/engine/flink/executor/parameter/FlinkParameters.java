@@ -16,69 +16,34 @@
  */
 package io.datavines.engine.flink.executor.parameter;
 
+import lombok.Data;
+
+@Data
 public class FlinkParameters {
 
     private String mainJar;
+
     private String mainClass;
+
     private String deployMode;
+
+    private String taskManagerCount;
+
+    private String taskManagerMemory;
+
+    private String jobManagerMemory;
+
     private String mainArgs;
+
     private String yarnQueue;
+
     private String jobName;
+
     private int parallelism = 1;
 
-    public String getMainJar() {
-        return mainJar;
-    }
+    private String flinkOthers;
 
-    public void setMainJar(String mainJar) {
-        this.mainJar = mainJar;
-    }
+    private String jars;
 
-    public String getMainClass() {
-        return mainClass;
-    }
-
-    public void setMainClass(String mainClass) {
-        this.mainClass = mainClass;
-    }
-
-    public String getDeployMode() {
-        return deployMode;
-    }
-
-    public void setDeployMode(String deployMode) {
-        this.deployMode = deployMode;
-    }
-
-    public String getMainArgs() {
-        return mainArgs;
-    }
-
-    public void setMainArgs(String mainArgs) {
-        this.mainArgs = mainArgs;
-    }
-
-    public String getYarnQueue() {
-        return yarnQueue;
-    }
-
-    public void setYarnQueue(String yarnQueue) {
-        this.yarnQueue = yarnQueue;
-    }
-
-    public String getJobName() {
-        return jobName;
-    }
-
-    public void setJobName(String jobName) {
-        this.jobName = jobName;
-    }
-
-    public int getParallelism() {
-        return parallelism;
-    }
-
-    public void setParallelism(int parallelism) {
-        this.parallelism = parallelism;
-    }
+    private String tags;
 }

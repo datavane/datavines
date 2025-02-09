@@ -45,7 +45,10 @@ public class Last30DayAvg extends AbstractExpectedValue {
         String engineType = inputParameter.get("engine_type");
         switch (engineType){
             case "spark":
+            case "livy":
                 return getConnectorFactory("spark").getMetricScript().last30DayAvg(uniqueKey);
+            case "flink":
+                return getConnectorFactory("flink").getMetricScript().last30DayAvg(uniqueKey);
             case "local":
                 return getConnectorFactory(inputParameter).getMetricScript().last30DayAvg(uniqueKey);
             default:

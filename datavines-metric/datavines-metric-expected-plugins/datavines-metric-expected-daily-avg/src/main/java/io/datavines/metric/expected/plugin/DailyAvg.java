@@ -46,7 +46,10 @@ public class DailyAvg extends AbstractExpectedValue {
         String engineType = inputParameter.get("engine_type");
         switch (engineType){
             case "spark":
+            case "livy":
                 return getConnectorFactory("spark").getMetricScript().dailyAvg(uniqueKey);
+            case "flink":
+                return getConnectorFactory("flink").getMetricScript().dailyAvg(uniqueKey);
             case "local":
                 return getConnectorFactory(inputParameter).getMetricScript().dailyAvg(uniqueKey);
             default:

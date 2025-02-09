@@ -33,19 +33,16 @@
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-core</artifactId>
-            <version>${project.version}</version>
         </dependency>
         
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-flink-api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         
         <dependency>
@@ -57,13 +54,6 @@
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-connector-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-core</artifactId>
-            <version>${flink.version}</version>
         </dependency>
     </dependencies>
 </project>

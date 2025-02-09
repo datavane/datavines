@@ -51,6 +51,7 @@ export type TEngineParameter = {
     executorMemory: string,
     executorCores: number,
     others: string,
+    flinkOthers?: string,
     parallelism?: number,
     jobName?: string,
     yarnQueue?: string,

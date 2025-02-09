@@ -18,10 +18,13 @@ package io.datavines.engine.flink.api.stream;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
-import io.datavines.engine.api.component.Component;
+import io.datavines.common.config.ConfigRuntimeException;
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.api.env.Execution;
 import io.datavines.engine.api.plugin.Plugin;
 import io.datavines.engine.flink.api.FlinkRuntimeEnvironment;
+import io.datavines.engine.flink.api.entity.FLinkColumnInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.table.api.Table;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
@@ -29,9 +32,13 @@ import org.apache.flink.types.Row;
 
 import java.util.List;
 
+import static io.datavines.engine.api.EngineConstants.*;
+
+@Slf4j
 public class FlinkStreamExecution implements Execution<FlinkStreamSource, FlinkStreamTransform, FlinkStreamSink>, Plugin {
 
     private final FlinkRuntimeEnvironment flinkEnv;
+
     private Config config;
 
     public FlinkStreamExecution(FlinkRuntimeEnvironment flinkEnv) {
@@ -56,10 +63,6 @@ public class FlinkStreamExecution implements Execution<FlinkStreamSource, FlinkS
         return new CheckResult(true, "Configuration check passed");
     }
 
-    public String getType() {
-        return "flink_stream";
-    }
-
     @Override
     public void prepare() throws Exception {
         // Initialization if needed
@@ -67,18 +70,24 @@ public class FlinkStreamExecution implements Execution<FlinkStreamSource, FlinkS
 
     @Override
     public void execute(List<FlinkStreamSource> sources, List<FlinkStreamTransform> transforms, List<FlinkStreamSink> sinks) throws Exception {
-        for (FlinkStreamSource source : sources) {
-            DataStream<Row> sourceStream = source.getData(flinkEnv);
-            createTemporaryView(source.getClass().getSimpleName(), sourceStream, source.getFieldNames());
+        sources.forEach(s -> {
+            try {
+                registerDatasource(s);
+            } catch (Exception e) {
+                log.error("register datasource error", e);
+                throw new DataVinesException(e);
+            }
+        });
 
-            DataStream<Row> transformedStream = sourceStream;
+        if (!sources.isEmpty()) {
+            DataStream<Row> ds = null;
             for (FlinkStreamTransform transform : transforms) {
-                transformedStream = transform.process(transformedStream, flinkEnv);
-                createTemporaryView(transform.getClass().getSimpleName(), transformedStream, transform.getOutputFieldNames());
+                ds = transform.process(ds, flinkEnv);
+                registerTransformTempView(transform, ds);
             }
 
-            for (FlinkStreamSink sink : sinks) {
-                sink.output(transformedStream, flinkEnv);
+            for (FlinkStreamSink sink: sinks) {
+                sink.output(ds, flinkEnv);
             }
         }
 
@@ -90,12 +99,26 @@ public class FlinkStreamExecution implements Execution<FlinkStreamSource, FlinkS
         // Flink's execution doesn't need explicit stopping
     }
 
-    private void createTemporaryView(String tableName, DataStream<Row> dataStream, String[] fieldNames) {
+    private void createTemporaryView(String tableName, DataStream<Row> dataStream) {
         StreamTableEnvironment tableEnv = flinkEnv.getTableEnv();
-        Table table = tableEnv.fromDataStream(dataStream);
-        for (int i = 0; i < fieldNames.length; i++) {
-            table = table.as(fieldNames[i]);
+        tableEnv.createTemporaryView(tableName, dataStream);
+    }
+
+    private void registerDatasource(FlinkStreamSource source) throws Exception {
+        Config conf = source.getConfig();
+        if (conf.has(OUTPUT_TABLE)) {
+            source.getData(flinkEnv);
+        } else {
+            throw new ConfigRuntimeException(
+                    "Plugin[" + source.getClass().getName() + "] must be registered as dataset/table, please set \"result_table_name\" config");
         }
-        tableEnv.createTemporaryView(tableName, table);
+    }
+
+    private void registerTransformTempView(FlinkStreamTransform transform, DataStream<Row> ds) {
+        Config config = transform.getConfig();
+        if (config.has(OUTPUT_TABLE)) {
+            String tableName = config.getString(OUTPUT_TABLE);
+            createTemporaryView(tableName, ds);
+        }
     }
 }

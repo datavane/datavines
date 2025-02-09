@@ -16,6 +16,13 @@
  */
 package io.datavines.engine.flink.config;
 
+import io.datavines.common.utils.StringUtils;
+import io.datavines.metric.api.ColumnInfo;
+import io.datavines.metric.api.MetricConstants;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class FlinkSinkSqlBuilder {
 
     private FlinkSinkSqlBuilder() {
@@ -23,40 +30,65 @@ public class FlinkSinkSqlBuilder {
     }
 
     public static String getActualValueSql() {
-        return "select\n" +
-                "  '${job_execution_id}' as job_execution_id,\n" +
-                "  '${metric_unique_key}' as metric_unique_key,\n" +
-                "  '${unique_code}' as unique_code,\n" +
-                "  ${actual_value} as actual_value,\n" +
-                "  cast(null as string) as expected_value,\n" +
-                "  cast(null as string) as operator,\n" +
-                "  cast(null as string) as threshold,\n" +
-                "  cast(null as string) as check_type,\n" +
-                "  CURRENT_TIMESTAMP as create_time,\n" +
-                "  CURRENT_TIMESTAMP as update_time\n" +
-                "from ${table_name}";
+
+        List<String> columnList = new ArrayList<>();
+        for (ColumnInfo columnInfo : MetricConstants.ACTUAL_COLUMN_LIST) {
+            if (columnInfo.isNeedSingleQuotation()) {
+                columnList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getParameterName()+"}") + " as " + columnInfo.getName());
+            } else {
+                columnList.add("${"+columnInfo.getParameterName()+"}" + " as " + columnInfo.getName());
+            }
+        }
+
+        return "select " + String.join(", ", columnList) + " from ${actual_table}";
+    }
+
+    private static String getBasicSql() {
+        List<String> columnList = new ArrayList<>();
+        for (ColumnInfo columnInfo : MetricConstants.RESULT_COLUMN_LIST) {
+
+            if (columnInfo.isNeedSingleQuotation()) {
+                columnList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getParameterName()+"}") + " as " + columnInfo.getName());
+            } else {
+                columnList.add("${"+columnInfo.getParameterName()+"}" + " as " + columnInfo.getName());
+            }
+
+        }
+
+        return "select " + String.join(", ", columnList);
     }
 
     public static String getDefaultSinkSql() {
-        return "select\n" +
-                "  '${job_execution_id}' as job_execution_id,\n" +
-                "  '${metric_unique_key}' as metric_unique_key,\n" +
-                "  '${unique_code}' as unique_code,\n" +
-                "  CASE WHEN ${actual_value} IS NULL THEN NULL ELSE ${actual_value} END as actual_value,\n" +
-                "  CASE WHEN ${expected_value} IS NULL THEN NULL ELSE ${expected_value} END as expected_value,\n" +
-                "  '${metric_type}' as metric_type,\n" +
-                "  '${metric_name}' as metric_name,\n" +
-                "  '${metric_dimension}' as metric_dimension,\n" +
-                "  '${database_name}' as database_name,\n" +
-                "  '${table_name}' as table_name,\n" +
-                "  '${column_name}' as column_name,\n" +
-                "  '${operator}' as operator,\n" +
-                "  '${threshold}' as threshold,\n" +
-                "  '${expected_type}' as expected_type,\n" +
-                "  '${result_formula}' as result_formula,\n" +
-                "  CASE WHEN ${actual_value} IS NULL THEN '${default_state}' ELSE NULL END as state,\n" +
-                "  CURRENT_TIMESTAMP as create_time,\n" +
-                "  CURRENT_TIMESTAMP as update_time\n" +
-                "from ${table_name} full join ${expected_table}";
+        return getBasicSql() + " from ${actual_table} cross join ${expected_table}";
+    }
+
+    public static String getMultiTableComparisonSinkSql() {
+        return getBasicSql()
+                + " from ( ${actual_execute_sql} ) tmp1"
+                + " cross join ( ${expected_execute_sql} ) tmp2";
+    }
+
+    public static String getProfileValueSql() {
+
+        List<String> columnList = new ArrayList<>();
+        List<String> columnValueList = new ArrayList<>();
+        for (ColumnInfo columnInfo : MetricConstants.PROFILE_COLUMN_LIST) {
+
+            columnList.add("`"+columnInfo.getName()+"`");
+
+            if ("actual_value".equals(columnInfo.getName())) {
+                columnValueList.add("?");
+            } else {
+                if (columnInfo.isNeedSingleQuotation()) {
+                    columnValueList.add(StringUtils.wrapperSingleQuotes("${"+columnInfo.getParameterName()+"}"));
+                } else {
+                    columnValueList.add("${"+columnInfo.getName()+"}");
+                }
+            }
+        }
+
+        return "INSERT INTO dv_catalog_entity_profile ("
+                + String.join(", ", columnList)+") VALUES ("
+                + String.join(", ", columnValueList)+ ") ON DUPLICATE KEY UPDATE actual_value = VALUES(actual_value), actual_value_type='${actual_value_type}',update_time=${update_time}";
     }
 }

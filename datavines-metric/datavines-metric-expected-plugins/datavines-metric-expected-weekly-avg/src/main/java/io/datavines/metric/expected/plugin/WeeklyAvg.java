@@ -46,7 +46,10 @@ public class WeeklyAvg extends AbstractExpectedValue {
         String engineType = inputParameter.get("engine_type");
         switch (engineType){
             case "spark":
+            case "livy":
                 return getConnectorFactory("spark").getMetricScript().weeklyAvg(uniqueKey);
+            case "flink":
+                return getConnectorFactory("flink").getMetricScript().weeklyAvg(uniqueKey);
             case "local":
                 return getConnectorFactory(inputParameter).getMetricScript().weeklyAvg(uniqueKey);
             default:

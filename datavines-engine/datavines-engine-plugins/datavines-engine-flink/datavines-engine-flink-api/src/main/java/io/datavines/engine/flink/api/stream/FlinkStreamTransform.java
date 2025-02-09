@@ -17,9 +17,12 @@
 package io.datavines.engine.flink.api.stream;
 
 import io.datavines.engine.api.component.Component;
+import io.datavines.engine.flink.api.entity.FLinkColumnInfo;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.types.Row;
 import io.datavines.engine.flink.api.FlinkRuntimeEnvironment;
+
+import java.util.List;
 
 public interface FlinkStreamTransform extends Component {
     
@@ -31,10 +34,6 @@ public interface FlinkStreamTransform extends Component {
     /**
      * 获取输出Schema
      */
-    String[] getOutputFieldNames();
-    
-    /**
-     * 获取输出数据类型
-     */
-    Class<?>[] getOutputFieldTypes();
+    List<FLinkColumnInfo> getOutputColumns();
+
 }

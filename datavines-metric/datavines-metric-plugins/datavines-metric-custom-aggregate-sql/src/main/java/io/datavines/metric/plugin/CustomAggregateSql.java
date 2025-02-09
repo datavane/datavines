@@ -39,12 +39,12 @@ public class CustomAggregateSql implements SqlMetric {
     private final HashMap<String,ConfigItem> configMap = new HashMap<>();
 
     public CustomAggregateSql() {
-        configMap.put("table",new ConfigItem("table", "表名", "table"));
+//        configMap.put("database",new ConfigItem("table", "表名", "table"));
         configMap.put("actual_aggregate_sql", new ConfigItem("actual_aggregate_sql","自定义聚合SQL","actual_aggregate_sql"));
-        configMap.put("filter",new ConfigItem("filter", "过滤条件", "filter"));
+//        configMap.put("filter", new ConfigItem("filter", "过滤条件", "filter"));
 
         requiredOptions.add("actual_aggregate_sql");
-        requiredOptions.add("table");
+//        requiredOptions.add("table");
     }
 
     @Override
@@ -109,5 +109,10 @@ public class CustomAggregateSql implements SqlMetric {
     @Override
     public List<DataVinesDataType> suitableType() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public boolean isCustomSql() {
+        return true;
     }
 }

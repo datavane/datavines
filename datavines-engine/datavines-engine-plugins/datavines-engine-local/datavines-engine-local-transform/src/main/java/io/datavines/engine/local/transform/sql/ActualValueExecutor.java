@@ -19,7 +19,7 @@ package io.datavines.engine.local.transform.sql;
 import io.datavines.common.config.Config;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.connector.api.entity.ResultList;
-import io.datavines.connector.plugin.utils.SqlUtils;
+import io.datavines.connector.api.utils.SqlUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.sql.Connection;

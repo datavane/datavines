@@ -25,7 +25,7 @@ import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalTransform;
 import io.datavines.connector.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.LoggerFactory;
-import io.datavines.connector.plugin.utils.SqlUtils;
+import io.datavines.connector.api.utils.SqlUtils;
 import org.slf4j.Logger;
 
 import java.sql.Connection;

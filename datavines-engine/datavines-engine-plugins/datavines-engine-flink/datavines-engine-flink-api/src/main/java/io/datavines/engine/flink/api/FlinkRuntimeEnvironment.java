@@ -22,42 +22,58 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.api.env.Execution;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.flink.api.stream.FlinkStreamExecution;
+import lombok.Getter;
+import org.apache.flink.api.common.RuntimeExecutionMode;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.table.api.bridge.java.StreamTableEnvironment;
 
+import static io.datavines.common.ConfigConstants.BATCH;
+import static io.datavines.engine.api.EngineConstants.TYPE;
+
 public class FlinkRuntimeEnvironment implements RuntimeEnvironment {
 
+    @Getter
     private StreamExecutionEnvironment env;
+
+    @Getter
     private StreamTableEnvironment tableEnv;
+
     private Config config;
-    private FlinkStreamExecution execution;
 
     public FlinkRuntimeEnvironment() {
         this.config = new Config();
-        this.execution = new FlinkStreamExecution(this);
     }
 
+    @Override
     public void setConfig(Config config) {
         if (config != null) {
             this.config = config;
         }
     }
 
+    @Override
     public Config getConfig() {
         return config;
     }
 
+    @Override
     public CheckResult checkConfig() {
         return new CheckResult(true, "Configuration check passed");
     }
 
+    @Override
     public Execution getExecution() {
-        return execution;
+        return new FlinkStreamExecution(this);
     }
 
+    @Override
     public void prepare() {
         try {
             env = StreamExecutionEnvironment.getExecutionEnvironment();
+            if (BATCH.equalsIgnoreCase(config.getString(TYPE))) {
+                env.setRuntimeMode(RuntimeExecutionMode.BATCH);
+            }
+
             tableEnv = StreamTableEnvironment.create(env);
         } catch (Exception e) {
             throw new DataVinesException("Failed to prepare Flink environment", e);
@@ -73,17 +89,5 @@ public class FlinkRuntimeEnvironment implements RuntimeEnvironment {
         } catch (Exception e) {
             throw new DataVinesException("Failed to stop Flink environment", e);
         }
-    }
-
-    public String getType() {
-        return "flink";
-    }
-
-    public StreamExecutionEnvironment getEnv() {
-        return env;
-    }
-
-    public StreamTableEnvironment getTableEnv() {
-        return tableEnv;
     }
 }

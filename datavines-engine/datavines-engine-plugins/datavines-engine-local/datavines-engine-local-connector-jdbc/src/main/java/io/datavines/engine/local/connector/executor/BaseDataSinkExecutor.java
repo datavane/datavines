@@ -22,7 +22,7 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.common.utils.ThreadUtils;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.utils.LoggerFactory;
-import io.datavines.connector.plugin.utils.SqlUtils;
+import io.datavines.connector.api.utils.SqlUtils;
 
 import org.slf4j.Logger;
 

@@ -42,6 +42,7 @@ const Index = ({ form, detail }: InnerProps) => {
                 parallelism: parameter.parallelism ?? 1,
                 jobName: parameter.jobName ?? '',
                 yarnQueue: parameter.yarnQueue ?? '',
+                flinkOthers: parameter.flinkOthers ?? '',
                 driverCores: parameter.driverCores ?? 1,
                 driverMemory: parameter.driverMemory ?? '512M',
                 numExecutors: parameter.numExecutors ?? 2,
@@ -142,10 +143,10 @@ const Index = ({ form, detail }: InnerProps) => {
                 label={intl.formatMessage({ id: 'dv_deploy_mode' })}
                 name="deployMode"
                 rules={[...requiredRule]}
-                initialValue="local"
+                initialValue="yarn-application"
             >
                 <Radio.Group>
-                    <Radio value="local">{intl.formatMessage({ id: 'dv_flink_deploy_mode_local' })}</Radio>
+                    {/*<Radio value="local">{intl.formatMessage({ id: 'dv_flink_deploy_mode_local' })}</Radio>*/}
                     <Radio value="yarn-session">{intl.formatMessage({ id: 'dv_flink_deploy_mode_yarn_session' })}</Radio>
                     <Radio value="yarn-per-job">{intl.formatMessage({ id: 'dv_flink_deploy_mode_yarn_per_job' })}</Radio>
                     <Radio value="yarn-application">{intl.formatMessage({ id: 'dv_flink_deploy_mode_yarn_application' })}</Radio>
@@ -197,7 +198,6 @@ const Index = ({ form, detail }: InnerProps) => {
                         {...layoutActuatorItem}
                         label={intl.formatMessage({ id: 'dv_metric_actuator_job_name' })}
                         name="jobName"
-                        rules={[...requiredRule]}
                     >
                         <Input autoComplete="off" allowClear />
                     </Form.Item>
@@ -216,8 +216,7 @@ const Index = ({ form, detail }: InnerProps) => {
             <Form.Item
                 {...layoutActuatorLineItem}
                 label={intl.formatMessage({ id: 'dv_metric_actuator_executor_options' })}
-                name="others"
-                rules={[...requiredRule]}
+                name="flinkOthers"
             >
                 <Input.TextArea autoComplete="off" rows={3} />
             </Form.Item>

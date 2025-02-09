@@ -322,6 +322,12 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-flink-config</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-local-executor</artifactId>
             <version>${project.version}</version>
             <exclusions>

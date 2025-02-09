@@ -17,24 +17,19 @@
 package io.datavines.engine.flink.api.stream;
 
 import io.datavines.engine.api.component.Component;
+import io.datavines.engine.flink.api.entity.FLinkColumnInfo;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.types.Row;
 import io.datavines.engine.flink.api.FlinkRuntimeEnvironment;
+
+import java.util.List;
 
 public interface FlinkStreamSource extends Component {
     
     /**
      * 获取数据流
      */
-    DataStream<Row> getData(FlinkRuntimeEnvironment environment);
-    
-    /**
-     * 获取数据Schema
-     */
-    String[] getFieldNames();
-    
-    /**
-     * 获取数据类型
-     */
-    Class<?>[] getFieldTypes();
+    DataStream<Row> getData(FlinkRuntimeEnvironment environment) throws Exception;
+
+    List<FLinkColumnInfo> getColumns();
 }

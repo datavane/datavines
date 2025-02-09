@@ -126,12 +126,6 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                     metricInputParameter.put(TABLE, outputTable);
                     metricInputParameter.put(TABLE_ALIAS, tableAlias);
                     metricInputParameter.put(COLUMN, metricInputParameter.get(COLUMN));
-                    metricInputParameter.put(REGEX_KEY, "regexp(${column}, ${regex})");
-                    metricInputParameter.put(NOT_REGEX_KEY, "!regexp(${column}, ${regex})");
-                    metricInputParameter.put(STRING_TYPE, "string");
-                    metricInputParameter.put(IF_FUNCTION_KEY, "if");
-                    metricInputParameter.put(LIMIT_TOP_50_KEY, " limit 50");
-                    metricInputParameter.put(LENGTH_KEY, "length(${column})");
                     metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                     metricInputParameter.put(ENGINE_TYPE, SPARK);
 

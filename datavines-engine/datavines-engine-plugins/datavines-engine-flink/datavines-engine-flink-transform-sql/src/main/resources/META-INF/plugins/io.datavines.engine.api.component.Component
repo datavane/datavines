@@ -1,0 +1,1 @@
+flink-batch-sql-transform=io.datavines.engine.flink.transform.sql.SqlTransform

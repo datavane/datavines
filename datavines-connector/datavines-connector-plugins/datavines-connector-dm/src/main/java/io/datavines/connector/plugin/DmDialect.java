@@ -31,4 +31,9 @@ public class DmDialect extends JdbcDialect{
     public String quoteIdentifier(String entity) {
         return "\"" + entity + "\"";
     }
+
+    @Override
+    public String getQuoteIdentifier() {
+        return "\"";
+    }
 }
