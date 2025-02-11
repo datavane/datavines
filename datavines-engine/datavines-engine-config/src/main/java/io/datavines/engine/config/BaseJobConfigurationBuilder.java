@@ -22,11 +22,7 @@ import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.*;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.utils.CommonPropertyUtils;
-import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.utils.ParameterUtils;
-import io.datavines.common.utils.StringUtils;
-import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.common.utils.*;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
@@ -35,12 +31,15 @@ import io.datavines.spi.PluginLoader;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.common.CommonConstants.*;
 import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.TABLE;
 import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public abstract class BaseJobConfigurationBuilder implements JobConfigurationBuilder {
@@ -58,6 +57,15 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
     @Override
     public void init(Map<String, String> inputParameter, JobExecutionInfo jobExecutionInfo) {
         this.inputParameter = inputParameter;
+        LocalDate nowDate = LocalDate.now();
+        this.inputParameter.put(WEEK_START_DAY, DateUtils.format(DateUtils.getWeekStart(nowDate), DateUtils.YYYY_MM_DD));
+        this.inputParameter.put(WEEK_END_DAY, DateUtils.format(DateUtils.getWeekEnd(nowDate), DateUtils.YYYY_MM_DD));
+        this.inputParameter.put(MONTH_START_DAY, DateUtils.format(DateUtils.getMonthStart(nowDate), DateUtils.YYYY_MM_DD));
+        this.inputParameter.put(MONTH_END_DAY, DateUtils.format(DateUtils.getMonthEnd(nowDate), DateUtils.YYYY_MM_DD));
+        this.inputParameter.put(DAY_START_TIME, DateUtils.format(DateUtils.getStartOfDay(nowDate), DateUtils.YYYY_MM_DD_HH_MM_SS));
+        this.inputParameter.put(DAY_END_TIME, DateUtils.format(DateUtils.getEndOfDay(nowDate), DateUtils.YYYY_MM_DD_HH_MM_SS));
+        this.inputParameter.put(DAY_AFTER_7_END_TIME, DateUtils.format(DateUtils.getEndOfDayAfterNDays(nowDate,7), DateUtils.YYYY_MM_DD_HH_MM_SS));
+        this.inputParameter.put(DAY_AFTER_30_END_TIME, DateUtils.format(DateUtils.getEndOfDayAfterNDays(nowDate,30), DateUtils.YYYY_MM_DD_HH_MM_SS));
         this.inputParameter.put(COLUMN, "");
         this.jobExecutionInfo = jobExecutionInfo;
         this.jobExecutionParameter = jobExecutionInfo.getJobExecutionParameter();

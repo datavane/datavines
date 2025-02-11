@@ -39,36 +39,36 @@ public class FlinkMetricScript extends JdbcMetricScript {
     public String dailyAvg(String uniqueKey) {
         return "SELECT ROUND(AVG(actual_value), 2) AS expected_value_" + uniqueKey +
                 " FROM md_dv_actual_values" +
-                " WHERE data_time >= TIMESTAMP ${data_time}" +
-                " AND data_time < TIMESTAMP ${data_time} + INTERVAL '1' DAY" +
+                " WHERE data_time >= '${day_start_time}'" +
+                " AND data_time < '${day_end_time}'" +
                 " AND unique_code = ${unique_code}";
     }
 
     @Override
     public String last7DayAvg(String uniqueKey) {
         return "select round(avg(actual_value),2) as expected_value_" + uniqueKey +
-                " from dv_actual_values where data_time >= TIMESTAMP ${data_time} + INTERVAL '-7' DAY" +
-                " and data_time < TIMESTAMP ${data_time} + INTERVAL '1' DAY and unique_code = ${unique_code}";
+                " from md_dv_actual_values where data_time >= '${day_start_time}'" +
+                " and data_time < '${day_after_7_end_time}' and unique_code = ${unique_code}";
     }
 
     @Override
     public String last30DayAvg(String uniqueKey) {
         return "select round(avg(actual_value),2) as expected_value_" + uniqueKey +
-                " from dv_actual_values where data_time >= TIMESTAMP ${data_time} + INTERVAL '-30' DAY" +
-                " and data_time < TIMESTAMP ${data_time} + INTERVAL '1' DAY and unique_code = ${unique_code}";
+                " from md_dv_actual_values where data_time >= '${day_start_time}'" +
+                " and data_time < '${day_after_30_end_time}' and unique_code = ${unique_code}";
     }
 
     @Override
     public String monthlyAvg(String uniqueKey) {
         return "select round(avg(actual_value),2) as expected_value_" + uniqueKey +
-                " from dv_actual_values where data_time >= DATE_TRUNC('MONTH', TIMESTAMP ${data_time})" +
-                " and data_time < DATE_TRUNC('MONTH', TIMESTAMP ${data_time}) + INTERVAL '1' MONTH - INTERVAL '1' DAY and unique_code = ${unique_code}";
+                " from md_dv_actual_values where data_time >= '${month_start_day} 00:00:00'" +
+                " and data_time <= '${month_end_day} 23:59:59' and unique_code = ${unique_code}";
     }
 
     @Override
     public String weeklyAvg(String uniqueKey) {
         return "select round(avg(actual_value),2) as expected_value_" + uniqueKey +
-                " from dv_actual_values where data_time >= DATE_TRUNC('WEEK', TIMESTAMP ${data_time})" +
-                " and data_time < DATE_TRUNC('WEEK', TIMESTAMP ${data_time}) + INTERVAL '1' WEEK - INTERVAL '1' DAY and unique_code = ${unique_code}";
+                " from md_dv_actual_values where data_time >= '${week_start_day} 00:00:00'"+
+                " and data_time <= '${week_end_day} 23:59:59' and unique_code = ${unique_code}";
     }
 }

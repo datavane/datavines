@@ -148,7 +148,7 @@ const Index = ({ form, detail }: InnerProps) => {
                 <Radio.Group>
                     {/*<Radio value="local">{intl.formatMessage({ id: 'dv_flink_deploy_mode_local' })}</Radio>*/}
                     <Radio value="yarn-session">{intl.formatMessage({ id: 'dv_flink_deploy_mode_yarn_session' })}</Radio>
-                    <Radio value="yarn-per-job">{intl.formatMessage({ id: 'dv_flink_deploy_mode_yarn_per_job' })}</Radio>
+                    {/*<Radio value="yarn-per-job">{intl.formatMessage({ id: 'dv_flink_deploy_mode_yarn_per_job' })}</Radio>*/}
                     <Radio value="yarn-application">{intl.formatMessage({ id: 'dv_flink_deploy_mode_yarn_application' })}</Radio>
                 </Radio.Group>
             </Form.Item>

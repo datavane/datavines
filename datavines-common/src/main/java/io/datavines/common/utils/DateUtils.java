@@ -16,10 +16,9 @@
  */
 package io.datavines.common.utils;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
@@ -43,6 +42,7 @@ public class DateUtils {
     public static final String YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 
     public static final String YYYYMMDD = "yyyyMMdd";
+
     public static final String YYYY_MM_DD = "yyyy-MM-dd";
 
     /**
@@ -108,6 +108,17 @@ public class DateUtils {
     }
 
     /**
+     * get the formatted date string
+     *
+     * @param localDate local data
+     * @param format        yyyy-MM-dd HH:mm:ss
+     * @return date string
+     */
+    public static String format(LocalDate localDate, String format) {
+        return localDate.format(DateTimeFormatter.ofPattern(format));
+    }
+
+    /**
      * convert time to yyyy-MM-dd HH:mm:ss format
      *
      * @param date date
@@ -116,7 +127,6 @@ public class DateUtils {
     public static String dateToString(Date date) {
         return format(date, YYYY_MM_DD_HH_MM_SS);
     }
-
 
     /**
      * convert string to date and time
@@ -134,7 +144,6 @@ public class DateUtils {
         }
         return null;
     }
-
 
     /**
      * convert date str to yyyy-MM-dd HH:mm:ss format
@@ -171,7 +180,6 @@ public class DateUtils {
         return Math.abs(d1.getTime() - d2.getTime());
     }
 
-
     /**
      * get hours between two dates
      *
@@ -197,7 +205,6 @@ public class DateUtils {
     public static long diffMin(Date d1, Date d2) {
         return (long) Math.ceil(differSec(d1, d2) / 60.0);
     }
-
 
     /**
      * get the date of the specified date in the days before and after
@@ -248,7 +255,6 @@ public class DateUtils {
         long seconds = (ms % (1000 * 60)) / 1000;
 
         return String.format("%02d %02d:%02d:%02d", days, hours, minutes, seconds);
-
     }
 
     /**
@@ -302,6 +308,95 @@ public class DateUtils {
     }
 
     /**
+     * get last day of month
+     *
+     * @param  date date
+     * @return  get last day of month
+     */
+    public static Date getLastDayOfMonth(Date date) {
+        Calendar cal = Calendar.getInstance();
+
+        cal.setTime(date);
+
+        cal.add(Calendar.MONTH, 1);
+        cal.set(Calendar.DAY_OF_MONTH, 1);
+        cal.add(Calendar.DAY_OF_MONTH, -1);
+
+        return cal.getTime();
+    }
+
+    /**
+     * get first day of week
+     *
+     * @param date date
+     * @return first day of week
+     */
+    public static LocalDate getWeekStart(LocalDate date) {
+        return date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+    }
+
+    /**
+     * get last day of week
+     * @param date
+     * @return
+     */
+    public static LocalDate getWeekEnd(LocalDate date) {
+        LocalDate startOfWeek = date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        return startOfWeek.with(TemporalAdjusters.nextOrSame(DayOfWeek.SUNDAY));
+    }
+
+    /**
+     * get the first day of the month
+     *
+     * @param date date
+     * @return the first day of the month
+     */
+    public static LocalDate getMonthStart(LocalDate date) {
+        return date.withDayOfMonth(1);
+    }
+
+    /**
+     * get the last day of the month
+     *
+     * @param date date
+     * @return the last day of the month
+     */
+    public static LocalDate getMonthEnd(LocalDate date) {
+        return date.with(TemporalAdjusters.lastDayOfMonth());
+    }
+
+    /**
+     * get the first time of the day
+     *
+     * @param date date
+     * @return the first day of the year
+     */
+    public static LocalDateTime getStartOfDay(LocalDate date) {
+        return date.atStartOfDay();
+    }
+
+    /**
+     * get the last time of the day
+     *
+     * @param date date
+     * @return the last day of the year
+     */
+    public static LocalDateTime getEndOfDay(LocalDate date) {
+        return date.atTime(LocalTime.MAX);
+    }
+
+    /**
+     * get the first time of the day after n days
+     *
+     * @param date date
+     * @param n n
+     * @return the first day of the year after n days
+     */
+    public static LocalDateTime getEndOfDayAfterNDays(LocalDate date, int n) {
+        return date.plusDays(n).atTime(LocalTime.MAX);
+    }
+
+    /**
      * get some hour of day
      *
      * @param date date
@@ -316,24 +411,6 @@ public class DateUtils {
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
-
-        return cal.getTime();
-    }
-
-    /**
-     * get last day of month
-     *
-     * @param  date date
-     * @return  get last day of month
-     */
-    public static Date getLastDayOfMonth(Date date) {
-        Calendar cal = Calendar.getInstance();
-
-        cal.setTime(date);
-
-        cal.add(Calendar.MONTH, 1);
-        cal.set(Calendar.DAY_OF_MONTH, 1);
-        cal.add(Calendar.DAY_OF_MONTH, -1);
 
         return cal.getTime();
     }
