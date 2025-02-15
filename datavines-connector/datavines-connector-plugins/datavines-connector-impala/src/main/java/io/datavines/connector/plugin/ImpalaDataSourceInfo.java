@@ -58,10 +58,4 @@ public class ImpalaDataSourceInfo extends BaseJdbcDataSourceInfo {
         return ";";
     }
 
-    @Override
-    public String getJdbcUrl() {
-        String jdbcUrl = super.getJdbcUrl();
-        return jdbcUrl + ";auth=noSasl";
-    }
-
 }

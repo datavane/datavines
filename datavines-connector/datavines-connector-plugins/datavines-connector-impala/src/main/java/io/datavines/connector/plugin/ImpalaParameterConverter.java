@@ -40,7 +40,6 @@ public class ImpalaParameterConverter extends JdbcParameterConverter {
             address.append(";").append(properties);
         }
 
-        address.append(";auth=noSasl");
         return address.toString();
     }
 }
