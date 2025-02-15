@@ -57,5 +57,11 @@
             <artifactId>flink-table-planner_${scala.binary.version}</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 </project>

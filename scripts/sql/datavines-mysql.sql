@@ -885,6 +885,7 @@ INSERT INTO `dv_config` VALUES ('27', '-1', 'spark.engine.parameter.driver.memor
 INSERT INTO `dv_config` VALUES ('28', '-1', 'spark.engine.parameter.executor.cores', '1', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
 INSERT INTO `dv_config` VALUES ('29', '-1', 'spark.engine.parameter.executor.memory', '512M', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
 INSERT INTO `dv_config` VALUES ('30', '-1', 'datavines.fqdn', 'http://127.0.0.1:5600', '1', '1', '2024-05-21 15:15:38', '1', '2024-05-21 15:15:38');
+INSERT INTO `dv_config` VALUES ('31', '-1', 'data.quality.flink.jar.name', '/libs/datavines-engine-flink-core-1.0.0-SNAPSHOT.jar', '1', '1', '2025-02-02 11:43:04', '1', '2025-02-02 11:43:04');
 
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0');
 INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `update_by`) VALUES ('1', "admin\'s default", '1', '1');

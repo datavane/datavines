@@ -17,6 +17,7 @@
 package io.datavines.engine.flink.jdbc.source;
 
 import io.datavines.common.utils.StringUtils;
+import io.datavines.engine.common.utils.ParserUtils;
 import io.datavines.engine.flink.api.entity.FLinkColumnInfo;
 import io.datavines.engine.flink.jdbc.utils.FlinkTableUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -46,7 +47,7 @@ public class JdbcSource implements FlinkStreamSource {
     @Override
     public DataStream<Row> getData(FlinkRuntimeEnvironment environment) throws Exception {
         getRowTypeInfo(config.getString(URL), config.getString(USER), config.getString(PASSWORD), "select * from " + config.getString(TABLE));
-        String createTableSql = FlinkTableUtils.generateCreateTableStatement(config.getString(OUTPUT_TABLE), config.getString(TABLE), columns, config);
+        String createTableSql = FlinkTableUtils.generateCreateTableStatement(config.getString(DATABASE), config.getString(OUTPUT_TABLE), config.getString(TABLE), columns, config);
         log.info("source create table sql: {}", createTableSql);
         environment.getTableEnv().executeSql(createTableSql);
         return null;
@@ -56,7 +57,7 @@ public class JdbcSource implements FlinkStreamSource {
         Properties properties = new Properties();
         properties.setProperty(USER, user);
         if (!StringUtils.isEmptyOrNullStr(password)) {
-            properties.setProperty(PASSWORD, password);
+            properties.setProperty(PASSWORD, ParserUtils.decode(password));
         }
 
         String[] url2Array = jdbcUrl.split("\\?");

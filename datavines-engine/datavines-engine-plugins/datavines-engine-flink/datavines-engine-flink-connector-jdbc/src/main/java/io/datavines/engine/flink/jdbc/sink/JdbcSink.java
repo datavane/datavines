@@ -16,6 +16,9 @@
  */
 package io.datavines.engine.flink.jdbc.sink;
 
+import io.datavines.common.utils.StringUtils;
+import io.datavines.common.utils.ThreadUtils;
+import io.datavines.engine.common.utils.ParserUtils;
 import io.datavines.engine.flink.api.entity.FLinkColumnInfo;
 import io.datavines.engine.flink.jdbc.utils.FlinkTableUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -30,9 +33,14 @@ import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.flink.api.FlinkRuntimeEnvironment;
 import io.datavines.engine.flink.api.stream.FlinkStreamSink;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static io.datavines.common.ConfigConstants.*;
@@ -46,7 +54,7 @@ public class JdbcSink implements FlinkStreamSink {
     private final List<FLinkColumnInfo> columns = new ArrayList<>();
 
     @Override
-    public void output(DataStream<Row> dataStream, FlinkRuntimeEnvironment environment) {
+    public void output(DataStream<Row> dataStream, FlinkRuntimeEnvironment environment) throws Exception{
         String sql = config.getString(SQL).replace("\\n", " ").replaceAll("/", "");
         Table table = environment.getTableEnv().sqlQuery(sql);
         ResolvedSchema schema = table.getResolvedSchema();
@@ -56,9 +64,10 @@ public class JdbcSink implements FlinkStreamSink {
             columnInfo.setDataType(column.getDataType().getLogicalType().asSerializableString());
             columns.add(columnInfo);
         });
+
         checkTableNotExistAndCreate();
 
-        String createTableSql = FlinkTableUtils.generateCreateTableStatement(config.getString(OUTPUT_TABLE), config.getString(TABLE), columns, config);
+        String createTableSql = FlinkTableUtils.generateCreateTableStatement(config.getString(DATABASE), config.getString(OUTPUT_TABLE), config.getString(TABLE), columns, config);
         log.info("sink create table sql: {}", createTableSql);
         environment.getTableEnv().executeSql(createTableSql);
         table.executeInsert(config.getString(OUTPUT_TABLE));
@@ -101,8 +110,58 @@ public class JdbcSink implements FlinkStreamSink {
     public void prepare(RuntimeEnvironment env) throws Exception {
     }
 
-    private void checkTableNotExistAndCreate() {
-        // Check if the table exists
-        // If not, create the table
+    private void checkTableNotExistAndCreate() throws Exception {
+        String jdbcUrl = config.getString(URL);
+        String user = config.getString(USER);
+        String password = config.getString(PASSWORD);
+        String query = String.format("SELECT * FROM %s WHERE 1=0", config.getString(DATABASE) + "." + config.getString(TABLE));
+
+        Properties properties = new Properties();
+        properties.setProperty(USER, user);
+        if (!StringUtils.isEmptyOrNullStr(password)) {
+            properties.setProperty(PASSWORD, ParserUtils.decode(password));
+        }
+
+        String[] url2Array = jdbcUrl.split("\\?");
+        String url = url2Array[0];
+        if (url2Array.length > 1) {
+            String[] keyArray =  url2Array[1].split("&");
+            for (String prop : keyArray) {
+                String[] values = prop.split("=");
+                properties.setProperty(values[0], values[1]);
+            }
+        }
+
+        boolean tableExists = false;
+        Connection conn = DriverManager.getConnection(url, properties);
+        int retryTimes = 3;
+        while (retryTimes > 0 && !tableExists) {
+            if (conn != null) {
+                PreparedStatement statement = null;
+                try {
+                    statement = conn.prepareStatement(query);
+                    statement.setQueryTimeout(30000);
+                    statement.execute();
+                    tableExists = true;
+                } catch (SQLException e) {
+                    log.error("tableExists error : ", e);
+                    retryTimes--;
+                    ThreadUtils.sleep(2000);
+                } finally {
+                    if (statement != null) {
+                        try {
+                            statement.close();
+                        } catch (SQLException e){
+                            log.error("close statement error : ", e);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!tableExists) {
+            String createTableSql = FlinkTableUtils.generateCreateTableStatement(config.getString(DATABASE), config.getString(TABLE), columns);
+            conn.prepareStatement(createTableSql).execute();
+        }
     }
 }

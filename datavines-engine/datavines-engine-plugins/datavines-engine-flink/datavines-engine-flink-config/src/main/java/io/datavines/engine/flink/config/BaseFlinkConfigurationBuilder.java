@@ -117,13 +117,13 @@ public abstract class BaseFlinkConfigurationBuilder extends BaseJobConfiguration
                             String tableAlias = getTableAlias(metricInputParameter.get(DATABASE), metricInputParameter.get(SCHEMA), metricInputParameter.get(TABLE), "1");
                             connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                             connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
+                            connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
                             table2OutputTable.put(table, outputTable);
 
                             metricInputParameter.put(TABLE, outputTable);
                             metricInputParameter.put(TABLE_ALIAS, tableAlias);
                             metricInputParameter.put(COLUMN, metricInputParameter.get(COLUMN));
                             metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
-//                            metricInputParameter.put(ENGINE_TYPE, SPARK);
 
                             String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 
@@ -174,12 +174,12 @@ public abstract class BaseFlinkConfigurationBuilder extends BaseJobConfiguration
                         String tableAlias = getTableAlias(metricInputParameter.get(DATABASE), metricInputParameter.get(SCHEMA), metricInputParameter.get(TABLE), "1");
                         connectorParameterMap.put(OUTPUT_TABLE, outputTable);
                         connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
+                        connectorParameterMap.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
 
                         metricInputParameter.put(TABLE, outputTable);
                         metricInputParameter.put(TABLE_ALIAS, tableAlias);
                         metricInputParameter.put(COLUMN, metricInputParameter.get(COLUMN));
                         metricInputParameter.put(SRC_CONNECTOR_TYPE, connectorParameter.getType());
-//                        metricInputParameter.put(ENGINE_TYPE, SPARK);
 
                         String connectorUUID = connectorFactory.getConnectorParameterConverter().getConnectorUUID(connectorParameterMap);
 

@@ -26,7 +26,6 @@ public class HiveParameterConverter extends JdbcParameterConverter {
 
     @Override
     protected String getUrl(Map<String, Object> parameter) {
-
         StringBuilder address = new StringBuilder();
         address.append("jdbc:hive2://");
         Object port = parameter.get(PORT);

@@ -22,9 +22,6 @@ import org.apache.flink.types.Row;
 import io.datavines.engine.flink.api.FlinkRuntimeEnvironment;
 
 public interface FlinkStreamSink extends Component {
-    
-    /**
-     * 输出数据流
-     */
-    void output(DataStream<Row> dataStream, FlinkRuntimeEnvironment environment);
+
+    void output(DataStream<Row> dataStream, FlinkRuntimeEnvironment environment) throws Exception;
 }

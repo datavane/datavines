@@ -100,11 +100,11 @@ public interface Dialect {
     }
 
     default String getTableExistsQuery(String table) {
-        return String.format("SELECT * FROM %s WHERE 1=0", table);
+        return String.format("SELECT 1 FROM %s WHERE 1=0", table);
     }
 
     default String getSchemaQuery(String table) {
-        return String.format("SELECT * FROM %s WHERE 1=0", table);
+        return String.format("SELECT 1 FROM %s WHERE 1=0", table);
     }
 
     default String getCountQuery(String table) {
