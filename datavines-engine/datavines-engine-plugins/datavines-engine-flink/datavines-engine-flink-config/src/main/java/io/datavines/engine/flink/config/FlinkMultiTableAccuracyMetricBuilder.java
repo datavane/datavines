@@ -85,7 +85,7 @@ public class FlinkMultiTableAccuracyMetricBuilder extends BaseFlinkConfiguration
                     if (("expected_value_" + metricUniqueKey).equals(metricInputParameter.get(EXPECTED_VALUE))) {
                         metricInputParameter.put(EXPECTED_VALUE, "-1");
                     }
-                    taskSinkSql = taskSinkSql.replaceAll("full join \\$\\{expected_table}","");
+                    taskSinkSql = taskSinkSql.replaceAll("cross join \\$\\{expected_table}","");
                 } else {
                     metricInputParameter.put(EXPECTED_VALUE, "COALESCE(expected_value_" + metricUniqueKey + ", -1)");
                 }
