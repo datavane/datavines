@@ -36,6 +36,14 @@
             <artifactId>datavines-connector-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.apache.kerby</groupId>
+            <artifactId>kerb-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.kerby</groupId>
+            <artifactId>kerb-util</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.hive</groupId>

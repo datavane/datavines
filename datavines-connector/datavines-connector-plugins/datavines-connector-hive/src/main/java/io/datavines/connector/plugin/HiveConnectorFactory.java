@@ -49,4 +49,9 @@ public class HiveConnectorFactory extends AbstractJdbcConnectorFactory {
     public MetricScript getMetricScript() {
         return new HiveMetricScript();
     }
+
+    @Override
+    public DataSourceClient getDataSourceClient() {
+        return new HiveDataSourceClient();
+    }
 }

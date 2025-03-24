@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import io.datavines.common.ConfigConstants;
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 
 import java.util.Map;

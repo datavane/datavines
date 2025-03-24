@@ -16,6 +16,7 @@
  */
 package io.datavines.common.datasource.jdbc;
 
+import io.datavines.common.ConfigConstants;
 import io.datavines.common.utils.Md5Utils;
 import io.datavines.common.utils.StringUtils;
 import org.slf4j.Logger;
@@ -179,5 +180,18 @@ public abstract class BaseJdbcDataSourceInfo {
     private String getOrEmpty(String keyword) {
         return StringUtils.isNotEmpty(keyword)? keyword.trim() : "";
     }
+
+    public String getKeytabFile(){
+        return param.get(ConfigConstants.KEYTAB_FILE);
+    }
+
+    public String getKeytabPrincipal(){
+        return param.get(ConfigConstants.KEYTAB_PRINCIPAL);
+    }
+
+    public String getKrb5ConfFile(){
+        return param.get(ConfigConstants.KRB5_CONF);
+    }
+
 
 }

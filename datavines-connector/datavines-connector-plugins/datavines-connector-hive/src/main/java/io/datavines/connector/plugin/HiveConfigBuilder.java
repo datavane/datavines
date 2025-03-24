@@ -91,7 +91,7 @@ public class HiveConfigBuilder extends JdbcConfigBuilder {
     }
 
     private InputParam getKeytabFile(boolean isEn) {
-        return getInputParam("keytabFile",
+        return getInputParam("keytab_file",
                 isEn ? "keytab File Path" : "keytab 文件地址",
                 isEn ? "please enter keytab File Path" : "请填入 keytab 文件地址", 1,
                 null,
@@ -99,7 +99,7 @@ public class HiveConfigBuilder extends JdbcConfigBuilder {
     }
 
     private InputParam getKeytabPrincipal(boolean isEn) {
-        return getInputParam("keytabPrincipal",
+        return getInputParam("keytab_principal",
                 "keytab Principal",
                 isEn ? "please enter keytab Principal" : "请填入 keytab 文件对应的 Principal", 1,
                 null,
@@ -107,7 +107,7 @@ public class HiveConfigBuilder extends JdbcConfigBuilder {
     }
 
     private InputParam getKrb5Conf(boolean isEn) {
-        return getInputParam("krb5Conf",
+        return getInputParam("krb5_conf",
                 isEn ? "krb5.conf File Path" : "krb5.conf 文件地址",
                 isEn ? "please enter krb5.conf File Path" : "请填入 krb5.conf 文件地址", 1,
                 null,

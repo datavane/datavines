@@ -173,4 +173,10 @@ public class ConfigConstants {
     public static final String FILE_NAME = "file_name";
 
     public static final String FLINK = "flink";
+
+    public static final String KEYTAB_FILE = "keytab_file";
+
+    public static final String KEYTAB_PRINCIPAL = "keytab_principal";
+
+    public static final String KRB5_CONF = "krb5_conf";
 }
