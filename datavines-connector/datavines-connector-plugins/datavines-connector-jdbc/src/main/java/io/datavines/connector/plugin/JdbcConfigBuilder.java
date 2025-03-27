@@ -117,7 +117,7 @@ public class JdbcConfigBuilder implements ConfigBuilder {
         return getInputParam("password",
                 isEn ? "password" : "密码",
                 isEn ? "please enter password" : "请填入密码", 1,
-                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter password" : "请填入密码").build(),
+                Validate.newBuilder().setRequired(false).setMessage(isEn ? "please enter password" : "请填入密码").build(),
                 null);
     }
 

@@ -17,11 +17,12 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
+import io.datavines.common.param.ConnectorResponse;
+import io.datavines.common.param.TestConnectionRequestParam;
+import io.datavines.common.utils.JSONUtils;
 import io.datavines.connector.api.DataSourceClient;
 
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.Map;
 
 public class HiveConnector extends JdbcConnector {
@@ -48,6 +49,27 @@ public class HiveConnector extends JdbcConnector {
     @Override
     protected ResultSet getPrimaryKeys(DatabaseMetaData metaData, String catalog, String schema, String tableName) throws SQLException {
         return null;
+    }
+
+    @Override
+    public ConnectorResponse testConnect(TestConnectionRequestParam param) {
+        Map<String,String> paramMap = JSONUtils.toMap(param.getDataSourceParam());
+        BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(paramMap);
+        if(KerberosUtils.checkKerberosConfig(dataSourceInfo.getKeytabPrincipal(), dataSourceInfo.getKeytabFile(), dataSourceInfo.getKrb5ConfFile())){
+            KerberosUtils.initKerberos(dataSourceInfo.getKeytabPrincipal(), dataSourceInfo.getKeytabFile(), dataSourceInfo.getKrb5ConfFile());
+        }
+        dataSourceInfo.loadClass();
+        try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(), dataSourceInfo.getUser(), dataSourceInfo.getPassword())) {
+            boolean result = con != null;
+            if (result) {
+                con.close();
+            }
+            return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(result).build();
+        } catch (SQLException e) {
+            logger.error("test connect error, param is {} :", JSONUtils.toJsonString(param), e);
+        }
+
+        return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
     }
 
 }
