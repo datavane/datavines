@@ -49,13 +49,13 @@
         <commons.version>1.0.0</commons.version>
         <slf4j.api.version>1.7.25</slf4j.api.version>
         <slf4j.log4j12.version>1.7.25</slf4j.log4j12.version>
-        <jackson.version>2.12.5</jackson.version>
+        <jackson.version>2.15.2</jackson.version>
         <oshi.core.version>5.8.7</oshi.core.version>
         <commons.collections4.version>4.1</commons.collections4.version>
         <guava.version>20.0</guava.version>
         <java.version>1.8</java.version>
-        <scala.version>2.11.8</scala.version>
-        <scala.binary.version>2.11</scala.binary.version>
+        <scala.version>2.12.15</scala.version>
+        <scala.binary.version>2.12</scala.binary.version>
         <hadoop.version>2.7.5</hadoop.version>
         <mysql.version>8.4.0</mysql.version>
         <skip.pmd.check>false</skip.pmd.check>
@@ -113,6 +113,7 @@
         <javax.mail.version>1.6.2</javax.mail.version>
         <oracle.version>19.3.0.0</oracle.version>
         <orai18n.version>12.1.0.2.0</orai18n.version>
+        <mongo-spark-connector.version>10.4.1</mongo-spark-connector.version>
         <jmx_prometheus_javaagent.version>0.20.0</jmx_prometheus_javaagent.version>
         <kerb.version>2.0.1</kerb.version>
 

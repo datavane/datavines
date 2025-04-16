@@ -42,9 +42,9 @@
     </modules>
 
     <properties>
-        <scala.binary.version>2.11</scala.binary.version>
-        <spark.version>2.4.0</spark.version>
-        <jackson.version>2.9.0</jackson.version>
+        <scala.binary.version>2.12</scala.binary.version>
+        <spark.version>3.4.4</spark.version>
+        <jackson.version>2.14.2</jackson.version>
         <spark.scope>provided</spark.scope>
     </properties>
 
@@ -64,7 +64,7 @@
                 <scope>${spark.scope}</scope>
                 <exclusions>
                     <exclusion>
-                        <artifactId>jackson-module-scala_2.11</artifactId>
+                        <artifactId>jackson-module-scala_${scala.binary.version}</artifactId>
                         <groupId>com.fasterxml.jackson.module</groupId>
                     </exclusion>
                 </exclusions>
@@ -86,7 +86,7 @@
             <dependency>
                 <groupId>org.mongodb.spark</groupId>
                 <artifactId>mongo-spark-connector_${scala.binary.version}</artifactId>
-                <version>${spark.version}</version>
+                <version>10.2.0</version>
                 <scope>${spark.scope}</scope>
             </dependency>
 
@@ -94,24 +94,6 @@
                 <groupId>org.apache.spark</groupId>
                 <artifactId>spark-hive_${scala.binary.version}</artifactId>
                 <version>${spark.version}</version>
-                <exclusions>
-                    <exclusion>
-                        <groupId>commons-httpclient</groupId>
-                        <artifactId>commons-httpclient</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.apache.httpcomponents</groupId>
-                        <artifactId>httpclient</artifactId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jackson-core-asl</artifactId>
-                        <groupId>org.codehaus.jackson</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jackson-mapper-asl</artifactId>
-                        <groupId>org.codehaus.jackson</groupId>
-                    </exclusion>
-                </exclusions>
                 <scope>${spark.scope}</scope>
             </dependency>
         </dependencies>

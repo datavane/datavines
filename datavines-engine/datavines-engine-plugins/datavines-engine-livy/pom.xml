@@ -34,9 +34,9 @@
     </modules>
 
     <properties>
-        <scala.binary.version>2.11</scala.binary.version>
-        <spark.version>2.4.0</spark.version>
-        <jackson.version>2.9.0</jackson.version>
+        <scala.binary.version>2.12</scala.binary.version>
+        <spark.version>3.4.4</spark.version>
+        <jackson.version>2.14.2</jackson.version>
         <spark.scope>provided</spark.scope>
     </properties>
 

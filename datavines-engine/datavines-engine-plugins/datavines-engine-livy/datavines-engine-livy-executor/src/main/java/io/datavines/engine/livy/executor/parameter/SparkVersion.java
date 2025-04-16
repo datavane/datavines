@@ -19,11 +19,9 @@ package io.datavines.engine.livy.executor.parameter;
 public enum SparkVersion {
 
     /**
-     * 0 SPARK1
-     * 1 SPARK2
+     * 0 SPARK3
      */
-    SPARK2(0, "SPARK2"),
-    SPARK3(1, "SPARK3");
+    SPARK3(0, "SPARK3");
 
     SparkVersion(int code, String description) {
         this.code = code;

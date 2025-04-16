@@ -70,7 +70,7 @@ The platform is based on plug-in design, and the following modules support user-
 
 - **Data Source**: `MySQL`, `Impala`, `StarRocks`, `Doris`, `Presto`, `Trino`, `ClickHouse`, `PostgreSQL` are already supported
 - **Check Rules**: 27 check rules such as built-in null value check, non-null check, enumeration check, etc.
-- **Job Execution Engine**: Two execution engines `Spark` and `Local` have been supported. The `Spark` engine currently only supports the `Spark2.4` version, and the `Local` engine is a local execution engine developed based on `JDBC`, without relying on other execution engines.
+- **Job Execution Engine**: Two execution engines `Spark` and `Local` have been supported. The `Spark` engine currently supports the `Spark3.4.x` version, and the `Local` engine is a local execution engine developed based on `JDBC`, without relying on other execution engines.
 - **Alert Channel**: Supported **Email**
 - **Error Data Storage**: `MySQL` and **local files** are already supported (only `Local` execution engine is supported)
 - **Registry**: Already supports `MySQL`, `PostgreSQL` and `ZooKeeper`

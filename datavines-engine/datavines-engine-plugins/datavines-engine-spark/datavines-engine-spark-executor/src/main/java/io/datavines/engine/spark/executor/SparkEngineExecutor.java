@@ -37,13 +37,14 @@ import io.datavines.common.utils.LoggerUtils;
 import io.datavines.engine.executor.core.executor.ShellCommandProcess;
 import io.datavines.engine.spark.executor.parameter.SparkArgsUtils;
 import io.datavines.engine.spark.executor.parameter.SparkParameters;
+import io.datavines.engine.spark.executor.parameter.SparkVersion;
 
 public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
 
     /**
-     * spark2 command
+     * spark command
      */
-    private static final String SPARK2_COMMAND = "${SPARK_HOME2}/bin/spark-submit";
+    private static final String SPARK_COMMAND = "${SPARK_HOME}/bin/spark-submit";
 
     private Configurations configurations;
 
@@ -64,7 +65,7 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
     public void execute() throws Exception {
         try {
             this.processResult = shellCommandProcess.run(buildCommand());
-            logger.info("process result: "+ JSONUtils.toJsonString(this.processResult));
+            logger.info("process result: {}", JSONUtils.toJsonString(this.processResult));
         } catch (Exception e) {
             logger.error("yarn process failure", e);
             throw e;
@@ -139,7 +140,7 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
 
         List<String> args = new ArrayList<>();
 
-        args.add(SPARK2_COMMAND);
+        args.add(SPARK_COMMAND);
 
         args.addAll(SparkArgsUtils.buildArgs(sparkParameters));
 
