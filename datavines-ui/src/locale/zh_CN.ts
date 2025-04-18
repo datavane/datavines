@@ -136,7 +136,7 @@ export default {
     jobs_task_check_expectVal_type: '期望值类型',
     jobs_task_check_formula: '校验公式',
     jobs_task_check_explain: '说明',
-    jobs_task_check_explain_text: '当校验公式的结果为真，那么检查结果为失败，反之亦然',
+    jobs_task_check_explain_text: '当校验公式的结果为真，那么检查结果为错误，反之亦然',
 
     jobs_tabs_title: '数据质量作业',
     jobs_tabs_comparison_title: '数据比对作业',

@@ -34,7 +34,7 @@ public enum JobCheckState {
      */
     NONE(0, "none", "未知"),
     SUCCESS(1, "success", "成功"),
-    FAILURE(2, "failure", "失败");
+    FAILURE(2, "failure", "错误");
 
     JobCheckState(int code, String description, String zhDescription) {
         this.code = code;
