@@ -199,7 +199,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                                     break;
                                 case BYTE_TYPE:
                                     if (StringUtils.isNotEmpty(rowContent)) {
-                                        errorDataPreparedStatement.setByte(j+1, Byte.parseByte(rowContent));
+                                        errorDataPreparedStatement.setByte(j+1, Byte.parseByte("true".equals(rowContent) ? "1" : "false".equals(rowContent) ? "0" : rowContent));
                                     } else {
                                         errorDataPreparedStatement.setNull(j+1, Types.TINYINT);
                                     }
