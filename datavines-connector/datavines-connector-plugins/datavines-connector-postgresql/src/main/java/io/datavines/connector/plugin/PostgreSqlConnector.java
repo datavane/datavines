@@ -27,6 +27,10 @@ import java.util.Map;
 
 public class PostgreSqlConnector extends JdbcConnector {
 
+    protected static final String FOREIGN_TABLE = "FOREIGN TABLE";
+
+    protected static final String[] TABLE_TYPES = new String[]{TABLE, VIEW, FOREIGN_TABLE};
+
     public PostgreSqlConnector(DataSourceClient dataSourceClient) {
         super(dataSourceClient);
     }
@@ -40,5 +44,11 @@ public class PostgreSqlConnector extends JdbcConnector {
     public ResultSet getMetadataDatabases(Connection connection) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         return metaData.getCatalogs();
+    }
+
+
+    @Override
+    public ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {
+        return metaData.getTables(catalog, schema, null, TABLE_TYPES);
     }
 }
