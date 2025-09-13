@@ -28,9 +28,14 @@ const Index = () => {
         pageSize: 10,
     });
     const onChange = ({ current, pageSize }: any) => {
-        setPageParams({
+        const newPageParams = {
             pageNumber: current,
             pageSize,
+        };
+        setPageParams(newPageParams);
+        getData({
+            ...form.getFieldsValue(),
+            ...newPageParams,
         });
     };
     const getData = async (values: any = null) => {
