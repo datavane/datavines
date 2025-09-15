@@ -129,6 +129,21 @@ export default {
     jobs_task_report_date: '报告日期',
     jobs_task_report_detail: '规则详情',
 
+    jobs_task_status_submitted_success: '已提交',
+    jobs_task_status_running_execution: '执行中',
+    jobs_task_status_ready_pause: '准备暂停',
+    jobs_task_status_pause: '暂停',
+    jobs_task_status_ready_stop: '准备停止',
+    jobs_task_status_stop: '停止',
+    jobs_task_status_failure: '失败',
+    jobs_task_status_success: '成功',
+    jobs_task_status_need_fault_tolerance: '需要容错',
+    jobs_task_status_kill: '强制终止',
+    jobs_task_status_waiting_thread: '等待线程',
+    jobs_task_status_waiting_summit: '待提交',
+
+
+
     jobs_task_check_result: '检查结果',
     jobs_task_check_subject: '检查对象',
     jobs_task_check_params: '检查参数',

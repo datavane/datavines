@@ -1,7 +1,7 @@
 import React, {
     forwardRef, useEffect, useImperativeHandle, useState,
 } from 'react';
-import {Button, DatePicker, Dropdown, Form, Input, Row, Table, Tabs} from 'antd';
+import { Button, Col, DatePicker, Dropdown, Form, Input, Row, Select, Table, Tabs } from 'antd';
 import { useIntl } from 'react-intl';
 import { ColumnsType } from 'antd/es/table';
 import { $http } from '@/http';
@@ -206,66 +206,129 @@ const JobExecutionLogs = ({ datasourceId }: TJobExecutionLogs) => {
                 <div className="dv-flex-between">
                     <div className="dv-datasource__search">
                         <Form form={form}>
-                            <Row style={{width: '100%'}}>
-                                <Form.Item style={{width: '15%'}}
-                                           label={intl.formatMessage({id: "jobs_task_name"})}
-                                           name="searchVal"
-                                >
-                                    <Input
-                                        style={{ width: '100%' }}
-                                        autoComplete="off"
-                                        onPressEnter={() => {
-                                            getData();
-                                        }}
-                                    />
-                                </Form.Item>
+                            <Row gutter={[16, 16]} style={{width: '100%'}}>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={6}>
+                                    <Form.Item
+                                        label={intl.formatMessage({id: "jobs_task_name"})}
+                                        name="searchVal"
+                                    >
+                                        <Input
+                                            autoComplete="off"
+                                            onPressEnter={() => {
+                                                getData();
+                                            }}
+                                        />
+                                    </Form.Item>
+                                </Col>
 
-                                <Form.Item style={{width: '15%',marginLeft: '10px'}}
-                                           label={intl.formatMessage({id: "job_database"})}
-                                           name="schemaSearch"
-                                >
-                                    <Input
-                                        style={{ width: '100%' }}
-                                        autoComplete="off"
-                                        onPressEnter={() => {
-                                            getData();
-                                        }}
-                                    />
-                                </Form.Item>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+                                    <Form.Item
+                                        label={intl.formatMessage({id: "job_database"})}
+                                        name="schemaSearch"
+                                    >
+                                        <Input
+                                            autoComplete="off"
+                                            onPressEnter={() => {
+                                                getData();
+                                            }}
+                                        />
+                                    </Form.Item>
+                                </Col>
 
-                                <Form.Item style={{width: '15%',marginLeft: '10px'}}
-                                           label={intl.formatMessage({id: "job_table"})}
-                                           name="tableSearch"
-                                >
-                                    <Input
-                                        style={{ width: '100%' }}
-                                        autoComplete="off"
-                                        onPressEnter={() => {
-                                            getData();
-                                        }}
-                                    />
-                                </Form.Item>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+                                    <Form.Item
+                                        label={intl.formatMessage({id: "job_table"})}
+                                        name="tableSearch"
+                                    >
+                                        <Input
+                                            autoComplete="off"
+                                            onPressEnter={() => {
+                                                getData();
+                                            }}
+                                        />
+                                    </Form.Item>
+                                </Col>
 
-                                <Form.Item style={{width: '15%',marginLeft: '10px'}}
-                                           label={intl.formatMessage({id: "job_column"})}
-                                           name="columnSearch"
-                                >
-                                    <Input
-                                        style={{ width: '100%' }}
-                                        autoComplete="off"
-                                        onPressEnter={() => {
-                                            getData();
-                                        }}
-                                    />
-                                </Form.Item>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={4}>
+                                    <Form.Item
+                                        label={intl.formatMessage({id: "job_column"})}
+                                        name="columnSearch"
+                                    >
+                                        <Input
+                                            autoComplete="off"
+                                            onPressEnter={() => {
+                                                getData();
+                                            }}
+                                        />
+                                    </Form.Item>
+                                </Col>
+                                <Col xs={24} sm={12} md={8} lg={6} xl={6}>
+                                    <Form.Item
+                                        label={intl.formatMessage({id: "jobs_task_status"})}
+                                        name="status"
+                                    >
+                                        <Select
+                                            allowClear
+                                            onSelect={() => {
+                                                getData();
+                                            }}
+                                            onClear={() => {
+                                                form.setFieldsValue({ status: undefined });
+                                                getData();
+                                            }}
+                                        >
+                                            <Select.Option value="0">
+                                                {intl.formatMessage({id: "jobs_task_status_submitted_success"})}
+                                            </Select.Option>
+                                            <Select.Option value="1">
+                                                {intl.formatMessage({id: "jobs_task_status_running_execution"})}
+                                            </Select.Option>
+                                            <Select.Option value="2">
+                                                {intl.formatMessage({id: "jobs_task_status_ready_pause"})}
+                                            </Select.Option>
+                                            <Select.Option value="3">
+                                                {intl.formatMessage({id: "jobs_task_status_pause"})}
+                                            </Select.Option>
+                                            <Select.Option value="4">
+                                                {intl.formatMessage({id: "jobs_task_status_ready_stop"})}
+                                            </Select.Option>
+                                            <Select.Option value="5">
+                                                {intl.formatMessage({id: "jobs_task_status_stop"})}
+                                            </Select.Option>
+                                            <Select.Option value="6">
+                                                {intl.formatMessage({id: "jobs_task_status_failure"})}
+                                            </Select.Option>
+                                            <Select.Option value="7">
+                                                {intl.formatMessage({id: "jobs_task_status_success"})}
+                                            </Select.Option>
+                                            <Select.Option value="8">
+                                                {intl.formatMessage({id: "jobs_task_status_need_fault_tolerance"})}
+                                            </Select.Option>
+                                            <Select.Option value="9">
+                                                {intl.formatMessage({id: "jobs_task_status_kill"})}
+                                            </Select.Option>
+                                            <Select.Option value="10">
+                                                {intl.formatMessage({id: "jobs_task_status_waiting_thread"})}
+                                            </Select.Option>
+                                            <Select.Option value="11">
+                                                {intl.formatMessage({id: "jobs_task_status_waiting_summit"})}
+                                            </Select.Option>
+                                        </Select>
+                                    </Form.Item>
+                                </Col>
 
-                                <Form.Item style={{width: '32%',marginLeft: '10px'}}
-                                           label={intl.formatMessage({ id: 'jobs_update_time' })}
-                                           name='updateTime'
-                                >
-                                    <DatePicker.RangePicker allowEmpty={[true, true]}
-                                                            style={{ width: '100%' }}  showTime />
-                                </Form.Item>
+                                <Col xs={24} sm={24} md={16} lg={12} xl={8}>
+                                    <Form.Item
+                                        label={intl.formatMessage({ id: 'jobs_update_time' })}
+                                        name='updateTime'
+                                    >
+                                        <DatePicker.RangePicker
+                                            allowEmpty={[true, true]}
+                                            style={{ width: '100%' }}
+                                            showTime
+                                        />
+                                    </Form.Item>
+                                </Col>
                             </Row>
                         </Form>
                     </div>
