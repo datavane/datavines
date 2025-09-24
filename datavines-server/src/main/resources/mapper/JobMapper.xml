@@ -38,7 +38,7 @@
 
     <select id="getJobPageSelect" resultType="io.datavines.server.api.dto.vo.JobVO">
         select p.id, p.name, p.schema_name ,p.table_name,p.column_name, p.type, u.username as updater, p.update_time, s.cron_expression
-        from (<include refid="basic_sql"/>) p left join `dv_user` u on u.id = p.create_by
+        from (<include refid="basic_sql"/>) p left join `dv_user` u on u.id = p.update_by
         left join `dv_job_schedule` s on p.id = s.job_id and s.status = 1
         <where>
             <if test="searchVal != null and searchVal != ''">
