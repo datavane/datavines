@@ -75,7 +75,7 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
     @Transactional(rollbackFor =  Exception.class)
     @Override
     public boolean generateQualityReport(Long datasourceId) {
-        String yesterday = DateUtils.format(DateUtils.addDays(DateUtils.getCurrentDate(),-1),DateUtils.YYYY_MM_DD);
+        String yesterday = DateUtils.format(new Date(), DateUtils.YYYY_MM_DD);
         List<JobExecutionResult> jobExecutionResultList = jobExecutionResultMapper.listByDatasourceIdAndTimeRange(datasourceId,yesterday + " 00:00:00", yesterday + " 23:59:59");
         if (CollectionUtils.isEmpty(jobExecutionResultList)) {
             return true;
