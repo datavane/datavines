@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.TableColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.TableInfo;
@@ -23,14 +24,13 @@ import io.datavines.common.datasource.jdbc.utils.JdbcDataSourceUtils;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.GetColumnsRequestParam;
 import io.datavines.common.param.GetTablesRequestParam;
+import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.DataSourceClient;
 import org.apache.commons.collections4.MapUtils;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,8 +39,49 @@ import static io.datavines.common.ConfigConstants.CATALOG;
 
 public class DorisConnector extends MysqlConnector {
 
+    public static final String DORIS_DEFAULT_CATALOG = "internal";
+
     public DorisConnector(DataSourceClient dataSourceClient) {
         super(dataSourceClient);
+    }
+
+    @Override
+    public BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param) {
+        return new DorisDataSourceInfo(param);
+    }
+
+    @Override
+    public ConnectorResponse testConnect(TestConnectionRequestParam param) {
+        Map<String,String> paramMap = JSONUtils.toMap(param.getDataSourceParam());
+        BaseJdbcDataSourceInfo dataSourceInfo = this.getDatasourceInfo(paramMap);
+        dataSourceInfo.loadClass();
+
+        try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(), dataSourceInfo.getUser(), dataSourceInfo.getPassword())) {
+            boolean result = con != null;
+            if (result) {
+                con.close();
+            }
+            return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(result).build();
+        } catch (SQLException e) {
+            logger.error("test connect error, param is {} :", JSONUtils.toJsonString(param), e);
+        }
+
+        return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
+    }
+
+    @Override
+    protected Connection getConnection(String dataSourceParam, Map<String,String> paramMap) throws SQLException {
+        Connection connection = super.getConnection(dataSourceParam, paramMap);
+
+        // 获取 catalog 名称并执行 SWITCH CATALOG
+        String catalogName = paramMap.get(CATALOG);
+        if (StringUtils.isNotEmpty(catalogName)) {
+            switchCatalog(connection, catalogName);
+        } else{
+            switchCatalog(connection, DORIS_DEFAULT_CATALOG);
+        }
+
+        return connection;
     }
 
     @Override
@@ -160,5 +201,50 @@ public class DorisConnector extends MysqlConnector {
     protected ResultSet getMetadataColumns(Connection connection, String catalog, String schema, String tableName, String columnName) throws SQLException {
         java.sql.Statement stmt = connection.createStatement();
         return stmt.executeQuery("select TABLE_NAME, COLUMN_NAME, COLUMN_TYPE ,COLUMN_COMMENT from information_schema.columns where TABLE_SCHEMA = '" + schema + "' AND TABLE_NAME ='" + tableName + "'");
+    }
+
+    private void switchCatalog(Connection connection, String catalogName) throws SQLException {
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
+            stmt = connection.createStatement();
+
+            // 执行 SWITCH CATALOG
+            String switchSql = "SWITCH " + catalogName;
+            logger.info("Executing SWITCH CATALOG: {}", switchSql);
+            stmt.execute(switchSql);
+
+            // 验证切换成功
+            rs = stmt.executeQuery("SELECT current_catalog()");
+            if (rs.next()) {
+                String currentCatalog = rs.getString(1);
+                if (!catalogName.equals(currentCatalog)) {
+                    throw new SQLException(String.format(
+                            "SWITCH CATALOG failed: expected '%s' but got '%s'",
+                            catalogName, currentCatalog));
+                }
+                logger.info("Successfully switched to catalog: {}", currentCatalog);
+            } else {
+                throw new SQLException("Failed to verify current catalog");
+            }
+        } catch (SQLException e) {
+            logger.error("Error switching to catalog {}: {}", catalogName, e.getMessage());
+            throw new SQLException("Failed to switch to catalog " + catalogName + ": " + e.getMessage(), e);
+        } finally {
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    logger.warn("Error closing ResultSet", e);
+                }
+            }
+            if (stmt != null) {
+                try {
+                    stmt.close();
+                } catch (SQLException e) {
+                    logger.warn("Error closing Statement", e);
+                }
+            }
+        }
     }
 }
