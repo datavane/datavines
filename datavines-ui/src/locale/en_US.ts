@@ -51,6 +51,7 @@ export default {
 
     confirm_text: 'OK',
     test_link: 'Test Connect',
+    test_link_success: 'Connection test succeeded',
     test_link_fail: 'Test Connect Failed',
 
     login_btn_text: 'Login',

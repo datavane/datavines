@@ -51,6 +51,7 @@ export default {
 
     confirm_text: '确认',
     test_link: '测试链接',
+    test_link_success: '连接测试成功',
     test_link_fail: '测试链接失败',
 
     login_btn_text: '登录',

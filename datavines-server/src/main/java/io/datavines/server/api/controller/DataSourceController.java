@@ -16,9 +16,12 @@
  */
 package io.datavines.server.api.controller;
 
+import io.datavines.common.param.ConnectorResponse;
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.core.entity.ResultMap;
 import io.datavines.server.api.dto.vo.Item;
 import io.datavines.common.param.TestConnectionRequestParam;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.server.api.dto.bo.datasource.DataSourceCreate;
@@ -56,7 +59,30 @@ public class DataSourceController {
     @ApiOperation(value = "test connection")
     @PostMapping(value = "/test", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object testConnection(@Valid @RequestBody TestConnectionRequestParam param)  {
-        return dataSourceService.testConnect(param);
+        ConnectorResponse response = dataSourceService.testConnect(param);
+
+        ResultMap resultMap = new ResultMap();
+
+        if (response == null) {
+            return resultMap.fail().message("Connector response is null");
+        }
+
+        boolean isSuccess = response.getStatus() != null
+                && response.getStatus().isSuccess()
+                && Boolean.TRUE.equals(response.getResult());
+
+        if (isSuccess) {
+            return resultMap.success()
+                    .message("Connection test succeeded")
+                    .payload(true);
+        } else {
+            String errorMsg = StringUtils.isEmpty(response.getErrorMsg())
+                    ? "Connection failed"
+                    : response.getErrorMsg();
+            return resultMap.fail()
+                    .message(errorMsg)
+                    .payload(false);
+        }
     }
 
     @ApiOperation(value = "create datasource")
