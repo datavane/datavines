@@ -359,5 +359,18 @@ export default {
     dv_flink_deploy_mode_yarn_application: 'Yarn Application Mode',
     dv_deploy_mode_cluster: 'Cluster Mode',
     dv_deploy_mode_yarn: 'Yarn Mode',
-    dv_deploy_mode_local: 'Local Mode'
+    dv_deploy_mode_local: 'Local Mode',
+
+    // HTTP error messages
+    http_error_network: 'Network connection failed, unable to connect to server',
+    http_error_timeout: 'Request timeout, please check your network',
+    http_error_400: 'Bad request',
+    http_error_401: 'Unauthorized, please login',
+    http_error_403: 'Access denied',
+    http_error_404: 'Resource not found',
+    http_error_500: 'Internal server error',
+    http_error_502: 'Gateway error',
+    http_error_503: 'Service unavailable',
+    http_error_504: 'Gateway timeout',
+    http_error_unknown: 'Server error'
 };

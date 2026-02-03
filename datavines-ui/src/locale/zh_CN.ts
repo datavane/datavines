@@ -361,5 +361,18 @@ export default {
     dv_flink_deploy_mode_yarn_application: 'Yarn Application模式',
     dv_deploy_mode_cluster: '集群模式',
     dv_deploy_mode_yarn: 'Yarn模式',
-    dv_deploy_mode_local: '本地模式'
+    dv_deploy_mode_local: '本地模式',
+
+    // HTTP error messages
+    http_error_network: '网络连接失败，无法连接到服务器',
+    http_error_timeout: '请求超时，请检查网络后重试',
+    http_error_400: '请求参数错误',
+    http_error_401: '未授权，请先登录',
+    http_error_403: '访问被拒绝',
+    http_error_404: '资源不存在',
+    http_error_500: '服务器内部错误',
+    http_error_502: '网关错误',
+    http_error_503: '服务暂时不可用',
+    http_error_504: '网关超时',
+    http_error_unknown: '服务器错误'
 };
