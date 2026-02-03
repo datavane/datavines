@@ -199,14 +199,21 @@ public class MongodbConnector implements Connector {
         try {
             MongoClient mongoClient = getMongoClient(paramMap);
             if (mongoClient == null) {
-                return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
+                return ConnectorResponse.builder()
+                        .status(ConnectorResponse.Status.ERROR)
+                        .result(false)
+                        .errorMsg("Failed to create MongoDB client")
+                        .build();
             }
             return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(true).build();
         } catch (Exception e) {
             logger.error(e.toString(), e);
+            return ConnectorResponse.builder()
+                    .status(ConnectorResponse.Status.ERROR)
+                    .result(false)
+                    .errorMsg(e.getMessage())
+                    .build();
         }
-
-        return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
     }
 
     @Override

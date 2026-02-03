@@ -67,9 +67,12 @@ public class HiveConnector extends JdbcConnector {
             return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(result).build();
         } catch (SQLException e) {
             logger.error("test connect error, param is {} :", JSONUtils.toJsonString(param), e);
+            return ConnectorResponse.builder()
+                    .status(ConnectorResponse.Status.ERROR)
+                    .result(false)
+                    .errorMsg(e.getMessage())
+                    .build();
         }
-
-        return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
     }
 
 }
