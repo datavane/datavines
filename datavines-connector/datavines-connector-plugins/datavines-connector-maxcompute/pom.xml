@@ -35,7 +35,6 @@
         <dependency>
             <groupId>com.aliyun.odps</groupId>
             <artifactId>odps-jdbc</artifactId>
-            <version>3.8.6</version>
             <classifier>jar-with-dependencies</classifier>
         </dependency>
         <dependency>
