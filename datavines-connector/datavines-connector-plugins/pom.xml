@@ -34,6 +34,8 @@
         <module>datavines-connector-jdbc</module>
         <module>datavines-connector-mysql</module>
         <module>datavines-connector-hive</module>
+        <module>datavines-connector-hive2-driver</module>
+        <module>datavines-connector-hive3-driver</module>
         <module>datavines-connector-impala</module>
         <module>datavines-connector-clickhouse</module>
         <module>datavines-connector-postgresql</module>

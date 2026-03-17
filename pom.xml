@@ -98,7 +98,8 @@
         <st4.version>4.0.8</st4.version>
         <lz4.version>1.3.0</lz4.version>
         <commons-configuration.version>1.8</commons-configuration.version>
-        <hive.version>2.1.0</hive.version>
+        <hive2.version>2.1.0</hive2.version>
+        <hive3.version>3.1.3</hive3.version>
         <sqlserver.version>6.1.0.jre8</sqlserver.version>
         <dameng.version>8.1.2.141</dameng.version>
         <hikari.version>4.0.3</hikari.version>
@@ -124,6 +125,7 @@
         <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
+        <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
 
     </properties>
 
@@ -575,7 +577,7 @@
             <dependency>
                 <groupId>org.apache.hive</groupId>
                 <artifactId>hive-jdbc</artifactId>
-                <version>${hive.version}</version>
+                <version>${hive2.version}</version>
             </dependency>
 
             <dependency>

@@ -24,6 +24,7 @@ import io.datavines.connector.api.DataSourceClient;
 
 import java.sql.*;
 import java.util.Map;
+import java.util.Properties;
 
 public class HiveConnector extends JdbcConnector {
 
@@ -55,17 +56,26 @@ public class HiveConnector extends JdbcConnector {
     public ConnectorResponse testConnect(TestConnectionRequestParam param) {
         Map<String,String> paramMap = JSONUtils.toMap(param.getDataSourceParam());
         BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(paramMap);
+        HiveDataSourceInfo hiveInfo = (HiveDataSourceInfo) dataSourceInfo;
+
         if(KerberosUtils.checkKerberosConfig(dataSourceInfo.getKeytabPrincipal(), dataSourceInfo.getKeytabFile(), dataSourceInfo.getKrb5ConfFile())){
             KerberosUtils.initKerberos(dataSourceInfo.getKeytabPrincipal(), dataSourceInfo.getKeytabFile(), dataSourceInfo.getKrb5ConfFile());
         }
-        dataSourceInfo.loadClass();
-        try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(), dataSourceInfo.getUser(), dataSourceInfo.getPassword())) {
+
+        String hiveVersion = hiveInfo.getHiveVersion();
+        Driver driver = HiveDriverClassLoader.getDriver(hiveVersion);
+        Properties props = new Properties();
+        if (dataSourceInfo.getUser() != null) {
+            props.setProperty("user", dataSourceInfo.getUser());
+        }
+        if (dataSourceInfo.getPassword() != null) {
+            props.setProperty("password", dataSourceInfo.getPassword());
+        }
+
+        try (Connection con = driver.connect(dataSourceInfo.getJdbcUrl(), props)) {
             boolean result = con != null;
-            if (result) {
-                con.close();
-            }
             return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(result).build();
-        } catch (SQLException e) {
+        } catch (Exception e) {
             logger.error("test connect error, param is {} :", JSONUtils.toJsonString(param), e);
             return ConnectorResponse.builder()
                     .status(ConnectorResponse.Status.ERROR)

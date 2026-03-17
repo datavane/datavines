@@ -19,9 +19,11 @@ package io.datavines.connector.plugin;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.datavines.common.param.form.ParamsOptions;
 import io.datavines.common.param.form.PluginParams;
 import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.type.InputParam;
+import io.datavines.common.param.form.type.SelectParam;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -33,6 +35,7 @@ public class HiveConfigBuilder extends JdbcConfigBuilder {
     @Override
     public String build(boolean isEn) {
         List<PluginParams> params = new ArrayList<>();
+        params.add(getHiveVersionSelect(isEn));
         params.add(getHostInput(isEn));
         params.add(getPortInput(isEn));
         if (getCatalogInput(isEn) != null) {
@@ -112,6 +115,21 @@ public class HiveConfigBuilder extends JdbcConfigBuilder {
                 isEn ? "please enter krb5.conf File Path" : "请填入 krb5.conf 文件地址", 1,
                 null,
                 null);
+    }
+
+    private SelectParam getHiveVersionSelect(boolean isEn) {
+        List<ParamsOptions> options = new ArrayList<>();
+        options.add(new ParamsOptions("Hive 2.x", "2.1", false));
+        options.add(new ParamsOptions("Hive 3.x", "3.1", false));
+
+        return SelectParam.newBuilder("hive_version", isEn ? "Hive Version" : "Hive 版本")
+                .setParamsOptionsList(options)
+                .setValue("2.1")
+                .addValidate(Validate.newBuilder()
+                        .setRequired(true)
+                        .setMessage(isEn ? "Please select Hive version" : "请选择 Hive 版本")
+                        .build())
+                .build();
     }
 
 }

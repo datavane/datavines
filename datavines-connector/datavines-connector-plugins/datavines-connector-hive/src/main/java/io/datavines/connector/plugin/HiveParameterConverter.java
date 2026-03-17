@@ -25,6 +25,13 @@ import static io.datavines.common.ConfigConstants.*;
 public class HiveParameterConverter extends JdbcParameterConverter {
 
     @Override
+    public Map<String, Object> converter(Map<String, Object> parameter) {
+        Map<String, Object> config = super.converter(parameter);
+        config.put(HIVE_VERSION, parameter.getOrDefault(HIVE_VERSION, "2.1"));
+        return config;
+    }
+
+    @Override
     protected String getUrl(Map<String, Object> parameter) {
         StringBuilder address = new StringBuilder();
         address.append("jdbc:hive2://");

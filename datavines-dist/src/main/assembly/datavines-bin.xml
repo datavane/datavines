@@ -75,6 +75,22 @@
             </includes>
             <outputDirectory>./conf</outputDirectory>
         </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/../datavines-connector/datavines-connector-plugins/datavines-connector-hive2-driver/target/hive2-driver-lib</directory>
+            <outputDirectory>./drivers/hive2</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/../datavines-connector/datavines-connector-plugins/datavines-connector-hive3-driver/target/hive3-driver-lib</directory>
+            <outputDirectory>./drivers/hive3</outputDirectory>
+            <includes>
+                <include>*.jar</include>
+            </includes>
+        </fileSet>
     </fileSets>
 
     <dependencySets>

@@ -183,4 +183,6 @@ public class ConfigConstants {
     public static final String KEYTAB_PRINCIPAL = "keytab_principal";
 
     public static final String KRB5_CONF = "krb5_conf";
+
+    public static final String HIVE_VERSION = "hive_version";
 }

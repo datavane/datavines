@@ -27,6 +27,16 @@ public class HiveDataSourceInfo extends BaseJdbcDataSourceInfo {
         super(param);
     }
 
+    public String getHiveVersion() {
+        String version = param.get(ConfigConstants.HIVE_VERSION);
+        return (version != null && !version.isEmpty()) ? version : "2.1";
+    }
+
+    @Override
+    public String paramToString() {
+        return super.paramToString() + "&hive_version=" + getHiveVersion();
+    }
+
     @Override
     public String getAddress() {
         StringBuilder address = new StringBuilder();
@@ -39,6 +49,11 @@ public class HiveDataSourceInfo extends BaseJdbcDataSourceInfo {
         return address.toString();
     }
 
+    /**
+     * Returns the Hive JDBC driver class name.
+     * Note: Actual driver loading uses HiveDriverClassLoader for ClassLoader isolation.
+     * Do NOT use this with Class.forName() or loadClass() directly.
+     */
     @Override
     public String getDriverClass() {
         return "org.apache.hive.jdbc.HiveDriver";
