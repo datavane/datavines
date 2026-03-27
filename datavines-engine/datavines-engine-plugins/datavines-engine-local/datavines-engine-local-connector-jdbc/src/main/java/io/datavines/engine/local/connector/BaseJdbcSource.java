@@ -18,9 +18,10 @@ package io.datavines.engine.local.connector;
 
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.Config;
+import io.datavines.common.utils.ThreadUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.connector.api.entity.JdbcOptions;
-import io.datavines.connector.plugin.utils.JdbcUtils;
+import io.datavines.connector.api.utils.JdbcUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSource;
@@ -94,19 +95,23 @@ public class BaseJdbcSource implements LocalSource {
     @Override
     public boolean checkTableExist() {
 
-        if (connectionHolder != null) {
-            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class)
-                    .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE));
-            JdbcOptions jdbcOptions = new JdbcOptions();
-            jdbcOptions.setDatabaseName(config.getString(DATABASE));
-            jdbcOptions.setSchemaName(config.getString(SCHEMA));
-            jdbcOptions.setTableName(config.getString(TABLE));
-            jdbcOptions.setQueryTimeout(10000);
-            try {
-                 return JdbcUtils.tableExists(connectionHolder.getConnection(), jdbcOptions, connectorFactory.getDialect());
-            } catch (Exception e) {
-                log.error("check table {} exists error :", config.getString(TABLE), e);
-                return false;
+        int retryTimes = 3;
+        while (retryTimes > 0) {
+            if (connectionHolder != null) {
+                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class)
+                        .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE));
+                JdbcOptions jdbcOptions = new JdbcOptions();
+                jdbcOptions.setDatabaseName(config.getString(DATABASE));
+                jdbcOptions.setSchemaName(config.getString(SCHEMA));
+                jdbcOptions.setTableName(config.getString(TABLE));
+                jdbcOptions.setQueryTimeout(10000);
+                try {
+                    return JdbcUtils.tableExists(connectionHolder.getConnection(), jdbcOptions, connectorFactory.getDialect());
+                } catch (Exception e) {
+                    log.error("check table {} exists error :", config.getString(TABLE), e);
+                    retryTimes--;
+                    ThreadUtils.sleep(2000);
+                }
             }
         }
 

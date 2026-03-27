@@ -18,31 +18,19 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.Dialect;
+import io.datavines.connector.api.entity.ResultList;
+import io.datavines.connector.api.utils.SqlUtils;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static io.datavines.common.ConfigConstants.*;
 
 public abstract class JdbcDialect implements Dialect {
-
-    protected final HashMap<String,String> dialectKeyMap = new HashMap<>();
-
-    @Override
-    public Map<String, String> getDialectKeyMap() {
-        dialectKeyMap.put(REGEX_KEY, "${column} regexp '${regexp}'");
-        dialectKeyMap.put(NOT_REGEX_KEY, "${column} not regexp '${regexp}'");
-        dialectKeyMap.put(STRING_TYPE, "varchar");
-        dialectKeyMap.put(IF_FUNCTION_KEY, "if");
-        dialectKeyMap.put(LIMIT_TOP_50_KEY, " limit 50");
-        dialectKeyMap.put(LENGTH_KEY, "length(${column})");
-        dialectKeyMap.put(IF_CASE_KEY, "if(${column} is null, 'NULL', cast(${column} as ${string_type}))");
-        dialectKeyMap.put(STD_DEV_KEY, "stddev");
-        dialectKeyMap.put(VARIANCE_KEY, "variance");
-        return dialectKeyMap;
-    }
 
     @Override
     public String getColumnPrefix() {
@@ -80,4 +68,8 @@ public abstract class JdbcDialect implements Dialect {
         return null;
     }
 
+    @Override
+    public ResultList getPageFromResultSet(Statement sourceConnectionStatement, ResultSet rs, String sourceTable, int start, int end) throws SQLException {
+        return SqlUtils.getPageFromResultSet(rs, start, end);
+    }
 }

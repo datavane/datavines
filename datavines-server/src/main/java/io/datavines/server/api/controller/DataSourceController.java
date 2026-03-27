@@ -16,12 +16,17 @@
  */
 package io.datavines.server.api.controller;
 
+import io.datavines.common.param.ConnectorResponse;
 import io.datavines.connector.api.ConnectorFactory;
-import io.datavines.server.api.dto.bo.datasource.*;
+import io.datavines.core.entity.ResultMap;
 import io.datavines.server.api.dto.vo.Item;
 import io.datavines.common.param.TestConnectionRequestParam;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.aop.RefreshToken;
+import io.datavines.server.api.dto.bo.datasource.DataSourceCreate;
+import io.datavines.server.api.dto.bo.datasource.DataSourceUpdate;
+import io.datavines.server.api.dto.bo.datasource.ExecuteRequest;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 import io.datavines.server.repository.service.CatalogEntityInstanceService;
@@ -54,7 +59,30 @@ public class DataSourceController {
     @ApiOperation(value = "test connection")
     @PostMapping(value = "/test", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object testConnection(@Valid @RequestBody TestConnectionRequestParam param)  {
-        return dataSourceService.testConnect(param);
+        ConnectorResponse response = dataSourceService.testConnect(param);
+
+        ResultMap resultMap = new ResultMap();
+
+        if (response == null) {
+            return resultMap.fail().message("Connector response is null");
+        }
+
+        boolean isSuccess = response.getStatus() != null
+                && response.getStatus().isSuccess()
+                && Boolean.TRUE.equals(response.getResult());
+
+        if (isSuccess) {
+            return resultMap.success()
+                    .message("Connection test succeeded")
+                    .payload(true);
+        } else {
+            String errorMsg = StringUtils.isEmpty(response.getErrorMsg())
+                    ? "Connection failed"
+                    : response.getErrorMsg();
+            return resultMap.fail()
+                    .message(errorMsg)
+                    .payload(false);
+        }
     }
 
     @ApiOperation(value = "create datasource")
@@ -147,7 +175,8 @@ public class DataSourceController {
         List<Item> items = new ArrayList<>();
 
         connectorList.forEach(it -> {
-            if (!"file".equalsIgnoreCase(it)) {
+            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(it);
+            if (connectorFactory.showInFrontend()) {
                 Item item = new Item(it,it);
                 items.add(item);
             }
@@ -160,11 +189,5 @@ public class DataSourceController {
     @GetMapping(value = "/list/{workspaceId}/{type}")
     public Object getDataSourceListByType(@PathVariable Long workspaceId, @PathVariable String type) {
         return dataSourceService.listByWorkSpaceIdAndType(workspaceId,type);
-    }
-
-    @ApiOperation(value = "get datasource list by info")
-    @GetMapping(value = "/listByInfo")
-    public Object getDataSourceListByInfo(@Valid @RequestBody DataSourceKeyProperties dataSourceKeyProperties) {
-        return dataSourceService.listByInfo(dataSourceKeyProperties);
     }
 }

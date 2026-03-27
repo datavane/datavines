@@ -109,7 +109,7 @@ public class HiveSqlUtils {
         return sql;
     }
 
-    private static Map<String, Object> getResultObjectMap(ResultSet rs, ResultSetMetaData metaData) throws SQLException {
+    public static Map<String, Object> getResultObjectMap(ResultSet rs, ResultSetMetaData metaData) throws SQLException {
         Map<String, Object> map = new LinkedHashMap<>();
 
         for (int i = 1; i <= metaData.getColumnCount(); i++) {

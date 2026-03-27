@@ -16,12 +16,17 @@
  */
 package io.datavines.common.datasource.jdbc;
 
+import io.datavines.common.ConfigConstants;
+import io.datavines.common.utils.Md5Utils;
 import io.datavines.common.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.util.Map;
+
+import static io.datavines.common.ConfigConstants.*;
 
 /**
  * data source base class
@@ -30,26 +35,26 @@ public abstract class BaseJdbcDataSourceInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(BaseJdbcDataSourceInfo.class);
 
-    protected final JdbcConnectionInfo jdbcConnectionInfo;
+    protected final Map<String,String> param;
 
-    public BaseJdbcDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        this.jdbcConnectionInfo = jdbcConnectionInfo;
+    public BaseJdbcDataSourceInfo(Map<String,String> param) {
+        this.param = param;
     }
 
     public String getUser() {
-        return jdbcConnectionInfo.getUser();
+        return param.get(USER);
     }
 
     public String getPassword() {
-        return jdbcConnectionInfo.getPassword();
+        return param.get(PASSWORD);
     }
 
     public String getHost() {
-        return jdbcConnectionInfo.getHost();
+        return param.get(HOST);
     }
 
     public String getPort() {
-        return jdbcConnectionInfo.getPort();
+        return param.get(PORT);
     }
 
     public String getValidationQuery() {
@@ -59,19 +64,19 @@ public abstract class BaseJdbcDataSourceInfo {
     public abstract String getAddress();
 
     public String getCatalog() {
-        return jdbcConnectionInfo.getCatalog();
+        return param.get(CATALOG);
     }
 
     public String getDatabase() {
-        return jdbcConnectionInfo.getDatabase();
+        return param.get(DATABASE);
     }
 
     public String getSchema() {
-        return jdbcConnectionInfo.getSchema();
+        return param.get(SCHEMA);
     }
 
     public String getProperties() {
-        return jdbcConnectionInfo.getProperties();
+        return param.get(PROPERTIES);
     }
 
     /**
@@ -159,6 +164,34 @@ public abstract class BaseJdbcDataSourceInfo {
     }
 
     public String getUniqueKey() {
-        return jdbcConnectionInfo.getUniqueKey();
+        return Md5Utils.getMd5(paramToString(), false);
     }
+
+    public String paramToString() {
+        return getHost().trim() +
+                "&" + getPort() +
+                "&" + getOrEmpty(getCatalog()) +
+                "&" + getOrEmpty(getDatabase()) +
+                "&" + getOrEmpty(getUser()) +
+                "&" + getOrEmpty(getPassword()) +
+                "&" + getProperties();
+    }
+
+    private String getOrEmpty(String keyword) {
+        return StringUtils.isNotEmpty(keyword)? keyword.trim() : "";
+    }
+
+    public String getKeytabFile(){
+        return param.get(ConfigConstants.KEYTAB_FILE);
+    }
+
+    public String getKeytabPrincipal(){
+        return param.get(ConfigConstants.KEYTAB_PRINCIPAL);
+    }
+
+    public String getKrb5ConfFile(){
+        return param.get(ConfigConstants.KRB5_CONF);
+    }
+
+
 }

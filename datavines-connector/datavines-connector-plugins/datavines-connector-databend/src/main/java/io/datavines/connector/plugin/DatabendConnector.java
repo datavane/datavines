@@ -17,7 +17,6 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.common.utils.JSONUtils;
@@ -25,6 +24,7 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.DataSourceClient;
 
 import java.sql.*;
+import java.util.Map;
 
 public class DatabendConnector extends JdbcConnector {
 
@@ -48,33 +48,31 @@ public class DatabendConnector extends JdbcConnector {
     }
 
     @Override
-    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        return new DatabendDataSourceInfo(jdbcConnectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param) {
+        return new DatabendDataSourceInfo(param);
     }
 
     @Override
     public ConnectorResponse testConnect(TestConnectionRequestParam param) {
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(param.getDataSourceParam(), JdbcConnectionInfo.class);
-        BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(jdbcConnectionInfo);
+        Map<String,String> paramMap = JSONUtils.toMap(param.getDataSourceParam());
+        BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(paramMap);
         dataSourceInfo.loadClass();
         try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(),
                 dataSourceInfo.getUser(), StringUtils.isEmpty(dataSourceInfo.getPassword()) ? null : dataSourceInfo.getPassword())) {
-            boolean result = (con!=null);
-            if (result) {
-                try {
-                    getMetadataDatabases(con);
-                } catch (Exception e) {
-                    logger.error("create connection error", e);
-                    return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
-                }
-
-                con.close();
+            if (con != null) {
+                getMetadataDatabases(con);
             }
-
-            return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(true).build();
-        } catch (SQLException e) {
-            logger.error("create connection error", e);
-            return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
+            return ConnectorResponse.builder()
+                    .status(ConnectorResponse.Status.SUCCESS)
+                    .result(true)
+                    .build();
+        } catch (Exception e) {
+            logger.error("test connect error", e);
+            return ConnectorResponse.builder()
+                    .status(ConnectorResponse.Status.ERROR)
+                    .result(false)
+                    .errorMsg(e.getMessage())
+                    .build();
         }
     }
 

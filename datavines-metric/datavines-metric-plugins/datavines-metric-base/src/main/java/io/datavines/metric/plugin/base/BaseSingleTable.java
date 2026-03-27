@@ -19,9 +19,11 @@ package io.datavines.metric.plugin.base;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.ConfigChecker;
 import io.datavines.common.entity.ExecuteSql;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.metric.api.ConfigItem;
 import io.datavines.metric.api.MetricLevel;
 import io.datavines.metric.api.SqlMetric;
+import io.datavines.spi.PluginLoader;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -89,5 +91,10 @@ public abstract class BaseSingleTable implements SqlMetric {
     @Override
     public MetricLevel getLevel() {
         return MetricLevel.TABLE;
+    }
+
+    protected ConnectorFactory getConnectorFactory(Map<String,String> inputParameter) {
+        String srcConnectorType = inputParameter.get("src_connector_type");
+        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
     }
 }

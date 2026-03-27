@@ -67,7 +67,7 @@ public class ColumnLength extends BaseSingleTableColumnNotUseView {
     public void prepare(Map<String, String> config) {
 
         if (config.containsKey("length") && config.containsKey("comparator") && config.containsKey("column")) {
-            filters.add(" ${length_key} ${comparator} ${length}");
+            filters.add(getConnectorFactory(config).getMetricScript().columnLengthCompare());
         }
         super.prepare(config);
     }

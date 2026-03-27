@@ -19,6 +19,8 @@ package io.datavines.server.repository.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.repository.entity.Command;
 
+import java.util.List;
+
 public interface CommandService extends IService<Command> {
 
     long insert(Command command);
@@ -27,7 +29,11 @@ public interface CommandService extends IService<Command> {
 
     Command getById(long id);
 
-    Command getOne(int totalSlot, int currentSlot);
+    Command getStartCommand(int totalSlot, int currentSlot);
 
     int deleteById(long id);
+
+    boolean deleteByJobExecutionId(Long jobExecutionId);
+
+    List<Command> listKillCommandByExecuteHost(String executeHost);
 }

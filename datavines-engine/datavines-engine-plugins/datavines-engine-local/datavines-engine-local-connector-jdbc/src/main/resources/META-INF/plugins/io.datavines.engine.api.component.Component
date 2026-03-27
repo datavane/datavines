@@ -1,3 +1,3 @@
-local-mysql-sink=io.datavines.engine.local.connector.MySQLSink
-local-jdbc-sink=io.datavines.engine.local.connector.BaseJdbcSink
-local-jdbc-source=io.datavines.engine.local.connector.BaseJdbcSource
+local-batch-mysql-sink=io.datavines.engine.local.connector.MySQLSink
+local-batch-jdbc-sink=io.datavines.engine.local.connector.BaseJdbcSink
+local-batch-jdbc-source=io.datavines.engine.local.connector.BaseJdbcSource

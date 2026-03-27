@@ -17,15 +17,15 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.connector.api.Connector;
-import io.datavines.connector.api.ConnectorParameterConverter;
+import io.datavines.connector.api.ParameterConverter;
 import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.Executor;
 
 public class ImpalaConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new ImpalaConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new ImpalaParameterConverter();
     }
 
     @Override

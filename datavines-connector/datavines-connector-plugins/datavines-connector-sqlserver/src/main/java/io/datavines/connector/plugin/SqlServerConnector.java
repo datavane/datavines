@@ -17,13 +17,13 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.connector.api.DataSourceClient;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class SqlServerConnector extends JdbcConnector {
 
@@ -32,8 +32,8 @@ public class SqlServerConnector extends JdbcConnector {
     }
 
     @Override
-    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        return new SqlServerDataSourceInfo(jdbcConnectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param) {
+        return new SqlServerDataSourceInfo(param);
     }
 
     @Override

@@ -17,28 +17,38 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.connector.api.DataSourceClient;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class PostgreSqlConnector extends JdbcConnector {
+
+    protected static final String FOREIGN_TABLE = "FOREIGN TABLE";
+
+    protected static final String[] TABLE_TYPES = new String[]{TABLE, VIEW, FOREIGN_TABLE};
 
     public PostgreSqlConnector(DataSourceClient dataSourceClient) {
         super(dataSourceClient);
     }
 
     @Override
-    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        return new PostgreSqlDataSourceInfo(jdbcConnectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param) {
+        return new PostgreSqlDataSourceInfo(param);
     }
 
     @Override
     public ResultSet getMetadataDatabases(Connection connection) throws SQLException {
         DatabaseMetaData metaData = connection.getMetaData();
         return metaData.getCatalogs();
+    }
+
+
+    @Override
+    public ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {
+        return metaData.getTables(catalog, schema, null, TABLE_TYPES);
     }
 }

@@ -17,16 +17,17 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class ImpalaDataSourceInfo extends BaseJdbcDataSourceInfo {
 
     private final Logger logger = LoggerFactory.getLogger(ImpalaDataSourceInfo.class);
 
-    public ImpalaDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        super(jdbcConnectionInfo);
+    public ImpalaDataSourceInfo(Map<String,String> param) {
+        super(param);
     }
 
     @Override
@@ -55,12 +56,6 @@ public class ImpalaDataSourceInfo extends BaseJdbcDataSourceInfo {
     @Override
     protected String getSeparator() {
         return ";";
-    }
-
-    @Override
-    public String getJdbcUrl() {
-        String jdbcUrl = super.getJdbcUrl();
-        return jdbcUrl + ";auth=noSasl";
     }
 
 }

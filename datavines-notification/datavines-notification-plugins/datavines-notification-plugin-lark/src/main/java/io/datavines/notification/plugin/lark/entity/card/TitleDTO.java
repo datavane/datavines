@@ -24,6 +24,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class TitleDTO {
+
     private String content;
+
     private String tag;
 }

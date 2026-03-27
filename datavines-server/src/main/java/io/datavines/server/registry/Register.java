@@ -28,6 +28,7 @@ import io.datavines.server.dqc.coordinator.failover.JobExecutionFailover;
 import io.datavines.server.repository.entity.Config;
 import io.datavines.server.repository.service.ConfigService;
 import io.datavines.server.utils.SpringApplicationContext;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -52,6 +53,7 @@ public class Register {
 
     private volatile int currentSlot = 0;
 
+    @Getter
     private volatile int totalSlot = 0;
 
     private static final Integer QUEUE_MAX_SIZE = 20;
@@ -160,10 +162,6 @@ public class Register {
 
     public int getSlot() {
         return currentSlot;
-    }
-
-    public int getTotalSlot() {
-        return totalSlot;
     }
 
     public void updateServerListInfo() {

@@ -18,16 +18,17 @@ package io.datavines.metric.plugin;
 
 import io.datavines.common.entity.ExecuteSql;
 import io.datavines.common.enums.DataVinesDataType;
+import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.metric.api.MetricActualValueType;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
+import io.datavines.spi.PluginLoader;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static io.datavines.common.CommonConstants.SPARK;
 import static io.datavines.common.ConfigConstants.METRIC_UNIQUE_KEY;
 
 public class ColumnHistogram extends BaseSingleTableColumn {
@@ -70,41 +71,26 @@ public class ColumnHistogram extends BaseSingleTableColumn {
     public ExecuteSql getActualValue(Map<String,String> inputParameter) {
         String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
         ExecuteSql executeSql = new ExecuteSql();
-        executeSql.setResultTable("invalidate_count_"+uniqueKey);
+        executeSql.setResultTable("invalidate_count_" + uniqueKey);
         StringBuilder actualValueSql = new StringBuilder();
 
         String engineType = inputParameter.get("engine_type");
-        if (SPARK.equalsIgnoreCase(engineType)) {
-            actualValueSql.append("select concat(k, '\001', cast(count as ${string_type})) as actual_value_").append(uniqueKey).append(" from (select if(${column} is null, 'NULL', cast(${column} as ${string_type})) as k, count(1) as count from ${table}");
-            if (!filters.isEmpty()) {
-                actualValueSql.append(" where ").append(String.join(" and ", filters));
-            }
-
-            actualValueSql.append(" group by ${column} order by count desc limit 50) T");
-        } else {
-            String srcConnectorType = inputParameter.get("src_connector_type");
-            switch (srcConnectorType){
-                case "oracle":
-                    actualValueSql.append("select concat(concat(k, '\001'), count) as actual_value_").append(uniqueKey).append(" from (select ${if_case_key} as k, count(1) as count from ${table}");
-                    break;
-                default:
-                    actualValueSql.append("select concat(k, '\001', cast(count as ${string_type})) as actual_value_").append(uniqueKey).append(" from (select ${if_case_key} as k, count(1) as count from ${table}");
-                    break;
-            }
-
-            if (!filters.isEmpty()) {
-                actualValueSql.append(" where ").append(String.join(" and ", filters));
-            }
-            actualValueSql.append(" group by ${column} order by count desc ");
-            switch (srcConnectorType){
-                case "oracle":
-                    // oracle the rownum filter should be placed at the outermost layer of the query, otherwise it cannot be filtered
-                    actualValueSql.append(" ) T where ${limit_top_50_key} ");
-                    break;
-                default:
-                    actualValueSql.append(" ${limit_top_50_key}) T");
-                    break;
-            }
+        String where = "";
+        switch (engineType){
+            case "spark":
+                if (!filters.isEmpty()) {
+                    where = " where " + String.join(" and ", filters);
+                }
+                actualValueSql.append(getConnectorFactory().getMetricScript().histogramActualValue(uniqueKey,where));
+                break;
+            case "local":
+                if (!filters.isEmpty()) {
+                    where = " where " + String.join(" and ", filters);
+                }
+                actualValueSql.append(getConnectorFactory(inputParameter).getMetricScript().histogramActualValue(uniqueKey,where));
+                break;
+            default:
+                break;
         }
 
         executeSql.setSql(actualValueSql.toString());
@@ -120,5 +106,9 @@ public class ColumnHistogram extends BaseSingleTableColumn {
     @Override
     public List<DataVinesDataType> suitableType() {
         return Arrays.asList(DataVinesDataType.NUMERIC_TYPE, DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
+    }
+
+    private ConnectorFactory getConnectorFactory() {
+        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin("spark");
     }
 }

@@ -62,7 +62,7 @@ public class ColumnInEnums extends BaseSingleTableColumnNotUseView {
     @Override
     public void prepare(Map<String, String> config) {
         if (config.containsKey("enum_list") && config.containsKey("column")) {
-            filters.add(" (${column} in ( ${enum_list} )) ");
+            filters.add(getConnectorFactory(config).getMetricScript().columnInEnums());
         }
         super.prepare(config);
     }

@@ -47,8 +47,8 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <commons.version>1.0.0</commons.version>
-        <slf4j.api.version>1.7.5</slf4j.api.version>
-        <slf4j.log4j12.version>1.7.5</slf4j.log4j12.version>
+        <slf4j.api.version>1.7.25</slf4j.api.version>
+        <slf4j.log4j12.version>1.7.25</slf4j.log4j12.version>
         <jackson.version>2.12.5</jackson.version>
         <oshi.core.version>5.8.7</oshi.core.version>
         <commons.collections4.version>4.1</commons.collections4.version>
@@ -57,23 +57,23 @@
         <scala.version>2.11.8</scala.version>
         <scala.binary.version>2.11</scala.binary.version>
         <hadoop.version>2.7.5</hadoop.version>
-        <mysql.version>8.0.16</mysql.version>
+        <mysql.version>8.4.0</mysql.version>
         <skip.pmd.check>false</skip.pmd.check>
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>false</maven.javadoc.skip>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <main.basedir>${project.basedir}</main.basedir>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <druid.version>1.1.13</druid.version>
+        <druid.version>1.2.23</druid.version>
         <swagger.version>1.9.3</swagger.version>
         <springfox.version>2.9.2</springfox.version>
-        <swagger-models.version>1.5.24</swagger-models.version>
+        <swagger-models.version>1.6.14</swagger-models.version>
         <groovy.version>3.0.7</groovy.version>
         <netty.version>4.1.53.Final</netty.version>
         <guice.version>4.2.0</guice.version>
         <logback.version>1.2.3</logback.version>
-        <httpclient.version>4.4.1</httpclient.version>
-        <httpcore.version>4.4.1</httpcore.version>
+        <httpclient.version>4.5.14</httpclient.version>
+        <httpcore.version>4.4.16</httpcore.version>
         <quartz.version>2.3.2</quartz.version>
         <commons.lang.version>2.3</commons.lang.version>
         <commons.lang3.version>3.5</commons.lang3.version>
@@ -84,14 +84,14 @@
         <jcommander.version>1.81</jcommander.version>
         <commons-validator.version>1.6</commons-validator.version>
         <javax-inject.version>1</javax-inject.version>
-        <spring.boot.version>2.6.1</spring.boot.version>
-        <mybatis-plus.version>3.5.0</mybatis-plus.version>
+        <spring.boot.version>2.7.18</spring.boot.version>
+        <mybatis-plus.version>3.5.8</mybatis-plus.version>
         <swagger.version>3.0.0</swagger.version>
-        <lombok.version>1.18.22</lombok.version>
+        <lombok.version>1.18.34</lombok.version>
         <postgresql.version>42.2.6</postgresql.version>
         <javax-validation.version>2.0.1.Final</javax-validation.version>
-        <jsqlparser.version>4.2</jsqlparser.version>
-        <jjwt.version>0.7.0</jjwt.version>
+        <jsqlparser.version>4.9</jsqlparser.version>
+        <jjwt.version>0.9.1</jjwt.version>
         <jbcrypt.version>0.3m</jbcrypt.version>
         <curator.version>4.3.0</curator.version>
         <zookeeper.version>3.4.14</zookeeper.version>
@@ -102,7 +102,7 @@
         <sqlserver.version>6.1.0.jre8</sqlserver.version>
         <dameng.version>8.1.2.141</dameng.version>
         <hikari.version>4.0.3</hikari.version>
-        <spring.version>5.3.12</spring.version>
+        <spring.version>5.3.39</spring.version>
         <kerberos.version>1.0.1.RELEASE</kerberos.version>
         <jodd.version>3.5.2</jodd.version>
         <kaptcha.version>2.3.2</kaptcha.version>
@@ -113,6 +113,9 @@
         <javax.mail.version>1.6.2</javax.mail.version>
         <oracle.version>19.3.0.0</oracle.version>
         <orai18n.version>12.1.0.2.0</orai18n.version>
+        <jmx_prometheus_javaagent.version>0.20.0</jmx_prometheus_javaagent.version>
+        <kerb.version>2.0.1</kerb.version>
+        <odps.jdbc.version>3.8.6</odps.jdbc.version>
 
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
@@ -188,12 +191,6 @@
             </dependency>
 
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>1.7.25</version>
-            </dependency>
-
-            <dependency>
                 <groupId>javax.validation</groupId>
                 <artifactId>validation-api</artifactId>
                 <version>${javax-validation.version}</version>
@@ -243,6 +240,18 @@
 
             <dependency>
                 <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-flink-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-flink-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
                 <artifactId>datavines-connector-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -278,8 +287,8 @@
             </dependency>
 
             <dependency>
-                <groupId>mysql</groupId>
-                <artifactId>mysql-connector-java</artifactId>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
                 <version>${mysql.version}</version>
 <!--                <scope>test</scope>-->
             </dependency>
@@ -287,7 +296,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.11</version>
+                <version>4.13.2</version>
                 <scope>test</scope>
             </dependency>
 
@@ -445,6 +454,10 @@
                     <exclusion>
                         <groupId>org.slf4j</groupId>
                         <artifactId>slf4j-log4j12</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
                     </exclusion>
                     <exclusion>
                         <artifactId>netty</artifactId>
@@ -673,6 +686,24 @@
                 <artifactId>orai18n</artifactId>
                 <version>${orai18n.version}</version>
             </dependency>
+
+            <!-- kerberos   -->
+            <dependency>
+                <groupId>org.apache.kerby</groupId>
+                <artifactId>kerb-core</artifactId>
+                <version>${kerb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.kerby</groupId>
+                <artifactId>kerb-util</artifactId>
+                <version>${kerb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun.odps</groupId>
+                <artifactId>odps-jdbc</artifactId>
+                <version>${odps.jdbc.version}</version>
+                <classifier>jar-with-dependencies</classifier>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -852,6 +883,17 @@
             <releases>
                 <enabled>true</enabled>
             </releases>
+        </repository>
+        <repository>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
         </repository>
     </repositories>
 

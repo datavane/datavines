@@ -18,21 +18,7 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.utils.StringUtils;
 
-import java.util.Map;
-
-import static io.datavines.common.ConfigConstants.*;
-
 public class OracleDialect extends JdbcDialect{
-    @Override
-    public Map<String, String> getDialectKeyMap() {
-        super.getDialectKeyMap();
-        dialectKeyMap.put(STRING_TYPE, "VARCHAR2");
-        dialectKeyMap.put(LIMIT_TOP_50_KEY, " rownum <= 50");
-        dialectKeyMap.put(REGEX_KEY, "regexp_like(${column},'${regexp}')");
-        dialectKeyMap.put(NOT_REGEX_KEY, "not regexp_like(${column},'${regexp}')");
-        dialectKeyMap.put(IF_CASE_KEY, "case when ${column} is null then 'NULL' else ${column}||'' end ");
-        return dialectKeyMap;
-    }
 
     @Override
     public String getDriver() {
@@ -42,21 +28,6 @@ public class OracleDialect extends JdbcDialect{
     @Override
     public boolean invalidateItemCanOutputToSelf() {
         return true;
-    }
-
-    @Override
-    public boolean supportToBeErrorDataStorage() {
-        return false;
-    }
-
-    @Override
-    public String getCreateTableAsSelectStatement(String srcTable, String targetDatabase, String targetTable) {
-        return String.format("CREATE TABLE %s.%s AS SELECT * FROM %s", quoteIdentifier(targetDatabase), quoteIdentifier(targetTable), quoteIdentifier(srcTable));
-    }
-
-    @Override
-    public String quoteIdentifier(String column) {
-        return column;
     }
 
     @Override

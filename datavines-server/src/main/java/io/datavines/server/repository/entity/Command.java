@@ -48,6 +48,9 @@ public class Command implements Serializable {
     @TableField(value = "job_execution_id")
     private Long jobExecutionId;
 
+    @TableField(value = "execute_host")
+    private String executeHost;
+
     @TableField(value = "priority")
     private Priority priority;
 

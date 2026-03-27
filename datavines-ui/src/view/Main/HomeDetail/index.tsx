@@ -18,7 +18,7 @@ import Dashboard from "view/Main/HomeDetail/Dashboard";
 import JobExecutionLogs from "view/Main/HomeDetail/JobExecutionLogs";
 
 type DataSource = {
-    id:number,
+    id:string,
     name:string
 }
 const DetailMain = () => {
@@ -80,7 +80,7 @@ const DetailMain = () => {
             optionFilterProp="children"
             filterOption={(input, option: any) => option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
             source={dataSourceList}
-            value={params?.id ? +params.id : undefined}
+            value={params?.id ? params.id : undefined}
             onChange={onChangeDataSource}
             sourceLabelMap="name"
             sourceValueMap="id"

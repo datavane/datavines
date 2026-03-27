@@ -19,7 +19,7 @@ package io.datavines.engine.local.api;
 import io.datavines.common.config.Config;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.api.component.Component;
-import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.connector.api.entity.ResultList;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;

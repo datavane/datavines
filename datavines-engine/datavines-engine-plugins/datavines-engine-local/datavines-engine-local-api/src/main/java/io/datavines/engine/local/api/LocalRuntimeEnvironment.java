@@ -22,6 +22,8 @@ import io.datavines.engine.api.env.Execution;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.entity.ConnectionHolder;
 import io.datavines.engine.local.api.utils.LoggerFactory;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 
 import java.sql.Statement;
@@ -30,13 +32,23 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
 
     protected Logger log = LoggerFactory.getLogger(LocalRuntimeEnvironment.class);
 
+    @Setter
+    @Getter
     private ConnectionHolder sourceConnection;
 
+    @Setter
+    @Getter
     private ConnectionHolder targetConnection;
 
+    @Setter
+    @Getter
     private ConnectionHolder metadataConnection;
 
+    @Setter
     private Statement currentStatement;
+
+    @Getter
+    private boolean stop;
 
     @Override
     public void prepare() {
@@ -63,33 +75,9 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
         return null;
     }
 
-    public ConnectionHolder getSourceConnection() {
-        return sourceConnection;
-    }
-
-    public void setSourceConnection(ConnectionHolder sourceConnection) {
-        this.sourceConnection = sourceConnection;
-    }
-
-    public ConnectionHolder getMetadataConnection() {
-        return metadataConnection;
-    }
-
-    public void setMetadataConnection(ConnectionHolder metadataConnection) {
-        this.metadataConnection = metadataConnection;
-    }
-
-    public ConnectionHolder getTargetConnection() {
-        return targetConnection;
-    }
-
-    public void setTargetConnection(ConnectionHolder targetConnection) {
-        this.targetConnection = targetConnection;
-    }
-
     public void close() throws Exception {
         if (currentStatement != null) {
-            currentStatement.close();
+            currentStatement.cancel();
         }
 
         if (sourceConnection != null) {
@@ -103,9 +91,8 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
         if (metadataConnection != null) {
             metadataConnection.close();
         }
+
+        stop = true;
     }
 
-    public void setCurrentStatement(Statement statement) {
-        this.currentStatement = statement;
-    }
 }

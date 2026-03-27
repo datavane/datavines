@@ -21,8 +21,8 @@ import io.datavines.connector.api.*;
 public class DorisConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new DorisConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new DorisParameterConverter();
     }
 
     @Override

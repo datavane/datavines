@@ -378,7 +378,7 @@ public class PluginLoader<T> {
                         line = line.substring(0, ci);
                     }
                     line = line.trim();
-                    if (line.length() > 0) {
+                    if (!line.isEmpty()) {
                         try {
                             String name = null;
                             int i = line.indexOf('=');
@@ -386,7 +386,7 @@ public class PluginLoader<T> {
                                 name = line.substring(0, i).trim();
                                 line = line.substring(i + 1).trim();
                             }
-                            if (line.length() > 0 ) {
+                            if (!line.isEmpty()) {
                                 loadClass(pluginClasses, resourceUrl, Class.forName(line, true, classLoader), name);
                             }
                         } catch (Throwable t) {
@@ -412,7 +412,7 @@ public class PluginLoader<T> {
 
         if (StringUtils.isEmpty(name)) {
             name = findAnnotationName(clazz);
-            if (name.length() == 0) {
+            if (name.isEmpty()) {
                 throw new IllegalStateException("No such plugin name for the class " + clazz.getName() + " in the config " + resourceUrl);
             }
         }

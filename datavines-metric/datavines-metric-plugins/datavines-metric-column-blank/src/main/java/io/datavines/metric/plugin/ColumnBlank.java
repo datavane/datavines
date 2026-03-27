@@ -60,7 +60,7 @@ public class ColumnBlank extends BaseSingleTableColumnNotUseView {
     @Override
     public void prepare(Map<String, String> config) {
         if (config.containsKey("column")) {
-            filters.add("(${column} is null or ${column} = '')");
+            filters.add(getConnectorFactory(config).getMetricScript().columnIsBlank());
         }
         super.prepare(config);
     }

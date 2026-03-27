@@ -69,70 +69,73 @@ public class CommonTaskServiceImpl
     public long refreshCatalog(CatalogRefresh catalogRefresh) {
 
         Long taskId = 0L;
-        registryHolder.blockUtilAcquireLock("1028");
-        QueryWrapper<CommonTask> queryWrapper = new QueryWrapper<>();
+        try {
+            registryHolder.blockUtilAcquireLock("1028");
+            QueryWrapper<CommonTask> queryWrapper = new QueryWrapper<>();
 
-        queryWrapper.lambda().eq(CommonTask::getStatus,0)
-                .eq(CommonTask::getTaskType, CommonTaskType.CATALOG_METADATA_FETCH)
-                .eq(CommonTask::getDataSourceId, catalogRefresh.getDatasourceId())
-                .eq(CommonTask::getParameter, JSONUtils.toJsonString(catalogRefresh));
-        List<CommonTask> oldTaskList = baseMapper.selectList(queryWrapper);
+            queryWrapper.lambda().eq(CommonTask::getStatus,0)
+                    .eq(CommonTask::getTaskType, CommonTaskType.CATALOG_METADATA_FETCH)
+                    .eq(CommonTask::getDataSourceId, catalogRefresh.getDatasourceId())
+                    .eq(CommonTask::getParameter, JSONUtils.toJsonString(catalogRefresh));
+            List<CommonTask> oldTaskList = baseMapper.selectList(queryWrapper);
 
-        if (CollectionUtils.isNotEmpty(oldTaskList)) {
-            registryHolder.release("1028");
-            return 0L;
-        }
-        //生成任务之前需要检查是否有相同的任务在执行
-        LocalDateTime now = LocalDateTime.now();
-        CommonTask commonTask = new CommonTask();
-        commonTask.setTaskType(catalogRefresh.getTaskType());
-        commonTask.setParameter(JSONUtils.toJsonString(catalogRefresh));
-        commonTask.setDataSourceId(catalogRefresh.getDatasourceId());
-        commonTask.setStatus(0);
-        commonTask.setExecuteHost(NetUtils.getAddr(
-                CommonPropertyUtils.getInt(CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT)));
-        commonTask.setTaskType(catalogRefresh.getTaskType());
-        String parameter = commonTask.getParameter();
-        if (StringUtils.isNotEmpty(parameter)) {
-            Map<String, String> parameterMap = JSONUtils.toMap(parameter);
-            if (parameterMap != null) {
-                String database = parameterMap.get(DATABASE);
-                String table = parameterMap.get(TABLE);
+            if (CollectionUtils.isNotEmpty(oldTaskList)) {
+                registryHolder.release("1028");
+                return 0L;
+            }
+            //生成任务之前需要检查是否有相同的任务在执行
+            LocalDateTime now = LocalDateTime.now();
+            CommonTask commonTask = new CommonTask();
+            commonTask.setTaskType(catalogRefresh.getTaskType());
+            commonTask.setParameter(JSONUtils.toJsonString(catalogRefresh));
+            commonTask.setDataSourceId(catalogRefresh.getDatasourceId());
+            commonTask.setStatus(0);
+            commonTask.setExecuteHost(NetUtils.getAddr(
+                    CommonPropertyUtils.getInt(CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT)));
+            commonTask.setTaskType(catalogRefresh.getTaskType());
+            String parameter = commonTask.getParameter();
+            if (StringUtils.isNotEmpty(parameter)) {
+                Map<String, String> parameterMap = JSONUtils.toMap(parameter);
+                if (parameterMap != null) {
+                    String database = parameterMap.get(DATABASE);
+                    String table = parameterMap.get(TABLE);
 
-                if (StringUtils.isEmpty(database) && StringUtils.isEmpty(table)) {
-                    commonTask.setType(FetchType.DATASOURCE);
-                }
+                    if (StringUtils.isEmpty(database) && StringUtils.isEmpty(table)) {
+                        commonTask.setType(FetchType.DATASOURCE);
+                    }
 
-                if (StringUtils.isEmpty(database) && StringUtils.isNotEmpty(table)) {
-                    throw new DataVinesServerException(Status.CATALOG_FETCH_METADATA_PARAMETER_ERROR);
-                }
+                    if (StringUtils.isEmpty(database) && StringUtils.isNotEmpty(table)) {
+                        throw new DataVinesServerException(Status.CATALOG_FETCH_METADATA_PARAMETER_ERROR);
+                    }
 
-                if (StringUtils.isNotEmpty(database) && StringUtils.isEmpty(table)) {
-                    commonTask.setDatabaseName(database);
-                    commonTask.setType(FetchType.DATABASE);
-                }
+                    if (StringUtils.isNotEmpty(database) && StringUtils.isEmpty(table)) {
+                        commonTask.setDatabaseName(database);
+                        commonTask.setType(FetchType.DATABASE);
+                    }
 
-                if (StringUtils.isNotEmpty(database) && StringUtils.isNotEmpty(table)) {
-                    commonTask.setTableName(table);
-                    commonTask.setDatabaseName(database);
-                    commonTask.setType(FetchType.TABLE);
+                    if (StringUtils.isNotEmpty(database) && StringUtils.isNotEmpty(table)) {
+                        commonTask.setTableName(table);
+                        commonTask.setDatabaseName(database);
+                        commonTask.setType(FetchType.TABLE);
+                    }
                 }
             }
+
+            commonTask.setSubmitTime(now);
+            commonTask.setCreateTime(now);
+            commonTask.setUpdateTime(now);
+
+            baseMapper.insert(commonTask);
+
+            CommonTaskCommand commonTaskCommand = new CommonTaskCommand();
+            commonTaskCommand.setTaskId(commonTask.getId());
+            commonTaskCommand.setCreateTime(now);
+            commonTaskCommand.setUpdateTime(now);
+            commonTaskCommandService.create(commonTaskCommand);
+            taskId = commonTask.getId();
+        } finally {
+            registryHolder.release("1028");
         }
-
-        commonTask.setSubmitTime(now);
-        commonTask.setCreateTime(now);
-        commonTask.setUpdateTime(now);
-
-        baseMapper.insert(commonTask);
-
-        CommonTaskCommand commonTaskCommand = new CommonTaskCommand();
-        commonTaskCommand.setTaskId(commonTask.getId());
-        commonTaskCommand.setCreateTime(now);
-        commonTaskCommand.setUpdateTime(now);
-        commonTaskCommandService.create(commonTaskCommand);
-        taskId = commonTask.getId();
-        registryHolder.release("1028");
 
         return taskId;
     }

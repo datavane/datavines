@@ -431,6 +431,10 @@ public class JobExecuteManager {
             JobRunner jobRunner = jobExecutionContext.getJobRunner();
             jobRunner.kill();
         } else {
+            if (unFinishedJobExecutionMap.get(jobExecutionId) == null) {
+                return;
+            }
+
             unFinishedJobExecutionMap.remove(jobExecutionId);
             JobExecution jobExecution = jobExternalService.getJobExecutionById(jobExecutionId);
             if (jobExecution != null) {

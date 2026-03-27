@@ -26,11 +26,11 @@ import io.datavines.connector.api.TypeConverter;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSink;
-import io.datavines.engine.local.api.entity.ResultList;
-import io.datavines.engine.local.api.entity.ResultListWithColumns;
+import io.datavines.connector.api.entity.ResultList;
+import io.datavines.connector.api.entity.ResultListWithColumns;
 import io.datavines.engine.local.api.utils.FileUtils;
 import io.datavines.engine.local.api.utils.LoggerFactory;
-import io.datavines.engine.local.api.utils.SqlUtils;
+import io.datavines.connector.api.utils.SqlUtils;
 import io.datavines.spi.PluginLoader;
 
 import org.slf4j.Logger;
@@ -143,7 +143,7 @@ public class LocalFileSink implements LocalSink {
                     int start = i * pageSize;
                     int end = (i+1) * pageSize;
 
-                    ResultListWithColumns resultList = SqlUtils.getListWithHeaderFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins("select * from " + outputTable), start, end);
+                    ResultListWithColumns resultList = SqlUtils.getListWithHeaderFromResultSet(resultSet,  start, end);
                     //执行文件下载到本地
                     FileUtils.writeToLocal(resultList,
                             config.getString(ERROR_DATA_DIR),

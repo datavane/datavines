@@ -405,6 +405,7 @@ CREATE TABLE `dv_command` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `type` tinyint(4) NOT NULL DEFAULT '0' COMMENT 'Command type: 0 start task, 1 stop task',
   `parameter` text COMMENT 'json command parameters',
+  `execute_host` varchar(255) COMMENT 'job execute host',
   `job_execution_id` bigint(20) NOT NULL COMMENT 'task id',
   `priority` int(11) DEFAULT NULL COMMENT 'process instance priority: 0 Highest,1 High,2 Medium,3 Low,4 Lowest',
   `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'create time',
@@ -449,6 +450,20 @@ CREATE TABLE `dv_env` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `env_name` (`name`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='运行环境配置信息';
+
+DROP TABLE IF EXISTS `dv_access_token`;
+CREATE TABLE `dv_access_token` (
+    `id` bigint(20) NOT NULL AUTO_INCREMENT,
+    `workspace_id` bigint(20) NOT NULL COMMENT '工作空间ID',
+    `user_id` bigint(20) NOT NULL COMMENT '用户ID',
+    `token` varchar(1024) NOT NULL COMMENT 'token',
+    `expire_time` datetime NOT NULL COMMENT '过期时间',
+    `create_by` bigint(20) NOT NULL COMMENT '创建用户ID',
+    `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    `update_by` bigint(20) NOT NULL COMMENT '更新用户ID',
+    `update_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='token 管理';
 
 -- ----------------------------
 -- Table structure for dv_error_data_storage
@@ -861,7 +876,7 @@ INSERT INTO `dv_config` VALUES ('21', '-1', 'livy.execution.threshold', '1000', 
 INSERT INTO `dv_config` VALUES ('22', '-1', 'livy.task.jars', CONCAT('datavines-common-1.0.0-SNAPSHOT.jar,datavines-spi-1.0.0-SNAPSHOT.jar,'
                                                                     'datavines-engine-spark-api-1.0.0-SNAPSHOT.jar,datavines-engine-spark-connector-jdbc-1.0.0-SNAPSHOT.jar,'
                                                                     'datavines-engine-core-1.0.0-SNAPSHOT.jar,datavines-engine-common-1.0.0-SNAPSHOT.jar,datavines-engine-spark-transform-sql-1.0.0-SNAPSHOT.jar,'
-                                                                    'datavines-engine-api-1.0.0-SNAPSHOT.jar,mysql-connector-java-8.0.16.jar,httpclient-4.4.1.jar,'
+                                                                    'datavines-engine-api-1.0.0-SNAPSHOT.jar,mysql-connector-j-8.4.0.jar,httpclient-4.4.1.jar,'
                                                                     'httpcore-4.4.1.jar,postgresql-42.2.6.jar,presto-jdbc-0.283.jar,trino-jdbc-407.jar,clickhouse-jdbc-0.1.53.jar,'
                                                                     'mongo-java-driver-3.9.0.jar,mongo-spark-connector_2.11-2.4.0.jar,datavines-engine-spark-connector-mongodb-1.0.0-SNAPSHOT.jar'),
                                 '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
@@ -873,6 +888,7 @@ INSERT INTO `dv_config` VALUES ('27', '-1', 'spark.engine.parameter.driver.memor
 INSERT INTO `dv_config` VALUES ('28', '-1', 'spark.engine.parameter.executor.cores', '1', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
 INSERT INTO `dv_config` VALUES ('29', '-1', 'spark.engine.parameter.executor.memory', '512M', '1', '1', '2023-09-05 21:02:38', '1', '2023-09-05 21:02:38');
 INSERT INTO `dv_config` VALUES ('30', '-1', 'datavines.fqdn', 'http://127.0.0.1:5600', '1', '1', '2024-05-21 15:15:38', '1', '2024-05-21 15:15:38');
+INSERT INTO `dv_config` VALUES ('31', '-1', 'data.quality.flink.jar.name', '/libs/datavines-engine-flink-core-1.0.0-SNAPSHOT.jar', '1', '1', '2025-02-02 11:43:04', '1', '2025-02-02 11:43:04');
 
 INSERT INTO `dv_user` (`id`, `username`, `password`, `email`, `phone`, `admin`) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0');
 INSERT INTO `dv_workspace` (`id`, `name`, `create_by`, `update_by`) VALUES ('1', "admin\'s default", '1', '1');

@@ -17,17 +17,21 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import io.datavines.common.utils.StringUtils;
+
+import java.util.Map;
+
+import static io.datavines.common.ConfigConstants.SID;
 
 public class OracleDataSourceInfo extends BaseJdbcDataSourceInfo {
 
-    public OracleDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo){
-        super(jdbcConnectionInfo);
+    public OracleDataSourceInfo(Map<String,String> param){
+        super(param);
     }
 
     @Override
     public String getAddress() {
-        return "jdbc:oracle:thin:@" + getHost() + ":" + getPort();
+        return "jdbc:oracle:thin:@//" + getHost() + ":" + getPort();
     }
 
     @Override
@@ -48,5 +52,25 @@ public class OracleDataSourceInfo extends BaseJdbcDataSourceInfo {
     @Override
     public String getValidationQuery() {
         return "Select 1 FROM DUAL";
+    }
+
+    @Override
+    public String getJdbcUrl() {
+        StringBuilder jdbcUrl = new StringBuilder(getAddress());
+        appendSid(jdbcUrl);
+        return jdbcUrl.toString();
+    }
+
+    /**
+     * append sid
+     * @param jdbcUrl jdbc url
+     */
+    protected void appendSid(StringBuilder jdbcUrl) {
+        if (StringUtils.isNotEmpty(param.get(SID))) {
+            if (getAddress().lastIndexOf('/') != (jdbcUrl.length() - 1)) {
+                jdbcUrl.append("/");
+            }
+            jdbcUrl.append(param.get(SID));
+        }
     }
 }

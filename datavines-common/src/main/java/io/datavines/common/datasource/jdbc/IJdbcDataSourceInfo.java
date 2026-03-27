@@ -16,7 +16,9 @@
  */
 package io.datavines.common.datasource.jdbc;
 
+import java.util.Map;
+
 public interface IJdbcDataSourceInfo {
 
-    BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo);
+    BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param);
 }

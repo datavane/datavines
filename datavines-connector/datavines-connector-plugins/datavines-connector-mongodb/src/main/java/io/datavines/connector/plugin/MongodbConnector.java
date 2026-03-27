@@ -30,6 +30,7 @@ import io.datavines.common.param.*;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.Connector;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.curator.shaded.com.google.common.collect.Streams;
 import org.bson.Document;
 import org.bson.types.Binary;
@@ -89,15 +90,15 @@ public class MongodbConnector implements Connector {
     }
 
     private MongoClient getMongoClient(String dataSourceParam) {
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-        return getMongoClient(jdbcConnectionInfo);
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        return getMongoClient(paramMap);
     }
 
-    private MongoClient getMongoClient(JdbcConnectionInfo jdbcConnectionInfo) {
+    private MongoClient getMongoClient(Map<String,String> param) {
 
         MongodbClientManager instance = MongodbClientManager.getInstance();
 
-        return instance.getMongoClient(jdbcConnectionInfo);
+        return instance.getMongoClient(param);
     }
 
     @Override
@@ -106,12 +107,12 @@ public class MongodbConnector implements Connector {
         String dataSourceParam = param.getDataSourceParam();
         String dataBase = param.getDatabase();
 
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-        if (jdbcConnectionInfo == null) {
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        if (MapUtils.isEmpty(paramMap)) {
             throw new SQLException("jdbc datasource param is no validate");
         }
 
-        MongoClient mongoClient = getMongoClient(jdbcConnectionInfo);
+        MongoClient mongoClient = getMongoClient(paramMap);
         MongoDatabase database = mongoClient.getDatabase(dataBase);
         MongoIterable<String> collectionList = database.listCollectionNames();
         List<TableInfo> tableInfos = new ArrayList<>();
@@ -129,15 +130,15 @@ public class MongodbConnector implements Connector {
     public ConnectorResponse getColumns(GetColumnsRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-        if (jdbcConnectionInfo == null) {
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        if (MapUtils.isEmpty(paramMap)) {
             throw new SQLException("jdbc datasource param is no validate");
         }
 
         String dataBase = param.getDataBase();
         String table = param.getTable();
 
-        MongoClient mongoClient = getMongoClient(jdbcConnectionInfo);
+        MongoClient mongoClient = getMongoClient(paramMap);
         MongoDatabase db = mongoClient.getDatabase(dataBase);
         Document sortDoc = new Document("_id", -1);
         Document doc = db.getCollection(table)
@@ -193,19 +194,26 @@ public class MongodbConnector implements Connector {
 
     @Override
     public ConnectorResponse testConnect(TestConnectionRequestParam param) {
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(param.getDataSourceParam(), JdbcConnectionInfo.class);
+        Map<String,String> paramMap = JSONUtils.toMap(param.getDataSourceParam());
 
         try {
-            MongoClient mongoClient = getMongoClient(jdbcConnectionInfo);
+            MongoClient mongoClient = getMongoClient(paramMap);
             if (mongoClient == null) {
-                return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
+                return ConnectorResponse.builder()
+                        .status(ConnectorResponse.Status.ERROR)
+                        .result(false)
+                        .errorMsg("Failed to create MongoDB client")
+                        .build();
             }
             return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(true).build();
         } catch (Exception e) {
             logger.error(e.toString(), e);
+            return ConnectorResponse.builder()
+                    .status(ConnectorResponse.Status.ERROR)
+                    .result(false)
+                    .errorMsg(e.getMessage())
+                    .build();
         }
-
-        return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
     }
 
     @Override

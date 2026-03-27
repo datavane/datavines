@@ -23,9 +23,9 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalTransform;
-import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.connector.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.LoggerFactory;
-import io.datavines.engine.local.api.utils.SqlUtils;
+import io.datavines.connector.api.utils.SqlUtils;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -81,7 +81,7 @@ public class SqlTransform implements LocalTransform {
     }
 
     @Override
-    public ResultList process(LocalRuntimeEnvironment env) {
+    public ResultList process(LocalRuntimeEnvironment env) throws DataVinesException {
 
         ResultList resultList = null;
         try {
@@ -89,9 +89,6 @@ public class SqlTransform implements LocalTransform {
             String pluginType = config.getString(PLUGIN_TYPE);
             logger.info("transform sql is: {}, transform_type is : {}", sql, pluginType);
             switch (TransformType.of(pluginType)){
-                case INVALIDATE_ITEMS :
-                    resultList = new InvalidateItemsExecutor().execute(env.getSourceConnection().getConnection(), config, env);
-                    break;
                 case ACTUAL_VALUE :
                     resultList = new ActualValueExecutor().execute(env.getSourceConnection().getConnection(), config, env);
                     break;

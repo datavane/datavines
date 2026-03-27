@@ -41,8 +41,8 @@ const MenuAside: React.FC<TMenuAside> = ({ menus, history }) => {
     const { loginInfo } = useSelector((r) => r.userReducer);
     const intl = useIntl();
     const { Render: RenderCreateSpace, show } = useAddSpace({});
-
     const { Render: RenderResetPassword, show1 } = useResetPassword({});
+
     const setActiveKeyRedirect = (redirect = false) => {
         const url = window.location.href;
         const match = menus.find((item) => {
@@ -101,15 +101,15 @@ const MenuAside: React.FC<TMenuAside> = ({ menus, history }) => {
                         justifyContent: 'space-between',
                     }}
                     >
-                        {intl.formatMessage({ id: 'header_top_workspace' })}
+                        {intl.formatMessage({id: 'header_top_workspace'})}
                         <span
                             style={{
                                 cursor: 'pointer',
                             }}
                             onClick={() => onShowSpace(undefined)}
                         >
-                            <PlusOutlined style={{ marginRight: '4px' }} />
-                            {intl.formatMessage({ id: 'common_create_btn' })}
+                            <PlusOutlined style={{marginRight: '4px'}}/>
+                            {intl.formatMessage({id: 'common_create_btn'})}
                         </span>
                     </div>
                     <div
@@ -141,10 +141,10 @@ const MenuAside: React.FC<TMenuAside> = ({ menus, history }) => {
                     style={{
                         cursor: 'pointer',
                     }}
-                    onClick={()=>onShowResetPassword(loginInfo.id)}
+                    onClick={() => onShowResetPassword(loginInfo.id)}
                 >
-                    <EditOutlined style={{ marginRight: '10px' }} />
-                    {intl.formatMessage({ id: 'common_reset_password' })}
+                    <EditOutlined style={{marginRight: '10px'}}/>
+                    {intl.formatMessage({id: 'common_reset_password'})}
                 </li>
                 <li
                     style={{
@@ -152,15 +152,15 @@ const MenuAside: React.FC<TMenuAside> = ({ menus, history }) => {
                     }}
                     onClick={handleMenuClick}
                 >
-                    <LogoutOutlined style={{ marginRight: '10px' }} />
-                    {intl.formatMessage({ id: 'common_Logout' })}
+                    <LogoutOutlined style={{marginRight: '10px'}}/>
+                    {intl.formatMessage({id: 'common_Logout'})}
                 </li>
             </ul>
         </div>
     );
     const $munus = menus.map((item) => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { exact, ...rest } = item;
+        const {exact, ...rest} = item;
         return {
             ...rest,
             style: {

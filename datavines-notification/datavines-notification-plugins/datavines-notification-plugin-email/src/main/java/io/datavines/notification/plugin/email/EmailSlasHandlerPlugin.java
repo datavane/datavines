@@ -31,23 +31,16 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.notification.api.entity.*;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
-import io.datavines.notification.plugin.email.entity.NotificationConfig;
 import io.datavines.notification.plugin.email.entity.ReceiverConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.datavines.notification.api.constants.NotificationConstants.*;
+
 @Slf4j
 public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
-
-    private final String STRING_YES = "YES";
-
-    private final String STRING_NO = "NO";
-
-    private final String STRING_TRUE = "TRUE";
-
-    private final String STRING_FALSE = "FALSE";
 
     @Override
     public SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config) {
@@ -149,8 +142,10 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
                 .addValidate(Validate.newBuilder().setRequired(true).build())
                 .build();
 
-        InputParam sslTrust = InputParam.newBuilder("smtpSslTrust", "mail.smtp.ssl.trust")
-                .setValue("true")
+        RadioParam sslTrust = RadioParam.newBuilder("smtpSslTrust", "mail.smtp.ssl.trust")
+                .addParamsOptions(new ParamsOptions(STRING_YES, STRING_TRUE, false))
+                .addParamsOptions(new ParamsOptions(STRING_NO, STRING_FALSE, false))
+                .setValue(STRING_FALSE)
                 .addValidate(Validate.newBuilder().setRequired(true).build())
                 .build();
 

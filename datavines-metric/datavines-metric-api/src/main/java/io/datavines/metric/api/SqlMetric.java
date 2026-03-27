@@ -104,4 +104,8 @@ public interface SqlMetric {
     default MetricDirectionType getDirectionType() {
         return MetricDirectionType.POSITIVE;
     }
+
+    default boolean isCustomSql() {
+        return false;
+    }
 }

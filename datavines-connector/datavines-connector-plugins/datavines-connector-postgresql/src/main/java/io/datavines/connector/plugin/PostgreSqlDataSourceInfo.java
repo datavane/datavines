@@ -17,17 +17,18 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class PostgreSqlDataSourceInfo extends BaseJdbcDataSourceInfo {
 
     private final Logger logger = LoggerFactory.getLogger(PostgreSqlDataSourceInfo.class);
 
-    public PostgreSqlDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        super(jdbcConnectionInfo);
+    public PostgreSqlDataSourceInfo(Map<String,String> param) {
+        super(param);
     }
 
     @Override

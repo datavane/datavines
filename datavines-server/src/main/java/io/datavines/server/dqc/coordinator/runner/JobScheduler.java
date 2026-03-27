@@ -16,6 +16,8 @@
  */
 package io.datavines.server.dqc.coordinator.runner;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.utils.*;
 import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
 import io.datavines.server.registry.Register;
@@ -28,6 +30,7 @@ import io.datavines.server.repository.service.impl.JobExternalService;
 import io.datavines.server.utils.SpringApplicationContext;
 import io.datavines.server.repository.entity.Command;
 
+import java.util.List;
 import java.util.Map;
 
 import static io.datavines.common.CommonConstants.*;
@@ -59,16 +62,31 @@ public class JobScheduler extends Thread {
         while (Stopper.isRunning()) {
             Command command = null;
             try {
+
+                String executeHost = NetUtils.getAddr(CommonPropertyUtils.getInt(CommonPropertyUtils.SERVER_PORT, CommonPropertyUtils.SERVER_PORT_DEFAULT));
+
+                // 获取执行地址在本机的Kill命令
+                List<Command> commandList = jobExternalService.listKillCommandByExecuteHost(executeHost);
+                if (CollectionUtils.isNotEmpty(commandList)) {
+                    commandList.forEach(killCommand -> {
+                        if (killCommand != null) {
+                            jobExecuteManager.addKillCommand(killCommand.getJobExecutionId());
+                            logger.info(String.format("kill job execution %s in %s", killCommand.getJobExecutionId(), executeHost));
+                            jobExternalService.deleteCommandById(killCommand.getId());
+                        }
+                    });
+                }
+
                 boolean runCheckFlag = OSUtils.checkResource(
                         CommonPropertyUtils.getDouble(MAX_CPU_LOAD_AVG, MAX_CPU_LOAD_AVG_DEFAULT),
                         CommonPropertyUtils.getDouble(RESERVED_MEMORY, RESERVED_MEMORY_DEFAULT));
 
                 if (!runCheckFlag) {
-                    ThreadUtils.sleep(SLEEP_TIME_MILLIS*10);
+                    ThreadUtils.sleep(SLEEP_TIME_MILLIS * 10);
                     continue;
                 }
 
-                command = jobExternalService.getCommand(register.getTotalSlot(), register.getSlot());
+                command = jobExternalService.getStartCommand(register.getTotalSlot(), register.getSlot());
                 if (command != null) {
                     String parameter = command.getParameter();
                     String engineType = LOCAL;
@@ -79,24 +97,20 @@ public class JobScheduler extends Thread {
                         }
                     }
 
-                    if (CommandType.START == command.getType()) {
-                        JobExecution jobExecution = jobExternalService.executeCommand(command);
-                        if (jobExecution == null) {
-                            logger.warn(String.format("job execution not found , command : %s", JSONUtils.toJsonString(command)));
-                            jobExternalService.deleteCommandById(command.getId());
-                            continue;
-                        }
-
-                        if (!executionOutOfThreshold(engineType)) {
-                            logger.info("start submit job execution : {} ", JSONUtils.toJsonString(jobExecution));
-                            jobExecuteManager.addExecuteCommand(jobExecution);
-                            logger.info(String.format("submit success, job execution : %s", jobExecution.getName()) );
-                            jobExternalService.deleteCommandById(command.getId());
-                        }
-                    } else if (CommandType.STOP == command.getType()) {
-                        jobExecuteManager.addKillCommand(command.getJobExecutionId());
-                        logger.info(String.format("kill job execution : %s", command.getJobExecutionId()) );
+                    JobExecution jobExecution = jobExternalService.executeCommand(command);
+                    if (jobExecution == null) {
+                        logger.warn(String.format("job execution not found , command : %s", JSONUtils.toJsonString(command)));
                         jobExternalService.deleteCommandById(command.getId());
+                        continue;
+                    }
+
+                    if (!executionOutOfThreshold(engineType)) {
+                        logger.info("start submit job execution : {} ", JSONUtils.toJsonString(jobExecution));
+                        jobExecuteManager.addExecuteCommand(jobExecution);
+                        logger.info(String.format("submit success, job execution : %s", jobExecution.getName()) );
+                        jobExternalService.deleteCommandById(command.getId());
+                        jobExecution.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
+                        jobExternalService.updateJobExecution(jobExecution);
                     }
 
                     ThreadUtils.sleep(SLEEP_TIME_MILLIS);

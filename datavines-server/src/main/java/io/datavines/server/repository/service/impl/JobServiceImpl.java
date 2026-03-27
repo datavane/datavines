@@ -32,10 +32,12 @@ import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.common.enums.DataVinesDataType;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.JobType;
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.PasswordFilterUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.connector.api.utils.SqlUtils;
 import io.datavines.core.enums.Status;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.core.utils.LanguageUtils;
@@ -383,17 +385,22 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
 
     private String getFQN(BaseJobParameter jobParameter) {
         String fqn = "";
-        String schema = (String)jobParameter.getMetricParameter().get(DATABASE);
+        String database = (String)jobParameter.getMetricParameter().get(DATABASE);
         String table = (String)jobParameter.getMetricParameter().get(TABLE);
         String column = (String)jobParameter.getMetricParameter().get(COLUMN);
-        if (StringUtils.isEmpty(schema)) {
+
+        if (StringUtils.isEmpty(database)) {
             return null;
         }
 
         if (StringUtils.isEmpty(table)) {
-            return null;
+            List<String> tables = SqlUtils.extractTablesFromSelect((String) jobParameter.getMetricParameter().get(ACTUAL_AGGREGATE_SQL));
+            if (CollectionUtils.isEmpty(tables)) {
+                throw new DataVinesException("custom sql must have table");
+            }
+            fqn = database + "." + tables.get(0);
         } else {
-            fqn = schema + "." + table;
+            fqn = database + "." + table;
         }
 
         if (StringUtils.isEmpty(column)) {
@@ -493,15 +500,13 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
     @Override
-    public boolean execute(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException {
+    public Long execute(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException {
         Job job = baseMapper.selectById(jobId);
         if (job == null) {
             throw new DataVinesServerException(Status.JOB_NOT_EXIST_ERROR, jobId);
         }
 
-        executeJob(job, scheduleTime);
-
-        return true;
+        return executeJob(job, scheduleTime);
     }
 
     @Override
@@ -525,18 +530,24 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
     }
 
 
-    private void executeJob(Job job, LocalDateTime scheduleTime) {
+    private Long executeJob(Job job, LocalDateTime scheduleTime) {
 
         JobExecution jobExecution = getJobExecution(job, scheduleTime);
 
         jobExecutionService.save(jobExecution);
+
+        Map<String, String> parameter = new HashMap<>();
+        parameter.put("engine", jobExecution.getEngineType());
 
         // add a command
         Command command = new Command();
         command.setType(CommandType.START);
         command.setPriority(Priority.MEDIUM);
         command.setJobExecutionId(jobExecution.getId());
+        command.setParameter(JSONUtils.toJsonString(parameter));
         commandService.insert(command);
+
+        return jobExecution.getId();
     }
 
     private JobExecution getJobExecution(Job job, LocalDateTime scheduleTime) {
@@ -585,7 +596,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         jobExecution.setErrorDataStorageType(errorDataStorageType);
         jobExecution.setErrorDataStorageParameter(errorDataStorageParameter);
         jobExecution.setErrorDataFileName(getErrorDataFileName(job.getParameter()));
-        jobExecution.setStatus(ExecutionStatus.SUBMITTED_SUCCESS);
+        jobExecution.setStatus(ExecutionStatus.WAITING_SUMMIT);
         jobExecution.setTenantCode(tenantStr);
         jobExecution.setEnv(envStr);
         jobExecution.setSubmitTime(LocalDateTime.now());

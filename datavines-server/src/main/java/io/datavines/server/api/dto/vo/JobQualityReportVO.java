@@ -17,16 +17,11 @@
 package io.datavines.server.api.dto.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.datavines.common.enums.ExecutionStatus;
-import io.datavines.common.enums.JobType;
-import io.datavines.core.utils.LanguageUtils;
-import io.datavines.server.enums.DqJobExecutionState;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 public class JobQualityReportVO implements Serializable {

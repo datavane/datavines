@@ -40,7 +40,7 @@ public enum OperatorType {
     GTE(4,"gte",">="),
     NE(5,"neq","!=");
 
-    OperatorType(int code, String description,String symbol) {
+    OperatorType(int code, String description, String symbol) {
         this.code = code;
         this.description = description;
         this.symbol = symbol;

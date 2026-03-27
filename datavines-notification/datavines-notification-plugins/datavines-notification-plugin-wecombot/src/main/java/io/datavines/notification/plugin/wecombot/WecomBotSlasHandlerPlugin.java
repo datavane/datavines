@@ -21,8 +21,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datavines.common.param.form.PluginParams;
 import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.type.InputParam;
+import io.datavines.common.utils.JSONUtils;
 import io.datavines.notification.api.entity.*;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
+import io.datavines.notification.plugin.wecombot.entity.ReceiverConfig;
 import lombok.extern.slf4j.Slf4j;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -38,11 +40,17 @@ public class WecomBotSlasHandlerPlugin implements SlasHandlerPlugin {
         String subject = slaNotificationMessage.getSubject();
         String message = slaNotificationMessage.getMessage();
         for (SlaSenderMessage senderMessage: wecomBotSenderSet) {
-            WecomBotSender wecomBotSender = new WecomBotSender(senderMessage);
-            // get webhook list
-            String[] webhookArr = wecomBotSender.getWebhookList().split(";");
-            HashSet<String> toReceivers = new HashSet<>(Arrays.asList(webhookArr));
+            WecomBotSender wecomBotSender = new WecomBotSender();
+            Set<SlaConfigMessage> slaConfigMessageSet = config.get(senderMessage);
+            HashSet<ReceiverConfig> toReceivers = new HashSet<>();
+            for (SlaConfigMessage receiver: slaConfigMessageSet) {
+                String receiverConfigStr = receiver.getConfig();
+                ReceiverConfig receiverConfig = JSONUtils.parseObject(receiverConfigStr, ReceiverConfig.class);
+                toReceivers.add(receiverConfig);
+            }
+
             SlaNotificationResultRecord record = wecomBotSender.sendMsg(toReceivers, subject, message);
+
             if (record.getStatus().equals(false)) {
                 record.setMessage(record.getMessage());
                 result.setStatus(false);
@@ -57,10 +65,6 @@ public class WecomBotSlasHandlerPlugin implements SlasHandlerPlugin {
     public String getConfigSenderJson() {
         // notify config item
         List<PluginParams> paramsList = new ArrayList<>();
-        InputParam webhook = InputParam.newBuilder("webhook", "webhook")
-                .addValidate(Validate.newBuilder().setRequired(true).build())
-                .build();
-        paramsList.add(webhook);
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         String result = null;
@@ -76,6 +80,10 @@ public class WecomBotSlasHandlerPlugin implements SlasHandlerPlugin {
     public String getConfigJson() {
         // sla create notify config item
         List<PluginParams> paramsList = new ArrayList<>();
+        InputParam webhook = InputParam.newBuilder("webhook", "webhook")
+                .addValidate(Validate.newBuilder().setRequired(true).build())
+                .build();
+        paramsList.add(webhook);
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         String result = null;

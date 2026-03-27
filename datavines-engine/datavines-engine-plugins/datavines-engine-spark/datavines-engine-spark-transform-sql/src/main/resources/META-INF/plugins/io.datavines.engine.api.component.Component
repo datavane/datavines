@@ -1,2 +1,2 @@
-spark-sql-transform=io.datavines.engine.spark.transform.sql.SqlTransform
-livy-sql-transform=io.datavines.engine.spark.transform.sql.SqlTransform
+spark-batch-sql-transform=io.datavines.engine.spark.transform.sql.SqlTransform
+livy-batch-sql-transform=io.datavines.engine.spark.transform.sql.SqlTransform

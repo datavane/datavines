@@ -18,11 +18,11 @@ package io.datavines.notification.plugin.dingtalk;
 
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.notification.api.entity.SlaNotificationResultRecord;
-import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.plugin.dingtalk.entity.ReceiverConfig;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.StringUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.http.HttpEntity;
@@ -33,11 +33,17 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.requireNonNull;
+import static io.datavines.notification.plugin.dingtalk.DingTalkConstants.MSG_TYPE;
 
 @Slf4j
 @EqualsAndHashCode
@@ -45,24 +51,6 @@ import static java.util.Objects.requireNonNull;
 public class DingTalkSender {
 
     private String msgType;
-    private String webHook;
-    private String keyWord;
-
-    private String mustNotNull = " must not be null";
-
-    public DingTalkSender(SlaSenderMessage senderMessage) {
-
-        String configString = senderMessage.getConfig();
-        Map<String, String> config = JSONUtils.toMap(configString);
-
-        msgType=config.get("msgType");
-
-        webHook=config.get("webHook");
-        requireNonNull(webHook, "dingtalk webHook" + mustNotNull);
-        keyWord=config.get("keyWord");
-        requireNonNull(keyWord, "dingtalk keyWord" + mustNotNull);
-
-    }
 
     public SlaNotificationResultRecord sendCardMsg(Set<ReceiverConfig> receiverSet, String subject, String message){
         SlaNotificationResultRecord result = new SlaNotificationResultRecord();
@@ -71,12 +59,12 @@ public class DingTalkSender {
         }
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         Set<ReceiverConfig> failToReceivers = new HashSet<>();
-        for(ReceiverConfig receiverConfig : receiverSet){
+        for (ReceiverConfig receiverConfig : receiverSet) {
             try {
                 String msg = generateMsgJson(subject, message, receiverConfig);
-                HttpPost httpPost = constructHttpPost(webHook, msg);
-                CloseableHttpClient httpClient = getDefaultClient();
-                try {
+                String url = constructUrl(receiverConfig.getWebhook(), receiverConfig.getSecret());
+                HttpPost httpPost = constructHttpPost(url, msg);
+                try (CloseableHttpClient httpClient = getDefaultClient()) {
                     CloseableHttpResponse response = httpClient.execute(httpPost);
                     String resp;
                     try {
@@ -87,8 +75,6 @@ public class DingTalkSender {
                         response.close();
                     }
                     log.info("Ding Talk send msg :{}, resp: {}", msg, resp);
-                } finally {
-                    httpClient.close();
                 }
             } catch (Exception e) {
                 failToReceivers.add(receiverConfig);
@@ -100,11 +86,28 @@ public class DingTalkSender {
             String recordMessage = String.format("send to %s fail", String.join(",", failToReceivers.stream().map(ReceiverConfig::getAtMobiles).collect(Collectors.toList())));
             result.setStatus(false);
             result.setMessage(recordMessage);
-        }else{
+        } else {
             result.setStatus(true);
         }
+
         return result;
     }
+
+    private String constructUrl(String webHook, String secret) throws NoSuchAlgorithmException, InvalidKeyException, UnsupportedEncodingException {
+        if (org.apache.commons.lang3.StringUtils.isBlank(secret)) {
+            return webHook;
+        }
+        Long timestamp = System.currentTimeMillis();
+        String stringToSign = timestamp + "\n" + secret;
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+        byte[] signData = mac.doFinal(stringToSign.getBytes(StandardCharsets.UTF_8));
+        String sign = URLEncoder.encode(new String(Base64.encodeBase64(signData)),"UTF-8");
+
+        // sign字段和timestamp字段必须拼接到请求URL上，否则会出现 310000 的错误信息
+        return String.format(webHook + "&sign=%s&timestamp=%d", sign, timestamp);
+    }
+
     private String generateMsgJson(String title, String content,ReceiverConfig receiverConfig) {
 
         final String atMobiles = receiverConfig.getAtMobiles();
@@ -115,15 +118,15 @@ public class DingTalkSender {
             msgType = DingTalkConstants.DING_TALK_MSG_TYPE_TEXT;
         }
         Map<String, Object> items = new HashMap<>();
-        items.put("msgtype", msgType);
+        items.put(MSG_TYPE, msgType);
         Map<String, Object> text = new HashMap<>();
         items.put(msgType, text);
 
         if (DingTalkConstants.DING_TALK_MSG_TYPE_MARKDOWN.equals(msgType)) {
             StringBuilder builder = new StringBuilder(content);
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(keyWord)) {
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(receiverConfig.getKeyword())) {
                 builder.append(" ");
-                builder.append(keyWord);
+                builder.append(receiverConfig.getKeyword());
             }
             builder.append("\n\n");
             if (org.apache.commons.lang3.StringUtils.isNotBlank(atMobiles)) {
@@ -148,9 +151,9 @@ public class DingTalkSender {
             StringBuilder builder = new StringBuilder(title);
             builder.append("\n");
             builder.append(content);
-            if (org.apache.commons.lang3.StringUtils.isNotBlank(keyWord)) {
+            if (org.apache.commons.lang3.StringUtils.isNotBlank(receiverConfig.getKeyword())) {
                 builder.append(" ");
-                builder.append(keyWord);
+                builder.append(receiverConfig.getKeyword());
             }
             byte[] byt = StringUtils.getBytesUtf8(builder.toString());
             String txt = StringUtils.newStringUtf8(byt);

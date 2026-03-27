@@ -73,10 +73,9 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     private CommonTaskScheduleService commonTaskScheduleService;
 
     @Override
-    public boolean testConnect(TestConnectionRequestParam param) {
+    public ConnectorResponse testConnect(TestConnectionRequestParam param) {
         ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
-        ConnectorResponse response = connectorFactory.getConnector().testConnect(param);
-        return (boolean)response.getResult();
+        return connectorFactory.getConnector().testConnect(param);
     }
 
     @Override

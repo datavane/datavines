@@ -18,8 +18,12 @@ package io.datavines.common.entity;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class QueryColumn {
+public class QueryColumn implements Serializable {
+
+    private static final long serialVersionUID = -2398995167525051291L;
 
     private String name;
 

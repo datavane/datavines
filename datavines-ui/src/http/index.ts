@@ -1,4 +1,5 @@
 import { getHttp } from '@Editor/http';
+import { setHttpErrorLocale } from '@Editor/http/response.interceptor';
 import { createHashHistory } from 'history';
 import shareData from 'src/utils/shareData';
 import { DV_STORAGE_LOGIN } from 'src/utils/constants';
@@ -32,6 +33,7 @@ export const $http = getHttp({
         }
         if (locale) {
             config.headers.language = locale;
+            setHttpErrorLocale(locale);
         }
         return config;
     },

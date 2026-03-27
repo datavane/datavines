@@ -42,14 +42,14 @@ public class ConfigController {
 
     @ApiOperation(value = "create config")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object createConfig(@Valid @RequestBody ConfigCreate ConfigCreate) throws DataVinesServerException {
-        return configService.create(ConfigCreate);
+    public Object createConfig(@Valid @RequestBody ConfigCreate configCreate) throws DataVinesServerException {
+        return configService.create(configCreate);
     }
 
     @ApiOperation(value = "update config")
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Object updateConfig(@Valid @RequestBody ConfigUpdate ConfigUpdate) throws DataVinesServerException {
-        return configService.update(ConfigUpdate)>0;
+    public Object updateConfig(@Valid @RequestBody ConfigUpdate configUpdate) throws DataVinesServerException {
+        return configService.update(configUpdate)>0;
     }
 
     @ApiOperation(value = "delete config")

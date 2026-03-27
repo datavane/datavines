@@ -25,12 +25,12 @@ import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.TypeConverter;
 import io.datavines.connector.api.entity.JdbcOptions;
 import io.datavines.connector.api.entity.StructField;
-import io.datavines.connector.plugin.utils.JdbcUtils;
+import io.datavines.connector.api.utils.JdbcUtils;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.entity.ConnectionHolder;
-import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.connector.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.LoggerFactory;
-import io.datavines.engine.local.api.utils.SqlUtils;
+import io.datavines.connector.api.utils.SqlUtils;
 import io.datavines.spi.PluginLoader;
 import org.slf4j.Logger;
 
@@ -105,22 +105,14 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
             }
 
             String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
-            boolean isEnableUseView = config.getBoolean(ENABLE_USE_VIEW);
+
             ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
             Dialect dialect = connectorFactory.getDialect();
             if (!checkTableExist(getConnectionHolder().getConnection(),
                     dialect.quoteIdentifier(targetDatabase)+"."+dialect.quoteIdentifier(targetTable), dialect)) {
-                if (isEnableUseView) {
-                    sourceConnectionStatement.execute(dialect.getCreateTableAsSelectStatement(sourceTable, targetDatabase, targetTable));
-                } else {
-                    sourceConnectionStatement.execute(dialect.getCreateTableAsSelectStatementFromSql(sourceTable, targetDatabase, targetTable));
-                }
+                sourceConnectionStatement.execute(dialect.getCreateTableAsSelectStatementFromSql(sourceTable, targetDatabase, targetTable));
             } else {
-                if (isEnableUseView) {
-                    sourceConnectionStatement.execute(dialect.getInsertAsSelectStatement(sourceTable, targetDatabase, targetTable));
-                } else {
-                    sourceConnectionStatement.execute(dialect.getInsertAsSelectStatementFromSql(sourceTable, targetDatabase, targetTable));
-                }
+                sourceConnectionStatement.execute(dialect.getInsertAsSelectStatementFromSql(sourceTable, targetDatabase, targetTable));
             }
 
         } catch (Exception e) {
@@ -148,7 +140,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
             env.setCurrentStatement(sourceConnectionStatement);
             String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
             ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
-
+            ConnectorFactory errorDataConnectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(config.getString(ERROR_DATA_CONNECTOR_TYPE));
             int count = 0;
             //执行统计行数语句
             countResultSet = sourceConnectionStatement.executeQuery(connectorFactory.getDialect().getCountQuery(sourceTable));
@@ -164,10 +156,11 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
 
             TypeConverter typeConverter = connectorFactory.getTypeConverter();
             Dialect dialect = connectorFactory.getDialect();
+            Dialect errorDataConnectorDialect = errorDataConnectorFactory.getDialect();
             String targetTableName = config.getString(ERROR_DATA_FILE_NAME);
             List<StructField> columns = getTableSchema(sourceConnectionStatement, config, typeConverter);
-            if (!checkTableExist(getConnectionHolder().getConnection(), targetTableName, dialect)) {
-                createTable(typeConverter, dialect, targetTableName, columns);
+            if (!checkTableExist(getConnectionHolder().getConnection(), targetTableName, errorDataConnectorDialect)) {
+                createTable(typeConverter, errorDataConnectorDialect, targetTableName, columns);
             }
             //根据行数进行分页查询。分批写到文件里面
             int pageSize = 1000;
@@ -175,7 +168,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
 
             errorDataResultSet = sourceConnectionStatement.executeQuery(connectorFactory.getDialect().getSelectQuery(sourceTable));
             errorDataStorageConnection = getConnectionHolder().getConnection();
-            String insertStatement = JdbcUtils.getInsertStatement(targetTableName, columns, dialect);
+            String insertStatement = JdbcUtils.getInsertStatement(targetTableName, columns, errorDataConnectorDialect);
             if (StringUtils.isEmpty(insertStatement)) {
                 return;
             }
@@ -185,8 +178,8 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
             for (int i=0; i<totalPage; i++) {
                 int start = i * pageSize;
                 int end = (i+1) * pageSize;
+                ResultList resultList = dialect.getPageFromResultSet(sourceConnectionStatement, errorDataResultSet, sourceTable, start, end);
 
-                ResultList resultList = SqlUtils.getPageFromResultSet(errorDataResultSet, SqlUtils.getQueryFromsAndJoins("select * from " + sourceTable), start, end);
                 for (Map<String, Object> row: resultList.getResultList()) {
                     for (int j=0; j<columns.size(); j++) {
                         StructField field = columns.get(j);
@@ -206,7 +199,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
                                     break;
                                 case BYTE_TYPE:
                                     if (StringUtils.isNotEmpty(rowContent)) {
-                                        errorDataPreparedStatement.setByte(j+1, Byte.parseByte(rowContent));
+                                        errorDataPreparedStatement.setByte(j+1, Byte.parseByte("true".equals(rowContent) ? "1" : "false".equals(rowContent) ? "0" : rowContent));
                                     } else {
                                         errorDataPreparedStatement.setNull(j+1, Types.TINYINT);
                                     }

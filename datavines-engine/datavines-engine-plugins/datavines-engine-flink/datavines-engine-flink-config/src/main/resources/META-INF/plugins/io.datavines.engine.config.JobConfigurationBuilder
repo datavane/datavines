@@ -1,0 +1,4 @@
+flink_single_table=io.datavines.engine.flink.config.FlinkSingleTableConfigurationBuilder
+flink_data_profile=io.datavines.engine.flink.config.FlinkDataProfileMetricBuilder
+flink_multi_table_accuracy=io.datavines.engine.flink.config.FlinkMultiTableAccuracyMetricBuilder
+flink_multi_table_value_comparison=io.datavines.engine.flink.config.FlinkMultiTableValueComparisonMetricBuilder

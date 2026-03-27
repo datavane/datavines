@@ -24,6 +24,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ElementDTO {
+
     private TextDTO text;
+
     private String tag;
 }

@@ -20,6 +20,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.bo.datasource.*;
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.server.api.dto.vo.DataSourceVO;
 import io.datavines.server.repository.entity.DataSource;
@@ -29,7 +30,7 @@ import java.util.List;
 
 public interface DataSourceService extends IService<DataSource> {
 
-    boolean testConnect(TestConnectionRequestParam connectionParam);
+    ConnectorResponse testConnect(TestConnectionRequestParam connectionParam);
 
     long insert(DataSourceCreate dataSource);
 

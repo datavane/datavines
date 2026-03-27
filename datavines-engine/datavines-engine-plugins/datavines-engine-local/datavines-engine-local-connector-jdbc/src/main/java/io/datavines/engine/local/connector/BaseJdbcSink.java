@@ -23,7 +23,7 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSink;
-import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.connector.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import io.datavines.engine.local.connector.executor.*;
 import org.slf4j.Logger;

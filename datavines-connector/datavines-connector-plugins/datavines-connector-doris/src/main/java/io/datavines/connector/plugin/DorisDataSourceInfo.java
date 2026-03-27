@@ -16,13 +16,14 @@
  */
 package io.datavines.connector.plugin;
 
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.common.utils.StringUtils;
+
+import java.util.Map;
 
 public class DorisDataSourceInfo extends MysqlDataSourceInfo {
 
-    public DorisDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        super(jdbcConnectionInfo);
+    public DorisDataSourceInfo(Map<String,String> param) {
+        super(param);
     }
 
     @Override

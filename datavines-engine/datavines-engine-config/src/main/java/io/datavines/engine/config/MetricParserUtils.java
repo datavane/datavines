@@ -148,9 +148,22 @@ public class MetricParserUtils {
         String[] columnList = new String[mappingColumnList.size()];
         for (int i = 0; i < mappingColumnList.size(); i++) {
             MappingColumn column = mappingColumnList.get(i);
-            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE_ALIAS), column.getColumn(),needQuote)
+            columnList[i] = getCoalesceString(inputParameterValueResult.get(TABLE_ALIAS), column.getColumn(), needQuote)
                     + column.getOperator()
-                    + getCoalesceString(inputParameterValueResult.get(TABLE2_ALIAS), column.getColumn2(),needQuote);
+                    + getCoalesceString(inputParameterValueResult.get(TABLE2_ALIAS), column.getColumn2(), needQuote);
+        }
+
+        return String.join(AND,columnList);
+    }
+
+    public static String getOnClauseForLocal(List<MappingColumn> mappingColumnList, Map<String,String> inputParameterValueResult, boolean needQuote) {
+        //get on clause
+        String[] columnList = new String[mappingColumnList.size()];
+        for (int i = 0; i < mappingColumnList.size(); i++) {
+            MappingColumn column = mappingColumnList.get(i);
+            columnList[i] = inputParameterValueResult.get(TABLE_ALIAS) + "." + QuoteIdentifier.quote(column.getColumn(), needQuote)
+                    + column.getOperator()
+                    + inputParameterValueResult.get(TABLE2_ALIAS) + "." + QuoteIdentifier.quote(column.getColumn2(), needQuote);
         }
 
         return String.join(AND,columnList);
@@ -161,9 +174,9 @@ public class MetricParserUtils {
         for (int i = 0; i < mappingColumnList.size(); i++) {
             MappingColumn column = mappingColumnList.get(i);
             if (index == 1) {
-                columnList[i] = tableAlias + "." + QuoteIdentifier.quote(column.getColumn(), needQuote) + " AS " +  QuoteIdentifier.quote(column.getColumn() + "_" + index, needQuote);;
+                columnList[i] = tableAlias + "." + QuoteIdentifier.quote(column.getColumn(), needQuote) + " AS " +  QuoteIdentifier.quote(column.getColumn() + "_" + index, needQuote);
             } else if (index == 2){
-                columnList[i] = tableAlias + "." + QuoteIdentifier.quote(column.getColumn2(), needQuote) + " AS " +  QuoteIdentifier.quote(column.getColumn2() + "_" + index, needQuote);;
+                columnList[i] = tableAlias + "." + QuoteIdentifier.quote(column.getColumn2(), needQuote) + " AS " +  QuoteIdentifier.quote(column.getColumn2() + "_" + index, needQuote);
             }
         }
 
@@ -178,7 +191,7 @@ public class MetricParserUtils {
     }
 
     public static String getCoalesceString(String table, String column, boolean needQuote) {
-        return "coalesce(" + table + "." + QuoteIdentifier.quote(column, needQuote) + ", '')";
+        return String.format("COALESCE(CAST(%s.%s AS STRING), '')", table, QuoteIdentifier.quote(column, needQuote));
     }
 
     public static String getColumnIsNullStr(String table, List<String> columns, boolean needQuote) {

@@ -23,5 +23,6 @@ import lombok.ToString;
 @EqualsAndHashCode
 @ToString
 public class ReceiverConfig {
+
     private String webhook;
 }

@@ -16,21 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
-import java.util.Map;
-
-import static io.datavines.common.ConfigConstants.*;
-
 public class PostgreSqlDialect extends JdbcDialect {
-
-    @Override
-    public Map<String, String> getDialectKeyMap() {
-        super.getDialectKeyMap();
-        dialectKeyMap.put(REGEX_KEY, "${column} ~ '${regexp}'");
-        dialectKeyMap.put(NOT_REGEX_KEY, "${column} !~ '${regexp}'");
-        dialectKeyMap.put(LENGTH_KEY, "length(${column}::text)");
-        dialectKeyMap.put(IF_CASE_KEY, "case when ${column} is null then 'NULL' else cast(${column} as ${string_type}) end ");
-        return dialectKeyMap;
-    }
 
     @Override
     public String getDriver() {

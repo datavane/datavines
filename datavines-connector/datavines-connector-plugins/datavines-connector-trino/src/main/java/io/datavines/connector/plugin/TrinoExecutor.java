@@ -17,8 +17,9 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.connector.api.DataSourceClient;
+
+import java.util.Map;
 
 public class TrinoExecutor extends BaseJdbcExecutor {
 
@@ -27,7 +28,7 @@ public class TrinoExecutor extends BaseJdbcExecutor {
     }
 
     @Override
-    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        return new TrinoDataSourceInfo(jdbcConnectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param) {
+        return new TrinoDataSourceInfo(param);
     }
 }

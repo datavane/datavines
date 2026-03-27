@@ -155,9 +155,12 @@ public class EMailSender {
         props.setProperty("mail.smtp.port", mailSmtpPort);
         props.setProperty("mail.smtp.auth", enableSmtpAuth);
         props.setProperty("mail.transport.protocol", mailProtocol);
+        props.setProperty("mail.smtp.ssl.protocols", "TLSv1.2");
         props.setProperty("mail.smtp.starttls.enable", mailUseStartTLS);
         props.setProperty("mail.smtp.ssl.enable", mailUseSSL);
-        props.setProperty("mail.smtp.ssl.trust", sslTrust);
+        if (Boolean.TRUE == Boolean.parseBoolean(sslTrust)) {
+            props.setProperty("mail.smtp.ssl.trust", mailSmtpHost);
+        }
 
         Authenticator auth = new Authenticator() {
             @Override
@@ -177,11 +180,17 @@ public class EMailSender {
             ArrayNode list = JSONUtils.parseArray(content);
             StringBuilder contents = new StringBuilder(100);
             for (JsonNode jsonNode : list) {
+                String nodeMessage = jsonNode.toString().replace("\"", "");
                 contents.append(EmailConstants.TR);
-                contents.append(EmailConstants.TD).append(jsonNode.toString().replace("\"", "")).append(EmailConstants.TD_END);
+                if (nodeMessage.startsWith("Task Execution Record")||nodeMessage.startsWith("任务执行记录")){
+                    String formatMessage = String.format("%s : <a href=\"%s\">%s</a>", nodeMessage.substring(0,nodeMessage.indexOf(" : ")),nodeMessage.substring(nodeMessage.indexOf(":")+2),nodeMessage.substring(nodeMessage.indexOf(":")+2));
+                    contents.append(EmailConstants.TD).append(formatMessage).append(EmailConstants.TD_END);
+                }else {
+                    contents.append(EmailConstants.TD).append(jsonNode.toString().replace("\"", "")).append(EmailConstants.TD_END);
+                }
                 contents.append(EmailConstants.TR_END);
             }
-            return EmailConstants.HTML_HEADER_PREFIX + contents.toString() + EmailConstants.TABLE_HTML_TAIL + EmailConstants.BODY_HTML_TAIL;
+            return EmailConstants.HTML_HEADER_PREFIX + contents + EmailConstants.TABLE_HTML_TAIL + EmailConstants.BODY_HTML_TAIL;
         }
         return content;
     }

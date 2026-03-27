@@ -17,7 +17,6 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.common.datasource.jdbc.entity.ColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.TableColumnInfo;
 import io.datavines.common.datasource.jdbc.entity.TableInfo;
@@ -28,6 +27,7 @@ import io.datavines.common.param.GetTablesRequestParam;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.DataSourceClient;
+import org.apache.commons.collections4.MapUtils;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -35,6 +35,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static io.datavines.common.ConfigConstants.CATALOG;
 
 public class StarRocksConnector extends MysqlConnector {
 
@@ -43,8 +46,8 @@ public class StarRocksConnector extends MysqlConnector {
     }
 
     @Override
-    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        return new StarRocksDataSourceInfo(jdbcConnectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param) {
+        return new StarRocksDataSourceInfo(param);
     }
 
     @Override
@@ -52,12 +55,12 @@ public class StarRocksConnector extends MysqlConnector {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
 
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-        if (jdbcConnectionInfo == null) {
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        if (MapUtils.isEmpty(paramMap)) {
             throw new SQLException("jdbc datasource param is no validate");
         }
 
-        Connection connection = getConnection(dataSourceParam, jdbcConnectionInfo);
+        Connection connection = getConnection(dataSourceParam, paramMap);
 
         List<TableInfo> tableList = null;
         ResultSet tables;
@@ -97,20 +100,20 @@ public class StarRocksConnector extends MysqlConnector {
     public ConnectorResponse getColumns(GetColumnsRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-        if (jdbcConnectionInfo == null) {
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        if (MapUtils.isEmpty(paramMap)) {
             throw new SQLException("jdbc datasource param is no validate");
         }
 
-        Connection connection = getConnection(dataSourceParam, jdbcConnectionInfo);
+        Connection connection = getConnection(dataSourceParam, paramMap);
 
         TableColumnInfo tableColumnInfo = null;
         try {
             String catalog;
             String schema;
 
-            if (StringUtils.isNotEmpty(jdbcConnectionInfo.getCatalog())) {
-                catalog = jdbcConnectionInfo.getCatalog();
+            if (StringUtils.isNotEmpty(paramMap.get(CATALOG))) {
+                catalog = paramMap.get(CATALOG);
                 schema = param.getDataBase();
             } else {
                 catalog = null;

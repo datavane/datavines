@@ -97,29 +97,21 @@ public class LocalSingleTableMetricBuilder extends BaseLocalConfigurationBuilder
                     connectorParameterMap.put(ERROR_DATA_FILE_NAME, jobExecutionInfo.getErrorDataFileName());
                     connectorParameterMap.put(ERROR_DATA_DIR, metricInputParameter.get(ERROR_DATA_DIR));
                     connectorParameterMap.put(METRIC_NAME, metricInputParameter.get(METRIC_NAME));
-                    boolean isEnableUseView = false;
-                    if (metricInputParameter.get(ENABLE_USE_VIEW) != null) {
-                        isEnableUseView = Boolean.parseBoolean(metricInputParameter.get(ENABLE_USE_VIEW));
+
+                    String metricType = parameter.getMetricType();
+                    SqlMetric sqlMetric = PluginLoader
+                            .getPluginLoader(SqlMetric.class)
+                            .getNewPlugin(metricType);
+                    MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
+                    if (sqlMetric.getInvalidateItems(metricInputParameter) != null) {
+                        ExecuteSql invalidateItemExecuteSql = sqlMetric.getInvalidateItems(metricInputParameter);
+                        connectorParameterMap.put(INVALIDATE_ITEMS_TABLE, "(" + ParameterUtils.convertParameterPlaceholders(invalidateItemExecuteSql.getSql(), metricInputParameter) + ") t");
                     }
 
-                    if (isEnableUseView) {
-                        connectorParameterMap.put(INVALIDATE_ITEMS_TABLE, metricInputParameter.get(INVALIDATE_ITEMS_TABLE));
-                    } else {
-                        String metricType = parameter.getMetricType();
-                        SqlMetric sqlMetric = PluginLoader
-                                .getPluginLoader(SqlMetric.class)
-                                .getNewPlugin(metricType);
-                        MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
-                        if (sqlMetric.getInvalidateItems(metricInputParameter) != null) {
-                            ExecuteSql invalidateItemExecuteSql = sqlMetric.getInvalidateItems(metricInputParameter);
-                            connectorParameterMap.put(INVALIDATE_ITEMS_TABLE, "(" + ParameterUtils.convertParameterPlaceholders(invalidateItemExecuteSql.getSql(), metricInputParameter) + ") t");
-                        }
-                    }
-
-                    connectorParameterMap.put(ENABLE_USE_VIEW, isEnableUseView);
                     connectorParameterMap.put(INVALIDATE_ITEM_CAN_OUTPUT, metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
                     // use to get source type converter in sink
                     connectorParameterMap.put(SRC_CONNECTOR_TYPE, metricInputParameter.get(SRC_CONNECTOR_TYPE));
+                    connectorParameterMap.put(ERROR_DATA_CONNECTOR_TYPE, jobExecutionInfo.getErrorDataStorageType());
                     connectorParameterMap.put(JOB_EXECUTION_ID, metricInputParameter.get(JOB_EXECUTION_ID));
                     connectorParameterMap.put(DRIVER, connectorFactory.getDialect().getDriver());
                     errorDataSinkConfig.setConfig(connectorParameterMap);

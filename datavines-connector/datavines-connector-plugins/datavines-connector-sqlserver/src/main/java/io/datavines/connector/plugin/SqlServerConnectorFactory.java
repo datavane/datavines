@@ -21,8 +21,8 @@ import io.datavines.connector.api.*;
 public class SqlServerConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new SqlServerConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new SqlServerParameterConverter();
     }
 
     @Override
@@ -43,5 +43,10 @@ public class SqlServerConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public ConfigBuilder getConfigBuilder() {
         return new SqlServerConfigBuilder();
+    }
+
+    @Override
+    public MetricScript getMetricScript() {
+        return new SqlServerMetricScript();
     }
 }

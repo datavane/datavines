@@ -17,8 +17,12 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.connector.api.DataSourceClient;
+
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
 
 public class ImpalaConnector extends JdbcConnector {
 
@@ -27,7 +31,22 @@ public class ImpalaConnector extends JdbcConnector {
     }
 
     @Override
-    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        return new ImpalaDataSourceInfo(jdbcConnectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param) {
+        return new ImpalaDataSourceInfo(param);
+    }
+
+    @Override
+    public ResultSet getMetadataColumns(DatabaseMetaData metaData, String catalog, String schema, String tableName, String columnName) throws SQLException {
+        return metaData.getColumns(null, catalog, tableName, columnName);
+    }
+
+    @Override
+    protected ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {
+        return metaData.getTables(null, catalog, null, TABLE_TYPES);
+    }
+
+    @Override
+    protected ResultSet getPrimaryKeys(DatabaseMetaData metaData, String catalog, String schema, String tableName) throws SQLException {
+        return null;
     }
 }

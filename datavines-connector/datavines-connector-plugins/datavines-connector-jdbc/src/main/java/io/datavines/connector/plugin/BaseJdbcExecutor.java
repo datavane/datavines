@@ -24,10 +24,12 @@ import io.datavines.common.param.ExecuteRequestParam;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.connector.api.DataSourceClient;
 import io.datavines.connector.api.Executor;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.SQLException;
+import java.util.Map;
 
 public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo {
 
@@ -46,10 +48,12 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
 
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        if (MapUtils.isEmpty(paramMap)) {
+            throw new SQLException("jdbc datasource param is no validate");
+        }
         JdbcTemplate jdbcTemplate = dataSourceClient.getJdbcTemplate(
-                JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
+                JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(paramMap)));
 
         String sql = param.getScript();
         if (StringUtils.isEmpty(sql)) {
@@ -68,9 +72,13 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
 
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        if (MapUtils.isEmpty(paramMap)) {
+            throw new SQLException("jdbc datasource param is no validate");
+        }
+
         JdbcTemplate jdbcTemplate = dataSourceClient.getJdbcTemplate(
-                JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
+                JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(paramMap)));
 
         String sql = param.getScript() + " limit 1";
         if (StringUtils.isEmpty(sql)) {
@@ -88,10 +96,12 @@ public abstract class BaseJdbcExecutor implements Executor, IJdbcDataSourceInfo 
     public ConnectorResponse queryForList(ExecuteRequestParam param) throws Exception {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        if (MapUtils.isEmpty(paramMap)) {
+            throw new SQLException("jdbc datasource param is no validate");
+        }
         JdbcTemplate jdbcTemplate = dataSourceClient.getJdbcTemplate(
-                JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
+                JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(paramMap)));
 
         String sql = param.getScript();
         if (StringUtils.isEmpty(sql)) {

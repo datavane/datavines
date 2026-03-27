@@ -16,13 +16,57 @@
  */
 package io.datavines.connector.plugin;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.datavines.common.param.form.PluginParams;
+import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.type.InputParam;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 public class HiveConfigBuilder extends JdbcConfigBuilder {
+
+    @Override
+    public String build(boolean isEn) {
+        List<PluginParams> params = new ArrayList<>();
+        params.add(getHostInput(isEn));
+        params.add(getPortInput(isEn));
+        if (getCatalogInput(isEn) != null) {
+            params.add(getCatalogInput(isEn));
+        }
+
+        params.add(getDatabaseInput(isEn));
+
+        if (getSchemaInput(isEn) != null) {
+            params.add(getSchemaInput(isEn));
+        }
+
+        params.add(getUserInput(isEn));
+        params.add(getPasswordInput(isEn));
+
+        params.add(getKeytabFile(isEn));
+        params.add(getKeytabPrincipal(isEn));
+        params.add(getKrb5Conf(isEn));
+
+        params.add(getPropertiesInput(isEn));
+
+        params.addAll(getOtherParams(isEn));
+
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        String result = null;
+
+        try {
+            result = mapper.writeValueAsString(params);
+        } catch (JsonProcessingException e) {
+            log.error("json parse error : ", e);
+        }
+        return result;
+    }
 
     @Override
     protected InputParam getPropertiesInput(boolean isEn) {
@@ -45,4 +89,29 @@ public class HiveConfigBuilder extends JdbcConfigBuilder {
         list.add(enableSparkHiveSupport);
         return list;
     }
+
+    private InputParam getKeytabFile(boolean isEn) {
+        return getInputParam("keytab_file",
+                isEn ? "keytab File Path" : "keytab 文件地址",
+                isEn ? "please enter keytab File Path" : "请填入 keytab 文件地址", 1,
+                null,
+                null);
+    }
+
+    private InputParam getKeytabPrincipal(boolean isEn) {
+        return getInputParam("keytab_principal",
+                "keytab Principal",
+                isEn ? "please enter keytab Principal" : "请填入 keytab 文件对应的 Principal", 1,
+                null,
+                null);
+    }
+
+    private InputParam getKrb5Conf(boolean isEn) {
+        return getInputParam("krb5_conf",
+                isEn ? "krb5.conf File Path" : "krb5.conf 文件地址",
+                isEn ? "please enter krb5.conf File Path" : "请填入 krb5.conf 文件地址", 1,
+                null,
+                null);
+    }
+
 }

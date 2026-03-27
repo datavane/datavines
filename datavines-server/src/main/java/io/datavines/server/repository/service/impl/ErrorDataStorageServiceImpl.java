@@ -51,10 +51,9 @@ import static io.datavines.common.log.SensitiveDataConverter.PWD_PATTERN_1;
 public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMapper, ErrorDataStorage> implements ErrorDataStorageService {
 
     @Override
-    public boolean testConnect(TestConnectionRequestParam param) {
+    public ConnectorResponse testConnect(TestConnectionRequestParam param) {
         ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
-        ConnectorResponse response = connectorFactory.getConnector().testConnect(param);
-        return (boolean)response.getResult();
+        return connectorFactory.getConnector().testConnect(param);
     }
 
     @Override

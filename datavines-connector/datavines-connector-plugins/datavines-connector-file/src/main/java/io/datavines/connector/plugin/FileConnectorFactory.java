@@ -41,8 +41,8 @@ public class FileConnectorFactory implements ConnectorFactory {
     }
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new FileConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new FileParameterConverter();
     }
 
     @Override
@@ -73,5 +73,15 @@ public class FileConnectorFactory implements ConnectorFactory {
     @Override
     public StatementParser getStatementParser() {
         return null;
+    }
+
+    @Override
+    public MetricScript getMetricScript() {
+        return null;
+    }
+
+    @Override
+    public Boolean showInFrontend() {
+        return false;
     }
 }

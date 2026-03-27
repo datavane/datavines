@@ -41,6 +41,7 @@ public enum JobType {
 
     @EnumValue
     private final int code;
+
     private final String description;
 
     private final String zhDescription;

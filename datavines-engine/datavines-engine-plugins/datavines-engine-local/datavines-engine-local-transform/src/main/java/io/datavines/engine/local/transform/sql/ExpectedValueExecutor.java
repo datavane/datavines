@@ -18,8 +18,8 @@ package io.datavines.engine.local.transform.sql;
 
 import io.datavines.common.config.Config;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
-import io.datavines.engine.local.api.entity.ResultList;
-import io.datavines.engine.local.api.utils.SqlUtils;
+import io.datavines.connector.api.entity.ResultList;
+import io.datavines.connector.api.utils.SqlUtils;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,7 +38,7 @@ public class ExpectedValueExecutor implements ITransformExecutor {
             statement = connection.createStatement();
             env.setCurrentStatement(statement);
             resultSet = statement.executeQuery(sql);
-            return SqlUtils.getListFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
+            return SqlUtils.getListFromResultSet(resultSet);
         } finally {
             SqlUtils.closeResultSet(resultSet);
             SqlUtils.closeStatement(statement);

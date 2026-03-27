@@ -24,7 +24,9 @@ import java.util.List;
 
 @Data
 public abstract class CardDTO {
+
     private HeaderDTO header;
+
     private List<ElementDTO> elements;
 
     public CardDTO() {
@@ -32,14 +34,12 @@ public abstract class CardDTO {
 
     public CardDTO(String headerContent, String headerColor, List<MessageDTO> messageList) {
         TitleDTO title = new TitleDTO(headerContent, "plain_text");
-        HeaderDTO headerDTO = new HeaderDTO(headerColor,title);
-        this.header = headerDTO;
+        this.header = new HeaderDTO(headerColor,title);
 
         List<ElementDTO> elementsDtoList = new ArrayList<>();
-        for (int i = 0; i < messageList.size(); i++) {
-            MessageDTO messageDTO = messageList.get(i);
-            TextDTO textDTO = new TextDTO("**" + messageDTO.getTitle() + "：**\n" + messageDTO.getContent(),"lark_md");
-            elementsDtoList.add(new ElementDTO(textDTO,"div"));
+        for (MessageDTO messageDTO : messageList) {
+            TextDTO textDTO = new TextDTO("**" + messageDTO.getTitle() + "：**\n" + messageDTO.getContent(), "lark_md");
+            elementsDtoList.add(new ElementDTO(textDTO, "div"));
 
         }
         this.elements = elementsDtoList;

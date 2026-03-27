@@ -17,16 +17,14 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.common.utils.StringUtils;
 
-import static io.datavines.common.ConfigConstants.*;
-import static io.datavines.common.ConfigConstants.PROPERTIES;
+import java.util.Map;
 
 public class MongodbDataSourceInfo extends BaseJdbcDataSourceInfo {
 
-    public MongodbDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        super(jdbcConnectionInfo);
+    public MongodbDataSourceInfo(Map<String,String> param) {
+        super(param);
     }
 
     @Override

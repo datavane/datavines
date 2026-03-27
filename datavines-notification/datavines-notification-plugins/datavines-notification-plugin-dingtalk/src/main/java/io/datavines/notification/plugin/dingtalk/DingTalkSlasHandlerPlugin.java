@@ -33,16 +33,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static io.datavines.notification.api.constants.NotificationConstants.*;
+
 @Slf4j
 public class DingTalkSlasHandlerPlugin implements SlasHandlerPlugin {
-
-    private final String STRING_YES = "YES";
-
-    private final String STRING_NO = "NO";
-
-    private final String STRING_TRUE = "TRUE";
-
-    private final String STRING_FALSE = "FALSE";
 
     @Override
     public SlaNotificationResult notify(SlaNotificationMessage slaNotificationMessage, Map<SlaSenderMessage, Set<SlaConfigMessage>> config) {
@@ -53,7 +47,7 @@ public class DingTalkSlasHandlerPlugin implements SlasHandlerPlugin {
         String subject = slaNotificationMessage.getSubject();
         String message = slaNotificationMessage.getMessage();
         for (SlaSenderMessage senderMessage: dingTalkSenderSet) {
-            DingTalkSender dingTalkSender = new DingTalkSender(senderMessage);
+            DingTalkSender dingTalkSender = new DingTalkSender();
             Set<SlaConfigMessage> slaConfigMessageSet = config.get(senderMessage);
             HashSet<ReceiverConfig> toReceivers = new HashSet<>();
             for (SlaConfigMessage receiver: slaConfigMessageSet) {
@@ -78,16 +72,6 @@ public class DingTalkSlasHandlerPlugin implements SlasHandlerPlugin {
 
         List<PluginParams> paramsList = new ArrayList<>();
 
-        InputParam webHook = InputParam.newBuilder("webHook", "webHook")
-                .addValidate(Validate.newBuilder().setRequired(true).build())
-                .build();
-        InputParam keyWord = InputParam.newBuilder("keyWord", "keyWord")
-                .addValidate(Validate.newBuilder().setRequired(true).build())
-                .build();
-
-        paramsList.add(webHook);
-        paramsList.add(keyWord);
-
         ObjectMapper mapper = new ObjectMapper();
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         String result = null;
@@ -105,7 +89,15 @@ public class DingTalkSlasHandlerPlugin implements SlasHandlerPlugin {
     public String getConfigJson() {
 
         List<PluginParams> paramsList = new ArrayList<>();
-
+        InputParam webHook = InputParam.newBuilder("webhook", "webhook")
+                .addValidate(Validate.newBuilder().setRequired(true).build())
+                .build();
+        InputParam keyWord = InputParam.newBuilder("keyWord", "keyWord")
+                .addValidate(Validate.newBuilder().setRequired(false).build())
+                .build();
+        InputParam secret = InputParam.newBuilder("secret", "secret")
+                .addValidate(Validate.newBuilder().setRequired(false).build())
+                .build();
         InputParam atMobiles = InputParam.newBuilder("atMobiles", "atMobiles")
                 .addValidate(Validate.newBuilder().setRequired(false).build())
                 .build();
@@ -119,6 +111,9 @@ public class DingTalkSlasHandlerPlugin implements SlasHandlerPlugin {
                 .addValidate(Validate.newBuilder().setRequired(true).build())
                 .build();
 
+        paramsList.add(webHook);
+        paramsList.add(secret);
+        paramsList.add(keyWord);
         paramsList.add(atMobiles);
         paramsList.add(atDingtalkIds);
         paramsList.add(isAtAll);

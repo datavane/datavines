@@ -21,8 +21,8 @@ import io.datavines.connector.api.*;
 public class DatabendConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new DatabendConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new DatabendParameterConverter();
     }
 
     @Override

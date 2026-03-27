@@ -54,4 +54,9 @@ public abstract class AbstractJdbcConnectorFactory implements ConnectorFactory {
     public StatementParser getStatementParser() {
         return new DefaultStatementParser();
     }
+
+    @Override
+    public MetricScript getMetricScript() {
+        return new JdbcMetricScript();
+    }
 }

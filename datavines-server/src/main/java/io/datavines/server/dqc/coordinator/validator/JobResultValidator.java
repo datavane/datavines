@@ -29,7 +29,7 @@ import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.client.NotificationClient;
 import io.datavines.server.api.dto.bo.issue.IssueCreate;
-import io.datavines.server.enums.DqJobExecutionState;
+import io.datavines.server.enums.JobCheckState;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.Job;
 import io.datavines.server.repository.entity.JobExecution;
@@ -43,6 +43,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static io.datavines.common.ConfigConstants.FIX_VALUE;
@@ -111,11 +112,11 @@ public class JobResultValidator {
         BeanUtils.copyProperties(jobExecutionResult, metricExecutionResult);
         if (MetricValidator.isSuccess(metricExecutionResult)) {
             jobExecutionResult.setScore(MetricValidator.getQualityScore(metricExecutionResult, true));
-            jobExecutionResult.setState(DqJobExecutionState.SUCCESS.getCode());
+            jobExecutionResult.setState(JobCheckState.SUCCESS.getCode());
             result = true;
         } else {
             jobExecutionResult.setScore(MetricValidator.getQualityScore(metricExecutionResult, false));
-            jobExecutionResult.setState(DqJobExecutionState.FAILURE.getCode());
+            jobExecutionResult.setState(JobCheckState.FAILURE.getCode());
         }
 
         jobExternalService.updateJobExecutionResult(jobExecutionResult);
@@ -142,7 +143,7 @@ public class JobResultValidator {
                 dataSourceName = dataSource.getName();
                 dataSourceType = dataSource.getType();
                 if (!CommonPropertyUtils.DATAVINES_FQDN_DEFAULT.equals(CommonPropertyUtils.getString(CommonPropertyUtils.DATAVINES_FQDN))) {
-                    fqdn = CommonPropertyUtils.getString(CommonPropertyUtils.DATAVINES_FQDN) + String.format("/#/main/detail/%s/jobs/instance?jobId=%s", dataSourceId, jobId);
+                    fqdn = CommonPropertyUtils.getString(CommonPropertyUtils.DATAVINES_FQDN) + String.format("/#/history?%s", Base64.getEncoder().encodeToString(String.format("jobId=%s&executionId=%s",jobId,jobExecutionId).getBytes(StandardCharsets.UTF_8)));
                 }
             }
 

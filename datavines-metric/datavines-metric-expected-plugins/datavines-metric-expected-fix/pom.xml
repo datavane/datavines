@@ -30,5 +30,12 @@
 
     <artifactId>datavines-metric-expected-fix</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-expected-base</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

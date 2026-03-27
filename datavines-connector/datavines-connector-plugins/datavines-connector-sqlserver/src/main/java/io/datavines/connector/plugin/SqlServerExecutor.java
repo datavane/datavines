@@ -17,17 +17,18 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.connector.api.DataSourceClient;
+
+import java.util.Map;
 
 public class SqlServerExecutor extends BaseJdbcExecutor {
 
-    public SqlServerExecutor(DataSourceClient DataSourceClient) {
-        super(DataSourceClient);
+    public SqlServerExecutor(DataSourceClient dataSourceClient) {
+        super(dataSourceClient);
     }
 
     @Override
-    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        return new SqlServerDataSourceInfo(jdbcConnectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param) {
+        return new SqlServerDataSourceInfo(param);
     }
 }

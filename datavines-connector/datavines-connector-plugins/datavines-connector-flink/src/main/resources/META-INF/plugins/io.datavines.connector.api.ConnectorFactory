@@ -1,0 +1,1 @@
+flink=io.datavines.connector.plugin.FlinkConnectorFactory

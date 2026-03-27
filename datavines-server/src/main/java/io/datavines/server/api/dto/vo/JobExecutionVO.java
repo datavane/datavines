@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.datavines.common.enums.ExecutionStatus;
 import io.datavines.common.enums.JobType;
 import io.datavines.core.utils.LanguageUtils;
-import io.datavines.server.enums.DqJobExecutionState;
+import io.datavines.server.enums.JobCheckState;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -47,7 +47,7 @@ public class JobExecutionVO implements Serializable {
 
     private ExecutionStatus status;
 
-    private DqJobExecutionState checkState;
+    private JobCheckState checkState;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
     private LocalDateTime startTime;
@@ -64,7 +64,7 @@ public class JobExecutionVO implements Serializable {
 
     public String getCheckState() {
         if (checkState == null) {
-            return LanguageUtils.isZhContext()? DqJobExecutionState.NONE.getZhDescription() : DqJobExecutionState.NONE.getDescription();
+            return LanguageUtils.isZhContext()? JobCheckState.NONE.getZhDescription() : JobCheckState.NONE.getDescription();
         }
         return LanguageUtils.isZhContext()? checkState.getZhDescription() : checkState.getDescription();
     }

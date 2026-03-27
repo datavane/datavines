@@ -16,10 +16,11 @@
  */
 package io.datavines.engine.local.api;
 
+import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.api.component.Component;
-import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.connector.api.entity.ResultList;
 
 public interface LocalTransform extends Component {
 
-    ResultList process(LocalRuntimeEnvironment env);
+    ResultList process(LocalRuntimeEnvironment env) throws DataVinesException;
 }

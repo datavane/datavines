@@ -17,11 +17,9 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.TestConnectionRequestParam;
-import io.datavines.common.param.form.Validate;
-import io.datavines.common.param.form.type.InputParam;
+
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.DataSourceClient;
@@ -29,6 +27,7 @@ import io.datavines.connector.api.DataSourceClient;
 import java.sql.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import static io.datavines.common.ConfigConstants.PASSWORD;
@@ -52,14 +51,15 @@ public class PrestoConnector extends JdbcConnector {
     }
 
     @Override
-    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        return new PrestoDataSourceInfo(jdbcConnectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param) {
+        return new PrestoDataSourceInfo(param);
     }
 
     @Override
     public ConnectorResponse testConnect(TestConnectionRequestParam param) {
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(param.getDataSourceParam(), JdbcConnectionInfo.class);
-        BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(jdbcConnectionInfo);
+        Map<String,String> paramMap = JSONUtils.toMap(param.getDataSourceParam());
+
+        BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(paramMap);
         dataSourceInfo.loadClass();
         Properties properties = new Properties();
         properties.setProperty(USER, dataSourceInfo.getUser());
@@ -78,23 +78,26 @@ public class PrestoConnector extends JdbcConnector {
         }
 
         try (Connection con = DriverManager.getConnection(url, properties)) {
-            boolean result = (con!=null);
-            if (result) {
-                try {
-                    getMetadataDatabases(con);
-                } catch (Exception e) {
-                    logger.error("create connection error", e);
-                    return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
-                }
-
-                con.close();
+            if (con != null) {
+                getMetadataDatabases(con);
             }
-
-            return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(true).build();
-        } catch (SQLException e) {
-            logger.error("create connection error", e);
-            return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
+            return ConnectorResponse.builder()
+                    .status(ConnectorResponse.Status.SUCCESS)
+                    .result(true)
+                    .build();
+        } catch (Exception e) {
+            logger.error("test connect error", e);
+            return ConnectorResponse.builder()
+                    .status(ConnectorResponse.Status.ERROR)
+                    .result(false)
+                    .errorMsg(e.getMessage())
+                    .build();
         }
+    }
+
+    @Override
+    public List<String> keyProperties() {
+        return Arrays.asList("host","port","catalog","database");
     }
 
 }

@@ -67,7 +67,7 @@ public class ColumnDuplicate extends BaseSingleTableColumnNotUseView {
         }
 
         if (config.containsKey("column")) {
-            invalidateItemsSql.append(" group by ${column} having count(${column}) > 1");
+            invalidateItemsSql.append(getConnectorFactory(config).getMetricScript().groupByHavingCountForDuplicate());
         }
     }
 

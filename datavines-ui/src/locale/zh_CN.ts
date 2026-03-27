@@ -47,9 +47,11 @@ export default {
     '/main/detail/:id': '详情',
     '/main/label': '标签管理',
     '/main/config': '参数管理',
+    '/main/tokenManager': '令牌管理',
 
     confirm_text: '确认',
     test_link: '测试链接',
+    test_link_success: '连接测试成功',
     test_link_fail: '测试链接失败',
 
     login_btn_text: '登录',
@@ -93,6 +95,7 @@ export default {
     jobs_list: '规则作业列表',
     jobs_add: '创建规则作业',
     jobs_add_tip: '请先保存规则作业',
+    jobs_id: '规则作业Id',
     jobs_name: '规则作业名称',
     jobs_type: '规则作业类型',
     jobs_updater: '更新人',
@@ -126,6 +129,21 @@ export default {
     jobs_task_score: '质量评分',
     jobs_task_report_date: '报告日期',
     jobs_task_report_detail: '规则详情',
+
+    jobs_task_status_submitted_success: '已提交',
+    jobs_task_status_running_execution: '执行中',
+    jobs_task_status_ready_pause: '准备暂停',
+    jobs_task_status_pause: '暂停',
+    jobs_task_status_ready_stop: '准备停止',
+    jobs_task_status_stop: '停止',
+    jobs_task_status_failure: '失败',
+    jobs_task_status_success: '成功',
+    jobs_task_status_need_fault_tolerance: '需要容错',
+    jobs_task_status_kill: '强制终止',
+    jobs_task_status_waiting_thread: '等待线程',
+    jobs_task_status_waiting_summit: '待提交',
+
+
 
     jobs_task_check_result: '检查结果',
     jobs_task_check_subject: '检查对象',
@@ -295,6 +313,9 @@ export default {
     error_title: '存储管理',
 
     user_title: '用户管理',
+
+    dv_task_manager_count: 'Task Manager数量',
+
     label_title: '标签分类',
     label_list: '标签列表',
     label_add_category: '新增标签分类',
@@ -304,9 +325,15 @@ export default {
     profile_schedule: '数据概览调度配置',
 
     config_title: '参数管理',
-    config_var_key: '参数名',
-    config_var_value: '参数值',
+    config_var_key: '变量键',
+    config_var_value: '变量值',
+    config_type: '配置类型',
     create_config: '创建参数',
+
+    token_title: '令牌管理',
+    token_expire_time: '过期时间',
+    token_token: '令牌',
+    create_token: '创建令牌',
 
     quality_dashboard_profile: '质量概览',
     quality_dashboard_trend: '质量趋势',
@@ -320,4 +347,33 @@ export default {
     next_ten_cron_run_times: '未来十次执行时间',
     view_future_execute_plan: '查看未来执行计划',
     test_send: '测试发送',
+
+    dv_deploy_mode: '部署模式',
+    dv_deploy_mode_required: '请选择部署模式',
+    dv_flink_home: 'Flink安装路径',
+    dv_flink_home_required: '请输入Flink安装路径',
+    dv_jobmanager_memory: 'JobManager内存 (MB)',
+    dv_jobmanager_memory_required: '请输入JobManager内存大小',
+    dv_taskmanager_memory: 'TaskManager内存 (MB)',
+    dv_taskmanager_memory_required: '请输入TaskManager内存大小',
+    dv_flink_deploy_mode_local: '本地模式',
+    dv_flink_deploy_mode_yarn_session: 'Yarn Session模式',
+    dv_flink_deploy_mode_yarn_per_job: 'Yarn Per-Job模式',
+    dv_flink_deploy_mode_yarn_application: 'Yarn Application模式',
+    dv_deploy_mode_cluster: '集群模式',
+    dv_deploy_mode_yarn: 'Yarn模式',
+    dv_deploy_mode_local: '本地模式',
+
+    // HTTP error messages
+    http_error_network: '网络连接失败，无法连接到服务器',
+    http_error_timeout: '请求超时，请检查网络后重试',
+    http_error_400: '请求参数错误',
+    http_error_401: '未授权，请先登录',
+    http_error_403: '访问被拒绝',
+    http_error_404: '资源不存在',
+    http_error_500: '服务器内部错误',
+    http_error_502: '网关错误',
+    http_error_503: '服务暂时不可用',
+    http_error_504: '网关超时',
+    http_error_unknown: '服务器错误'
 };

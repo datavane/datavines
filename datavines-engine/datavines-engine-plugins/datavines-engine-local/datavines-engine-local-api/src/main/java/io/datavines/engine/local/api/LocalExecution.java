@@ -22,9 +22,8 @@ import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.api.env.Execution;
-import io.datavines.engine.local.api.entity.ResultList;
+import io.datavines.connector.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.LoggerFactory;
-import io.datavines.engine.local.api.utils.SqlUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 
@@ -58,7 +57,6 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
             return;
         }
 
-        List<String> invalidItemTableSet = new ArrayList<>();
         String preSql = null;
         String postSql = null;
         try {
@@ -116,14 +114,11 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
 
             List<ResultList> taskResult = new ArrayList<>();
             List<ResultList> actualValue = new ArrayList<>();
-            transforms.forEach(localTransform -> {
+            for (LocalTransform localTransform : transforms) {
+                if (localRuntimeEnvironment.isStop()) {
+                    break;
+                }
                 switch (TransformType.of(localTransform.getConfig().getString(PLUGIN_TYPE))){
-                    case INVALIDATE_ITEMS:
-                        if (StringUtils.isNotEmpty(localTransform.getConfig().getString(INVALIDATE_ITEMS_TABLE))) {
-                            invalidItemTableSet.add(localTransform.getConfig().getString(INVALIDATE_ITEMS_TABLE));
-                        }
-                        localTransform.process(localRuntimeEnvironment);
-                        break;
                     case ACTUAL_VALUE:
                         ResultList actualValueResult = localTransform.process(localRuntimeEnvironment);
                         actualValue.add(actualValueResult);
@@ -138,9 +133,12 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
                     default:
                         break;
                 }
-            });
+            }
 
             for (LocalSink localSink : sinks) {
+                if (localRuntimeEnvironment.isStop()) {
+                    break;
+                }
                 switch (SinkType.of(localSink.getConfig().getString(PLUGIN_TYPE))){
                     case ERROR_DATA:
                         localSink.output(null, localRuntimeEnvironment);
@@ -159,14 +157,6 @@ public class LocalExecution implements Execution<LocalSource, LocalTransform, Lo
         } catch (Exception e) {
             log.error("execute error", e);
             throw e;
-        } finally {
-            for (String invalidItemTable : invalidItemTableSet) {
-                try {
-                    SqlUtils.dropView(invalidItemTable, localRuntimeEnvironment.getSourceConnection().getConnection());
-                } catch (SQLException sqlException) {
-                    log.error("drop view error: ", sqlException);
-                }
-            }
         }
 
         post(postSql);

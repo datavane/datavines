@@ -20,12 +20,15 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.server.api.annotation.AuthIgnore;
 import io.datavines.core.enums.Status;
+import io.datavines.server.api.annotation.CheckTokenExist;
 import io.datavines.server.repository.entity.User;
+import io.datavines.server.repository.service.AccessTokenService;
 import io.datavines.server.repository.service.UserService;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.core.utils.TokenManager;
 import lombok.extern.slf4j.Slf4j;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -44,8 +47,11 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
     @Resource
     private UserService userService;
 
+    @Resource
+    private AccessTokenService accessTokenService;
+
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler) {
 
         HandlerMethod handlerMethod = null;
         try {
@@ -63,12 +69,20 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             return true;
         }
 
+        CheckTokenExist checkTokenExist = method.getAnnotation(CheckTokenExist.class);
+
         String token = request.getHeader(DataVinesConstants.TOKEN_HEADER_STRING);
 
         if (StringUtils.isEmpty(token)){
             token = request.getParameter(DataVinesConstants.TOKEN_HEADER_STRING);
             if (StringUtils.isEmpty(token)) {
                 throw new DataVinesServerException(Status.TOKEN_IS_NULL_ERROR);
+            }
+        }
+
+        if (checkTokenExist != null) {
+            if (!accessTokenService.checkTokenExist(token)) {
+                throw new DataVinesServerException(Status.INVALID_TOKEN, token);
             }
         }
 
@@ -84,17 +98,18 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         ContextHolder.setParam(DataVinesConstants.LOGIN_USER, user);
+        ContextHolder.setParam(DataVinesConstants.TOKEN, token);
 
         return true;
     }
 
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    public void postHandle(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler, ModelAndView modelAndView) {
 
     }
 
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull Object handler, Exception ex) {
         ContextHolder.removeAll();
     }
 }

@@ -18,6 +18,8 @@ package io.datavines.core.constant;
 
 public class DataVinesConstants {
 
+    public static String TOKEN = "token";
+
     public static String LOGIN_USER = "login_user";
 
     public static String WORKSPACE_ID = "workspace_id";
@@ -61,11 +63,11 @@ public class DataVinesConstants {
 
     public static final String TOKEN_HEADER_STRING = "Authorization";
 
-    public static final String TOKEN_USER_NAME = "token_user_name";
+    public static final String TOKEN_USER_NAME = "un";
 
-    public static final String TOKEN_USER_PASSWORD = "token_user_password";
+    public static final String TOKEN_USER_PASSWORD = "up";
 
-    public static final String TOKEN_CREATE_TIME = "token_create_time";
+    public static final String TOKEN_CREATE_TIME = "ct";
 
     public static final String TOKEN_VERIFICATION_CODE = "token_verification_code";
 

@@ -16,18 +16,20 @@
  */
 package io.datavines.connector.plugin;
 
+import io.datavines.common.datasource.jdbc.utils.HiveSqlUtils;
+import io.datavines.connector.api.entity.ResultList;
+import lombok.extern.slf4j.Slf4j;
+
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import static io.datavines.common.ConfigConstants.STRING_TYPE;
-
+@Slf4j
 public class HiveDialect extends JdbcDialect {
-
-    @Override
-    public Map<String, String> getDialectKeyMap() {
-        super.getDialectKeyMap();
-        dialectKeyMap.put(STRING_TYPE, "string");
-        return dialectKeyMap;
-    }
 
     @Override
     public String getDriver() {
@@ -35,7 +37,12 @@ public class HiveDialect extends JdbcDialect {
     }
 
     @Override
-    public boolean invalidateItemCanOutput() {
-        return false;
+    public ResultList getPageFromResultSet(Statement sourceConnectionStatement, ResultSet rs,String sourceTable,  int start, int end) throws SQLException {
+        List<Map<String, Object>> resultList = new ArrayList<>();
+        String sql = "select * from " + sourceTable +  " LIMIT " + start + ", " + (end-start);
+        ResultSet errorDataResultSet = sourceConnectionStatement.executeQuery(sql);
+        ResultSetMetaData metaData = rs.getMetaData();
+        resultList.add(HiveSqlUtils.getResultObjectMap(errorDataResultSet, metaData));
+        return new ResultList(resultList);
     }
 }

@@ -17,43 +17,43 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import io.datavines.connector.api.DataSourceClient;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Map;
 
-public class OracleConnector extends JdbcConnector{
+public class OracleConnector extends JdbcConnector {
 
     public OracleConnector(DataSourceClient dataSourceClient) {
         super(dataSourceClient);
     }
 
     @Override
-    public BaseJdbcDataSourceInfo getDatasourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        return new OracleDataSourceInfo(jdbcConnectionInfo);
+    public BaseJdbcDataSourceInfo getDatasourceInfo(Map<String,String> param) {
+        return new OracleDataSourceInfo(param);
     }
 
     @Override
     public ResultSet getMetadataColumns(DatabaseMetaData metaData, String catalog, String schema, String tableName, String columnName) throws SQLException {
-        return metaData.getColumns(null,schema.toUpperCase(), tableName, columnName);
+        return metaData.getColumns(null,catalog.toUpperCase(), tableName, columnName);
     }
 
     @Override
     public ResultSet getMetadataTables(DatabaseMetaData metaData, String catalog, String schema) throws SQLException {
-        return metaData.getTables(null,schema.toUpperCase(), null, TABLE_TYPES);
+        return metaData.getTables(null,catalog.toUpperCase(), null, TABLE_TYPES);
     }
 
     @Override
     protected ResultSet getPrimaryKeys(DatabaseMetaData metaData, String catalog, String schema, String tableName) throws SQLException {
-        return metaData.getPrimaryKeys(null, schema.toUpperCase(), tableName);
+        return metaData.getPrimaryKeys(null, catalog.toUpperCase(), tableName);
     }
 
     @Override
     public ResultSet getMetadataDatabases(Connection connection) throws SQLException {
         java.sql.Statement stmt = connection.createStatement();
-        return stmt.executeQuery("select NAME AS Database FROM V$database");
+        return stmt.executeQuery("SELECT username AS Database FROM all_users");
     }
 }

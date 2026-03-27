@@ -427,7 +427,7 @@ export const colCol:Col[][] = [[{
     dataIndex: 'changeBefore',
     key: 'changeBefore',
 }, {
-    title: <FormattedMessage id="jobs_nminute_before" />,
+    title: <FormattedMessage id="job_after" />,
     dataIndex: 'changeAfter',
     key: 'changeAfter',
 }, {

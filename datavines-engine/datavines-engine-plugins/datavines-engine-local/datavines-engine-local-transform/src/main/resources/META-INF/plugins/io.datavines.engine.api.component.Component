@@ -1,1 +1,1 @@
-local-sql-transform=io.datavines.engine.local.transform.sql.SqlTransform
+local-batch-sql-transform=io.datavines.engine.local.transform.sql.SqlTransform

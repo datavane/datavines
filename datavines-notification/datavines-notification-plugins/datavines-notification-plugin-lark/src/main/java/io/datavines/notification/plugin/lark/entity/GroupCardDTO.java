@@ -17,15 +17,18 @@
 package io.datavines.notification.plugin.lark.entity;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 public class GroupCardDTO extends CardDTO {
 
     public GroupCardDTO() {
         super();
     }
+
     public GroupCardDTO(String headerContent, String headerColor, List<MessageDTO> messageList) {
         super(headerContent, headerColor, messageList);
     }

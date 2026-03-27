@@ -17,15 +17,16 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class DmDataSourceInfo extends BaseJdbcDataSourceInfo {
     private final Logger logger = LoggerFactory.getLogger(DmDataSourceInfo.class);
 
-    public DmDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        super(jdbcConnectionInfo);
+    public DmDataSourceInfo(Map<String,String> param) {
+        super(param);
     }
 
     @Override

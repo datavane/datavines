@@ -101,7 +101,7 @@ public class JdbcSource implements SparkBatchSource {
         }
 
         DataFrameReader reader = new DataFrameReader(env.sparkSession());
-        return reader.jdbc(config.getString(URL), config.getString(TABLE),properties);
+        return reader.jdbc(config.getString(URL), config.getString(TABLE), properties);
     }
 
     private Dataset<Row> hiveSourceData(SparkRuntimeEnvironment env) {

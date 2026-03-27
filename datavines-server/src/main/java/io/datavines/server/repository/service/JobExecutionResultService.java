@@ -18,6 +18,7 @@ package io.datavines.server.repository.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import io.datavines.server.api.dto.vo.JobExecutionResultVO;
+import io.datavines.server.enums.JobCheckState;
 import io.datavines.server.repository.entity.JobExecutionResult;
 
 import java.util.List;
@@ -39,6 +40,8 @@ public interface JobExecutionResultService extends IService<JobExecutionResult> 
     List<JobExecutionResult> listByJobExecutionId(long jobExecutionId);
 
     JobExecutionResultVO getResultVOByJobExecutionId(long jobExecutionId);
+
+    JobCheckState getCheckResultByJobExecutionId(long jobExecutionId);
 
     List<JobExecutionResultVO> getResultVOListByJobExecutionId(long jobExecutionId);
 

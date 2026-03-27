@@ -22,6 +22,7 @@ public class ConfigConstants {
     public static final String CONNECTOR_TYPE = "connector_type";
     public static final String DATASOURCE_ID = "datasource_id";
     public static final String TABLE = "table";
+    public static final String VIEW_SQL = "view_sql";
     public static final String TABLE_ALIAS = "table_alias";
     public static final String TABLE2_ALIAS = "table2_alias";
     public static final String TABLE_ALIAS_COLUMNS = "table_alias_columns";
@@ -37,6 +38,7 @@ public class ConfigConstants {
     public static final String ACTUAL_NAME = "actual_name";
     public static final String ACTUAL_EXECUTE_SQL = "actual_execute_sql";
     public static final String ACTUAL_AGGREGATE_SQL = "actual_aggregate_sql";
+    public static final String ACTUAL_CUSTOM_SQL = "actual_custom_sql";
     public static final String EXPECTED_NAME = "expected_name";
     public static final String EXPECTED_TYPE = "expected_type";
     public static final String EXPECTED_TABLE = "expected_table";
@@ -60,6 +62,7 @@ public class ConfigConstants {
     public static final String DATA_DATE = "data_date";
     public static final String REGEXP_PATTERN = "regexp_pattern";
     public static final String ERROR_OUTPUT_PATH = "error_output_path";
+    public static final String ERROR_DATA_CONNECTOR_TYPE = "error_data_connector_type";
     public static final String INDEX = "index";
     public static final String PATH = "path";
     public static final String HDFS_FILE = "hdfs_file";
@@ -74,9 +77,12 @@ public class ConfigConstants {
     public static final String ERROR_DATA_FILE_NAME = "error_data_file_name";
     public static final String VALIDATE_RESULT_DATA_DIR = "validate_result_data_dir";
     public static final String INVALIDATE_ITEM_CAN_OUTPUT = "invalidate_item_can_output";
+
+    public static final String ERROR_DATA_STORAGE_ID = "error_data_storage_id";
     public static final String ERROR_DATA_OUTPUT_TO_DATASOURCE_DATABASE = "error_data_output_to_datasource_database";
     public static final String DATASOURCE = "datasource";
     public static final String DATABASE = "database";
+    public static final String SID = "sid";
     public static final String DATABASE_NAME = "database_name";
     public static final String TABLE_NAME = "table_name";
     public static final String COLUMN_NAME = "column_name";
@@ -88,6 +94,10 @@ public class ConfigConstants {
     public static final String URL = "url";
     public static final String HOST = "host";
     public static final String PORT = "port";
+
+    // odps
+    public static final String ENDPOINT = "endpoint";
+
     public static final String CATALOG = "catalog";
     public static final String PROPERTIES = "properties";
     public static final String TYPE = "type";
@@ -102,11 +112,10 @@ public class ConfigConstants {
     public static final String OUTPUT_TABLE = "output_table";
     public static final String TMP_TABLE = "tmp_table";
     public static final String COLUMN_SEPARATOR = "column_separator";
-    public static final String LINE_SEPERATOR = "line_separator";
+    public static final String LINE_SEPARATOR = "line_separator";
     public static final String DATA_DIR = "data_dir";
 
     public static final String ENABLE_SPARK_HIVE_SUPPORT = "enable_spark_hive_support";
-    public static final String ENABLE_USE_VIEW = "enable_use_view";
 
     public static final String FILE = "file";
 
@@ -164,4 +173,14 @@ public class ConfigConstants {
     public static final String SAVE_MODE = "save_mode";
 
     public static final String UPSERT = "Upsert";
+
+    public static final String FILE_NAME = "file_name";
+
+    public static final String FLINK = "flink";
+
+    public static final String KEYTAB_FILE = "keytab_file";
+
+    public static final String KEYTAB_PRINCIPAL = "keytab_principal";
+
+    public static final String KRB5_CONF = "krb5_conf";
 }

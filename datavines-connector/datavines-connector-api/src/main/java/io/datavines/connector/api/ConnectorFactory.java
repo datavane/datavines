@@ -29,7 +29,7 @@ public interface ConnectorFactory {
 
     Dialect getDialect();
 
-    ConnectorParameterConverter getConnectorParameterConverter();
+    ParameterConverter getConnectorParameterConverter();
 
     Executor getExecutor();
 
@@ -42,4 +42,10 @@ public interface ConnectorFactory {
     StatementSplitter getStatementSplitter();
 
     StatementParser getStatementParser();
+
+    MetricScript getMetricScript();
+
+    default Boolean showInFrontend() {
+        return true;
+    }
 }

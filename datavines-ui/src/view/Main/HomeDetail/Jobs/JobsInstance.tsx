@@ -160,7 +160,7 @@ const JobsInstance = () => {
             width: 300,
             render: (text: string, record: TJobsInstanceTableItem) => (
                 <>
-                    <IF visible={record.status === 'submitted' || record.status === 'running' || record.status === '已提交' || record.status === '执行中'}>
+                    <IF visible={record.status === 'submitted' || record.status === 'running' || record.status === 'waiting_summit' || record.status === '已提交' || record.status === '执行中' || record.status === '待提交'}>
                         <a style={{ marginRight: 5 }} onClick={() => { onStop(record); }}>{intl.formatMessage({ id: 'jobs_task_stop_btn' })}</a>
                     </IF>
                     <a style={{ marginRight: 5 }} onClick={() => { onLog(record); }}>{intl.formatMessage({ id: 'jobs_task_log_btn' })}</a>

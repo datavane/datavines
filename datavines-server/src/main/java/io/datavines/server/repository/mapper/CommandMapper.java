@@ -25,10 +25,6 @@ import io.datavines.server.repository.entity.Command;
 @Mapper
 public interface CommandMapper extends BaseMapper<Command> {
 
-    /**
-     * SELECT BY ID
-     * @return
-     */
-    @Select("SELECT * from dv_command where type in (0,1) and id % #{totalSlot} = #{currentSlot} order by update_time limit 1 ")
-    Command getOne(@Param("totalSlot") int totalSlot, @Param("currentSlot") int currentSlot);
+    @Select("SELECT * from dv_command where type in (0,1) and id % #{totalSlot} = #{currentSlot} and type = 0 order by update_time limit 1 ")
+    Command getStartCommand(@Param("totalSlot") int totalSlot, @Param("currentSlot") int currentSlot);
 }

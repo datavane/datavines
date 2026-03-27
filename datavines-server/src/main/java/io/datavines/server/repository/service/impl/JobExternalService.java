@@ -81,8 +81,12 @@ public class JobExternalService {
         return jobExecutionService.getById(id);
     }
 
-    public Command getCommand(int totalSlot, int currentSlot){
-        return commandService.getOne(totalSlot, currentSlot);
+    public Command getStartCommand(int totalSlot, int currentSlot) {
+        return commandService.getStartCommand(totalSlot, currentSlot);
+    }
+
+    public List<Command> listKillCommandByExecuteHost(String executeHost) {
+        return commandService.listKillCommandByExecuteHost(executeHost);
     }
 
     public CommonTaskCommand getCatalogCommand(int totalSlot, int currentSlot){

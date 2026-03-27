@@ -117,7 +117,7 @@ public class JdbcConfigBuilder implements ConfigBuilder {
         return getInputParam("password",
                 isEn ? "password" : "密码",
                 isEn ? "please enter password" : "请填入密码", 1,
-                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter password" : "请填入密码").build(),
+                Validate.newBuilder().setRequired(false).setMessage(isEn ? "please enter password" : "请填入密码").build(),
                 null);
     }
 
@@ -144,15 +144,7 @@ public class JdbcConfigBuilder implements ConfigBuilder {
 
     protected List<PluginParams> getOtherParams(boolean isEn) {
 
-        List<PluginParams> list = new ArrayList<>();
-
-        InputParam enableExternalCatalog = getInputParam("enable_use_view",
-                isEn ? "enable.use.view" : "允许使用视图",
-                isEn ? "please enter true or false" : "请填入 true 或者 false", 2, null,
-                "false");
-
-        list.add(enableExternalCatalog);
-        return list;
+        return new ArrayList<>();
     }
 
 }

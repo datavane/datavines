@@ -66,7 +66,7 @@ public class ColumnUnique extends BaseSingleTableColumnNotUseView {
         }
 
         if (config.containsKey("column")) {
-            invalidateItemsSql.append(" group by ${column} having count(1) = 1");
+            invalidateItemsSql.append(getConnectorFactory(config).getMetricScript().groupByHavingCountForUnique());
         }
 
     }

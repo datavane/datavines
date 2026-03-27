@@ -41,14 +41,7 @@
         <module>datavines-metric-expected-last7day-avg</module>
         <module>datavines-metric-expected-last30day-avg</module>
         <module>datavines-metric-expected-none</module>
+        <module>datavines-metric-expected-base</module>
     </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-metric-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-    </dependencies>
 
 </project>

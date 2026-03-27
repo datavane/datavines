@@ -85,7 +85,7 @@ public class ConfigParser {
     public List<Component> getSourcePlugins() {
         List<Component> sourcePluginList = new ArrayList<>();
         config.getSourceParameters().forEach(sourceConfig -> {
-            String pluginName = envConfig.getEngine() + "-" + sourceConfig.getPlugin()+"-source";
+            String pluginName = String.format("%s-%s-%s-source", envConfig.getEngine(), envConfig.getType(), sourceConfig.getPlugin());
             Component component = PluginLoader
                     .getPluginLoader(Component.class)
                     .getNewPlugin(pluginName);
@@ -99,7 +99,7 @@ public class ConfigParser {
     public List<Component> getSinkPlugins() {
         List<Component> sinkPluginList = new ArrayList<>();
         config.getSinkParameters().forEach(sinkConfig -> {
-            String pluginName = envConfig.getEngine() + "-" + sinkConfig.getPlugin()+"-sink";
+            String pluginName = String.format("%s-%s-%s-sink", envConfig.getEngine(), envConfig.getType(), sinkConfig.getPlugin());
             Component component = PluginLoader
                     .getPluginLoader(Component.class)
                     .getNewPlugin(pluginName);
@@ -113,7 +113,7 @@ public class ConfigParser {
     public List<Component> getTransformPlugins() {
         List<Component> transformPluginList = new ArrayList<>();
         config.getTransformParameters().forEach(transformConfig -> {
-            String pluginName = envConfig.getEngine() + "-" + transformConfig.getPlugin() + "-transform";
+            String pluginName = String.format("%s-%s-%s-transform", envConfig.getEngine(), envConfig.getType(), transformConfig.getPlugin());
             Component component = PluginLoader
                     .getPluginLoader(Component.class)
                     .getNewPlugin(pluginName);

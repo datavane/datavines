@@ -21,8 +21,8 @@ import io.datavines.connector.api.*;
 public class TrinoConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new TrinoConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new TrinoParameterConverter();
     }
 
     @Override

@@ -26,10 +26,10 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
@@ -37,17 +37,17 @@ public class MongodbClientManager {
 
     private final Logger logger = LoggerFactory.getLogger(MongodbClientManager.class);
 
-    private final LoadingCache<JdbcConnectionInfo, MongoClient> mongoClientLoadingCache = CacheBuilder.newBuilder()
+    private final LoadingCache<Map<String,String>, MongoClient> mongoClientLoadingCache = CacheBuilder.newBuilder()
             .expireAfterAccess(5, TimeUnit.MINUTES)
-            .removalListener((RemovalListener<JdbcConnectionInfo, MongoClient>) notification -> {
+            .removalListener((RemovalListener<Map<String,String> , MongoClient>) notification -> {
                 notification.getValue().close();
             })
-            .build(new CacheLoader<JdbcConnectionInfo, MongoClient>() {
+            .build(new CacheLoader<Map<String,String>, MongoClient>() {
 
                 @Override
-                public MongoClient load(JdbcConnectionInfo jdbcConnectionInfo) {
+                public MongoClient load(Map<String,String> param) {
                     try {
-                        BaseJdbcDataSourceInfo dataSourceInfo = new MongodbDataSourceInfo(jdbcConnectionInfo);
+                        BaseJdbcDataSourceInfo dataSourceInfo = new MongodbDataSourceInfo(param);
                         MongoClientSettings.Builder options = MongoClientSettings.builder();
                         String url = dataSourceInfo.getJdbcUrl();
                         ConnectionString connectionString = new ConnectionString(url);
@@ -69,11 +69,11 @@ public class MongodbClientManager {
         return MongodbClientManager.Singleton.INSTANCE;
     }
 
-    public MongoClient getMongoClient(JdbcConnectionInfo jdbcConnectionInfo) {
+    public MongoClient getMongoClient(Map<String,String> param) {
 
         MongoClient mongoClient = null;
         try {
-            mongoClient = mongoClientLoadingCache.get(jdbcConnectionInfo);
+            mongoClient = mongoClientLoadingCache.get(param);
         } catch (ExecutionException e) {
             logger.error(e.toString(), e);
         }

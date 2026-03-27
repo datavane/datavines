@@ -300,4 +300,20 @@ public class CommonConstants {
     public static final String CATALOG_ENTITY_INSTANCE_STATUS_ACTIVE = "active";
 
     public static final String CATALOG_ENTITY_INSTANCE_STATUS_DELETED = "deleted";
+
+    public static final String WEEK_START_DAY = "week_start_day";
+
+    public static final String WEEK_END_DAY = "week_end_day";
+
+    public static final String MONTH_START_DAY = "month_start_day";
+
+    public static final String MONTH_END_DAY = "month_end_day";
+
+    public static final String DAY_START_TIME = "day_start_time";
+
+    public static final String DAY_END_TIME = "day_end_time";
+
+    public static final String DAY_AFTER_7_END_TIME = "day_after_7_end_time";
+
+    public static final String DAY_AFTER_30_END_TIME = "day_after_30_end_time";
 }

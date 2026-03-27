@@ -84,11 +84,6 @@ public class LivyEngineExecutor extends AbstractLivyEngineExecutor {
     }
 
     @Override
-    public boolean isCancel() throws Exception {
-        return this.cancel;
-    }
-
-    @Override
     public ProcessResult getProcessResult() {
         return this.processResult;
     }

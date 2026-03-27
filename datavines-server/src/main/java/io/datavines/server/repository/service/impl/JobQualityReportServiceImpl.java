@@ -30,7 +30,7 @@ import io.datavines.metric.api.*;
 import io.datavines.server.api.dto.bo.job.JobQualityReportDashboardParam;
 import io.datavines.server.api.dto.vo.*;
 import io.datavines.server.enums.DataQualityLevel;
-import io.datavines.server.enums.DqJobExecutionState;
+import io.datavines.server.enums.JobCheckState;
 import io.datavines.server.repository.entity.*;
 import io.datavines.server.repository.mapper.JobExecutionResultMapper;
 import io.datavines.server.repository.mapper.JobQualityReportMapper;
@@ -75,7 +75,7 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
     @Transactional(rollbackFor =  Exception.class)
     @Override
     public boolean generateQualityReport(Long datasourceId) {
-        String yesterday = DateUtils.format(DateUtils.addDays(DateUtils.getCurrentDate(),-1),DateUtils.YYYY_MM_DD);
+        String yesterday = DateUtils.format(new Date(), DateUtils.YYYY_MM_DD);
         List<JobExecutionResult> jobExecutionResultList = jobExecutionResultMapper.listByDatasourceIdAndTimeRange(datasourceId,yesterday + " 00:00:00", yesterday + " 23:59:59");
         if (CollectionUtils.isEmpty(jobExecutionResultList)) {
             return true;
@@ -230,13 +230,32 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
             throw new DataVinesException("param can not be null");
         }
 
-        queryWrapper.eq(dashboardParam.getDatasourceId()!= null, JobQualityReport::getDatasourceId, dashboardParam.getDatasourceId());
+        queryWrapper.eq(JobQualityReport::getDatasourceId, dashboardParam.getDatasourceId());
+        String entityLevel = DATASOURCE;
 
-        queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()), JobQualityReport::getDatabaseName, dashboardParam.getSchemaName());
-        if (StringUtils.isEmpty(dashboardParam.getTableName())) {
-            queryWrapper.eq(JobQualityReport::getTableName, "--");
-        } else {
-            queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getTableName()), JobQualityReport::getTableName, dashboardParam.getTableName());
+        if (StringUtils.isNotEmpty(dashboardParam.getSchemaName())) {
+            entityLevel = DATABASE;
+        }
+
+        if (StringUtils.isNotEmpty(dashboardParam.getTableName())) {
+            entityLevel = TABLE;
+        }
+
+        switch (entityLevel) {
+            case DATASOURCE:
+                queryWrapper.eq(JobQualityReport::getEntityLevel, DATASOURCE);
+                break;
+            case DATABASE:
+                queryWrapper.eq(JobQualityReport::getEntityLevel, DATABASE);
+                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()), JobQualityReport::getDatabaseName, dashboardParam.getSchemaName());
+                break;
+            case TABLE:
+                queryWrapper.eq(JobQualityReport::getEntityLevel, TABLE);
+                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()), JobQualityReport::getDatabaseName, dashboardParam.getSchemaName());
+                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getTableName()), JobQualityReport::getTableName, dashboardParam.getTableName());
+                break;
+            default:
+                break;
         }
 
         if (StringUtils.isEmpty(dashboardParam.getReportDate())) {
@@ -250,6 +269,7 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
         if (CollectionUtils.isEmpty(jobQualityReports)) {
             return null;
         }
+
         JobQualityReportScore reportScore = new JobQualityReportScore();
         reportScore.setScore(new BigDecimal(0));
         reportScore.setQualityLevel(DataQualityLevel.UNQUALIFIED.getZhDescription());
@@ -293,18 +313,33 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
         }
 
         LambdaQueryWrapper<JobQualityReport> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(dashboardParam.getDatasourceId()!= null, JobQualityReport::getDatasourceId, dashboardParam.getDatasourceId());
+        queryWrapper.eq(JobQualityReport::getDatasourceId, dashboardParam.getDatasourceId());
 
-        if (StringUtils.isEmpty(dashboardParam.getTableName())) {
-            queryWrapper.eq(JobQualityReport::getDatabaseName, "--");
-        } else {
-            queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()), JobQualityReport::getDatabaseName, dashboardParam.getSchemaName());
+        String entityLevel = DATASOURCE;
+
+        if (StringUtils.isNotEmpty(dashboardParam.getSchemaName())) {
+            entityLevel = DATABASE;
         }
 
-        if (StringUtils.isEmpty(dashboardParam.getTableName())) {
-            queryWrapper.eq(JobQualityReport::getTableName, "--");
-        } else {
-            queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getTableName()), JobQualityReport::getTableName, dashboardParam.getTableName());
+        if (StringUtils.isNotEmpty(dashboardParam.getTableName())) {
+            entityLevel = TABLE;
+        }
+
+        switch (entityLevel) {
+            case DATASOURCE:
+                queryWrapper.eq(JobQualityReport::getEntityLevel, DATASOURCE);
+                break;
+            case DATABASE:
+                queryWrapper.eq(JobQualityReport::getEntityLevel, DATABASE);
+                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()), JobQualityReport::getDatabaseName, dashboardParam.getSchemaName());
+                break;
+            case TABLE:
+                queryWrapper.eq(JobQualityReport::getEntityLevel, TABLE);
+                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()), JobQualityReport::getDatabaseName, dashboardParam.getSchemaName());
+                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getTableName()), JobQualityReport::getTableName, dashboardParam.getTableName());
+                break;
+            default:
+                break;
         }
 
         queryWrapper.between(JobQualityReport::getReportDate, startDateStr, endDateStr);
@@ -384,7 +419,7 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
             String resultFormulaFormat = resultFormula.getResultFormat(!LanguageUtils.isZhContext())+" ${operator} ${threshold}";
 
             jobExecutionResultVO.setCheckSubject(jobExecutionResult.getDatabaseName() + "." + jobExecutionResult.getTableName() + "." + jobExecutionResult.getColumnName());
-            jobExecutionResultVO.setCheckResult(DqJobExecutionState.of(jobExecutionResult.getState()).getDescription(!LanguageUtils.isZhContext()));
+            jobExecutionResultVO.setCheckResult(JobCheckState.of(jobExecutionResult.getState()).getDescription(!LanguageUtils.isZhContext()));
             SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobExecutionResult.getMetricName());
             if (!"multi_table_value_comparison".equalsIgnoreCase(sqlMetric.getName())) {
                 ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(jobExecution.getEngineType() + "_" + jobExecutionResult.getExpectedType());

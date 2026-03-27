@@ -138,7 +138,7 @@ public class HttpUtils {
     public static String post(String url, String body, Map<String,String> headers) {
         CloseableHttpClient httpclient = HttpUtils.getInstance();
 
-        StringEntity stringEntity=new StringEntity(body, ContentType.APPLICATION_JSON);
+        StringEntity stringEntity = new StringEntity(body, ContentType.APPLICATION_JSON);
         HttpPost httpPost = new HttpPost(url);
         if(headers != null && !headers.isEmpty()){
             headers.forEach(httpPost::addHeader);

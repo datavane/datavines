@@ -21,8 +21,8 @@ import io.datavines.connector.api.*;
 public class MysqlConnectorFactory extends AbstractJdbcConnectorFactory {
 
     @Override
-    public ConnectorParameterConverter getConnectorParameterConverter() {
-        return new MysqlConnectorParameterConverter();
+    public ParameterConverter getConnectorParameterConverter() {
+        return new MysqlParameterConverter();
     }
 
     @Override
@@ -43,5 +43,10 @@ public class MysqlConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public ConfigBuilder getConfigBuilder() {
         return new MysqlConfigBuilder();
+    }
+
+    @Override
+    public MetricScript getMetricScript() {
+        return new MysqlMetricScript();
     }
 }

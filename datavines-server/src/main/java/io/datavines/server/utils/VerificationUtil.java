@@ -76,9 +76,10 @@ public class VerificationUtil {
 
     private static String buildJwtVerification(String verificationCode) {
         Map<String, Object> claims = new HashMap<>();
+        Long createTime = System.currentTimeMillis();
         claims.put(DataVinesConstants.TOKEN_VERIFICATION_CODE, verificationCode);
-        claims.put(DataVinesConstants.TOKEN_CREATE_TIME, System.currentTimeMillis());
-        return tokenManager.toTokenString(timeOutMillis, claims);
+        claims.put(DataVinesConstants.TOKEN_CREATE_TIME, createTime);
+        return tokenManager.toTokenString(createTime, timeOutMillis, claims);
     }
 
     private static String buildImageByte64(String verificationCode) {

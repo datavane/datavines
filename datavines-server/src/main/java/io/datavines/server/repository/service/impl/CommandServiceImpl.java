@@ -16,12 +16,18 @@
  */
 package io.datavines.server.repository.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import io.datavines.server.enums.CommandType;
 import io.datavines.server.repository.entity.Command;
 import io.datavines.server.repository.mapper.CommandMapper;
 import io.datavines.server.repository.service.CommandService;
 import org.springframework.stereotype.Service;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service("commandService")
 public class CommandServiceImpl extends ServiceImpl<CommandMapper, Command> implements CommandService {
@@ -43,12 +49,30 @@ public class CommandServiceImpl extends ServiceImpl<CommandMapper, Command> impl
     }
 
     @Override
-    public Command getOne(int totalSlot, int currentSlot) {
-        return baseMapper.getOne(totalSlot, currentSlot);
+    public Command getStartCommand(int totalSlot, int currentSlot) {
+        return baseMapper.getStartCommand(totalSlot, currentSlot);
     }
 
     @Override
     public int deleteById(long id) {
         return baseMapper.deleteById(id);
+    }
+
+    @Override
+    public boolean deleteByJobExecutionId(Long jobExecutionId) {
+        return remove(new LambdaQueryWrapper<Command>().eq(Command::getJobExecutionId, jobExecutionId));
+    }
+
+    @Override
+    public List<Command> listKillCommandByExecuteHost(String executeHost) {
+        List<Command> commands = list(new LambdaQueryWrapper<Command>()
+                .eq(Command::getType, CommandType.STOP)
+                .eq(Command::getExecuteHost, executeHost).last("limit 20"));
+
+        if (CollectionUtils.isEmpty(commands)) {
+            return new ArrayList<>();
+        }
+
+        return commands;
     }
 }

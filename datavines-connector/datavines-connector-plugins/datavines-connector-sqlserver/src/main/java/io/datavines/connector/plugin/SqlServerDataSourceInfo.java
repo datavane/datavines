@@ -17,12 +17,12 @@
 package io.datavines.connector.plugin;
 
 import io.datavines.common.datasource.jdbc.BaseJdbcDataSourceInfo;
-import io.datavines.common.datasource.jdbc.JdbcConnectionInfo;
+import java.util.Map;
 
 public class SqlServerDataSourceInfo extends BaseJdbcDataSourceInfo {
 
-    public SqlServerDataSourceInfo(JdbcConnectionInfo jdbcConnectionInfo) {
-        super(jdbcConnectionInfo);
+    public SqlServerDataSourceInfo(Map<String,String> param) {
+        super(param);
     }
 
     @Override

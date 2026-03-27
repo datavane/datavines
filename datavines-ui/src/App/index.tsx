@@ -12,7 +12,7 @@ import { routerNoLogin } from '../router';
 import { IntlWrap } from '@/locale';
 import { useMount } from '@/common';
 import shareData from '@/utils/shareData';
-import { DV_LANGUAGE } from '@/utils/constants';
+import {DV_LANGUAGE, DV_STORAGE_LOGIN} from '@/utils/constants';
 
 const Main = React.lazy(() => import('view/Main'));
 function App() {
@@ -32,7 +32,7 @@ function App() {
                     <Route key="/main" path="/main">
                         <Main />
                     </Route>
-                    <Redirect from="/" to="/login" />
+                    <Redirect from="/" to={shareData.sessionGet(DV_STORAGE_LOGIN)? '/main' : '/login'} />
                 </Switch>
             </Suspense>
         </Router>

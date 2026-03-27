@@ -27,6 +27,7 @@ import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.Connector;
 import io.datavines.common.datasource.jdbc.utils.JdbcDataSourceUtils;
 import io.datavines.connector.api.DataSourceClient;
+import org.apache.commons.collections4.MapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,17 +35,15 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
-import static io.datavines.common.ConfigConstants.HOST;
-import static io.datavines.common.ConfigConstants.PORT;
+import static io.datavines.common.ConfigConstants.*;
 
 public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
     protected final Logger logger = LoggerFactory.getLogger(JdbcConnector.class);
 
     protected static final String TABLE = "TABLE";
-
-    protected static final String DATABASE = "DATABASE";
 
     protected static final String VIEW = "VIEW";
 
@@ -60,22 +59,22 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         this.dataSourceClient = dataSourceClient;
     }
 
-    protected Connection getConnection(String dataSourceParam, JdbcConnectionInfo jdbcConnectionInfo) throws SQLException {
-        return dataSourceClient.getConnection(JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(jdbcConnectionInfo)));
+    protected Connection getConnection(String dataSourceParam, Map<String,String> param) throws SQLException {
+        return dataSourceClient.getConnection(JdbcDataSourceInfoManager.getDatasourceInfo(dataSourceParam, getDatasourceInfo(param)));
     }
 
     @Override
     public ConnectorResponse getDatabases(GetDatabasesRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-        if (jdbcConnectionInfo == null) {
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        if (MapUtils.isEmpty(paramMap)) {
             throw new SQLException("jdbc datasource param is no validate");
         }
 
         List<DatabaseInfo> databaseList = new ArrayList<>();
-        if (StringUtils.isEmptyOrNullStr(jdbcConnectionInfo.getDatabase())) {
-            Connection connection = getConnection(dataSourceParam, jdbcConnectionInfo);
+        if (StringUtils.isEmptyOrNullStr(paramMap.get(DATABASE))) {
+            Connection connection = getConnection(dataSourceParam, paramMap);
             ResultSet rs = getMetadataDatabases(connection);
 
             while (rs.next()) {
@@ -83,7 +82,7 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
             }
             JdbcDataSourceUtils.releaseConnection(connection);
         } else {
-            databaseList.add(new DatabaseInfo(jdbcConnectionInfo.getDatabase(), DATABASE));
+            databaseList.add(new DatabaseInfo(paramMap.get(DATABASE), DATABASE));
         }
 
         builder.result(databaseList);
@@ -96,12 +95,12 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
 
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-        if (jdbcConnectionInfo == null) {
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        if (MapUtils.isEmpty(paramMap)) {
             throw new SQLException("jdbc datasource param is no validate");
         }
 
-        Connection connection = getConnection(dataSourceParam, jdbcConnectionInfo);
+        Connection connection = getConnection(dataSourceParam, paramMap);
 
         List<TableInfo> tableList = null;
         ResultSet tables;
@@ -111,12 +110,12 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
             String catalog;
             String schema;
 
-            if (StringUtils.isNotEmpty(jdbcConnectionInfo.getCatalog())) {
-                catalog = jdbcConnectionInfo.getCatalog();
+            if (StringUtils.isNotEmpty(paramMap.get(CATALOG))) {
+                catalog = paramMap.get(CATALOG);
                 schema = param.getDatabase();
             } else {
                 catalog = param.getDatabase();
-                schema = StringUtils.isEmptyOrNullStr(jdbcConnectionInfo.getSchema())  ? null : jdbcConnectionInfo.getSchema();
+                schema = StringUtils.isEmptyOrNullStr(paramMap.get(SCHEMA))  ? null : paramMap.get(SCHEMA);
             }
 
             tableList = new ArrayList<>();
@@ -152,24 +151,24 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
     public ConnectorResponse getColumns(GetColumnsRequestParam param) throws SQLException {
         ConnectorResponse.ConnectorResponseBuilder builder = ConnectorResponse.builder();
         String dataSourceParam = param.getDataSourceParam();
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSourceParam, JdbcConnectionInfo.class);
-        if (jdbcConnectionInfo == null) {
+        Map<String,String> paramMap = JSONUtils.toMap(dataSourceParam);
+        if (MapUtils.isEmpty(paramMap)) {
             throw new SQLException("jdbc datasource param is no validate");
         }
 
-        Connection connection = getConnection(dataSourceParam, jdbcConnectionInfo);
+        Connection connection = getConnection(dataSourceParam, paramMap);
 
         TableColumnInfo tableColumnInfo = null;
         try {
             String catalog;
             String schema;
 
-            if (StringUtils.isNotEmpty(jdbcConnectionInfo.getCatalog())) {
-                catalog = jdbcConnectionInfo.getCatalog();
+            if (StringUtils.isNotEmpty(paramMap.get(CATALOG))) {
+                catalog = paramMap.get(CATALOG);
                 schema = param.getDataBase();
             } else {
                 catalog = param.getDataBase();
-                schema = StringUtils.isEmptyOrNullStr(jdbcConnectionInfo.getSchema())  ? null : jdbcConnectionInfo.getSchema();
+                schema = StringUtils.isEmptyOrNullStr(paramMap.get(SCHEMA))  ? null : paramMap.get(SCHEMA);
             }
 
             String tableName = param.getTable();
@@ -195,8 +194,8 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
 
     @Override
     public ConnectorResponse testConnect(TestConnectionRequestParam param) {
-        JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(param.getDataSourceParam(), JdbcConnectionInfo.class);
-        BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(jdbcConnectionInfo);
+        Map<String,String> paramMap = JSONUtils.toMap(param.getDataSourceParam());
+        BaseJdbcDataSourceInfo dataSourceInfo = getDatasourceInfo(paramMap);
         dataSourceInfo.loadClass();
 
         try (Connection con = DriverManager.getConnection(dataSourceInfo.getJdbcUrl(), dataSourceInfo.getUser(), dataSourceInfo.getPassword())) {
@@ -207,9 +206,12 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
             return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(result).build();
         } catch (SQLException e) {
             logger.error("test connect error, param is {} :", JSONUtils.toJsonString(param), e);
+            return ConnectorResponse.builder()
+                    .status(ConnectorResponse.Status.ERROR)
+                    .result(false)
+                    .errorMsg(e.getMessage())
+                    .build();
         }
-
-        return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
     }
 
     private List<String> getPrimaryKeys(String catalog, String schema, String tableName, DatabaseMetaData metaData) {

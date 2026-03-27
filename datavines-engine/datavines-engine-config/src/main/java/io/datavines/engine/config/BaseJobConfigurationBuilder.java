@@ -22,11 +22,7 @@ import io.datavines.common.config.enums.TransformType;
 import io.datavines.common.entity.*;
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.common.utils.CommonPropertyUtils;
-import io.datavines.common.utils.JSONUtils;
-import io.datavines.common.utils.ParameterUtils;
-import io.datavines.common.utils.StringUtils;
-import io.datavines.common.utils.placeholder.PlaceholderUtils;
+import io.datavines.common.utils.*;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
@@ -35,12 +31,15 @@ import io.datavines.spi.PluginLoader;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.datavines.common.CommonConstants.*;
 import static io.datavines.common.ConfigConstants.*;
+import static io.datavines.common.ConfigConstants.TABLE;
 import static io.datavines.engine.config.MetricParserUtils.generateUniqueCode;
 
 public abstract class BaseJobConfigurationBuilder implements JobConfigurationBuilder {
@@ -58,6 +57,15 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
     @Override
     public void init(Map<String, String> inputParameter, JobExecutionInfo jobExecutionInfo) {
         this.inputParameter = inputParameter;
+        LocalDate nowDate = LocalDate.now();
+        this.inputParameter.put(WEEK_START_DAY, DateUtils.format(DateUtils.getWeekStart(nowDate), DateUtils.YYYY_MM_DD));
+        this.inputParameter.put(WEEK_END_DAY, DateUtils.format(DateUtils.getWeekEnd(nowDate), DateUtils.YYYY_MM_DD));
+        this.inputParameter.put(MONTH_START_DAY, DateUtils.format(DateUtils.getMonthStart(nowDate), DateUtils.YYYY_MM_DD));
+        this.inputParameter.put(MONTH_END_DAY, DateUtils.format(DateUtils.getMonthEnd(nowDate), DateUtils.YYYY_MM_DD));
+        this.inputParameter.put(DAY_START_TIME, DateUtils.format(DateUtils.getStartOfDay(nowDate), DateUtils.YYYY_MM_DD_HH_MM_SS));
+        this.inputParameter.put(DAY_END_TIME, DateUtils.format(DateUtils.getEndOfDay(nowDate), DateUtils.YYYY_MM_DD_HH_MM_SS));
+        this.inputParameter.put(DAY_AFTER_7_END_TIME, DateUtils.format(DateUtils.getEndOfDayAfterNDays(nowDate,7), DateUtils.YYYY_MM_DD_HH_MM_SS));
+        this.inputParameter.put(DAY_AFTER_30_END_TIME, DateUtils.format(DateUtils.getEndOfDayAfterNDays(nowDate,30), DateUtils.YYYY_MM_DD_HH_MM_SS));
         this.inputParameter.put(COLUMN, "");
         this.jobExecutionInfo = jobExecutionInfo;
         this.jobExecutionParameter = jobExecutionInfo.getJobExecutionParameter();
@@ -70,13 +78,13 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
             this.inputParameter.put(COLUMN_SEPARATOR,
                     errorDataParameterMap.get(CommonPropertyUtils.COLUMN_SEPARATOR) == null ?
                             CommonPropertyUtils.COLUMN_SEPARATOR_DEFAULT : errorDataParameterMap.get(CommonPropertyUtils.COLUMN_SEPARATOR));
-            this.inputParameter.put(LINE_SEPERATOR,
+            this.inputParameter.put(LINE_SEPARATOR,
                     errorDataParameterMap.get(CommonPropertyUtils.LINE_SEPARATOR) == null ?
                             CommonPropertyUtils.LINE_SEPARATOR_DEFAULT : errorDataParameterMap.get(CommonPropertyUtils.LINE_SEPARATOR));
         } else {
             this.inputParameter.put(ERROR_DATA_DIR, CommonPropertyUtils.getString(CommonPropertyUtils.ERROR_DATA_DIR, CommonPropertyUtils.ERROR_DATA_DIR_DEFAULT));
             this.inputParameter.put(COLUMN_SEPARATOR, CommonPropertyUtils.getString(CommonPropertyUtils.COLUMN_SEPARATOR, CommonPropertyUtils.COLUMN_SEPARATOR_DEFAULT));
-            this.inputParameter.put(LINE_SEPERATOR, CommonPropertyUtils.getString(CommonPropertyUtils.LINE_SEPARATOR, CommonPropertyUtils.LINE_SEPARATOR_DEFAULT));
+            this.inputParameter.put(LINE_SEPARATOR, CommonPropertyUtils.getString(CommonPropertyUtils.LINE_SEPARATOR, CommonPropertyUtils.LINE_SEPARATOR_DEFAULT));
         }
 
         if (FILE.equalsIgnoreCase(jobExecutionInfo.getValidateResultDataStorageType())) {
@@ -228,6 +236,19 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
         return actualValueSourceConfig;
     }
 
+    protected SourceConfig getValidateResultDataSourceConfig(String outputTable) throws DataVinesException {
+
+        SourceConfig actualValueSourceConfig = new SourceConfig();
+        ConnectorFactory storageFactory =
+                PluginLoader.getPluginLoader(ConnectorFactory.class)
+                        .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
+
+        actualValueSourceConfig.setPlugin(storageFactory.getCategory());
+        actualValueSourceConfig.setType(SourceType.METADATA.getDescription());
+        actualValueSourceConfig.setConfig(getValidateResultSourceConfigMap(null,"dv_actual_values", outputTable));
+        return actualValueSourceConfig;
+    }
+
     protected SinkConfig getValidateResultDataSinkConfig(ExpectedValue expectedValue, String sql, String dbTable, Map<String, String> inputParameter) throws DataVinesException {
 
         SinkConfig validateResultDataStorageConfig = new SinkConfig();
@@ -261,6 +282,27 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
 
         configMap.put(TABLE, dbTable);
         configMap.put(OUTPUT_TABLE, dbTable);
+        if (StringUtils.isNotEmpty(sql)) {
+            configMap.put(SQL, sql);
+        }
+
+        return configMap;
+    }
+
+    private Map<String,Object> getValidateResultSourceConfigMap(String sql, String dbTable,String outputTable) {
+        Map<String, Object> configMap = new HashMap<>();
+        ConnectorFactory storageFactory =
+                PluginLoader.getPluginLoader(ConnectorFactory.class)
+                        .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
+        if (storageFactory != null) {
+            if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {
+                configMap = storageFactory.getConnectorParameterConverter().converter(JSONUtils.toMap(jobExecutionInfo.getValidateResultDataStorageParameter(), String.class, Object.class));
+                configMap.put(DRIVER, storageFactory.getDialect().getDriver());
+            }
+        }
+
+        configMap.put(TABLE, dbTable);
+        configMap.put(OUTPUT_TABLE, outputTable);
         if (StringUtils.isNotEmpty(sql)) {
             configMap.put(SQL, sql);
         }

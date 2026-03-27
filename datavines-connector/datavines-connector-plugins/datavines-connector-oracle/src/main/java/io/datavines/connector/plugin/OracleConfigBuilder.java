@@ -16,16 +16,48 @@
  */
 package io.datavines.connector.plugin;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.datavines.common.param.form.PluginParams;
 import io.datavines.common.param.form.Validate;
 import io.datavines.common.param.form.type.InputParam;
+import lombok.extern.slf4j.Slf4j;
 
-public class OracleConfigBuilder extends JdbcConfigBuilder{
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
+public class OracleConfigBuilder extends JdbcConfigBuilder {
+
     @Override
-    protected InputParam getSchemaInput(boolean isEn) {
-        return getInputParam("schema",
-                isEn ? "schema" : "模式",
-                isEn ? "please enter schema" : "请填入模式", 1,
-                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter schema" : "请填入模式").build(), null);
+    public String build(boolean isEn) {
+        List<PluginParams> params = new ArrayList<>();
+        params.add(getHostInput(isEn));
+        params.add(getPortInput(isEn));
+        params.add(getSID(isEn));
+        params.add(getUserInput(isEn));
+        params.add(getPasswordInput(isEn));
+        params.add(getPropertiesInput(isEn));
+        params.addAll(getOtherParams(isEn));
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+        String result = null;
+
+        try {
+            result = mapper.writeValueAsString(params);
+        } catch (JsonProcessingException e) {
+            log.error("json parse error : ", e);
+        }
+
+        return result;
+    }
+
+    private InputParam getSID(boolean isEn) {
+        return getInputParam("sid",
+                isEn ? "sid" : "SID",
+                isEn ? "please enter sid" : "请填入SID", 1,
+                Validate.newBuilder().setRequired(true).setMessage(isEn ? "please enter sid" : "请填入SID").build(), null);
     }
 
 }

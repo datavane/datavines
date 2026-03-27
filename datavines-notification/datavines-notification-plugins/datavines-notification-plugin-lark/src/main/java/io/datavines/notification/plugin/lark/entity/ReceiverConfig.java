@@ -17,13 +17,11 @@
 package io.datavines.notification.plugin.lark.entity;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import java.util.Objects;
 
 @Data
-@EqualsAndHashCode
 @ToString
 public class ReceiverConfig {
 
@@ -33,9 +31,9 @@ public class ReceiverConfig {
     private String groupName;
 
     /**
-     * Feishu Group webhook address, excluding "https://open.feishu.cn/open-apis/bot/v2/hook/" part
+     * Feishu webhook
      */
-    private String token;
+    private String webhook;
 
     /**
      * Is it @ everyone
@@ -51,11 +49,11 @@ public class ReceiverConfig {
             return false;
         }
         ReceiverConfig that = (ReceiverConfig) o;
-        return Objects.equals(token, that.token) && atAll == that.atAll;
+        return Objects.equals(webhook, that.webhook) && atAll == that.atAll;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(token, atAll);
+        return Objects.hash(webhook, atAll);
     }
 }

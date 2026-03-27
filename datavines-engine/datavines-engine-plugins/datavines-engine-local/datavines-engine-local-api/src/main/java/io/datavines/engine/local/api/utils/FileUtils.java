@@ -17,8 +17,8 @@
 package io.datavines.engine.local.api.utils;
 
 import io.datavines.connector.api.TypeConverter;
-import io.datavines.engine.local.api.entity.QueryColumn;
-import io.datavines.engine.local.api.entity.ResultListWithColumns;
+import io.datavines.connector.api.entity.QueryColumn;
+import io.datavines.connector.api.entity.ResultListWithColumns;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 

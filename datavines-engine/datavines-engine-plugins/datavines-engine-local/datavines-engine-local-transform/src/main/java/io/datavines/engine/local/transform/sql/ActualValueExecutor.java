@@ -18,8 +18,8 @@ package io.datavines.engine.local.transform.sql;
 
 import io.datavines.common.config.Config;
 import io.datavines.engine.local.api.LocalRuntimeEnvironment;
-import io.datavines.engine.local.api.entity.ResultList;
-import io.datavines.engine.local.api.utils.SqlUtils;
+import io.datavines.connector.api.entity.ResultList;
+import io.datavines.connector.api.utils.SqlUtils;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.sql.Connection;
@@ -44,7 +44,7 @@ public class ActualValueExecutor implements ITransformExecutor {
             statement = connection.createStatement();
             env.setCurrentStatement(statement);
             resultSet = statement.executeQuery(sql);
-            resultList = SqlUtils.getListFromResultSet(resultSet, SqlUtils.getQueryFromsAndJoins(sql));
+            resultList = SqlUtils.getListFromResultSet(resultSet);
             if (CollectionUtils.isNotEmpty(resultList.getResultList())) {
                 List<Map<String, Object>> dataList = resultList.getResultList();
                 List<Map<String, Object>> newDataList = new ArrayList<>();

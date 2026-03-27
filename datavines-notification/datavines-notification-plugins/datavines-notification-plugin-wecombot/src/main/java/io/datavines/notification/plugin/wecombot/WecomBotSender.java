@@ -21,7 +21,7 @@ import io.datavines.common.utils.HttpUtils;
 import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.notification.api.entity.SlaNotificationResultRecord;
-import io.datavines.notification.api.entity.SlaSenderMessage;
+import io.datavines.notification.plugin.wecombot.entity.ReceiverConfig;
 import io.datavines.notification.plugin.wecombot.entity.WecomBotRes;
 import io.datavines.notification.plugin.wecombot.utils.ContentUtil;
 import lombok.Data;
@@ -31,48 +31,38 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-import static java.util.Objects.requireNonNull;
 
 @Slf4j
 @EqualsAndHashCode
 @Data
 public class WecomBotSender {
 
-    private String webhookList;
-
-    public WecomBotSender(SlaSenderMessage senderMessage) {
-        String configString = senderMessage.getConfig();
-        Map<String, String> config = JSONUtils.toMap(configString);
-        webhookList = config.get("webhook");
-        requireNonNull(webhookList, "webhook must not be null");
-
-    }
-
-    public SlaNotificationResultRecord sendMsg(Set<String> receiverSet, String subject, String message) {
+    public SlaNotificationResultRecord sendMsg(Set<ReceiverConfig> receiverSet, String subject, String message) {
         SlaNotificationResultRecord result = new SlaNotificationResultRecord();
         // if there is no receivers && no receiversCc, no need to process
         if (CollectionUtils.isEmpty(receiverSet)) {
             return result;
         }
-        receiverSet.removeIf(StringUtils::isEmpty);
+        receiverSet.removeIf(receiver -> StringUtils.isEmpty(receiver.getWebhook()));
         Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
         // send msg
         Set<String> failToReceivers = new HashSet<>();
-        for (String receiver : receiverSet) {
+        for (ReceiverConfig receiver : receiverSet) {
             try {
                 String markdownMessage = getMarkdownMessage(subject, message);
                 Map<String, Object> paramMap = ContentUtil.createParamMap(WecomBotConstants.MSG_TYPE, WecomBotConstants.MARKDOWN, WecomBotConstants.MARKDOWN, ContentUtil.createParamMap(WecomBotConstants.CONTENT, markdownMessage));
-                String res = HttpUtils.post(receiver, JSONUtils.toJsonString(paramMap), null);
+                String res = HttpUtils.post(receiver.getWebhook(), JSONUtils.toJsonString(paramMap), null);
                 WecomBotRes wecomBotRes = WecomBotRes.parseFromJson(res);
                 if(!wecomBotRes.success()){
-                    failToReceivers.add(receiver);
+                    failToReceivers.add(receiver.getWebhook());
                     log.info("wecomBot sender error, please check config! webhook: {} , param: {}, res: {}", receiver, JSONUtils.toJsonString(paramMap), res);
                 }
             } catch (Exception e) {
-                failToReceivers.add(receiver);
+                failToReceivers.add(receiver.getWebhook());
                 log.error("wecomBot send error", e);
             }
         }
+
         if (!CollectionUtils.isEmpty(failToReceivers)) {
             String recordMessage = String.format("send to %s fail", String.join(",", failToReceivers));
             result.setStatus(false);
@@ -91,7 +81,13 @@ public class WecomBotSender {
         if (StringUtils.isNotEmpty(content)) {
             ArrayNode list = JSONUtils.parseArray(content);
             for (JsonNode jsonNode : list) {
-                contents.append(WecomBotConstants.QUOTE_START).append(jsonNode.toString().replace("\"", "")).append(WecomBotConstants.END);
+                String nodeMessage = jsonNode.toString().replace("\"", "");
+                if (nodeMessage.startsWith("Task Execution Record")||nodeMessage.startsWith("任务执行记录")){
+                    String formatMessage = String.format("%s : [%s](%s)", nodeMessage.substring(0,nodeMessage.indexOf(" : ")),nodeMessage.substring(nodeMessage.indexOf(":")+2),nodeMessage.substring(nodeMessage.indexOf(":")+2));
+                    contents.append(WecomBotConstants.QUOTE_START).append(formatMessage).append(WecomBotConstants.END);
+                }else {
+                    contents.append(WecomBotConstants.QUOTE_START).append(nodeMessage).append(WecomBotConstants.END);
+                }
             }
         }
         return contents.toString();

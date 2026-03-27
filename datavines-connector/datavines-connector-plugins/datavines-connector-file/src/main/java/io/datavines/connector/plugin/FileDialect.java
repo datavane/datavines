@@ -18,7 +18,11 @@ package io.datavines.connector.plugin;
 
 import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.Dialect;
+import io.datavines.connector.api.entity.ResultList;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Map;
 
@@ -59,6 +63,11 @@ public class FileDialect implements Dialect {
         if (StringUtils.isNotEmpty(executionId)) {
             return executionId + "/validate_result.csv";
         }
+        return null;
+    }
+
+    @Override
+    public ResultList getPageFromResultSet(Statement sourceConnectionStatement, ResultSet rs, String sourceTable, int start, int end) throws SQLException {
         return null;
     }
 }

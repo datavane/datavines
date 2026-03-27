@@ -56,7 +56,7 @@ public interface JobService extends IService<Job> {
                             Integer pageNumber,
                             Integer pageSize);
 
-    boolean execute(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException;
+    Long execute(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException;
 
     String getJobExecutionConfig(Long jobId, LocalDateTime scheduleTime) throws DataVinesServerException;
 

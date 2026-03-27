@@ -23,9 +23,14 @@ import lombok.ToString;
 import java.util.Objects;
 
 @Data
-@EqualsAndHashCode
 @ToString
 public class ReceiverConfig {
+
+    private String webhook;
+
+    private String secret;
+
+    private String keyword;
 
     private String atMobiles;
 
