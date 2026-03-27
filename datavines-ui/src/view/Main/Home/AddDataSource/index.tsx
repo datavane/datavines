@@ -45,6 +45,21 @@ const Inner = ({ form }: InnerProps) => {
                     };
                 }
 
+                if (item.type === 'select') {
+                    const $selectProps = pickProps(item.props || {}, ['placeholder', 'disabled']);
+                    return {
+                        ...object,
+                        widget: (
+                            <CustomSelect
+                                {...$selectProps}
+                                source={(item.options || []).map((opt: any) => ({
+                                    label: opt.label,
+                                    value: opt.value,
+                                }))}
+                            />
+                        ),
+                    };
+                }
 
                 const isTextarea = item.type === 'input' && item.props?.type === 'textarea';
                 const $props = pickProps(item.props || {}, ['placeholder', isTextarea && 'rows', 'disabled'].filter(Boolean) as string[]);
