@@ -17,7 +17,7 @@ const refreshToken = (newToken: string) => {
                 type: 'save_login',
                 payload: newLoginInfo,
             });
-            shareData.sessionSet(DV_STORAGE_LOGIN, newLoginInfo);
+            shareData.storageSet(DV_STORAGE_LOGIN, newLoginInfo);
         });
     }
 };

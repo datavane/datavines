@@ -24,9 +24,9 @@ export const download = (blob: any, fileName?: string) => {
 };
 
 export const getDefaultWorkspaceId = () => {
-    const loginInfo = shareData.sessionGet(DV_STORAGE_LOGIN) || {};
+    const loginInfo = shareData.storageGet(DV_STORAGE_LOGIN) || {};
     if (loginInfo.id) {
-        const workspaceId = shareData.sessionGet(`${DV_WORKSPACE_ID}_${loginInfo.id}`);
+        const workspaceId = shareData.storageGet(`${DV_WORKSPACE_ID}_${loginInfo.id}`);
         return workspaceId;
     }
     return undefined;
