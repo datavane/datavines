@@ -58,4 +58,9 @@ public class Count implements ResultFormula {
     public ResultFormulaType getType() {
         return ResultFormulaType.VALUE;
     }
+
+    @Override
+    public String getPluginName() {
+        return "count";
+    }
 }

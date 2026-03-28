@@ -31,7 +31,7 @@ import io.datavines.engine.local.api.entity.ConnectionHolder;
 import io.datavines.connector.api.entity.ResultList;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import io.datavines.connector.api.utils.SqlUtils;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.slf4j.Logger;
 
 import java.math.BigDecimal;
@@ -106,7 +106,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
 
             String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
 
-            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
+            ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(srcConnectorType);
             Dialect dialect = connectorFactory.getDialect();
             if (!checkTableExist(getConnectionHolder().getConnection(),
                     dialect.quoteIdentifier(targetDatabase)+"."+dialect.quoteIdentifier(targetTable), dialect)) {
@@ -139,8 +139,8 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
             sourceConnectionStatement = env.getSourceConnection().getConnection().createStatement();
             env.setCurrentStatement(sourceConnectionStatement);
             String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
-            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
-            ConnectorFactory errorDataConnectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(config.getString(ERROR_DATA_CONNECTOR_TYPE));
+            ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(srcConnectorType);
+            ConnectorFactory errorDataConnectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(config.getString(ERROR_DATA_CONNECTOR_TYPE));
             int count = 0;
             //执行统计行数语句
             countResultSet = sourceConnectionStatement.executeQuery(connectorFactory.getDialect().getCountQuery(sourceTable));
@@ -340,7 +340,7 @@ public class ErrorDataSinkExecutor extends BaseDataSinkExecutor {
 
     private List<StructField> getTableSchema(Statement statement, Config config, TypeConverter typeConverter) {
         if (statement != null) {
-            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class)
+            ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
                     .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE));
 
             String tableName = config.getString(INVALIDATE_ITEMS_TABLE);

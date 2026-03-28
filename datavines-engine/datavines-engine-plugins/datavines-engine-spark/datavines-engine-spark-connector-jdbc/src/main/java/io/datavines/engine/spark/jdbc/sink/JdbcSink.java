@@ -147,4 +147,9 @@ public class JdbcSink implements SparkBatchSink {
 
         return null;
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("livy-batch-jdbc-sink", "spark-batch-jdbc-sink");
+    }
 }

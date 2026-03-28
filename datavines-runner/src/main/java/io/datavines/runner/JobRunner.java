@@ -37,7 +37,7 @@ import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.core.NotificationManager;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -71,8 +71,8 @@ public class JobRunner {
             Logger taskLogger = LoggerFactory.getLogger(taskLoggerName);
             Thread.currentThread().setName(taskLoggerName);
 
-            engineExecutor = PluginLoader
-                    .getPluginLoader(EngineExecutor.class)
+            engineExecutor = PluginDiscovery.getMultiKeyPluginDiscovery(EngineExecutor.class, EngineExecutor::getPluginNames)
+                    
                     .getNewPlugin(jobExecutionRequest.getEngineType());
 
             engineExecutor.init(jobExecutionRequest, taskLogger, configurations);
@@ -86,7 +86,7 @@ public class JobRunner {
                 Long jobExecutionId = jobExecutionRequest.getJobExecutionId();
                 String validateResultStorageType = jobExecutionRequest.getValidateResultDataStorageType();
                 ConnectorFactory validateResultStorageFactory =
-                        PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(validateResultStorageType);
+                        PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(validateResultStorageType);
                 if (validateResultStorageFactory == null) {
                     log.error("validate result storage type {} is not supported", validateResultStorageType);
                     return;
@@ -159,15 +159,15 @@ public class JobRunner {
         parameters.put(ConfigConstants.THRESHOLD, metricExecutionResult.getThreshold()+"");
         parameters.put(ConfigConstants.OPERATOR, OperatorType.of(metricExecutionResult.getOperator()).getSymbol());
 
-        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricExecutionResult.getMetricName());
+        SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(metricExecutionResult.getMetricName());
         messages.add((isEn ? "Metric" : "检查规则") + " : " + sqlMetric.getNameByLanguage(isEn));
 
         ResultFormula resultFormula =
-                PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(metricExecutionResult.getResultFormula());
+                PluginDiscovery.getMultiKeyPluginDiscovery(ResultFormula.class, ResultFormula::getPluginNames).getOrCreatePlugin(metricExecutionResult.getResultFormula());
 
         messages.add((isEn ? "Check Subject" : "检查目标") + " : " + metricExecutionResult.getDatabaseName() + "." + metricExecutionResult.getTableName() + "." + metricExecutionResult.getColumnName());
 
-        ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(engineType + "_" + metricExecutionResult.getExpectedType());
+        ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames).getOrCreatePlugin(engineType + "_" + metricExecutionResult.getExpectedType());
         messages.add((isEn ? "Expected Value Type" : "期望值类型") + " : " + expectedValue.getNameByLanguage(isEn));
 
         String resultFormulaFormat = resultFormula.getResultFormat(isEn)+" ${operator} ${threshold}";
@@ -180,7 +180,7 @@ public class JobRunner {
 
     private String buildAlertSubject(MetricExecutionResult metricExecutionResult, boolean isEn) {
         String checkSubject = metricExecutionResult.getDatabaseName() + "." + metricExecutionResult.getTableName() + "." + metricExecutionResult.getColumnName();
-        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricExecutionResult.getMetricName());
+        SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(metricExecutionResult.getMetricName());
         return  isEn ? (sqlMetric.getNameByLanguage(true) + " alerting on " + checkSubject) :
                 checkSubject + "在" + sqlMetric.getNameByLanguage(false) + "中异常";
     }

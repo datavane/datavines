@@ -18,7 +18,7 @@ package io.datavines.metric.expected.plugin;
 
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.metric.api.ExpectedValue;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 
 import java.util.Map;
 
@@ -26,10 +26,10 @@ public abstract class AbstractExpectedValue implements ExpectedValue {
 
     protected ConnectorFactory getConnectorFactory(Map<String,String> inputParameter) {
         String srcConnectorType = inputParameter.get("src_connector_type");
-        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType);
+        return PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(srcConnectorType);
     }
 
     protected ConnectorFactory getConnectorFactory(String connectorType) {
-        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(connectorType);
+        return PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(connectorType);
     }
 }

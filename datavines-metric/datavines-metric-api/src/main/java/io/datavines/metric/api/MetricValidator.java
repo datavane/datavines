@@ -17,7 +17,7 @@
 package io.datavines.metric.api;
 
 import io.datavines.common.enums.OperatorType;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
@@ -36,7 +36,7 @@ public class MetricValidator {
         BigDecimal expectedValue = executionResult.getExpectedValue();
 
         OperatorType operatorType = OperatorType.of(StringUtils.trim(executionResult.getOperator()));
-        ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class)
+        ResultFormula resultFormula = PluginDiscovery.getMultiKeyPluginDiscovery(ResultFormula.class, ResultFormula::getPluginNames)
                 .getOrCreatePlugin(executionResult.getResultFormula());
 
         return getCompareResult(operatorType,
@@ -48,9 +48,9 @@ public class MetricValidator {
         BigDecimal actualValue = executionResult.getActualValue();
         BigDecimal expectedValue = executionResult.getExpectedValue();
 
-        ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class)
+        ResultFormula resultFormula = PluginDiscovery.getMultiKeyPluginDiscovery(ResultFormula.class, ResultFormula::getPluginNames)
                 .getOrCreatePlugin(executionResult.getResultFormula());
-        SqlMetric metric = PluginLoader.getPluginLoader(SqlMetric.class)
+        SqlMetric metric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames)
                 .getOrCreatePlugin(executionResult.getMetricName());
 
         return resultFormula.getScore(actualValue, expectedValue, isSuccess, metric.getDirectionType());

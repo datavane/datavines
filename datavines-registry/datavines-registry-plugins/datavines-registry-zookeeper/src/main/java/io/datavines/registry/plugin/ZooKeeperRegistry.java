@@ -237,4 +237,9 @@ public class ZooKeeperRegistry implements Registry {
             }
         }
     }
+
+    @Override
+    public String getPluginName() {
+        return "zookeeper";
+    }
 }

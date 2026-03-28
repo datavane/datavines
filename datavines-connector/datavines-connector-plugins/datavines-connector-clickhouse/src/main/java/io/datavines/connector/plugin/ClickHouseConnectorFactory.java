@@ -54,4 +54,9 @@ public class ClickHouseConnectorFactory extends AbstractJdbcConnectorFactory {
     public TypeConverter getTypeConverter() {
         return new ClickHouseTypeConverter();
     }
+
+    @Override
+    public String getPluginName() {
+        return "clickhouse";
+    }
 }

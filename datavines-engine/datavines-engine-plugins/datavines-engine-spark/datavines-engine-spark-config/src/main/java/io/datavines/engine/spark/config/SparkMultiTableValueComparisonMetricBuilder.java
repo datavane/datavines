@@ -21,7 +21,7 @@ import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.SqlMetric;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -39,8 +39,8 @@ public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfig
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
                 String metricType = parameter.getMetricType();
-                SqlMetric sqlMetric = PluginLoader
-                        .getPluginLoader(SqlMetric.class)
+                SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames)
+                        
                         .getNewPlugin(metricType);
 
                 MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
@@ -71,5 +71,10 @@ public class SparkMultiTableValueComparisonMetricBuilder extends BaseSparkConfig
         }
 
         configuration.setSinkParameters(sinkConfigs);
+    }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("livy_multi_table_value_comparison", "spark_multi_table_value_comparison");
     }
 }

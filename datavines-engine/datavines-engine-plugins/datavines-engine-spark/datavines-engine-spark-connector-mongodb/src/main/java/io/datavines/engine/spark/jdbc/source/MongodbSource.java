@@ -84,4 +84,9 @@ public class MongodbSource implements SparkBatchSource {
     }
 
 
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("livy-batch-mongodb-source", "spark-batch-mongodb-source");
+    }
 }

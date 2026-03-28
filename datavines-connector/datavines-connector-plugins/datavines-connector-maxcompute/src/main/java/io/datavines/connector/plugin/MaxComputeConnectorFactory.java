@@ -54,4 +54,9 @@ public class MaxComputeConnectorFactory extends AbstractJdbcConnectorFactory {
     public MetricScript getMetricScript() {
         return new MaxComputeMetricScript();
     }
+
+    @Override
+    public String getPluginName() {
+        return "maxcompute";
+    }
 }

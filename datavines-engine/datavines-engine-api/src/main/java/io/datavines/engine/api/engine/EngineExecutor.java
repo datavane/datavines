@@ -21,10 +21,17 @@ import org.slf4j.Logger;
 
 import io.datavines.common.config.Configurations;
 import io.datavines.common.entity.ProcessResult;
-import io.datavines.spi.SPI;
 
-@SPI
+import java.util.Collection;
+import java.util.Collections;
+
 public interface EngineExecutor {
+
+    String getPluginName();
+
+    default Collection<String> getPluginNames() {
+        return Collections.singletonList(getPluginName());
+    }
 
     void init(JobExecutionRequest jobExecutionRequest, Logger logger, Configurations configurations) throws Exception;
 

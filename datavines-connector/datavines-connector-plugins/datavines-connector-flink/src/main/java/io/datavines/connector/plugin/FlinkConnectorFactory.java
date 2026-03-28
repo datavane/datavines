@@ -49,4 +49,9 @@ public class FlinkConnectorFactory extends AbstractJdbcConnectorFactory {
     public Boolean showInFrontend() {
         return false;
     }
+
+    @Override
+    public String getPluginName() {
+        return "flink";
+    }
 }

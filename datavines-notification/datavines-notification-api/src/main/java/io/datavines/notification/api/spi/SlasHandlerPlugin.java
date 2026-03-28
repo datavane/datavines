@@ -20,13 +20,19 @@ import io.datavines.notification.api.entity.SlaNotificationMessage;
 import io.datavines.notification.api.entity.SlaNotificationResult;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
-import io.datavines.spi.SPI;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
-@SPI
 public interface SlasHandlerPlugin {
+
+    String getPluginName();
+
+    default Collection<String> getPluginNames() {
+        return Collections.singletonList(getPluginName());
+    }
 
     /**
      * save message to db then send message to receiver , return the status finally

@@ -164,4 +164,9 @@ public class JdbcSink implements FlinkStreamSink {
             conn.prepareStatement(createTableSql).execute();
         }
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("flink-batch-jdbc-sink");
+    }
 }

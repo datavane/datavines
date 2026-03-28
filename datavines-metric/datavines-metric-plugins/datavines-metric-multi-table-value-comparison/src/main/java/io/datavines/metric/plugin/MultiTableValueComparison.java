@@ -84,4 +84,9 @@ public class MultiTableValueComparison implements SqlMetric {
     public List<DataVinesDataType> suitableType() {
         return Collections.emptyList();
     }
+
+    @Override
+    public String getPluginName() {
+        return "multi_table_value_comparison";
+    }
 }

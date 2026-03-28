@@ -72,4 +72,9 @@ public class WeeklyAvg extends AbstractExpectedValue {
     public void prepare(Map<String, String> config) {
 
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("flink_weekly_avg", "livy_weekly_avg", "local_weekly_avg", "spark_weekly_avg");
+    }
 }

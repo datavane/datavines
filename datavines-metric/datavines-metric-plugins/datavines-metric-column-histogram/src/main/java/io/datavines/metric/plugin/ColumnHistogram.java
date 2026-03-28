@@ -23,7 +23,7 @@ import io.datavines.metric.api.MetricActualValueType;
 import io.datavines.metric.api.MetricDimension;
 import io.datavines.metric.api.MetricType;
 import io.datavines.metric.plugin.base.BaseSingleTableColumn;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 
 import java.util.Arrays;
 import java.util.List;
@@ -109,6 +109,11 @@ public class ColumnHistogram extends BaseSingleTableColumn {
     }
 
     private ConnectorFactory getConnectorFactory() {
-        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin("spark");
+        return PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin("spark");
+    }
+
+    @Override
+    public String getPluginName() {
+        return "column_histogram";
     }
 }

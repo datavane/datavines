@@ -17,4 +17,9 @@
 package io.datavines.engine.flink.jdbc.sink;
 
 public class MySQLSink extends JdbcSink {
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("flink-batch-mysql-sink");
+    }
 }

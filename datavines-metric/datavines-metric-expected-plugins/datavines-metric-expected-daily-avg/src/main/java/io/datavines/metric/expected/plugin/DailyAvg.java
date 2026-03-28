@@ -72,4 +72,9 @@ public class DailyAvg extends AbstractExpectedValue {
     public void prepare(Map<String, String> config) {
 
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("flink_daily_avg", "livy_daily_avg", "local_daily_avg", "spark_daily_avg");
+    }
 }

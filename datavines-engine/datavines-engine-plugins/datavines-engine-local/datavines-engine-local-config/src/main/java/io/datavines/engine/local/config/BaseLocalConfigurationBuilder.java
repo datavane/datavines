@@ -30,7 +30,7 @@ import io.datavines.engine.config.BaseJobConfigurationBuilder;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -64,13 +64,13 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
                 if (jobExecutionParameter.getConnectorParameter() != null) {
                     String metricType = parameter.getMetricType();
-                    SqlMetric sqlMetric = PluginLoader
-                            .getPluginLoader(SqlMetric.class)
+                    SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames)
+                            
                             .getNewPlugin(metricType);
                     if (sqlMetric.isCustomSql()) {
                         ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
-                        ConnectorFactory connectorFactory = PluginLoader
-                                .getPluginLoader(ConnectorFactory.class)
+                        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
+                                
                                 .getNewPlugin(connectorParameter.getType());
 
                         List<String> tables = SqlUtils.extractTablesFromSelect(metricInputParameter.get(ACTUAL_AGGREGATE_SQL));
@@ -136,8 +136,8 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                         sourceConnectorSet.add(connectorUuid);
                     } else {
                         ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
-                        ConnectorFactory connectorFactory = PluginLoader
-                                .getPluginLoader(ConnectorFactory.class)
+                        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
+                                
                                 .getNewPlugin(connectorParameter.getType());
 
                         Map<String, Object> connectorParameterMap = new HashMap<>(connectorParameter.getParameters());
@@ -197,8 +197,8 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                     connectorParameterMap.putAll(metricInputParameter);
                     connectorParameterMap.put(TABLE, metricInputParameter.get(TABLE2));
                     connectorParameterMap.put(DATABASE, metricInputParameter.get(DATABASE2));
-                    ConnectorFactory connectorFactory = PluginLoader
-                            .getPluginLoader(ConnectorFactory.class)
+                    ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
+                            
                             .getNewPlugin(connectorParameter2.getType());
 
                     if (connectorParameter2.getParameters().get(SCHEMA) != null) {
@@ -241,8 +241,8 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
 
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
 
-                ExpectedValue expectedValue = PluginLoader
-                        .getPluginLoader(ExpectedValue.class)
+                ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames)
+                        
                         .getNewPlugin(expectedType);
 
                 if (expectedValue.isNeedDefaultDatasource() && !isAddValidateResultDataSource) {
@@ -267,8 +267,8 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
                 String metricType = parameter.getMetricType();
-                SqlMetric sqlMetric = PluginLoader
-                        .getPluginLoader(SqlMetric.class)
+                SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames)
+                        
                         .getNewPlugin(metricType);
 
                 MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
@@ -304,8 +304,8 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
 
                 // generate expected value transform sql
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
-                ExpectedValue expectedValue = PluginLoader
-                        .getPluginLoader(ExpectedValue.class)
+                ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames)
+                        
                         .getNewPlugin(expectedType);
                 expectedValue.prepare(metricInputParameter);
 

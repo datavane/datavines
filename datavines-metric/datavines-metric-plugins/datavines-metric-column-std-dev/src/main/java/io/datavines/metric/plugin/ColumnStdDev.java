@@ -84,4 +84,9 @@ public class ColumnStdDev extends BaseSingleTableColumn {
     public List<DataVinesDataType> suitableType() {
         return Collections.singletonList(DataVinesDataType.NUMERIC_TYPE);
     }
+
+    @Override
+    public String getPluginName() {
+        return "column_std_dev";
+    }
 }

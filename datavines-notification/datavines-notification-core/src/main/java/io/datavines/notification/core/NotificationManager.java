@@ -22,7 +22,7 @@ import io.datavines.notification.api.entity.SlaNotificationResult;
 import io.datavines.notification.api.entity.SlaConfigMessage;
 import io.datavines.notification.api.entity.SlaSenderMessage;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -37,8 +37,8 @@ public class NotificationManager {
     private final Set<String> supportedPlugins;
 
     public NotificationManager(){
-        supportedPlugins = PluginLoader
-                .getPluginLoader(SlasHandlerPlugin.class)
+        supportedPlugins = PluginDiscovery.getMultiKeyPluginDiscovery(SlasHandlerPlugin.class, SlasHandlerPlugin::getPluginNames)
+                
                 .getSupportedPlugins();
     }
 
@@ -54,8 +54,8 @@ public class NotificationManager {
             if (!supportedPlugins.contains(type)) {
                 throw new DataVinesException("sender type not support of "+ type);
             }
-            SlasHandlerPlugin handlerPlugin = PluginLoader
-                    .getPluginLoader(SlasHandlerPlugin.class)
+            SlasHandlerPlugin handlerPlugin = PluginDiscovery.getMultiKeyPluginDiscovery(SlasHandlerPlugin.class, SlasHandlerPlugin::getPluginNames)
+                    
                     .getOrCreatePlugin(type);
             Map<SlaSenderMessage, Set<SlaConfigMessage>> senderEntity = new HashMap(){
                 {

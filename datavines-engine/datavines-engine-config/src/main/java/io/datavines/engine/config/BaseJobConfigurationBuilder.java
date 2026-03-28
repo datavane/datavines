@@ -26,7 +26,7 @@ import io.datavines.common.utils.*;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -153,8 +153,8 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
                 String metricType = parameter.getMetricType();
-                SqlMetric sqlMetric = PluginLoader
-                        .getPluginLoader(SqlMetric.class)
+                SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames)
+                        
                         .getNewPlugin(metricType);
                 boolean invalidateItemCanOutput = Boolean.parseBoolean(metricInputParameter.get(INVALIDATE_ITEM_CAN_OUTPUT));
                 MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
@@ -187,8 +187,8 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
 
                 // generate expected value transform sql
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
-                ExpectedValue expectedValue = PluginLoader
-                        .getPluginLoader(ExpectedValue.class)
+                ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames)
+                        
                         .getNewPlugin(expectedType);
 
                 ExecuteSql expectedValueExecuteSql =
@@ -227,7 +227,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
 
         SourceConfig actualValueSourceConfig = new SourceConfig();
         ConnectorFactory storageFactory =
-                PluginLoader.getPluginLoader(ConnectorFactory.class)
+                PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
                         .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
 
         actualValueSourceConfig.setPlugin(storageFactory.getCategory());
@@ -240,7 +240,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
 
         SourceConfig actualValueSourceConfig = new SourceConfig();
         ConnectorFactory storageFactory =
-                PluginLoader.getPluginLoader(ConnectorFactory.class)
+                PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
                         .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
 
         actualValueSourceConfig.setPlugin(storageFactory.getCategory());
@@ -271,7 +271,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
     private Map<String,Object> getValidateResultSourceConfigMap(String sql, String dbTable) {
         Map<String, Object> configMap = new HashMap<>();
         ConnectorFactory storageFactory =
-                PluginLoader.getPluginLoader(ConnectorFactory.class)
+                PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
                         .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
         if (storageFactory != null) {
             if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {
@@ -292,7 +292,7 @@ public abstract class BaseJobConfigurationBuilder implements JobConfigurationBui
     private Map<String,Object> getValidateResultSourceConfigMap(String sql, String dbTable,String outputTable) {
         Map<String, Object> configMap = new HashMap<>();
         ConnectorFactory storageFactory =
-                PluginLoader.getPluginLoader(ConnectorFactory.class)
+                PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
                         .getOrCreatePlugin(jobExecutionInfo.getValidateResultDataStorageType());
         if (storageFactory != null) {
             if (StringUtils.isNotEmpty(jobExecutionInfo.getValidateResultDataStorageParameter())) {

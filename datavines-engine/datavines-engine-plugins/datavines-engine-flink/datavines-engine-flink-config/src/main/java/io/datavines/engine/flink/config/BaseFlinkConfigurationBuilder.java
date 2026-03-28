@@ -32,7 +32,7 @@ import io.datavines.engine.common.utils.ParserUtils;
 import io.datavines.engine.config.BaseJobConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -72,8 +72,8 @@ public abstract class BaseFlinkConfigurationBuilder extends BaseJobConfiguration
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
                 if (jobExecutionParameter.getConnectorParameter() != null) {
                     String metricType = parameter.getMetricType();
-                    SqlMetric sqlMetric = PluginLoader
-                            .getPluginLoader(SqlMetric.class)
+                    SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames)
+                            
                             .getNewPlugin(metricType);
                     if (sqlMetric.isCustomSql()) {
                         List<String> tables = SqlUtils.extractTablesFromSelect(metricInputParameter.get(ACTUAL_AGGREGATE_SQL));
@@ -83,8 +83,8 @@ public abstract class BaseFlinkConfigurationBuilder extends BaseJobConfiguration
                         Map<String,String> table2OutputTable = new HashMap<>();
                         for (String table : tables) {
                             ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
-                            ConnectorFactory connectorFactory = PluginLoader
-                                    .getPluginLoader(ConnectorFactory.class)
+                            ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
+                                    
                                     .getNewPlugin(connectorParameter.getType());
                             table = table.replaceAll(connectorFactory.getDialect().getQuoteIdentifier(), "");
                             String[] tableArray = table.split("\\.");
@@ -148,8 +148,8 @@ public abstract class BaseFlinkConfigurationBuilder extends BaseJobConfiguration
                         }
                     } else {
                         ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
-                        ConnectorFactory connectorFactory = PluginLoader
-                                .getPluginLoader(ConnectorFactory.class)
+                        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
+                                
                                 .getNewPlugin(connectorParameter.getType());
 
                         SourceConfig sourceConfig = new SourceConfig();
@@ -207,8 +207,8 @@ public abstract class BaseFlinkConfigurationBuilder extends BaseJobConfiguration
                         metricInputParameter.put(SCHEMA2, (String)connectorParameter2.getParameters().get(SCHEMA));
                     }
 
-                    ConnectorFactory connectorFactory = PluginLoader
-                            .getPluginLoader(ConnectorFactory.class)
+                    ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
+                            
                             .getNewPlugin(connectorParameter2.getType());
 
                     connectorParameterMap.put(TABLE, metricInputParameter.get(TABLE2));
@@ -243,8 +243,7 @@ public abstract class BaseFlinkConfigurationBuilder extends BaseJobConfiguration
 
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
 
-                ExpectedValue expectedValue = PluginLoader
-                        .getPluginLoader(ExpectedValue.class)
+                ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames)
                         .getNewPlugin(expectedType);
 
                 if (expectedValue.isNeedDefaultDatasource() && !isAddValidateResultDataSource) {
@@ -293,8 +292,8 @@ public abstract class BaseFlinkConfigurationBuilder extends BaseJobConfiguration
             errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
 
             Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, Object.class));
-            ConnectorFactory connectorFactory = PluginLoader
-                    .getPluginLoader(ConnectorFactory.class)
+            ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
+                    
                     .getNewPlugin(jobExecutionInfo.getErrorDataStorageType());
 
             if (connectorFactory == null) {

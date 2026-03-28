@@ -36,7 +36,7 @@ import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.entity.JobExecutionResult;
 import io.datavines.server.repository.service.*;
 import io.datavines.server.repository.service.impl.JobExternalService;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -185,15 +185,15 @@ public class JobResultValidator {
         parameters.put("threshold", String.valueOf(metricExecutionResult.getThreshold()));
         parameters.put("operator",OperatorType.of(metricExecutionResult.getOperator()).getSymbol());
 
-        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricExecutionResult.getMetricName());
+        SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(metricExecutionResult.getMetricName());
         messages.add((isEn ? "Metric" : "检查规则") + " : " + sqlMetric.getNameByLanguage(isEn));
 
         ResultFormula resultFormula =
-                PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(metricExecutionResult.getResultFormula());
+                PluginDiscovery.getMultiKeyPluginDiscovery(ResultFormula.class, ResultFormula::getPluginNames).getOrCreatePlugin(metricExecutionResult.getResultFormula());
 
         messages.add((isEn ? "Check Subject" : "检查目标") + " : " + metricExecutionResult.getDatabaseName() + "." + metricExecutionResult.getTableName() + "." + metricExecutionResult.getColumnName());
 
-        ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(engineType + "_" + metricExecutionResult.getExpectedType());
+        ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames).getOrCreatePlugin(engineType + "_" + metricExecutionResult.getExpectedType());
         messages.add((isEn ? "Expected Value Type" : "期望值类型") + " : " + expectedValue.getNameByLanguage(isEn));
 
         String resultFormulaFormat = resultFormula.getResultFormat(isEn)+" ${operator} ${threshold}";
@@ -210,7 +210,7 @@ public class JobResultValidator {
 
     private String buildAlertSubject(MetricExecutionResult metricExecutionResult, boolean isEn) {
         String checkSubject = metricExecutionResult.getDatabaseName() + "." + metricExecutionResult.getTableName() + "." + metricExecutionResult.getColumnName();
-        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricExecutionResult.getMetricName());
+        SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(metricExecutionResult.getMetricName());
         return  isEn ? (sqlMetric.getNameByLanguage(true) + "alerting on " + checkSubject) :
                 checkSubject + "在" + sqlMetric.getNameByLanguage(false) + "中异常了";
     }

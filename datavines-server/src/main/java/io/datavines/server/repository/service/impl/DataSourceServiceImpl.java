@@ -39,7 +39,7 @@ import io.datavines.server.repository.mapper.DataSourceMapper;
 import io.datavines.server.repository.service.*;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.utils.ContextHolder;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
@@ -74,7 +74,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
     @Override
     public ConnectorResponse testConnect(TestConnectionRequestParam param) {
-        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
+        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(param.getType());
         return connectorFactory.getConnector().testConnect(param);
     }
 
@@ -93,7 +93,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
         String type = dataSourceCreate.getType();
 
-        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type);
+        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(type);
         List<String> keyProperties = connectorFactory.getConnector().keyProperties();
         List<String> keyPropertyValueList = new ArrayList<>();
         keyPropertyValueList.add(dataSourceCreate.getType().toLowerCase());
@@ -166,7 +166,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
         String type = dataSourceUpdate.getType();
 
-        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type);
+        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(type);
         List<String> keyProperties = connectorFactory.getConnector().keyProperties();
         List<String> keyPropertyValueList = new ArrayList<>();
         keyPropertyValueList.add(dataSourceUpdate.getType().toLowerCase());
@@ -271,7 +271,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         Map<String,String> paramMap = dataSourceKeyProperties.getParam();
         String type = dataSourceKeyProperties.getType();
         String paramCode = "";
-        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type);
+        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(type);
         List<String> keyProperties = connectorFactory.getConnector().keyProperties();
         List<String> keyPropertyValueList = new ArrayList<>();
         keyPropertyValueList.add(type.toLowerCase());
@@ -315,7 +315,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         param.setDataSourceParam(dataSource.getParam());
 
         Object result = null;
-        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
+        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(param.getType());
         try {
             ConnectorResponse response = connectorFactory.getConnector().getDatabases(param);
             result = response.getResult();
@@ -336,7 +336,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         param.setDatabase(database);
 
         Object result = null;
-        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
+        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(param.getType());
         try {
             ConnectorResponse response = connectorFactory.getConnector().getTables(param);
             result = response.getResult();
@@ -358,7 +358,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         param.setTable(table);
 
         Object result = null;
-        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
+        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(param.getType());
         try {
             ConnectorResponse response = connectorFactory.getConnector().getColumns(param);
             result = response.getResult();
@@ -378,7 +378,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         param.setDataSourceParam(dataSource.getParam());
         param.setScript(request.getScript());
         Object result = null;
-        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
+        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(param.getType());
         try {
             ConnectorResponse response = connectorFactory.getExecutor().queryForList(param);
             result = response.getResult();
@@ -392,6 +392,6 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
 
     @Override
     public String getConfigJson(String type) {
-        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConfigBuilder().build(!LanguageUtils.isZhContext());
+        return PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(type).getConfigBuilder().build(!LanguageUtils.isZhContext());
     }
 }

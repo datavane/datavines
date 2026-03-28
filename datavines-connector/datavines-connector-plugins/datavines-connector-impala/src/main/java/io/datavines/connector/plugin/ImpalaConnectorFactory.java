@@ -42,4 +42,9 @@ public class ImpalaConnectorFactory extends AbstractJdbcConnectorFactory {
     public Executor getExecutor() {
         return new ImpalaExecutor(getDataSourceClient());
     }
+
+    @Override
+    public String getPluginName() {
+        return "impala";
+    }
 }

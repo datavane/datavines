@@ -221,4 +221,9 @@ public class EmailSlasHandlerPlugin implements SlasHandlerPlugin {
                 .setEmit(null)
                 .build();
     }
+
+    @Override
+    public String getPluginName() {
+        return "email";
+    }
 }

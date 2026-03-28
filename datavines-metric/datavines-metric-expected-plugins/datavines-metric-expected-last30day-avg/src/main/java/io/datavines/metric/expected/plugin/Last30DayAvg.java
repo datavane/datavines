@@ -71,4 +71,9 @@ public class Last30DayAvg extends AbstractExpectedValue {
     public void prepare(Map<String, String> config) {
 
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("flink_last_30d_avg", "livy_last_30d_avg", "local_last_30d_avg", "spark_last_30d_avg");
+    }
 }

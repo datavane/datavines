@@ -103,4 +103,9 @@ public class MysqlRegistry implements Registry {
         mysqlMutex.close();
         mysqlServerStateManager.close();
     }
+
+    @Override
+    public String getPluginName() {
+        return "mysql";
+    }
 }

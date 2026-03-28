@@ -31,7 +31,7 @@ import io.datavines.server.repository.entity.DataSource;
 import io.datavines.server.repository.entity.catalog.CatalogEntityInstance;
 import io.datavines.server.repository.service.CatalogEntityInstanceService;
 import io.datavines.server.repository.service.DataSourceService;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -171,11 +171,11 @@ public class DataSourceController {
     @ApiOperation(value = "get connector type list")
     @GetMapping(value = "/type/list")
     public Object getConnectorTypeList() {
-        Set<String> connectorList = PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
+        Set<String> connectorList = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
 
         connectorList.forEach(it -> {
-            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(it);
+            ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(it);
             if (connectorFactory.showInFrontend()) {
                 Item item = new Item(it,it);
                 items.add(item);

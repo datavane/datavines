@@ -95,4 +95,9 @@ public class MongodbSink implements SparkBatchSink {
 
         return null;
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("livy-batch-mongodb-sink", "spark-batch-mongodb-sink");
+    }
 }
