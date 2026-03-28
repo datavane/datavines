@@ -37,7 +37,7 @@ import io.datavines.server.repository.mapper.JobQualityReportMapper;
 import io.datavines.server.repository.service.JobExecutionService;
 import io.datavines.server.repository.service.JobQualityReportService;
 import io.datavines.server.repository.service.JobExecutionResultReportRelService;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.beans.BeanUtils;
@@ -415,14 +415,14 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
             JobExecution jobExecution = jobExecutionService.getById(jobExecutionResult.getJobExecutionId());
             JobExecutionResultVO jobExecutionResultVO = new JobExecutionResultVO();
             ResultFormula resultFormula =
-                    PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(jobExecutionResult.getResultFormula());
+                    PluginDiscovery.getMultiKeyPluginDiscovery(ResultFormula.class, ResultFormula::getPluginNames).getOrCreatePlugin(jobExecutionResult.getResultFormula());
             String resultFormulaFormat = resultFormula.getResultFormat(!LanguageUtils.isZhContext())+" ${operator} ${threshold}";
 
             jobExecutionResultVO.setCheckSubject(jobExecutionResult.getDatabaseName() + "." + jobExecutionResult.getTableName() + "." + jobExecutionResult.getColumnName());
             jobExecutionResultVO.setCheckResult(JobCheckState.of(jobExecutionResult.getState()).getDescription(!LanguageUtils.isZhContext()));
-            SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobExecutionResult.getMetricName());
+            SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(jobExecutionResult.getMetricName());
             if (!"multi_table_value_comparison".equalsIgnoreCase(sqlMetric.getName())) {
-                ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin(jobExecution.getEngineType() + "_" + jobExecutionResult.getExpectedType());
+                ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames).getOrCreatePlugin(jobExecution.getEngineType() + "_" + jobExecutionResult.getExpectedType());
                 jobExecutionResultVO.setExpectedType(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()));
             }
             jobExecutionResultVO.setMetricName(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()));

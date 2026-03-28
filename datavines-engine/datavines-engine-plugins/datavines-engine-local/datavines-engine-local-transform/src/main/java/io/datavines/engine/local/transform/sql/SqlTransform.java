@@ -122,4 +122,9 @@ public class SqlTransform implements LocalTransform {
 
         return resultList;
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("local-batch-sql-transform");
+    }
 }

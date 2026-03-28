@@ -114,4 +114,9 @@ public class SparkRuntimeEnvironment implements RuntimeEnvironment {
         }
         return execution;
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("livy", "spark");
+    }
 }

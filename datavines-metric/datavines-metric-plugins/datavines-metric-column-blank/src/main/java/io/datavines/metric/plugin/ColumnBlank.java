@@ -74,4 +74,9 @@ public class ColumnBlank extends BaseSingleTableColumnNotUseView {
     public MetricDirectionType getDirectionType() {
         return MetricDirectionType.NEGATIVE;
     }
+
+    @Override
+    public String getPluginName() {
+        return "column_blank";
+    }
 }

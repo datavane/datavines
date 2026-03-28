@@ -49,4 +49,9 @@ public class MysqlConnectorFactory extends AbstractJdbcConnectorFactory {
     public MetricScript getMetricScript() {
         return new MysqlMetricScript();
     }
+
+    @Override
+    public String getPluginName() {
+        return "mysql";
+    }
 }

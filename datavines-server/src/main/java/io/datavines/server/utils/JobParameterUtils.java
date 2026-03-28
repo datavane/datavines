@@ -18,7 +18,7 @@ package io.datavines.server.utils;
 
 import io.datavines.common.entity.job.BaseJobParameter;
 import io.datavines.metric.api.SqlMetric;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 
@@ -31,7 +31,7 @@ public class JobParameterUtils {
     public static List<BaseJobParameter> regenerateJobParameterList(List<BaseJobParameter> jobParameters) {
         List<BaseJobParameter> result = new ArrayList<>();
         for (BaseJobParameter jobParameter : jobParameters) {
-            SqlMetric metric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobParameter.getMetricType());
+            SqlMetric metric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(jobParameter.getMetricType());
             if (metric == null) {
                 continue;
             }

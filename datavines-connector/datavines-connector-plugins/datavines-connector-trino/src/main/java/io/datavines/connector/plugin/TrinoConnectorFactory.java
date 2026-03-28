@@ -49,4 +49,9 @@ public class TrinoConnectorFactory extends AbstractJdbcConnectorFactory {
     public DataSourceClient getDataSourceClient() {
         return new TrinoDataSourceClient();
     }
+
+    @Override
+    public String getPluginName() {
+        return "trino";
+    }
 }

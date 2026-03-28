@@ -58,4 +58,9 @@ public class FixValue implements ExpectedValue {
     public void prepare(Map<String, String> config) {
 
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("flink_fix_value", "livy_fix_value", "local_fix_value", "spark_fix_value");
+    }
 }

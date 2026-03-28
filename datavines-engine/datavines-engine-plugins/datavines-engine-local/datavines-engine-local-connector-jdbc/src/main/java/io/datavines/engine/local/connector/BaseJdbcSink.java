@@ -132,4 +132,9 @@ public class BaseJdbcSink implements LocalSink {
         return "";
     }
 
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("local-batch-jdbc-sink");
+    }
 }

@@ -140,4 +140,9 @@ public class LocalFileSource implements LocalSource {
     public boolean checkTableExist() {
         return true;
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("local-file-source");
+    }
 }

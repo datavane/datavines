@@ -129,4 +129,9 @@ public class LarkSlasHandlerPlugin implements SlasHandlerPlugin {
 
         return result;
     }
+
+    @Override
+    public String getPluginName() {
+        return "lark";
+    }
 }

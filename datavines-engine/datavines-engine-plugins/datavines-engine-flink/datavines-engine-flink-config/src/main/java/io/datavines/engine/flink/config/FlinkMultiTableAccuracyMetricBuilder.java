@@ -24,7 +24,7 @@ import io.datavines.common.utils.JSONUtils;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -72,7 +72,7 @@ public class FlinkMultiTableAccuracyMetricBuilder extends BaseFlinkConfiguration
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
-                ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class)
+                ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames)
                         .getNewPlugin(expectedType);
 
                 //get the actual value storage parameter
@@ -107,4 +107,9 @@ public class FlinkMultiTableAccuracyMetricBuilder extends BaseFlinkConfiguration
         configuration.setSinkParameters(sinkConfigs);
     }
 
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("flink_multi_table_accuracy");
+    }
 }

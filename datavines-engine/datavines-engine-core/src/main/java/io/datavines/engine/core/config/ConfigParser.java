@@ -23,7 +23,7 @@ import io.datavines.common.config.EnvConfig;
 import io.datavines.engine.api.component.Component;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.core.utils.JsonUtils;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,8 +68,8 @@ public class ConfigParser {
     }
 
     private RuntimeEnvironment createRuntimeEnvironment() {
-        RuntimeEnvironment env = PluginLoader
-                .getPluginLoader(RuntimeEnvironment.class)
+        RuntimeEnvironment env = PluginDiscovery.getMultiKeyPluginDiscovery(RuntimeEnvironment.class, RuntimeEnvironment::getPluginNames)
+                
                 .getNewPlugin(envConfig.getEngine());
         Config config = new Config(envConfig.getConfig());
         config.put(TYPE, envConfig.getType());
@@ -86,8 +86,8 @@ public class ConfigParser {
         List<Component> sourcePluginList = new ArrayList<>();
         config.getSourceParameters().forEach(sourceConfig -> {
             String pluginName = String.format("%s-%s-%s-source", envConfig.getEngine(), envConfig.getType(), sourceConfig.getPlugin());
-            Component component = PluginLoader
-                    .getPluginLoader(Component.class)
+            Component component = PluginDiscovery.getMultiKeyPluginDiscovery(Component.class, Component::getPluginNames)
+                    
                     .getNewPlugin(pluginName);
             sourceConfig.getConfig().put(PLUGIN_TYPE, sourceConfig.getType());
             component.setConfig(new Config(sourceConfig.getConfig()));
@@ -100,8 +100,8 @@ public class ConfigParser {
         List<Component> sinkPluginList = new ArrayList<>();
         config.getSinkParameters().forEach(sinkConfig -> {
             String pluginName = String.format("%s-%s-%s-sink", envConfig.getEngine(), envConfig.getType(), sinkConfig.getPlugin());
-            Component component = PluginLoader
-                    .getPluginLoader(Component.class)
+            Component component = PluginDiscovery.getMultiKeyPluginDiscovery(Component.class, Component::getPluginNames)
+                    
                     .getNewPlugin(pluginName);
             sinkConfig.getConfig().put(PLUGIN_TYPE, sinkConfig.getType());
             component.setConfig(new Config(sinkConfig.getConfig()));
@@ -114,8 +114,8 @@ public class ConfigParser {
         List<Component> transformPluginList = new ArrayList<>();
         config.getTransformParameters().forEach(transformConfig -> {
             String pluginName = String.format("%s-%s-%s-transform", envConfig.getEngine(), envConfig.getType(), transformConfig.getPlugin());
-            Component component = PluginLoader
-                    .getPluginLoader(Component.class)
+            Component component = PluginDiscovery.getMultiKeyPluginDiscovery(Component.class, Component::getPluginNames)
+                    
                     .getNewPlugin(pluginName);
             transformConfig.getConfig().put(PLUGIN_TYPE, transformConfig.getType());
             component.setConfig(new Config(transformConfig.getConfig()));

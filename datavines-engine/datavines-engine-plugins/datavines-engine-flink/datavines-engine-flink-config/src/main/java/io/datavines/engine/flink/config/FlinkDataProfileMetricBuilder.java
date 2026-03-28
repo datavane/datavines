@@ -54,4 +54,9 @@ public class FlinkDataProfileMetricBuilder extends BaseFlinkConfigurationBuilder
 
         configuration.setSinkParameters(sinkConfigs);
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("flink_data_profile");
+    }
 }

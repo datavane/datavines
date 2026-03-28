@@ -42,7 +42,7 @@ import io.datavines.server.repository.service.CatalogEntityInstanceService;
 import io.datavines.server.repository.service.CatalogEntityRelService;
 import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.server.utils.ContextHolder;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
@@ -160,7 +160,7 @@ public class CatalogEntityRelServiceImpl extends ServiceImpl<CatalogEntityRelMap
         StringBuilder errors = new StringBuilder();
 
         for (DataSourceInfo dataSourceInfo: dataSourceInfos) {
-            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(dataSourceInfo.getType());
+            ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(dataSourceInfo.getType());
             if (connectorFactory == null) {
                 errors.append("Unsupported datasource type: ").append(dataSourceInfo.getType()).append("; ");
                 continue;

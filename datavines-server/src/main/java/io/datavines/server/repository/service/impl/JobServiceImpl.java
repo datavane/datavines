@@ -63,7 +63,7 @@ import io.datavines.server.repository.service.*;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.server.utils.DefaultDataSourceInfoUtils;
 import io.datavines.server.utils.JobParameterUtils;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -138,7 +138,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             DataSource dataSource = dataSourceService.getDataSourceById(jobCreate.getDataSourceId());
             if (dataSource != null) {
                 String errorDataStorageType = dataSource.getType();
-                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorageType);
+                ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(errorDataStorageType);
                 if (connectorFactory == null || !connectorFactory.getDialect().invalidateItemCanOutputToSelf()) {
                     throw new DataVinesServerException(Status.DATASOURCE_NOT_SUPPORT_ERROR_DATA_OUTPUT_TO_SELF_ERROR, errorDataStorageType);
                 }
@@ -210,7 +210,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             DataSource dataSource = dataSourceService.getDataSourceById(job.getDataSourceId());
             if (dataSource != null) {
                 String errorDataStorageType = dataSource.getType();
-                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorageType);
+                ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(errorDataStorageType);
                 if (connectorFactory == null || !connectorFactory.getDialect().invalidateItemCanOutputToSelf()) {
                     throw new DataVinesServerException(Status.DATASOURCE_NOT_SUPPORT_ERROR_DATA_OUTPUT_TO_SELF_ERROR, errorDataStorageType);
                 }
@@ -365,7 +365,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
                     throw new DataVinesServerException(Status.ENTITY_TYPE_NOT_EXIST);
                 }
 
-                SqlMetric metric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(jobParameter.getMetricType());
+                SqlMetric metric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(jobParameter.getMetricType());
                 if (metric == null) {
                     throw new DataVinesServerException(Status.METRIC_JOB_RELATED_ENTITY_NOT_EXIST, jobParameter.getMetricType().toUpperCase());
                 }
@@ -620,7 +620,7 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
             throw new DataVinesServerException(Status.JOB_PARAMETER_IS_NULL_ERROR);
         }
 
-        ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(baseJobParameter.getResultFormula());
+        ResultFormula resultFormula = PluginDiscovery.getMultiKeyPluginDiscovery(ResultFormula.class, ResultFormula::getPluginNames).getOrCreatePlugin(baseJobParameter.getResultFormula());
 
         String database = (String)metricParameter.get(DATABASE);
         String table = (String)metricParameter.get(TABLE);

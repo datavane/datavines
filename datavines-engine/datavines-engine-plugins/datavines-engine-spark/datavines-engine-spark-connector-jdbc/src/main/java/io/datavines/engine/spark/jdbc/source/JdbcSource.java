@@ -114,4 +114,9 @@ public class JdbcSource implements SparkBatchSource {
         return sparkSession.table(config.getString(TABLE));
     }
 
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("livy-batch-jdbc-source", "spark-batch-jdbc-source");
+    }
 }

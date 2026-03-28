@@ -87,4 +87,9 @@ public class ColumnMinLength extends BaseSingleTableColumn {
     public List<DataVinesDataType> suitableType() {
         return Arrays.asList(DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
     }
+
+    @Override
+    public String getPluginName() {
+        return "column_min_length";
+    }
 }

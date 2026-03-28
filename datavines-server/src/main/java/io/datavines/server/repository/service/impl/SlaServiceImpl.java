@@ -37,7 +37,7 @@ import io.datavines.server.repository.mapper.SlaMapper;
 import io.datavines.server.repository.service.SlaJobService;
 import io.datavines.server.repository.service.SlaService;
 import io.datavines.server.utils.ContextHolder;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,16 +74,16 @@ public class SlaServiceImpl extends ServiceImpl<SlaMapper, Sla> implements SlaSe
 
     @Override
     public String getSenderConfigJson(String type) {
-        return PluginLoader
-                .getPluginLoader(SlasHandlerPlugin.class)
+        return PluginDiscovery.getMultiKeyPluginDiscovery(SlasHandlerPlugin.class, SlasHandlerPlugin::getPluginNames)
+                
                 .getOrCreatePlugin(type)
                 .getConfigSenderJson();
     }
 
     @Override
     public Set<String> getSupportPlugin(){
-        Set<String> supportedPlugins = PluginLoader
-                .getPluginLoader(SlasHandlerPlugin.class)
+        Set<String> supportedPlugins = PluginDiscovery.getMultiKeyPluginDiscovery(SlasHandlerPlugin.class, SlasHandlerPlugin::getPluginNames)
+                
                 .getSupportedPlugins();
         return supportedPlugins;
     }

@@ -179,4 +179,9 @@ public class FlinkEngineExecutor extends AbstractYarnEngineExecutor {
     public boolean isCancel() {
         return this.cancel;
     }
+
+    @Override
+    public String getPluginName() {
+        return "flink";
+    }
 }

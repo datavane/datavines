@@ -44,4 +44,9 @@ public class DorisConnectorFactory extends AbstractJdbcConnectorFactory {
     public ConfigBuilder getConfigBuilder() {
         return new DorisConfigBuilder();
     }
+
+    @Override
+    public String getPluginName() {
+        return "doris";
+    }
 }

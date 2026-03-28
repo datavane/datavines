@@ -49,4 +49,9 @@ public class SqlServerConnectorFactory extends AbstractJdbcConnectorFactory {
     public MetricScript getMetricScript() {
         return new SqlServerMetricScript();
     }
+
+    @Override
+    public String getPluginName() {
+        return "sqlserver";
+    }
 }

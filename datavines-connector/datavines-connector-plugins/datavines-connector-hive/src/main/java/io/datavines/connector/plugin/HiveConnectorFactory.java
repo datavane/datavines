@@ -54,4 +54,9 @@ public class HiveConnectorFactory extends AbstractJdbcConnectorFactory {
     public DataSourceClient getDataSourceClient() {
         return new HiveDataSourceClient();
     }
+
+    @Override
+    public String getPluginName() {
+        return "hive";
+    }
 }

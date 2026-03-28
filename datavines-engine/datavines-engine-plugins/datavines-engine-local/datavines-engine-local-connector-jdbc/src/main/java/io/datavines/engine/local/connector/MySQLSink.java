@@ -75,4 +75,9 @@ public class MySQLSink extends BaseJdbcSink {
                 "  UNIQUE KEY `dv_entity_definition_un` (`entity_uuid`)\n" +
                 ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;\n";
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("local-batch-mysql-sink");
+    }
 }

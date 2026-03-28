@@ -54,4 +54,9 @@ public class OracleConnectorFactory extends AbstractJdbcConnectorFactory{
     public MetricScript getMetricScript() {
         return new OracleMetricScript();
     }
+
+    @Override
+    public String getPluginName() {
+        return "oracle";
+    }
 }

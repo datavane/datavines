@@ -29,7 +29,7 @@ import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -79,7 +79,7 @@ public class LocalMultiTableAccuracyMetricBuilder extends BaseLocalConfiguration
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
 
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
-                ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class)
+                ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames)
                         .getNewPlugin(expectedType);
 
                 String validateResultSinkSql = SinkSqlBuilder.getJobExecutionResultSql()
@@ -107,8 +107,8 @@ public class LocalMultiTableAccuracyMetricBuilder extends BaseLocalConfiguration
                     errorDataSinkConfig.setType(SinkType.ERROR_DATA.getDescription());
 
                     Map<String, Object> connectorParameterMap = new HashMap<>(JSONUtils.toMap(jobExecutionInfo.getErrorDataStorageParameter(),String.class, Object.class));
-                    ConnectorFactory connectorFactory = PluginLoader
-                            .getPluginLoader(ConnectorFactory.class)
+                    ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
+                            
                             .getNewPlugin(jobExecutionInfo.getErrorDataStorageType());
 
                     if (connectorFactory == null) {
@@ -127,8 +127,8 @@ public class LocalMultiTableAccuracyMetricBuilder extends BaseLocalConfiguration
                     connectorParameterMap.put(METRIC_NAME, metricInputParameter.get(METRIC_NAME));
 
                     String metricType = parameter.getMetricType();
-                    SqlMetric sqlMetric = PluginLoader
-                            .getPluginLoader(SqlMetric.class)
+                    SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames)
+                            
                             .getNewPlugin(metricType);
                     MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
                     if (sqlMetric.getInvalidateItems(metricInputParameter) != null) {
@@ -150,5 +150,10 @@ public class LocalMultiTableAccuracyMetricBuilder extends BaseLocalConfiguration
         }
 
         configuration.setSinkParameters(sinkConfigs);
+    }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("local_multi_table_accuracy");
     }
 }

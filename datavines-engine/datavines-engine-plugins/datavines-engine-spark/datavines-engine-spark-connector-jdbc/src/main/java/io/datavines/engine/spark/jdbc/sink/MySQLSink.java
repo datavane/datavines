@@ -17,4 +17,9 @@
 package io.datavines.engine.spark.jdbc.sink;
 
 public class MySQLSink extends JdbcSink {
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("livy-batch-mysql-sink", "spark-batch-mysql-sink");
+    }
 }
