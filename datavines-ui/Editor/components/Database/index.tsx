@@ -27,6 +27,7 @@ import Schedule from '@/view/Main/HomeDetail/Jobs/components/Schedule';
 import SearchForm from './SearchForm';
 import store from '@/store';
 import { useLogger } from '@/view/Main/HomeDetail/Jobs/useLogger';
+import Lineage from '../Lineage';
 
 type DIndexProps = {
     onShowModal?: (...args: any[]) => any;
@@ -164,6 +165,8 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                 });
                 setTotal(0);
                 setRowKey('id');
+                break;
+            case 'Lineage':
                 break;
             default:
         }
@@ -822,6 +825,10 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                 overflow: 'auto',
                             }}
                             >
+                                {tableItems[+activeTableKey]?.name === 'Lineage' ? (
+                                    <Lineage tableUuid={selectDatabases[selectDatabases.length - 1]?.uuid || ''} />
+                                ) : (
+                                <>
                                 {
                                     tableItems[+activeTableKey]?.name === 'Profile' ? (
                                         <>
@@ -897,6 +904,8 @@ const Index = ({ onShowModal, afterClose }:DIndexProps) => {
                                            />
                                         ) : ''
                                 }
+                                </>
+                                )}
                             </div>
 
                         </div>

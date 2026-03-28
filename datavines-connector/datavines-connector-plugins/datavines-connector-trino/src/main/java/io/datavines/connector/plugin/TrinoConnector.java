@@ -93,9 +93,4 @@ public class TrinoConnector extends JdbcConnector {
                     .build();
         }
     }
-
-    @Override
-    public List<String> keyProperties() {
-        return Arrays.asList("host","port","catalog","database");
-    }
 }

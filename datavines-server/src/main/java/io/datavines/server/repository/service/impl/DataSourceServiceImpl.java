@@ -16,6 +16,7 @@
  */
 package io.datavines.server.repository.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -24,13 +25,11 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import io.datavines.common.utils.*;
 import io.datavines.core.utils.LanguageUtils;
 import io.datavines.server.api.dto.bo.catalog.CatalogRefresh;
-import io.datavines.server.api.dto.bo.datasource.ExecuteRequest;
+import io.datavines.server.api.dto.bo.datasource.*;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.param.*;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.enums.Status;
-import io.datavines.server.api.dto.bo.datasource.DataSourceCreate;
-import io.datavines.server.api.dto.bo.datasource.DataSourceUpdate;
 import io.datavines.server.api.dto.bo.job.schedule.MapParam;
 import io.datavines.server.api.dto.bo.task.CommonTaskScheduleCreateOrUpdate;
 import io.datavines.server.api.dto.vo.DataSourceVO;
@@ -41,6 +40,7 @@ import io.datavines.server.repository.service.*;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginLoader;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -96,6 +96,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type);
         List<String> keyProperties = connectorFactory.getConnector().keyProperties();
         List<String> keyPropertyValueList = new ArrayList<>();
+        keyPropertyValueList.add(dataSourceCreate.getType().toLowerCase());
         if (CollectionUtils.isNotEmpty(keyProperties)) {
             keyProperties.forEach(property -> {
                 if (StringUtils.isNotEmpty(paramMap.get(property))) {
@@ -168,6 +169,7 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
         ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type);
         List<String> keyProperties = connectorFactory.getConnector().keyProperties();
         List<String> keyPropertyValueList = new ArrayList<>();
+        keyPropertyValueList.add(dataSourceUpdate.getType().toLowerCase());
         if (CollectionUtils.isNotEmpty(keyProperties)) {
             keyProperties.forEach(property -> {
                 if (StringUtils.isNotEmpty(paramMap.get(property))) {
@@ -262,6 +264,46 @@ public class DataSourceServiceImpl extends ServiceImpl<DataSourceMapper, DataSou
     @Override
     public List<DataSource> listByWorkSpaceIdAndType(long workspaceId, String type) {
         return baseMapper.selectList(new QueryWrapper<DataSource>().lambda().eq(DataSource::getWorkspaceId, workspaceId).eq(DataSource::getType, type));
+    }
+
+    @Override
+    public List<DataSourceInfo> listByInfo(DataSourceKeyProperties dataSourceKeyProperties) {
+        Map<String,String> paramMap = dataSourceKeyProperties.getParam();
+        String type = dataSourceKeyProperties.getType();
+        String paramCode = "";
+        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type);
+        List<String> keyProperties = connectorFactory.getConnector().keyProperties();
+        List<String> keyPropertyValueList = new ArrayList<>();
+        keyPropertyValueList.add(type.toLowerCase());
+        if (CollectionUtils.isNotEmpty(keyProperties)) {
+            keyProperties.forEach(property -> {
+                if (StringUtils.isNotEmpty(paramMap.get(property))) {
+                    keyPropertyValueList.add(paramMap.get(property).toLowerCase());
+                }
+            });
+        }
+
+        if (CollectionUtils.isNotEmpty(keyPropertyValueList)) {
+            paramCode = Md5Utils.getMd5(String.join("@#@", keyPropertyValueList),true);
+        }
+
+        if (StringUtils.isEmpty(paramCode)) {
+            return  new ArrayList<>();
+        }
+
+        List<DataSource> dataSourceList = list(new LambdaQueryWrapper<DataSource>().eq(DataSource::getParamCode, paramCode));
+        if (CollectionUtils.isEmpty(dataSourceList)) {
+            return  new ArrayList<>();
+        }
+
+        List<DataSourceInfo> dataSources = new ArrayList<>();
+        dataSourceList.forEach(dataSource -> {
+            DataSourceInfo dataSourceInfo = new DataSourceInfo();
+            BeanUtils.copyProperties(dataSource, dataSourceInfo);
+            dataSources.add(dataSourceInfo);
+        });
+
+        return dataSources;
     }
 
     @Override

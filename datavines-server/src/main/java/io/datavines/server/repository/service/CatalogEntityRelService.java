@@ -17,7 +17,23 @@
 package io.datavines.server.repository.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.server.api.dto.bo.catalog.lineage.LineageEntityEdgeInfo;
+import io.datavines.server.api.dto.bo.catalog.lineage.SqlWithDataSourceKeyProperties;
+import io.datavines.server.api.dto.bo.catalog.lineage.SqlWithDataSourceList;
+import io.datavines.server.api.dto.vo.catalog.lineage.CatalogEntityLineageVO;
 import io.datavines.server.repository.entity.catalog.CatalogEntityRel;
 
 public interface CatalogEntityRelService extends IService<CatalogEntityRel> {
+
+    public boolean addLineage(LineageEntityEdgeInfo entityEdgeInfo);
+
+    public boolean addLineageByParseSql(SqlWithDataSourceList sqlWithDataSourceList);
+
+    public boolean addLineageByParseSql2(SqlWithDataSourceKeyProperties sqlWithDataSourceKeyProperties);
+
+    public CatalogEntityLineageVO getLineageByFqn(Long datasourceId, String fqn, int upstreamDepth, int downstreamDepth);
+
+    public CatalogEntityLineageVO getLineageByUUID(String uuid, int upstreamDepth, int downstreamDepth);
+
+    public boolean deleteLineage(String fromUUID, String toUUID);
 }
