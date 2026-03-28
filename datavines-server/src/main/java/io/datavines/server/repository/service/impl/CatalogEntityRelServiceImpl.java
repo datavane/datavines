@@ -143,45 +143,64 @@ public class CatalogEntityRelServiceImpl extends ServiceImpl<CatalogEntityRelMap
     @Override
     public boolean addLineageByParseSql(SqlWithDataSourceList sqlWithDataSourceList) {
         if (sqlWithDataSourceList == null) {
-            return false;
+            throw new DataVinesServerException("Request body cannot be null");
         }
 
         List<DataSourceInfo> dataSourceInfos = sqlWithDataSourceList.getDataSourceInfos();
         if (CollectionUtils.isEmpty(dataSourceInfos)) {
-            return false;
+            throw new DataVinesServerException("DataSource list cannot be empty");
         }
 
         String sql = sqlWithDataSourceList.getSql();
+        if (StringUtils.isEmpty(sql)) {
+            throw new DataVinesServerException("SQL cannot be empty");
+        }
+
+        boolean added = false;
+        StringBuilder errors = new StringBuilder();
 
         for (DataSourceInfo dataSourceInfo: dataSourceInfos) {
             ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(dataSourceInfo.getType());
             if (connectorFactory == null) {
+                errors.append("Unsupported datasource type: ").append(dataSourceInfo.getType()).append("; ");
                 continue;
             }
 
             DataSource dataSource = dataSourceService.getDataSourceById(dataSourceInfo.getId());
+            if (dataSource == null) {
+                errors.append("DataSource not found, id: ").append(dataSourceInfo.getId()).append("; ");
+                continue;
+            }
 
             JdbcConnectionInfo jdbcConnectionInfo = JSONUtils.parseObject(dataSource.getParam(), JdbcConnectionInfo.class);
 
-            ScriptMetadata scriptMetadata = LineageParser.parseScript(sql, connectorFactory.getStatementSplitter(), connectorFactory.getStatementParser());
+            ScriptMetadata scriptMetadata;
+            try {
+                scriptMetadata = LineageParser.parseScript(sql, connectorFactory.getStatementSplitter(), connectorFactory.getStatementParser());
+            } catch (Exception e) {
+                throw new DataVinesServerException("SQL parse error: " + e.getMessage(), e);
+            }
+
             if (scriptMetadata == null) {
-                continue;
+                throw new DataVinesServerException("Failed to parse SQL, please check the SQL syntax");
             }
 
             List<StatementMetadata> statementMetadataList = scriptMetadata.getStatementMetadataList();
             if (CollectionUtils.isEmpty(statementMetadataList)) {
-                continue;
+                throw new DataVinesServerException("No valid SQL statements found after parsing");
             }
 
             for (StatementMetadata statementMetadata: statementMetadataList) {
                 StatementMetadataFragment statementMetadataFragment = statementMetadata.getStatementMetadataFragment();
                 if (statementMetadataFragment == null) {
+                    errors.append("Cannot extract table lineage from SQL: ").append(statementMetadata.getStatementText()).append("; ");
                     continue;
                 }
 
                 List<String> inputTables = statementMetadataFragment.getInputTables();
                 List<String> outputTables = statementMetadataFragment.getOutputTables();
                 if (CollectionUtils.isEmpty(inputTables) || CollectionUtils.isEmpty(outputTables)) {
+                    errors.append("SQL must contain both source (SELECT) and target (INSERT/CREATE) tables; ");
                     continue;
                 }
 
@@ -191,27 +210,42 @@ public class CatalogEntityRelServiceImpl extends ServiceImpl<CatalogEntityRelMap
                             continue;
                         }
 
-                        if (jdbcConnectionInfo!= null && !inputTable.contains(".")) {
-                            inputTable = jdbcConnectionInfo.getDatabase() + "." + inputTable;
+                        String resolvedInput = inputTable;
+                        String resolvedOutput = outputTable;
+
+                        if (jdbcConnectionInfo != null && !resolvedInput.contains(".")) {
+                            resolvedInput = jdbcConnectionInfo.getDatabase() + "." + resolvedInput;
                         }
 
-                        if (jdbcConnectionInfo!= null && !outputTable.contains(".")) {
-                            outputTable = jdbcConnectionInfo.getDatabase() + "." + outputTable;
+                        if (jdbcConnectionInfo != null && !resolvedOutput.contains(".")) {
+                            resolvedOutput = jdbcConnectionInfo.getDatabase() + "." + resolvedOutput;
                         }
 
-                        CatalogEntityInstance fromEntity = catalogEntityInstanceService.getByDataSourceAndFQN(dataSourceInfo.getId(), inputTable);
-                        CatalogEntityInstance toEntity = catalogEntityInstanceService.getByDataSourceAndFQN(dataSourceInfo.getId(), outputTable);
+                        CatalogEntityInstance fromEntity = catalogEntityInstanceService.getByDataSourceAndFQN(dataSourceInfo.getId(), resolvedInput);
+                        CatalogEntityInstance toEntity = catalogEntityInstanceService.getByDataSourceAndFQN(dataSourceInfo.getId(), resolvedOutput);
                         if (fromEntity == null || toEntity == null) {
+                            if (fromEntity == null) {
+                                errors.append("Table not found in catalog: ").append(resolvedInput).append("; ");
+                            }
+                            if (toEntity == null) {
+                                errors.append("Table not found in catalog: ").append(resolvedOutput).append("; ");
+                            }
                             continue;
                         }
 
-                        return addLineage(fromEntity.getUuid(), toEntity.getUuid(), LineageSourceType.SQL_PARSER, statementMetadata.getStatementText());
+                        if (addLineage(fromEntity.getUuid(), toEntity.getUuid(), LineageSourceType.SQL_PARSER, statementMetadata.getStatementText())) {
+                            added = true;
+                        }
                     }
                 }
             }
         }
 
-        return false;
+        if (!added && errors.length() > 0) {
+            throw new DataVinesServerException(errors.toString());
+        }
+
+        return added;
     }
 
     @Override

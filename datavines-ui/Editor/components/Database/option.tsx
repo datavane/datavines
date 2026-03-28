@@ -95,6 +95,9 @@ export const tableTabs:Tab[] = [
     {
         label: <FormattedMessage id="job_issue" />, name: 'Issues', children: null, key: '4',
     },
+    {
+        label: <FormattedMessage id="lineage_title" />, name: 'Lineage', children: null, key: '5',
+    },
 ];
 export const tableCol:Col[][] = [[{
     title: <FormattedMessage id="job_column" />,
