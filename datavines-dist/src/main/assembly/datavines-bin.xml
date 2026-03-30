@@ -75,6 +75,14 @@
             </includes>
             <outputDirectory>./conf</outputDirectory>
         </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/../scripts/sql</directory>
+            <includes>
+                <include>datavines-mysql.sql</include>
+            </includes>
+            <outputDirectory>./scripts</outputDirectory>
+        </fileSet>
     </fileSets>
 
     <dependencySets>
