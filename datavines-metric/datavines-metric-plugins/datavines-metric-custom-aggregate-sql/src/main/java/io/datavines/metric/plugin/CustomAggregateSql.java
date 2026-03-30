@@ -115,4 +115,9 @@ public class CustomAggregateSql implements SqlMetric {
     public boolean isCustomSql() {
         return true;
     }
+
+    @Override
+    public String getPluginName() {
+        return "custom_aggregate_sql";
+    }
 }

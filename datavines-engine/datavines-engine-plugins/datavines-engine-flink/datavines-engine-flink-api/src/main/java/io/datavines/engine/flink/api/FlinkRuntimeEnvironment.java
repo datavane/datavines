@@ -90,4 +90,9 @@ public class FlinkRuntimeEnvironment implements RuntimeEnvironment {
             throw new DataVinesException("Failed to stop Flink environment", e);
         }
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("flink");
+    }
 }

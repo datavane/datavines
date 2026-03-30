@@ -44,4 +44,9 @@ public class DatabendConnectorFactory extends AbstractJdbcConnectorFactory {
     public ConfigBuilder getConfigBuilder() {
         return new DatabendConfigBuilder();
     }
+
+    @Override
+    public String getPluginName() {
+        return "databend";
+    }
 }

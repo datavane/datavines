@@ -16,14 +16,19 @@
  */
 package io.datavines.registry.api;
 
-import io.datavines.spi.SPI;
-
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
-@SPI
 public interface Registry {
+
+    String getPluginName();
+
+    default Collection<String> getPluginNames() {
+        return Collections.singletonList(getPluginName());
+    }
 
     void init(Properties properties) throws Exception;
 

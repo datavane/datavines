@@ -56,4 +56,9 @@ public class SparkNone implements ExpectedValue {
     public void prepare(Map<String, String> config) {
 
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("livy_none", "spark_none");
+    }
 }

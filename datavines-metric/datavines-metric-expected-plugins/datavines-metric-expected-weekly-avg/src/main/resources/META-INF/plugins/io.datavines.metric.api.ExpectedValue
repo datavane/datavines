@@ -1,4 +1,0 @@
-local_weekly_avg=io.datavines.metric.expected.plugin.WeeklyAvg
-spark_weekly_avg=io.datavines.metric.expected.plugin.WeeklyAvg
-livy_weekly_avg=io.datavines.metric.expected.plugin.WeeklyAvg
-flink_weekly_avg=io.datavines.metric.expected.plugin.WeeklyAvg

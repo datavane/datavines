@@ -44,6 +44,12 @@ public class CatalogEntityRel implements Serializable {
     @TableField(value = "type")
     private String type;
 
+    @TableField(value = "source_type")
+    private String sourceType;
+
+    @TableField(value = "related_script")
+    private String relatedScript;
+
     @TableField(value = "update_by")
     private Long updateBy;
 

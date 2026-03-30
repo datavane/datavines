@@ -27,7 +27,7 @@ import io.datavines.engine.local.api.LocalRuntimeEnvironment;
 import io.datavines.engine.local.api.LocalSource;
 import io.datavines.engine.local.api.entity.ConnectionHolder;
 import io.datavines.engine.local.api.utils.LoggerFactory;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.slf4j.Logger;
 
 import java.util.ArrayList;
@@ -98,7 +98,7 @@ public class BaseJdbcSource implements LocalSource {
         int retryTimes = 3;
         while (retryTimes > 0) {
             if (connectionHolder != null) {
-                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class)
+                ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
                         .getOrCreatePlugin(config.getString(SRC_CONNECTOR_TYPE));
                 JdbcOptions jdbcOptions = new JdbcOptions();
                 jdbcOptions.setDatabaseName(config.getString(DATABASE));
@@ -116,5 +116,10 @@ public class BaseJdbcSource implements LocalSource {
         }
 
         return false;
+    }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("local-batch-jdbc-source");
     }
 }

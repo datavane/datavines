@@ -84,4 +84,9 @@ public class FileConnectorFactory implements ConnectorFactory {
     public Boolean showInFrontend() {
         return false;
     }
+
+    @Override
+    public String getPluginName() {
+        return "file";
+    }
 }

@@ -25,7 +25,7 @@ import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -48,8 +48,8 @@ public class FlinkSingleTableConfigurationBuilder extends BaseFlinkConfiguration
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
                 metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
-                ExpectedValue expectedValue = PluginLoader
-                        .getPluginLoader(ExpectedValue.class)
+                ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames)
+                        
                         .getNewPlugin(expectedType);
 
                 metricInputParameter.put(UNIQUE_CODE, StringUtils.wrapperSingleQuotes(generateUniqueCode(metricInputParameter)));
@@ -84,5 +84,10 @@ public class FlinkSingleTableConfigurationBuilder extends BaseFlinkConfiguration
         }
 
         configuration.setSinkParameters(sinkConfigs);
+    }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("flink_single_table");
     }
 }

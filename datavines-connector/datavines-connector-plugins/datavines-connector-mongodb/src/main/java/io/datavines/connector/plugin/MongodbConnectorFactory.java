@@ -49,4 +49,9 @@ public class MongodbConnectorFactory extends AbstractJdbcConnectorFactory {
     public ConfigBuilder getConfigBuilder() {
         return new MongodbConfigBuilder();
     }
+
+    @Override
+    public String getPluginName() {
+        return "mongodb";
+    }
 }

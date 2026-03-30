@@ -74,4 +74,9 @@ public class LocalEngineExecutor extends AbstractEngineExecutor {
     protected String buildCommand() {
         return null;
     }
+
+    @Override
+    public String getPluginName() {
+        return "local";
+    }
 }

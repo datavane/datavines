@@ -29,7 +29,7 @@ import io.datavines.server.api.dto.bo.storage.ErrorDataStorageUpdate;
 import io.datavines.server.api.dto.vo.ErrorDataStorageVO;
 import io.datavines.server.api.dto.vo.Item;
 import io.datavines.server.repository.service.ErrorDataStorageService;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -120,10 +120,10 @@ public class ErrorDataStorageController {
     @ApiOperation(value = "get error data storage type list")
     @GetMapping(value = "/type/list")
     public Object getErrorDataStorageTypeList() {
-        Set<String> errorDataStorageList = PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
+        Set<String> errorDataStorageList = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
         for (String errorDataStorage : errorDataStorageList) {
-            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorage);
+            ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(errorDataStorage);
             if (connectorFactory  == null) {
                 continue;
             }

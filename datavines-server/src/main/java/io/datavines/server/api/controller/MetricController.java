@@ -26,7 +26,7 @@ import io.datavines.core.aop.RefreshToken;
 import io.datavines.server.api.dto.vo.Item;
 import io.datavines.server.api.dto.vo.MetricConfigItem;
 import io.datavines.server.api.dto.vo.MetricItem;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.MediaType;
@@ -46,10 +46,10 @@ public class MetricController {
     @ApiOperation(value = "get metric list")
     @GetMapping(value = "/list")
     public Object getMetricList() {
-        Set<String> metricList = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+        Set<String> metricList = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
         metricList.forEach(it -> {
-            SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
+            SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(it);
             if (sqlMetric != null) {
                 Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
                 items.add(item);
@@ -62,7 +62,7 @@ public class MetricController {
     @ApiOperation(value = "get metric list by type")
     @GetMapping(value = "/list/{type}")
     public Object getMetricListByType(@PathVariable("type") String type) {
-        Set<String> metricList = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+        Set<String> metricList = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getSupportedPlugins();
         List<MetricItem> items = new ArrayList<>();
         JobType jobType = JobType.of(type);
         if (jobType == null) {
@@ -72,7 +72,7 @@ public class MetricController {
         switch (jobType) {
             case DATA_QUALITY:
                 metricList.forEach(it -> {
-                    SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
+                    SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(it);
                     if (sqlMetric != null && sqlMetric.getType().isSingleTable()) {
                         if (!excludeMetricSet.contains(it)) {
                             MetricItem item = new MetricItem(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()), it, sqlMetric.getLevel().getDescription());
@@ -83,7 +83,7 @@ public class MetricController {
                 break;
             case DATA_RECONCILIATION:
                 metricList.forEach(it -> {
-                    SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
+                    SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(it);
                     if (sqlMetric != null && !sqlMetric.getType().isSingleTable()) {
                         MetricItem item = new MetricItem(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()), it, sqlMetric.getLevel().getDescription());
                         items.add(item);
@@ -99,11 +99,11 @@ public class MetricController {
     @ApiOperation(value = "get reconciliation metric list")
     @GetMapping(value = "/reconciliation/list")
     public Object getReconciliationMetricList() {
-        Set<String> metricList = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+        Set<String> metricList = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
 
         metricList.forEach(it -> {
-            SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
+            SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(it);
             if (sqlMetric != null && !sqlMetric.getType().isSingleTable()) {
                 Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
                 items.add(item);
@@ -116,11 +116,11 @@ public class MetricController {
     @ApiOperation(value = "get quality metric list")
     @GetMapping(value = "/quality/list/{level}")
     public Object getDataQualityMetricList(@NotNull @PathVariable("level") String level) {
-        Set<String> metricList = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+        Set<String> metricList = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
 
         metricList.forEach(it -> {
-            SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(it);
+            SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(it);
             if (sqlMetric != null && sqlMetric.getType().isSingleTable() && level.equals(sqlMetric.getLevel().getDescription())) {
                 if (!excludeMetricSet.contains(it)) {
                     Item item = new Item(sqlMetric.getNameByLanguage(!LanguageUtils.isZhContext()),it);
@@ -135,7 +135,7 @@ public class MetricController {
     @ApiOperation(value = "get metric info")
     @GetMapping(value = "/configs/{name}")
     public Object getMetricConfig(@PathVariable("name") String name) {
-        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(name);
+        SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(name);
         if (sqlMetric != null) {
             Map<String, ConfigItem> resultSet = sqlMetric.getConfigMap();
             List<MetricConfigItem> items = new ArrayList<>();
@@ -152,7 +152,7 @@ public class MetricController {
     @ApiOperation(value = "get expected value list")
     @GetMapping(value = "/expectedValue/list/{type}")
     public Object getExpectedTypeList(@PathVariable("type") String type) {
-        Set<String> expectedValueList = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
+        Set<String> expectedValueList = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames).getSupportedPlugins();
         Set<String> afterFilterSet = new HashSet<>();
         afterFilterSet = expectedValueList.stream()
                 .map(it ->it.replace("local_", "")
@@ -179,7 +179,7 @@ public class MetricController {
         }
 
         afterFilterSet.forEach(it -> {
-            ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class).getOrCreatePlugin("local_" + it);
+            ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames).getOrCreatePlugin("local_" + it);
             if (expectedValue != null) {
                 Item item = new Item(expectedValue.getNameByLanguage(!LanguageUtils.isZhContext()),it);
                 items.add(item);
@@ -192,7 +192,7 @@ public class MetricController {
     @ApiOperation(value = "get engine type list")
     @GetMapping(value = "/engine/list")
     public Object getEngineTypeList() {
-        Set<String> engineTypeList = PluginLoader.getPluginLoader(EngineExecutor.class).getSupportedPlugins();
+        Set<String> engineTypeList = PluginDiscovery.getMultiKeyPluginDiscovery(EngineExecutor.class, EngineExecutor::getPluginNames).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
         engineTypeList.forEach(it -> {
             Item item = new Item(it,it);
@@ -205,10 +205,10 @@ public class MetricController {
     @ApiOperation(value = "get result formula list")
     @GetMapping(value = "/resultFormula/list")
     public Object getResultFormulaList() {
-        Set<String> resultFormulaTypeList = PluginLoader.getPluginLoader(ResultFormula.class).getSupportedPlugins();
+        Set<String> resultFormulaTypeList = PluginDiscovery.getMultiKeyPluginDiscovery(ResultFormula.class, ResultFormula::getPluginNames).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
         resultFormulaTypeList.forEach(it -> {
-            ResultFormula resultFormula = PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(it);
+            ResultFormula resultFormula = PluginDiscovery.getMultiKeyPluginDiscovery(ResultFormula.class, ResultFormula::getPluginNames).getOrCreatePlugin(it);
             if (resultFormula != null) {
                 Item item = new Item(resultFormula.getNameByLanguage(!LanguageUtils.isZhContext()),it);
                 items.add(item);

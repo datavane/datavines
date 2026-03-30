@@ -24,7 +24,7 @@ import io.datavines.common.utils.StringUtils;
 
 import io.datavines.engine.common.utils.QuoteIdentifier;
 import io.datavines.metric.api.ConfigItem;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.MapUtils;
 
 import java.time.LocalDateTime;
@@ -125,7 +125,7 @@ public class MetricParserUtils {
         Map<String,String> newInputParameterValue = new HashMap<>();
         newInputParameterValue.put(METRIC_NAME, inputParameterValue.get(METRIC_NAME));
         newInputParameterValue.put(DATABASE, inputParameterValue.get(DATABASE));
-        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(StringUtils.removeSingeQuotes(inputParameterValue.get(METRIC_NAME)));
+        SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(StringUtils.removeSingeQuotes(inputParameterValue.get(METRIC_NAME)));
         Map<String, ConfigItem> configMap = sqlMetric.getConfigMap();
         if (MapUtils.isNotEmpty(configMap)) {
             for(ConfigItem configItem : configMap.values()) {

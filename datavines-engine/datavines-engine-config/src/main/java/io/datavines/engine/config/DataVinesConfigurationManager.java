@@ -26,7 +26,7 @@ import io.datavines.common.enums.JobType;
 import io.datavines.common.exception.DataVinesException;
 import io.datavines.common.utils.StringUtils;
 import io.datavines.metric.api.SqlMetric;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
@@ -68,8 +68,8 @@ public class DataVinesConfigurationManager {
                 throw new DataVinesException("metric type can not be null");
             }
 
-            sqlMetric = PluginLoader
-                    .getPluginLoader(SqlMetric.class)
+            sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames)
+                    
                     .getNewPlugin(metricType);
 
             if (sqlMetric == null) {
@@ -81,13 +81,13 @@ public class DataVinesConfigurationManager {
             throw new DataVinesException("can not find the metric");
         }
 
-        JobConfigurationBuilder builder = PluginLoader
-                .getPluginLoader(JobConfigurationBuilder.class)
+        JobConfigurationBuilder builder = PluginDiscovery.getMultiKeyPluginDiscovery(JobConfigurationBuilder.class, JobConfigurationBuilder::getPluginNames)
+                
                 .getNewPlugin(jobExecutionInfo.getEngineType() + "_" + sqlMetric.getType().getDescription());
 
         if (jobType == JobType.DATA_PROFILE) {
-            builder = PluginLoader
-                    .getPluginLoader(JobConfigurationBuilder.class)
+            builder = PluginDiscovery.getMultiKeyPluginDiscovery(JobConfigurationBuilder.class, JobConfigurationBuilder::getPluginNames)
+                    
                     .getNewPlugin(jobExecutionInfo.getEngineType() + "_data_profile");
         }
 

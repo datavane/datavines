@@ -85,4 +85,9 @@ public class SqlTransform implements FlinkStreamTransform {
     public List<FLinkColumnInfo> getOutputColumns() {
         return columns;
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("flink-batch-sql-transform");
+    }
 }

@@ -49,4 +49,9 @@ public class PrestoConnectorFactory extends AbstractJdbcConnectorFactory {
     public DataSourceClient getDataSourceClient() {
         return new PrestoDataSourceClient();
     }
+
+    @Override
+    public String getPluginName() {
+        return "presto";
+    }
 }

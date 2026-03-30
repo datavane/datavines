@@ -19,12 +19,13 @@ package io.datavines.engine.config;
 import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.entity.JobExecutionInfo;
 import io.datavines.common.exception.DataVinesException;
-import io.datavines.spi.SPI;
 
+import java.util.Collection;
 import java.util.Map;
 
-@SPI
 public interface JobConfigurationBuilder {
+
+    Collection<String> getPluginNames();
 
     void init(Map<String, String> inputParameter, JobExecutionInfo jobExecutionInfo);
 

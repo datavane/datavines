@@ -35,7 +35,7 @@ import io.datavines.server.repository.service.SlaJobService;
 import io.datavines.server.repository.service.SlaNotificationService;
 import io.datavines.server.repository.service.SlaSenderService;
 import io.datavines.server.utils.ContextHolder;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -122,8 +122,8 @@ public class SlaNotificationServiceImpl extends ServiceImpl<SlaNotificationMappe
 
     @Override
     public String getConfigJson(String type) {
-        return PluginLoader
-                .getPluginLoader(SlasHandlerPlugin.class)
+        return PluginDiscovery.getMultiKeyPluginDiscovery(SlasHandlerPlugin.class, SlasHandlerPlugin::getPluginNames)
+                
                 .getOrCreatePlugin(type)
                 .getConfigJson();
     }

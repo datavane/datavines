@@ -44,6 +44,9 @@ public class DataSource implements Serializable {
     @TableField(value = "name")
     private String name;
 
+    @TableField(value = "category")
+    private String category;
+
     @TableField(value = "type")
     private String type;
 

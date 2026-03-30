@@ -42,7 +42,7 @@ import io.datavines.server.repository.service.CatalogEntityRelService;
 import io.datavines.server.repository.service.CatalogSchemaChangeService;
 import io.datavines.server.scheduler.CommonTaskRequest;
 import io.datavines.server.utils.SpringApplicationContext;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -79,8 +79,8 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
 
         this.dataSource = request.getDataSource();
 
-        this.connectorFactory = PluginLoader
-                .getPluginLoader(ConnectorFactory.class)
+        this.connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
+                
                 .getOrCreatePlugin(dataSource.getType());
 
         this.instanceService = SpringApplicationContext.getBean(CatalogEntityInstanceService.class);

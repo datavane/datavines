@@ -44,4 +44,9 @@ public class DmConnectorFactory extends AbstractJdbcConnectorFactory {
     public ConfigBuilder getConfigBuilder() {
         return new DmConfigBuilder();
     }
+
+    @Override
+    public String getPluginName() {
+        return "dm";
+    }
 }

@@ -16,11 +16,13 @@
  */
 package io.datavines.engine.api.component;
 
-import io.datavines.spi.SPI;;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.api.plugin.Plugin;
 
-@SPI
+import java.util.Collection;
+
 public interface Component extends Plugin {
+
+    Collection<String> getPluginNames();
     void prepare(RuntimeEnvironment env) throws Exception;
 }

@@ -95,4 +95,9 @@ public class LocalRuntimeEnvironment implements RuntimeEnvironment {
         stop = true;
     }
 
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("local");
+    }
 }

@@ -54,4 +54,9 @@ public class SparkDataProfileMetricBuilder extends BaseSparkConfigurationBuilder
 
         configuration.setSinkParameters(sinkConfigs);
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("livy_data_profile", "spark_data_profile");
+    }
 }

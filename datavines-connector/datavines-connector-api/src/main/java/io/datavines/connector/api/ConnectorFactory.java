@@ -16,10 +16,16 @@
  */
 package io.datavines.connector.api;
 
-import io.datavines.spi.SPI;;
+import java.util.Collection;
+import java.util.Collections;
 
-@SPI
 public interface ConnectorFactory {
+
+    String getPluginName();
+
+    default Collection<String> getPluginNames() {
+        return Collections.singletonList(getPluginName());
+    }
 
     String getCategory();
 

@@ -31,7 +31,7 @@ import io.datavines.connector.api.entity.ResultListWithColumns;
 import io.datavines.engine.local.api.utils.FileUtils;
 import io.datavines.engine.local.api.utils.LoggerFactory;
 import io.datavines.connector.api.utils.SqlUtils;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 
 import org.slf4j.Logger;
 
@@ -130,7 +130,7 @@ public class LocalFileSink implements LocalSink {
             }
 
             String srcConnectorType = config.getString(SRC_CONNECTOR_TYPE);
-            TypeConverter typeConverter = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(srcConnectorType).getTypeConverter();
+            TypeConverter typeConverter = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(srcConnectorType).getTypeConverter();
             if (count > 0) {
                 count = Math.min(count, 10000);
                 //根据行数进行分页查询。分批写到文件里面
@@ -156,5 +156,10 @@ public class LocalFileSink implements LocalSink {
                 resultSet.close();
             }
         }
+    }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("local-file-sink");
     }
 }

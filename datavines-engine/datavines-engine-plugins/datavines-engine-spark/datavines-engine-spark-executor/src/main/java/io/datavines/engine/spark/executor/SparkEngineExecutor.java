@@ -149,4 +149,9 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
 
         return command;
     }
+
+    @Override
+    public String getPluginName() {
+        return "spark";
+    }
 }

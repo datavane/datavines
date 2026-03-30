@@ -35,7 +35,7 @@ import io.datavines.server.repository.entity.ErrorDataStorage;
 import io.datavines.server.repository.mapper.ErrorDataStorageMapper;
 import io.datavines.server.repository.service.ErrorDataStorageService;
 import io.datavines.server.utils.ContextHolder;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -52,7 +52,7 @@ public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMap
 
     @Override
     public ConnectorResponse testConnect(TestConnectionRequestParam param) {
-        ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(param.getType());
+        ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(param.getType());
         return connectorFactory.getConnector().testConnect(param);
     }
 
@@ -136,7 +136,7 @@ public class ErrorDataStorageServiceImpl extends ServiceImpl<ErrorDataStorageMap
 
     @Override
     public String getConfigJson(String type) {
-        return PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(type).getConfigBuilder().buildErrorDataStorage(!LanguageUtils.isZhContext());
+        return PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(type).getConfigBuilder().buildErrorDataStorage(!LanguageUtils.isZhContext());
     }
 
     private boolean isErrorDataStorageExist(String name) {

@@ -29,7 +29,7 @@ import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.config.MetricParserUtils;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.SqlMetric;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -53,8 +53,8 @@ public class LocalMultiTableValueComparisonMetricBuilder extends BaseLocalConfig
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
                 metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
                 String metricType = parameter.getMetricType();
-                SqlMetric sqlMetric = PluginLoader
-                        .getPluginLoader(SqlMetric.class)
+                SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames)
+                        
                         .getNewPlugin(metricType);
 
                 MetricParserUtils.operateInputParameter(metricInputParameter, sqlMetric, jobExecutionInfo);
@@ -112,7 +112,7 @@ public class LocalMultiTableValueComparisonMetricBuilder extends BaseLocalConfig
                 Map<String, String> metricInputParameter = metric2InputParameter.get(metricUniqueKey);
                 metricInputParameter.put(METRIC_UNIQUE_KEY, metricUniqueKey);
                 String expectedType = jobExecutionInfo.getEngineType() + "_" + parameter.getExpectedType();
-                ExpectedValue expectedValue = PluginLoader.getPluginLoader(ExpectedValue.class)
+                ExpectedValue expectedValue = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames)
                         .getNewPlugin(expectedType);
 
                 String validateResultSinkSql = SinkSqlBuilder.getJobExecutionResultSql()
@@ -136,5 +136,10 @@ public class LocalMultiTableValueComparisonMetricBuilder extends BaseLocalConfig
         }
 
         configuration.setSinkParameters(sinkConfigs);
+    }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("local_multi_table_value_comparison");
     }
 }

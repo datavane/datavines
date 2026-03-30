@@ -72,4 +72,9 @@ public class TargetTableTotalRows implements ExpectedValue {
             }
         }
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("flink_target_table_total_rows", "livy_target_table_total_rows", "local_target_table_total_rows", "spark_target_table_total_rows");
+    }
 }

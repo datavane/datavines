@@ -54,4 +54,9 @@ public class PostgreSqlConnectorFactory extends AbstractJdbcConnectorFactory {
     public MetricScript getMetricScript() {
         return new PostgreSqlMetricScript();
     }
+
+    @Override
+    public String getPluginName() {
+        return "postgresql";
+    }
 }

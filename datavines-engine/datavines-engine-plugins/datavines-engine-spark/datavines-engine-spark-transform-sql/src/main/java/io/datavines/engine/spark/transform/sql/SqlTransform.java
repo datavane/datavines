@@ -61,4 +61,9 @@ public class SqlTransform implements BaseSparkTransform {
     public Dataset<Row> process(Dataset<Row> data, SparkRuntimeEnvironment env) {
         return env.sparkSession().sql(config.getString(SQL));
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("livy-batch-sql-transform", "spark-batch-sql-transform");
+    }
 }

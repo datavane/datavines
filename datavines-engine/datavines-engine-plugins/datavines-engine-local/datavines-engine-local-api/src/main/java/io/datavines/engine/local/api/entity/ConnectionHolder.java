@@ -19,7 +19,7 @@ package io.datavines.engine.local.api.entity;
 import io.datavines.common.config.Config;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.engine.local.api.utils.LoggerFactory;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.slf4j.Logger;
 
 import java.sql.Connection;
@@ -45,8 +45,8 @@ public class ConnectionHolder {
 
     public Connection getConnection() throws SQLException {
         if (connection == null || connection.isClosed() || !connection.isValid(10)) {
-            ConnectorFactory connectorFactory = PluginLoader
-                    .getPluginLoader(ConnectorFactory.class)
+            ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
+                    
                     .getNewPlugin(config.getString(SRC_CONNECTOR_TYPE));
             connection = connectorFactory.getDataSourceClient().getConnection(config.configMap(), logger);
         }

@@ -176,4 +176,9 @@ public class JdbcSource implements FlinkStreamSource {
     @Override
     public void prepare(RuntimeEnvironment env) {
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("flink-batch-jdbc-source");
+    }
 }

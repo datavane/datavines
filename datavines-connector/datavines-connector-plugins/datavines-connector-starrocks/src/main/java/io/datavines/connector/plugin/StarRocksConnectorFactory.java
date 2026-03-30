@@ -44,4 +44,9 @@ public class StarRocksConnectorFactory extends AbstractJdbcConnectorFactory {
     public ConfigBuilder getConfigBuilder() {
         return new StarRocksConfigBuilder();
     }
+
+    @Override
+    public String getPluginName() {
+        return "starrocks";
+    }
 }
