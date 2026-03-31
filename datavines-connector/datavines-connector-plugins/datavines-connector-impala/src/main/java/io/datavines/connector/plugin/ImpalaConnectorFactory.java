@@ -16,10 +16,12 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.Connector;
 import io.datavines.connector.api.ParameterConverter;
 import io.datavines.connector.api.Dialect;
 import io.datavines.connector.api.Executor;
+import io.datavines.connector.api.StatementParser;
 
 public class ImpalaConnectorFactory extends AbstractJdbcConnectorFactory {
 
@@ -41,6 +43,11 @@ public class ImpalaConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public Executor getExecutor() {
         return new ImpalaExecutor(getDataSourceClient());
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.hive);
     }
 
     @Override

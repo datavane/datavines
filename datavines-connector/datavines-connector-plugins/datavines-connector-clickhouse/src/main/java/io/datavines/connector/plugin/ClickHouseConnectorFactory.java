@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.*;
 
 public class ClickHouseConnectorFactory extends AbstractJdbcConnectorFactory {
@@ -53,6 +54,11 @@ public class ClickHouseConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public TypeConverter getTypeConverter() {
         return new ClickHouseTypeConverter();
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.clickhouse);
     }
 
     @Override

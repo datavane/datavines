@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-    Modal, Form, Select, Divider, Button, Space, Typography, message,
+    Modal, Form, Select, Divider, Typography, message,
 } from 'antd';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import { useIntl } from 'react-intl';
 import useRequest from '../../hooks/useRequest';
-import { CatalogEntityInstanceInfo } from './useLineageData';
 
 const { Text } = Typography;
 
@@ -27,10 +25,8 @@ const AddLineageModal: React.FC<AddLineageModalProps> = ({
     // Cascade data
     const [fromDatabases, setFromDatabases] = useState<any[]>([]);
     const [fromTables, setFromTables] = useState<any[]>([]);
-    const [fromColumns, setFromColumns] = useState<any[]>([]);
     const [toDatabases, setToDatabases] = useState<any[]>([]);
     const [toTables, setToTables] = useState<any[]>([]);
-    const [toColumns, setToColumns] = useState<any[]>([]);
 
     const loadDatabases = async (dsUuid: string, setFn: (v: any[]) => void) => {
         try {
@@ -46,32 +42,17 @@ const AddLineageModal: React.FC<AddLineageModalProps> = ({
         } catch { setFn([]); }
     };
 
-    const loadColumns = async (tableUuid: string, setFn: (v: any[]) => void) => {
-        try {
-            const res = await $http.get(`/catalog/list/column/${tableUuid}`);
-            setFn(res || []);
-        } catch { setFn([]); }
-    };
-
     const handleSubmit = async () => {
         try {
             const values = await form.validateFields();
             setSubmitting(true);
-
-            const columnMappings = values.columnMappings || [];
-            const childRelDetailList = columnMappings
-                .filter((m: any) => m?.fromColumn && m?.toColumn)
-                .map((m: any) => ({
-                    fromChildren: [{ uuid: m.fromColumn }],
-                    toChild: { uuid: m.toColumn },
-                }));
 
             const payload = {
                 fromEntity: { uuid: values.fromTable },
                 toEntity: { uuid: values.toTable },
                 lineageDetail: {
                     sourceType: 'MANUAL',
-                    childRelDetailList,
+                    childRelDetailList: [],
                 },
             };
 
@@ -91,10 +72,8 @@ const AddLineageModal: React.FC<AddLineageModalProps> = ({
             form.resetFields();
             setFromDatabases([]);
             setFromTables([]);
-            setFromColumns([]);
             setToDatabases([]);
             setToTables([]);
-            setToColumns([]);
         }
     }, [visible]);
 
@@ -125,7 +104,6 @@ const AddLineageModal: React.FC<AddLineageModalProps> = ({
                                 loadDatabases(val, setFromDatabases);
                                 form.setFieldsValue({ fromDatabase: undefined, fromTable: undefined });
                                 setFromTables([]);
-                                setFromColumns([]);
                             }}
                         />
                     </Form.Item>
@@ -142,7 +120,6 @@ const AddLineageModal: React.FC<AddLineageModalProps> = ({
                             onChange={(val) => {
                                 loadTables(val, setFromTables);
                                 form.setFieldsValue({ fromTable: undefined });
-                                setFromColumns([]);
                             }}
                         />
                     </Form.Item>
@@ -156,9 +133,6 @@ const AddLineageModal: React.FC<AddLineageModalProps> = ({
                             options={fromTables.map((t: any) => ({
                                 label: t.name, value: t.uuid,
                             }))}
-                            onChange={(val) => {
-                                loadColumns(val, setFromColumns);
-                            }}
                         />
                     </Form.Item>
                 </div>
@@ -181,7 +155,6 @@ const AddLineageModal: React.FC<AddLineageModalProps> = ({
                                 loadDatabases(val, setToDatabases);
                                 form.setFieldsValue({ toDatabase: undefined, toTable: undefined });
                                 setToTables([]);
-                                setToColumns([]);
                             }}
                         />
                     </Form.Item>
@@ -198,7 +171,6 @@ const AddLineageModal: React.FC<AddLineageModalProps> = ({
                             onChange={(val) => {
                                 loadTables(val, setToTables);
                                 form.setFieldsValue({ toTable: undefined });
-                                setToColumns([]);
                             }}
                         />
                     </Form.Item>
@@ -212,54 +184,9 @@ const AddLineageModal: React.FC<AddLineageModalProps> = ({
                             options={toTables.map((t: any) => ({
                                 label: t.name, value: t.uuid,
                             }))}
-                            onChange={(val) => {
-                                loadColumns(val, setToColumns);
-                            }}
                         />
                     </Form.Item>
                 </div>
-
-                <Divider style={{ margin: '8px 0' }} />
-
-                <Text strong>{intl.formatMessage({ id: 'lineage_column_mapping' })} ({intl.formatMessage({ id: 'lineage_optional' })})</Text>
-                <Form.List name="columnMappings">
-                    {(fields, { add, remove }) => (
-                        <>
-                            {fields.map(({ key, name, ...restField }) => (
-                                <div key={key} style={{ display: 'flex', gap: 8, marginTop: 8, alignItems: 'center' }}>
-                                    <Form.Item {...restField} name={[name, 'fromColumn']} style={{ flex: 1, marginBottom: 0 }}>
-                                        <Select
-                                            placeholder={intl.formatMessage({ id: 'lineage_select_column' })}
-                                            options={fromColumns.map((c: any) => ({
-                                                label: c.name, value: c.uuid,
-                                            }))}
-                                        />
-                                    </Form.Item>
-                                    <span>→</span>
-                                    <Form.Item {...restField} name={[name, 'toColumn']} style={{ flex: 1, marginBottom: 0 }}>
-                                        <Select
-                                            placeholder={intl.formatMessage({ id: 'lineage_select_column' })}
-                                            options={toColumns.map((c: any) => ({
-                                                label: c.name, value: c.uuid,
-                                            }))}
-                                        />
-                                    </Form.Item>
-                                    <MinusCircleOutlined onClick={() => remove(name)} />
-                                </div>
-                            ))}
-                            <Button
-                                type="dashed"
-                                onClick={() => add()}
-                                icon={<PlusOutlined />}
-                                style={{ marginTop: 8, width: '100%' }}
-                                size="small"
-                                disabled={fromColumns.length === 0 || toColumns.length === 0}
-                            >
-                                {intl.formatMessage({ id: 'lineage_column_mapping' })}
-                            </Button>
-                        </>
-                    )}
-                </Form.List>
             </Form>
         </Modal>
     );

@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.*;
 
 public class SqlServerConnectorFactory extends AbstractJdbcConnectorFactory {
@@ -48,6 +49,11 @@ public class SqlServerConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public MetricScript getMetricScript() {
         return new SqlServerMetricScript();
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.sqlserver);
     }
 
     @Override
