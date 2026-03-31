@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.*;
 
 public class HiveConnectorFactory extends AbstractJdbcConnectorFactory {
@@ -53,6 +54,11 @@ public class HiveConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public DataSourceClient getDataSourceClient() {
         return new HiveDataSourceClient();
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.hive);
     }
 
     @Override

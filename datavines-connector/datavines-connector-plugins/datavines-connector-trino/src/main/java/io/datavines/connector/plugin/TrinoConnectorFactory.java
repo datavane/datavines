@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.*;
 
 public class TrinoConnectorFactory extends AbstractJdbcConnectorFactory {
@@ -48,6 +49,11 @@ public class TrinoConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public DataSourceClient getDataSourceClient() {
         return new TrinoDataSourceClient();
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.presto);
     }
 
     @Override
