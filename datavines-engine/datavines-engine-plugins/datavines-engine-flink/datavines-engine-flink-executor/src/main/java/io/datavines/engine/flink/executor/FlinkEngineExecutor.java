@@ -89,20 +89,6 @@ public class FlinkEngineExecutor extends AbstractYarnEngineExecutor {
         String basePath = System.getProperty("user.dir").replace(File.separator + "bin", File.separator + "libs");
         flinkParameters.setMainJar(basePath + File.separator + configurations.getString("data.quality.flink.jar.name"));
 
-//        String pluginDir = basePath.endsWith("libs") ?
-//                basePath.replace("libs","plugins") + File.separator + "flink":
-//                basePath + File.separator + "plugins" + File.separator + "flink";
-//
-//        logger.info("flink engine plugin dir : {}", pluginDir);
-//
-//        if (FileUtils.isExist(pluginDir)) {
-//            List<String> filePathList = FileUtils.getFileList(pluginDir);
-//            if (CollectionUtils.isNotEmpty(filePathList)) {
-//                String jars = " --classpath " + String.join(",", filePathList);
-//                flinkParameters.setJars(jars);
-//            }
-//        }
-
         DataVinesJobConfig configuration =
                 JSONUtils.parseObject(jobExecutionRequest.getApplicationParameter(), DataVinesJobConfig.class);
 

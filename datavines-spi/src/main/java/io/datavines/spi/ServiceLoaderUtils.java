@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.ServiceConfigurationError;
 import java.util.ServiceLoader;
 
+import io.datavines.spi.PluginDescriptor;
+
 /**
  * ServiceLoader 的安全封装。
  *
@@ -82,5 +84,62 @@ public final class ServiceLoaderUtils {
             result.add(provider);
         }
         return result;
+    }
+
+    /**
+     * 使用指定 ClassLoader 加载，同时读取 {@link PluginDescriptor} 信息。
+     * 返回 (descriptor, instance) 对列表，供 {@link VersionedPluginRegistry} 使用。
+     *
+     * @param serviceType SPI 服务接口
+     * @param classLoader 指定的 ClassLoader
+     * @return PluginEntry 列表
+     */
+    public static <S> List<PluginEntry<S>> loadWithDescriptor(
+            Class<S> serviceType, ClassLoader classLoader) {
+
+        List<PluginEntry<S>> result = new ArrayList<>();
+        PluginDescriptor descriptor = PluginDescriptor.load(classLoader);
+
+        ServiceLoader<S> loader = ServiceLoader.load(serviceType, classLoader);
+        Iterator<S> it = loader.iterator();
+
+        while (it.hasNext()) {
+            try {
+                S instance = it.next();
+                result.add(new PluginEntry<S>(descriptor, instance));
+            } catch (ServiceConfigurationError e) {
+                log.error("Failed to load {} provider: {}",
+                        serviceType.getName(), e.getMessage(), e);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 包含插件描述符与实例的条目。
+     *
+     * @param <S> 插件实例类型
+     */
+    public static final class PluginEntry<S> {
+        private final PluginDescriptor descriptor; // nullable
+        private final S instance;
+
+        public PluginEntry(PluginDescriptor descriptor, S instance) {
+            this.descriptor = descriptor;
+            this.instance = instance;
+        }
+
+        /** 返回插件描述符，可能为 null。 */
+        public PluginDescriptor getDescriptor() {
+            return descriptor;
+        }
+
+        public S getInstance() {
+            return instance;
+        }
+
+        public boolean hasDescriptor() {
+            return descriptor != null;
+        }
     }
 }
