@@ -47,21 +47,24 @@ public final class PluginDescriptor {
     public static final String DESCRIPTOR_PATH = "META-INF/datavines-plugin.properties";
 
     private static final String KEY_NAME = "plugin.name";
+    private static final String KEY_MODULE = "plugin.module";
     private static final String KEY_VERSION = "plugin.version";
     private static final String KEY_SPI_VERSION = "plugin.spi.version";
     private static final String KEY_MAIN_VERSION_RANGE = "plugin.main.version.range";
     private static final String KEY_DESCRIPTION = "plugin.description";
 
     private final String pluginName;
+    private final String pluginModule;
     private final PluginVersion version;
     private final PluginVersion spiVersion;
     private final String mainVersionRange;
     private final String description;
 
-    private PluginDescriptor(String pluginName, PluginVersion version,
+    private PluginDescriptor(String pluginName, String pluginModule, PluginVersion version,
                              PluginVersion spiVersion, String mainVersionRange,
                              String description) {
         this.pluginName = pluginName;
+        this.pluginModule = pluginModule != null ? pluginModule : "";
         this.version = version;
         this.spiVersion = spiVersion;
         this.mainVersionRange = mainVersionRange;
@@ -105,13 +108,15 @@ public final class PluginDescriptor {
                             ? PluginVersion.of(spiVersionStr.trim())
                             : PluginVersion.ZERO;
 
+                    String moduleStr = props.getProperty(KEY_MODULE, "");
                     String mainVersionRange = props.getProperty(KEY_MAIN_VERSION_RANGE, "");
                     String description = props.getProperty(KEY_DESCRIPTION, "");
 
-                    log.debug("Loaded plugin descriptor: {}@{} from {}", name.trim(), version, url);
+                    log.debug("Loaded plugin descriptor: {}@{} (module={}) from {}",
+                            name.trim(), version, moduleStr.trim(), url);
 
                     return new PluginDescriptor(
-                            name.trim(), version, spiVersion,
+                            name.trim(), moduleStr.trim(), version, spiVersion,
                             mainVersionRange.trim(), description.trim());
 
                 } catch (Exception e) {
@@ -129,25 +134,43 @@ public final class PluginDescriptor {
      */
     public static PluginDescriptor of(String pluginName, String version) {
         return new PluginDescriptor(
-                pluginName, PluginVersion.of(version),
+                pluginName, "", PluginVersion.of(version),
                 PluginVersion.ZERO, "", "");
     }
 
     /**
-     * 手动构建描述符（完整参数）。
+     * 手动构建描述符（完整参数，含模块）。
      */
-    public static PluginDescriptor of(String pluginName, String version,
+    public static PluginDescriptor of(String pluginName, String pluginModule, String version,
                                       String spiVersion, String mainVersionRange,
                                       String description) {
         return new PluginDescriptor(
-                pluginName, PluginVersion.of(version),
+                pluginName, pluginModule != null ? pluginModule : "",
+                PluginVersion.of(version),
                 PluginVersion.of(spiVersion),
                 mainVersionRange != null ? mainVersionRange : "",
                 description != null ? description : "");
     }
 
+    /**
+     * 手动构建描述符（无模块，兼容旧代码）。
+     */
+    public static PluginDescriptor of(String pluginName, String version,
+                                      String spiVersion, String mainVersionRange,
+                                      String description) {
+        return of(pluginName, "", version, spiVersion, mainVersionRange, description);
+    }
+
     public String getPluginName() {
         return pluginName;
+    }
+
+    /**
+     * 返回插件所属模块，如 "connector"、"metric"、"engine"。
+     * 对应 {@code datavines-plugin.properties} 中的 {@code plugin.module} 字段。
+     */
+    public String getPluginModule() {
+        return pluginModule;
     }
 
     public PluginVersion getVersion() {
@@ -196,6 +219,7 @@ public final class PluginDescriptor {
     @Override
     public String toString() {
         return "PluginDescriptor{" + getPluginId()
+                + (pluginModule.isEmpty() ? "" : ", module=" + pluginModule)
                 + ", spiVersion=" + spiVersion
                 + ", mainVersionRange='" + mainVersionRange + "'"
                 + "}";

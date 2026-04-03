@@ -30,10 +30,11 @@ import java.util.List;
  * <ol>
  *   <li>先检查已加载缓存</li>
  *   <li>SPI 白名单包 → 强制从 {@code spiClassLoader} 加载，确保接口 Class 对象唯一</li>
- *   <li>其他 → 从插件自身 URL 集合加载（父为 Extension ClassLoader，不含 AppClassLoader）</li>
+ *   <li>其他 → 从插件自身 URL 集合加载（父为 Extension ClassLoader，避免宿主实现类泄漏）</li>
  * </ol>
  *
- * <p>参考 Trino {@code PluginClassLoader}。
+ * <p>SPI 包白名单保证：无论插件 JAR 中是否打包了相同类，关键接口始终来自同一个 ClassLoader，
+ * 避免 {@code ClassCastException} 等跨 ClassLoader 类型不兼容问题。
  */
 public final class PluginClassLoader extends URLClassLoader {
 
@@ -42,9 +43,11 @@ public final class PluginClassLoader extends URLClassLoader {
      */
     public static final List<String> DEFAULT_SPI_PACKAGES = Collections.unmodifiableList(Arrays.asList(
             "io.datavines.spi.",
+            "io.datavines.common.",
             "io.datavines.connector.api.",
             "io.datavines.metric.api.",
             "io.datavines.engine.api.",
+            "io.datavines.engine.config.",
             "io.datavines.notification.api.",
             "io.datavines.registry.api.",
             // 共享第三方库（避免序列化/日志问题）
@@ -79,9 +82,11 @@ public final class PluginClassLoader extends URLClassLoader {
      */
     public PluginClassLoader(String pluginId, List<URL> urls,
                              ClassLoader spiClassLoader, List<String> spiPackages) {
-        // 父为 Extension ClassLoader（跳过 AppClassLoader），实现完全隔离
-        // Java 8: getSystemClassLoader().getParent() 返回 Extension ClassLoader
-        super(urls.toArray(new URL[0]), ClassLoader.getSystemClassLoader().getParent());
+        // 父为 spiClassLoader（即宿主 AppClassLoader），使插件可访问 libs/ 中的服务器类和共享依赖。
+        // SPI 及共享 API 包通过白名单机制强制委托给 spiClassLoader，保证跨 ClassLoader 的类型唯一。
+        // 如需完全隔离，可将父改为 ClassLoader.getSystemClassLoader().getParent()，
+        // 但届时每个插件目录必须自包含所有非 SPI 依赖（包括 datavines-connector-jdbc 等）。
+        super(urls.toArray(new URL[0]), spiClassLoader);
         this.pluginId = pluginId;
         this.spiClassLoader = spiClassLoader;
         this.spiPackages = Collections.unmodifiableList(new ArrayList<String>(spiPackages));

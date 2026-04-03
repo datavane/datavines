@@ -1,38 +1,48 @@
-DataVines Versioned Plugin Directory
-=====================================
+DataVines Plugin Directory
+==========================
 
-Place versioned plugin JARs in subdirectories structured as:
+DataVines uses a versioned plugin directory layout so that multiple versions of
+the same connector or metric can coexist at runtime, each loaded by its own
+isolated ClassLoader.
 
-    plugins/{plugin-name}/{version}/*.jar
+Directory layout
+----------------
 
-Each plugin JAR MUST contain META-INF/datavines-plugin.properties:
+    plugins/
+    ├── {module}/               # connector | metric | engine | notification | registry | ...
+    │   └── {plugin-name}/
+    │       └── {version}/
+    │           ├── datavines-{plugin}.jar
+    │           └── {optional-driver}.jar
+
+Each plugin JAR must include META-INF/datavines-plugin.properties:
 
     plugin.name=mysql
-    plugin.version=8.0.33
+    plugin.module=connector
+    plugin.version=1.0.0
     plugin.spi.version=1.0.0
     plugin.main.version.range=[1.0.0,2.0.0)
     plugin.description=MySQL connector
 
-Example — deploying two versions of the MySQL connector simultaneously:
+    # Optional: extra JARs to co-locate (JDBC drivers, etc.)
+    plugin.dependencies=com.mysql:mysql-connector-j
+
+Example — two MySQL driver versions side by side:
 
     plugins/
-    ├── mysql/
-    │   ├── 5.7.44/
-    │   │   ├── datavines-connector-mysql-5.7.44.jar
-    │   │   └── mysql-connector-j-5.1.49.jar
-    │   └── 8.0.33/
-    │       ├── datavines-connector-mysql-8.0.33.jar
-    │       └── mysql-connector-j-8.0.33.jar
-    └── postgresql/
-        └── 42.7.0/
-            └── datavines-connector-postgresql.jar
+    └── connector/
+        └── mysql/
+            ├── 5.x/
+            │   ├── datavines-connector-mysql.jar
+            │   └── mysql-connector-j-5.1.49.jar
+            └── 8.x/
+                ├── datavines-connector-mysql.jar
+                └── mysql-connector-j-8.4.0.jar
 
-When this directory contains versioned subdirectories, DataVines activates
-"directory mode" with ClassLoader isolation per plugin version (production).
-
-When this directory is empty or absent, DataVines uses "classpath mode" —
-all plugins in libs/ are discovered via ServiceLoader (suitable for IDE
-development or single-version deployments).
-
-To override the plugins directory path, set the JVM property:
-    -Ddatavines.plugins.dir=/absolute/path/to/plugins
+Notes
+-----
+* In a packaged deployment these directories are populated automatically by the
+  build. Do not add plugin JARs to libs/ manually.
+* When the plugins/ directory is absent (e.g. IDE run), the server falls back to
+  loading plugins from the application classpath via ServiceLoader.
+* Override the plugin root: -Ddatavines.plugins.dir=/path/to/plugins

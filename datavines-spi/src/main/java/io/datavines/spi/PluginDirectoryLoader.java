@@ -22,7 +22,6 @@ import io.datavines.spi.classloader.ThreadContextClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,6 +29,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Collections;
 import java.util.List;
 
@@ -39,22 +39,22 @@ import java.util.List;
  * <p>目录规范：
  * <pre>
  * {plugin.dir}/
- * ├── mysql/
- * │   ├── 5.7.44/
- * │   │   ├── datavines-connector-mysql-5.7.44.jar
- * │   │   └── mysql-connector-j-5.1.49.jar
- * │   └── 8.0.33/
- * │       ├── datavines-connector-mysql-8.0.33.jar
- * │       └── mysql-connector-j-8.0.33.jar
- * └── postgresql/
- *     └── 42.7.0/
- *         └── datavines-connector-postgresql.jar
+ * ├── connector/
+ * │   ├── mysql/
+ * │   │   ├── 5.7.44/
+ * │   │   │   ├── datavines-connector-mysql-5.7.44.jar
+ * │   │   │   └── mysql-connector-j-5.1.49.jar
+ * │   │   └── 8.0.33/
+ * │   │       ├── datavines-connector-mysql-8.0.33.jar
+ * │   │       └── mysql-connector-j-8.0.33.jar
+ * │   └── postgresql/
+ * │       └── 42.7.0/
+ * │           └── datavines-connector-postgresql.jar
  * </pre>
  *
- * <p>扫描逻辑：两层目录 {@code plugins/{name}/{version}/} → 解析为 (pluginName, version)。
- * 每个 (name, version) 目录创建独立的 {@link PluginClassLoader}。
- *
- * <p>参考 Trino {@code ServerPluginsProvider}。
+ * <p>扫描逻辑：标准结构为三层目录 {@code plugins/{module}/{name}/{version}/}，
+ * 同时兼容旧的两层目录 {@code plugins/{name}/{version}/}。
+ * 每个版本目录创建独立的 {@link PluginClassLoader}，实现类加载隔离。
  */
 public final class PluginDirectoryLoader {
 
@@ -123,8 +123,15 @@ public final class PluginDirectoryLoader {
         }
 
         // 从目录名推断 pluginName 和 version
-        String inferredName = versionDir.getParent().getFileName().toString();
+        Path nameDir = versionDir.getParent();
+        if (nameDir == null) {
+            log.warn("Skipping malformed plugin version directory without parent: {}", versionDir);
+            return;
+        }
+
+        String inferredName = nameDir.getFileName().toString();
         String inferredVersion = versionDir.getFileName().toString();
+        String inferredModule = inferModule(versionDir);
         String pluginId = inferredName + "@" + inferredVersion;
 
         PluginClassLoader classLoader = new PluginClassLoader(
@@ -139,11 +146,12 @@ public final class PluginDirectoryLoader {
                         PluginDescriptor.DESCRIPTOR_PATH, versionDir,
                         inferredName, inferredVersion);
                 // 容错：使用推断的元数据
-                descriptor = PluginDescriptor.of(inferredName, inferredVersion);
+                descriptor = PluginDescriptor.of(inferredName, inferredModule, inferredVersion,
+                        "0.0.0", "", "");
             }
 
             // 校验 descriptor 与目录名一致性
-            validateDescriptor(descriptor, inferredName, inferredVersion);
+            validateDescriptor(descriptor, inferredModule, inferredName, inferredVersion);
 
             // 宿主版本兼容性校验
             if (currentHostVersion != null && !descriptor.isCompatibleWith(currentHostVersion)) {
@@ -251,7 +259,20 @@ public final class PluginDirectoryLoader {
         DirectoryStream<Path> stream = null;
         try {
             stream = Files.newDirectoryStream(dir, "*.jar");
+            List<Path> jars = new ArrayList<Path>();
             for (Path jar : stream) {
+                if (Files.isRegularFile(jar)) {
+                    jars.add(jar);
+                }
+            }
+            Collections.sort(jars, new Comparator<Path>() {
+                @Override
+                public int compare(Path left, Path right) {
+                    return left.getFileName().toString().compareTo(right.getFileName().toString());
+                }
+            });
+
+            for (Path jar : jars) {
                 try {
                     urls.add(jar.toUri().toURL());
                 } catch (MalformedURLException e) {
@@ -276,7 +297,17 @@ public final class PluginDirectoryLoader {
      * 校验描述符与目录名的一致性。
      */
     private void validateDescriptor(PluginDescriptor descriptor,
-                                    String inferredName, String inferredVersion) {
+                                    String inferredModule,
+                                    String inferredName,
+                                    String inferredVersion) {
+        if (descriptor.getPluginModule() != null
+                && !descriptor.getPluginModule().isEmpty()
+                && !descriptor.getPluginModule().equals(inferredModule)) {
+            log.warn("Plugin module mismatch: descriptor says '{}', directory says '{}'. "
+                            + "Using descriptor module for metadata, but directory placement should be corrected.",
+                    descriptor.getPluginModule(), inferredModule);
+        }
+
         if (!descriptor.getPluginName().equals(inferredName)) {
             log.warn("Plugin name mismatch: descriptor says '{}', directory says '{}'. "
                     + "Using descriptor name.", descriptor.getPluginName(), inferredName);
@@ -288,6 +319,23 @@ public final class PluginDirectoryLoader {
             log.warn("Plugin version mismatch: descriptor says '{}', directory says '{}'. "
                     + "Using descriptor version.", descriptorVersion, inferredVersion);
         }
+    }
+
+    private String inferModule(Path versionDir) {
+        for (Path root : pluginRootDirs) {
+            if (!versionDir.startsWith(root)) {
+                continue;
+            }
+
+            Path relative = root.relativize(versionDir);
+            if (relative.getNameCount() == 2) {
+                return "";
+            }
+            if (relative.getNameCount() >= 3) {
+                return relative.getName(0).toString();
+            }
+        }
+        return "";
     }
 
     private static void closeQuietly(PluginClassLoader classLoader) {

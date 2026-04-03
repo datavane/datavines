@@ -22,8 +22,6 @@ package io.datavines.spi.classloader;
  * <p>使用 try-with-resources 模式自动还原原始 ClassLoader，
  * 避免因异常导致 ClassLoader 泄漏。
  *
- * <p>参考 Trino {@code ThreadContextClassLoader}。
- *
  * <p>使用示例：
  * <pre>{@code
  * try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(pluginClassLoader)) {

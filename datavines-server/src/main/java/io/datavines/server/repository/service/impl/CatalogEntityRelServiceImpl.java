@@ -44,7 +44,6 @@ import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.server.utils.ContextHolder;
 import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.CollectionUtils;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -267,7 +266,6 @@ public class CatalogEntityRelServiceImpl extends ServiceImpl<CatalogEntityRelMap
         return getCatalogEntityLineageVO(catalogEntityInstance);
     }
 
-    @NotNull
     private CatalogEntityLineageVO getCatalogEntityLineageVO(CatalogEntityInstance catalogEntityInstance) {
         Set<String> nodeSet = new HashSet<>();
         Set<String> edgeSet = new HashSet<>();

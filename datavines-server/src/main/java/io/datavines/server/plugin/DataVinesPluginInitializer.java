@@ -102,7 +102,7 @@ public final class DataVinesPluginInitializer {
 
     /**
      * 服务端所有 SPI 接口类型列表。
-     * {@link PluginDirectoryLoader} 将对每种类型在 plugins 目录中搜索实现。
+     * {@link PluginDirectoryLoader} 将对每种类型在 plugins/{module}/ 目录中搜索实现。
      */
     private static final List<Class<?>> KNOWN_SERVER_SPI_TYPES = Collections.unmodifiableList(
             Arrays.<Class<?>>asList(
@@ -115,6 +115,23 @@ public final class DataVinesPluginInitializer {
                     Registry.class
             )
     );
+
+    /**
+     * SPI 接口到插件模块子目录名的映射。
+     * 对应 {@code plugins/{module}/} 的目录结构，与 {@code plugin.module} 字段一致。
+     */
+    private static final Map<Class<?>, String> SPI_MODULE_MAP;
+    static {
+        Map<Class<?>, String> m = new HashMap<Class<?>, String>();
+        m.put(ConnectorFactory.class,         "connector");
+        m.put(SqlMetric.class,                "metric");
+        m.put(ExpectedValue.class,            "expected-value");
+        m.put(ResultFormula.class,            "result-formula");
+        m.put(JobConfigurationBuilder.class,  "engine");
+        m.put(SlasHandlerPlugin.class,        "notification");
+        m.put(Registry.class,                 "registry");
+        SPI_MODULE_MAP = Collections.unmodifiableMap(m);
+    }
 
     private DataVinesPluginInitializer() {}
 
@@ -145,7 +162,30 @@ public final class DataVinesPluginInitializer {
     }
 
     /**
-     * 目录模式：使用 PluginDirectoryLoader 加载各版本插件并注册到 PluginDiscoveryBootstrap。
+     * 目录模式：针对每种 SPI 类型，扫描 plugins/{module}/ 子目录，
+     * 使用 PluginDirectoryLoader 加载各版本插件并注册到 PluginDiscoveryBootstrap。
+     *
+     * <p>目录结构示例：
+     * <pre>
+     * plugins/
+     * ├── connector/
+     * │   ├── mysql/
+     * │   │   └── 1.0.0-SNAPSHOT/
+     * │   │       └── datavines-connector-mysql-1.0.0-SNAPSHOT.jar
+     * │   └── postgresql/
+     * │       └── 1.0.0-SNAPSHOT/
+     * │           └── datavines-connector-postgresql-1.0.0-SNAPSHOT.jar
+     * ├── metric/
+     * │   └── column_avg/
+     * │       └── 1.0.0-SNAPSHOT/
+     * │           └── datavines-metric-column-avg-1.0.0-SNAPSHOT.jar
+     * └── engine/
+     *     ├── flink/
+     *     │   └── 1.0.0-SNAPSHOT/
+     *     │       ├── datavines-engine-flink-api-1.0.0-SNAPSHOT.jar
+     *     │       └── datavines-engine-flink-executor-1.0.0-SNAPSHOT.jar
+     *     └── ...
+     * </pre>
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static void initializeFromDirectory(File pluginsDir) {
@@ -155,25 +195,43 @@ public final class DataVinesPluginInitializer {
         log.info("========================================================");
 
         ClassLoader spiClassLoader = DataVinesPluginInitializer.class.getClassLoader();
-        PluginDirectoryLoader loader = new PluginDirectoryLoader(
-                Collections.singletonList(pluginsDir.toPath()),
-                spiClassLoader
-        );
 
         Map<Class<?>, VersionedPluginRegistry<?>> registries =
                 new HashMap<Class<?>, VersionedPluginRegistry<?>>();
 
         for (Class<?> spiType : KNOWN_SERVER_SPI_TYPES) {
+            String moduleName = SPI_MODULE_MAP.get(spiType);
+            if (moduleName == null) {
+                log.warn("  No module mapping for SPI type: {}", spiType.getSimpleName());
+                continue;
+            }
+
+            File moduleDir = new File(pluginsDir, moduleName);
+            if (!moduleDir.isDirectory()) {
+                log.debug("  Module dir not found, skipping: {}", moduleDir.getAbsolutePath());
+                continue;
+            }
+
+            PluginDirectoryLoader loader = new PluginDirectoryLoader(
+                    Collections.singletonList(moduleDir.toPath()),
+                    spiClassLoader
+            );
+
             try {
                 VersionedPluginRegistry registry = loader.load(spiType);
                 if (!registry.isEmpty()) {
                     registries.put(spiType, registry);
-                    log.info("  Loaded {} plugin(s) for SPI: {}",
-                            registry.supportedPluginNames().size(), spiType.getSimpleName());
+                    log.info("  [{}] Loaded {} plugin(s) for SPI: {}",
+                            moduleName, registry.supportedPluginNames().size(),
+                            spiType.getSimpleName());
+                } else {
+                    log.debug("  [{}] No plugins found for SPI: {}", moduleName,
+                            spiType.getSimpleName());
                 }
             } catch (Exception e) {
-                log.warn("  Failed to load SPI {} from plugins directory: {}",
-                        spiType.getSimpleName(), e.getMessage());
+                log.warn("  [{}] Failed to load SPI {} from '{}': {}",
+                        moduleName, spiType.getSimpleName(),
+                        moduleDir.getAbsolutePath(), e.getMessage());
             }
         }
 
@@ -205,18 +263,32 @@ public final class DataVinesPluginInitializer {
     }
 
     /**
-     * 检查目录下是否含有「版本化」的子目录（即 plugins/{name}/{version}/ 结构）。
-     * 仅检查两层深度；如果至少有一个版本目录则返回 true。
+     * 检查 plugins 目录下是否含有「版本化」的子目录。
+     *
+     * <p>新结构为 3 层：{@code plugins/{module}/{name}/{version}/}
+     * <br>旧结构（兼容）为 2 层：{@code plugins/{name}/{version}/}
+     * <br>任意一层满足即返回 true。
      */
     private static boolean hasVersionedSubdirs(File pluginsDir) {
-        File[] nameDirs = pluginsDir.listFiles(File::isDirectory);
-        if (nameDirs == null || nameDirs.length == 0) {
+        File[] level1Dirs = pluginsDir.listFiles(File::isDirectory);
+        if (level1Dirs == null || level1Dirs.length == 0) {
             return false;
         }
-        for (File nameDir : nameDirs) {
-            File[] versionDirs = nameDir.listFiles(File::isDirectory);
-            if (versionDirs != null && versionDirs.length > 0) {
-                return true;
+        for (File level1 : level1Dirs) {
+            File[] level2Dirs = level1.listFiles(File::isDirectory);
+            if (level2Dirs == null) continue;
+            for (File level2 : level2Dirs) {
+                // Check if level2 looks like a version dir (contains *.jar or has version-like name)
+                File[] level3Dirs = level2.listFiles(File::isDirectory);
+                if (level3Dirs != null && level3Dirs.length > 0) {
+                    // 3-level structure: plugins/{module}/{name}/{version}/
+                    return true;
+                }
+                // Also accept 2-level: plugins/{name}/{version}/ where level2 is version dir
+                File[] jars = level2.listFiles(f -> f.getName().endsWith(".jar"));
+                if (jars != null && jars.length > 0) {
+                    return true;
+                }
             }
         }
         return false;

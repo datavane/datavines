@@ -124,6 +124,7 @@
         <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
         <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
+        <exec-maven-plugin.version>3.4.1</exec-maven-plugin.version>
 
     </properties>
 
@@ -717,7 +718,6 @@
     </dependencies>
 
     <build>
-        <finalName>datavines-${project.version}</finalName>
         <pluginManagement>
             <plugins>
                 <plugin>
@@ -874,6 +874,9 @@
         </plugins>
 
     </build>
+
+    <profiles>
+    </profiles>
 
     <repositories>
         <repository>

@@ -48,13 +48,222 @@
             <artifactId>datavines-runner</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- ===== Plugin aggregators: bring all plugin JARs into the resolved dep set ===== -->
+        <!-- Scope is "provided" so the Groovy plugin scanner can find them via
+             project.artifacts, while the assembly <dependencySet> (runtime scope)
+             excludes them from libs/ — they are loaded from plugins/ at runtime. -->
+
+        <!-- Connector plugins (also transitively brings all JDBC drivers) -->
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-connector-all</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Metric plugins -->
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-all</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Expected-value plugins -->
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-expected-all</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Result-formula plugins -->
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-metric-result-formula-all</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Local engine sub-modules -->
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-local-api</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-local-config</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-local-executor</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-local-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-local-transform</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-local-connector-jdbc</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-local-connector-file</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Notification plugins -->
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-notification-plugin-dingtalk</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-notification-plugin-email</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-notification-plugin-lark</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-notification-plugin-wecombot</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Registry plugins -->
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-registry-mysql</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-registry-zookeeper</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <finalName>datavines-${project.version}</finalName>
+    </build>
 
     <profiles>
         <profile>
             <id>release</id>
             <build>
                 <plugins>
+                    <!-- Scan all resolved plugin JARs and stage them into target/plugin-staging/
+                         before assembly runs. Each datavines plugin JAR carries a
+                         META-INF/datavines-plugin.properties descriptor that declares its
+                         module, name and optional bundled dependencies (JDBC drivers etc.).
+                         The scanner reads these descriptors and assembles self-contained
+                         plugin directories under: {module}/{name}/{version}/*.jar -->
+                    <plugin>
+                        <groupId>org.codehaus.gmaven</groupId>
+                        <artifactId>groovy-maven-plugin</artifactId>
+                        <version>2.1.1</version>
+                        <executions>
+                            <execution>
+                                <id>scan-and-stage-plugins</id>
+                                <phase>prepare-package</phase>
+                                <goals>
+                                    <goal>execute</goal>
+                                </goals>
+                                <configuration>
+                                    <source>
+import java.util.zip.ZipFile
+import java.util.Properties
+
+def stagingDir = new File(project.build.directory, 'plugin-staging')
+stagingDir.mkdirs()
+
+// Build artifact lookup: "groupId:artifactId" or "groupId:artifactId:classifier" -> artifact file
+def artifactMap = [:]
+project.artifacts.each { a ->
+    if (a.type == 'jar') {
+        artifactMap[a.groupId + ':' + a.artifactId] = a.file
+        if (a.classifier) {
+            artifactMap[a.groupId + ':' + a.artifactId + ':' + a.classifier] = a.file
+        }
+    }
+}
+
+int staged = 0
+project.artifacts.each { artifact ->
+    if (artifact.groupId != 'io.datavines') return
+    if (artifact.type != 'jar' || artifact.classifier) return
+    def jarFile = artifact.file
+    if (!jarFile?.exists()) return
+
+    def zip = new ZipFile(jarFile)
+    def entry = zip.getEntry('META-INF/datavines-plugin.properties')
+    if (!entry) { zip.close(); return }
+
+    def props = new Properties()
+    props.load(zip.getInputStream(entry))
+    zip.close()
+
+    def pluginModule = props.getProperty('plugin.module')?.trim()
+    def pluginName   = props.getProperty('plugin.name')?.trim()
+    if (!pluginModule || !pluginName) return
+
+    def pluginDir = new File(stagingDir, pluginModule + '/' + pluginName + '/' + project.version)
+    pluginDir.mkdirs()
+
+    // Copy the plugin JAR itself
+    new File(pluginDir, jarFile.name).bytes = jarFile.bytes
+
+    // Copy extra dependencies declared in plugin.dependencies
+    def depsStr = props.getProperty('plugin.dependencies', '').trim()
+    if (depsStr) {
+        depsStr.split(',').each { dep ->
+            def depKey = dep.trim()
+            def depFile = artifactMap[depKey]
+            if (depFile?.exists()) {
+                new File(pluginDir, depFile.name).bytes = depFile.bytes
+            } else {
+                log.warn('[' + pluginModule + '/' + pluginName + '] dependency not in resolved set: ' + depKey)
+            }
+        }
+    }
+    staged++
+    log.info('Staged plugin: plugins/' + pluginModule + '/' + pluginName + '/' + project.version + '/')
+}
+log.info('Plugin staging complete: ' + staged + ' plugin(s) staged to ' + stagingDir)
+                                    </source>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
                     <plugin>
                         <artifactId>maven-assembly-plugin</artifactId>
                         <executions>
