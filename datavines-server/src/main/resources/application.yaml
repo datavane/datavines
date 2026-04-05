@@ -80,6 +80,12 @@ management:
 
 logging:
   config: classpath:server-logback.xml
+
+jwt:
+  token:
+    secret: PLEASE_CHANGE_THIS_TO_A_RANDOM_STRING
+    timeout: 8640000
+    algorithm: HS256
 ---
 spring:
   config:

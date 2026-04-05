@@ -19,6 +19,7 @@ package io.datavines.core.utils;
 import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.exception.DataVinesServerException;
 import io.jsonwebtoken.CompressionCodecs;
+import jodd.util.BCrypt;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -35,11 +36,13 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.datavines.common.entity.TokenInfo;
 
+import javax.annotation.PostConstruct;
+
 @Slf4j
 @Component
 public class TokenManager {
 
-    @Value("${jwt.token.secret:asdqwe}")
+    @Value("${jwt.token.secret:}")
     private String tokenSecret;
 
     @Value("${jwt.token.timeout:8640000}")
@@ -47,6 +50,15 @@ public class TokenManager {
 
     @Value("${jwt.token.algorithm:HS256}")
     private String algorithm;
+
+    @PostConstruct
+    public void validateSecret() {
+        if (StringUtils.isEmpty(tokenSecret) || tokenSecret.length() < 16) {
+            log.warn("jwt.token.secret is not configured or too short, generating random secret");
+            tokenSecret = java.util.UUID.randomUUID().toString().replace("-", "")
+                        + java.util.UUID.randomUUID().toString().replace("-", "");
+        }
+    }
 
     public String generateToken(String username, String password) {
         Map<String, Object> claims = new HashMap<>();
@@ -163,7 +175,7 @@ public class TokenManager {
     public boolean validateToken(String token, String username, String password) {
         String tokenUsername = getUsername(token);
         String tokenPassword = getPassword(token);
-        return (username.equals(tokenUsername) && password.equals(tokenPassword) && !(isExpired(token)));
+        return (username.equals(tokenUsername) && BCrypt.checkpw(tokenPassword, password) && !(isExpired(token)));
     }
 
     private Date getCreatedDate(String token) {
