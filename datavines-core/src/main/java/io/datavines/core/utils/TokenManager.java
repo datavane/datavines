@@ -175,6 +175,9 @@ public class TokenManager {
     public boolean validateToken(String token, String username, String password) {
         String tokenUsername = getUsername(token);
         String tokenPassword = getPassword(token);
+        if (StringUtils.isEmpty(tokenUsername) || StringUtils.isEmpty(tokenPassword)) {
+            return false;
+        }
         return (username.equals(tokenUsername) && BCrypt.checkpw(tokenPassword, password) && !(isExpired(token)));
     }
 
