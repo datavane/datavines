@@ -31,41 +31,40 @@
     <artifactId>datavines-engine-local-executor</artifactId>
 
     <dependencies>
-
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-api</artifactId>
+            <artifactId>datavines-engine-core</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-executor</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-local-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-local-connector-jdbc</artifactId>
+            <artifactId>datavines-connector-all</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-io</artifactId>
+                    <groupId>commons-io</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-local-connector-file</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.1.214</version>
         </dependency>
 
         <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-local-transform</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
         </dependency>
-
     </dependencies>
 
 </project>
