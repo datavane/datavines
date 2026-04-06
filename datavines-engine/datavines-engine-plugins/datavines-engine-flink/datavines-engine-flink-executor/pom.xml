@@ -17,6 +17,7 @@
     limitations under the License.
 
 -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -32,51 +33,15 @@
     <dependencies>
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
             <artifactId>datavines-engine-executor</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-core</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-flink-api</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-common</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-flink-connector-jdbc</artifactId>
             <version>${project.version}</version>
         </dependency>
 
-<!--        <dependency>-->
-<!--            <groupId>io.datavines</groupId>-->
-<!--            <artifactId>datavines-engine-flink-connector-mongodb</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-
-<!--        <dependency>-->
-<!--            <groupId>io.datavines</groupId>-->
-<!--            <artifactId>datavines-engine-flink-connector-file</artifactId>-->
-<!--            <version>${project.version}</version>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-flink-transform-sql</artifactId>
+            <artifactId>datavines-engine-flink-core</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
+
 </project>

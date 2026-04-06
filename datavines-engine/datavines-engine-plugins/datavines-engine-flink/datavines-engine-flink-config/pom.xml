@@ -32,17 +32,7 @@
     <dependencies>
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-core</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-api</artifactId>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-flink-api</artifactId>
+            <artifactId>datavines-engine-flink-core</artifactId>
         </dependency>
         
         <dependency>

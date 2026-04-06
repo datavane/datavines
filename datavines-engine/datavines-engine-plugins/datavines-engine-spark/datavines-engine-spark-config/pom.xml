@@ -39,7 +39,7 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-common</artifactId>
+            <artifactId>datavines-engine-core</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

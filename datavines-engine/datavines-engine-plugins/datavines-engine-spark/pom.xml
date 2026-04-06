@@ -32,13 +32,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>datavines-engine-spark-core</module>
-        <module>datavines-engine-spark-connector-jdbc</module>
         <module>datavines-engine-spark-executor</module>
-        <module>datavines-engine-spark-api</module>
-        <module>datavines-engine-spark-transform-sql</module>
         <module>datavines-engine-spark-config</module>
-        <module>datavines-engine-spark-connector-file</module>
-        <module>datavines-engine-spark-connector-mongodb</module>
     </modules>
 
     <properties>
