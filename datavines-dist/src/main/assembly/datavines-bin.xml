@@ -17,6 +17,7 @@
     limitations under the License.
 
 -->
+
 <assembly>
     <id>bin</id>
 
@@ -110,14 +111,7 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
                 <include>io.datavines:datavines-common</include>
-                <include>io.datavines:datavines-spi</include>
-                <include>io.datavines:datavines-engine-spark-api</include>
-                <include>io.datavines:datavines-engine-spark-connector-jdbc</include>
-                <include>io.datavines:datavines-engine-spark-connector-mongodb</include>
                 <include>io.datavines:datavines-engine-core</include>
-                <include>io.datavines:datavines-engine-common</include>
-                <include>io.datavines:datavines-engine-spark-transform-sql</include>
-                <include>io.datavines:datavines-engine-api</include>
                 <include>com.mysql:mysql-connector-j</include>
                 <include>org.apache.httpcomponents:httpclient</include>
                 <include>org.apache.httpcomponents:httpcore</include>
@@ -139,13 +133,7 @@
             <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
                 <include>io.datavines:datavines-common</include>
-                <include>io.datavines:datavines-spi</include>
-                <include>io.datavines:datavines-engine-flink-api</include>
-                <include>io.datavines:datavines-engine-flink-connector-jdbc</include>
                 <include>io.datavines:datavines-engine-core</include>
-                <include>io.datavines:datavines-engine-common</include>
-                <include>io.datavines:datavines-engine-flink-transform-sql</include>
-                <include>io.datavines:datavines-engine-api</include>
                 <include>com.mysql:mysql-connector-j</include>
                 <include>org.apache.httpcomponents:httpclient</include>
                 <include>org.apache.httpcomponents:httpcore</include>

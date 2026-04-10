@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package io.datavines.engine.spark.core;
+package io.datavines.engine.local.core;
 
 import io.datavines.common.config.Config;
 import io.datavines.common.config.DataVinesJobConfig;
@@ -22,37 +22,30 @@ import io.datavines.engine.api.component.Component;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.core.BaseDataVinesBootstrap;
 import io.datavines.engine.core.enums.ConnectorType;
-import io.datavines.engine.spark.api.SparkRuntimeEnvironment;
-import io.datavines.engine.spark.api.batch.SparkBatchSink;
-import io.datavines.engine.spark.api.batch.SparkBatchSource;
-import io.datavines.engine.spark.jdbc.sink.JdbcSink;
-import io.datavines.engine.spark.jdbc.sink.MongodbSink;
-import io.datavines.engine.spark.jdbc.sink.MySQLSink;
-import io.datavines.engine.spark.jdbc.source.JdbcSource;
-import io.datavines.engine.spark.jdbc.source.MongodbSource;
-import io.datavines.engine.spark.transform.sql.SqlTransform;
+import io.datavines.engine.local.api.LocalSink;
+import io.datavines.engine.local.api.LocalSource;
+import io.datavines.engine.local.api.LocalRuntimeEnvironment;
+import io.datavines.engine.local.api.utils.LoggerFactory;
+import io.datavines.engine.local.connector.*;
+import io.datavines.engine.local.transform.sql.SqlTransform;
+import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.Base64;
 import java.util.stream.Collectors;
 
 import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
 import static io.datavines.engine.api.EngineConstants.TYPE;
 
-public class SparkDataVinesBootstrap extends BaseDataVinesBootstrap {
 
-    public static void main(String[] args) {
-        SparkDataVinesBootstrap bootstrap = new SparkDataVinesBootstrap();
-        if (args.length == 1) {
-            String arg = args[0];
-            args[0] = new String(Base64.getDecoder().decode(arg));
-            bootstrap.execute(args);
-        }
+public class LocalDataVinesBootstrap extends BaseDataVinesBootstrap {
+
+    public LocalDataVinesBootstrap(Logger logger) {
+        LoggerFactory.setLogger(logger);
     }
 
     @Override
     protected RuntimeEnvironment createRuntimeEnvironment(DataVinesJobConfig config) {
-        SparkRuntimeEnvironment runtimeEnvironment = new SparkRuntimeEnvironment();
+        LocalRuntimeEnvironment runtimeEnvironment = new LocalRuntimeEnvironment();
         Config runtimeConfig = new Config(config.getEnvConfig().getConfig());
         runtimeConfig.put(TYPE, config.getEnvConfig().getType());
         runtimeEnvironment.setConfig(runtimeConfig);
@@ -63,16 +56,16 @@ public class SparkDataVinesBootstrap extends BaseDataVinesBootstrap {
     @Override
     protected List<Component> createSources(DataVinesJobConfig config) {
         return config.getSourceParameters().stream().map(sourceConfig -> {
-            SparkBatchSource source;
+            LocalSource source;
             switch (ConnectorType.of(sourceConfig.getPlugin())) {
                 case JDBC:
-                    source = new JdbcSource();
+                    source = new BaseJdbcSource();
                     break;
-                case MONGODB:
-                    source = new MongodbSource();
+                case FILE:
+                    source = new LocalFileSource();
                     break;
                 default:
-                    throw new IllegalArgumentException("Unsupported spark source plugin: " + sourceConfig.getPlugin());
+                    throw new IllegalArgumentException("Unsupported local source plugin: " + sourceConfig.getPlugin());
             }
             sourceConfig.getConfig().put(PLUGIN_TYPE, sourceConfig.getType());
             source.setConfig(new Config(sourceConfig.getConfig()));
@@ -93,19 +86,19 @@ public class SparkDataVinesBootstrap extends BaseDataVinesBootstrap {
     @Override
     protected List<Component> createSinks(DataVinesJobConfig config) {
         return config.getSinkParameters().stream().map(sinkConfig -> {
-            SparkBatchSink sink;
+            LocalSink sink;
             switch (ConnectorType.of(sinkConfig.getPlugin())) {
                 case JDBC:
-                    sink = new JdbcSink();
+                    sink = new BaseJdbcSink();
                     break;
                 case MYSQL:
                     sink = new MySQLSink();
                     break;
-                case MONGODB:
-                    sink = new MongodbSink();
+                case FILE:
+                    sink = new LocalFileSink();
                     break;
                 default:
-                    throw new IllegalArgumentException("Unsupported spark sink plugin: " + sinkConfig.getPlugin());
+                    throw new IllegalArgumentException("Unsupported local sink plugin: " + sinkConfig.getPlugin());
             }
             sinkConfig.getConfig().put(PLUGIN_TYPE, sinkConfig.getType());
             sink.setConfig(new Config(sinkConfig.getConfig()));

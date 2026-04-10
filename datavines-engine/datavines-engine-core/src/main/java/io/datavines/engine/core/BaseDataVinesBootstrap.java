@@ -16,26 +16,34 @@
  */
 package io.datavines.engine.core;
 
+import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.entity.ProcessResult;
 import io.datavines.common.enums.ExecutionStatus;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
-
-import java.util.List;
 import io.datavines.common.config.CheckResult;
 import io.datavines.common.config.ConfigRuntimeException;
 import io.datavines.engine.api.component.Component;
 import io.datavines.engine.api.env.Execution;
 import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.core.config.ConfigParser;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public abstract class BaseDataVinesBootstrap {
 
     private static final Logger logger = LoggerFactory.getLogger(BaseDataVinesBootstrap.class);
 
     private Execution execution;
+
+    protected abstract RuntimeEnvironment createRuntimeEnvironment(DataVinesJobConfig config) throws Exception;
+
+    protected abstract List<Component> createSources(DataVinesJobConfig config) throws Exception;
+
+    protected abstract List<Component> createTransforms(DataVinesJobConfig config) throws Exception;
+
+    protected abstract List<Component> createSinks(DataVinesJobConfig config) throws Exception;
 
     public ProcessResult execute(String[] args) {
         if (args.length == 1) {
@@ -65,12 +73,14 @@ public abstract class BaseDataVinesBootstrap {
 
     private void parseConfigAndExecute(String configFile) throws Exception {
         ConfigParser configParser = new ConfigParser(configFile);
-        List<Component> sources = configParser.getSourcePlugins();
-        List<Component> transforms = configParser.getTransformPlugins();
-        List<Component> sinks = configParser.getSinkPlugins();
-        execution = configParser.getRuntimeEnvironment().getExecution();
+        DataVinesJobConfig jobConfig = configParser.getConfig();
+        RuntimeEnvironment runtimeEnvironment = createRuntimeEnvironment(jobConfig);
+        List<Component> sources = createSources(jobConfig);
+        List<Component> transforms = createTransforms(jobConfig);
+        List<Component> sinks = createSinks(jobConfig);
+        execution = runtimeEnvironment.getExecution();
         checkConfig(sources, transforms, sinks);
-        prepare(configParser.getRuntimeEnvironment(), sources, transforms, sinks);
+        prepare(runtimeEnvironment, sources, transforms, sinks);
         if (execution == null) {
             throw new Exception("can not create execution , please check the config");
         }

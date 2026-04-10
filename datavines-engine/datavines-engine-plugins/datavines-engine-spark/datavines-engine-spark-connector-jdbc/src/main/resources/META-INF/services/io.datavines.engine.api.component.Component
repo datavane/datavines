@@ -1,3 +1,0 @@
-io.datavines.engine.spark.jdbc.sink.JdbcSink
-io.datavines.engine.spark.jdbc.sink.MySQLSink
-io.datavines.engine.spark.jdbc.source.JdbcSource

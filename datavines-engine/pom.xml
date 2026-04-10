@@ -31,12 +31,10 @@
     <artifactId>datavines-engine</artifactId>
     <packaging>pom</packaging>
     <modules>
-        <module>datavines-engine-api</module>
         <module>datavines-engine-plugins</module>
         <module>datavines-engine-core</module>
         <module>datavines-engine-executor</module>
         <module>datavines-engine-config</module>
-        <module>datavines-engine-common</module>
     </modules>
 
     <dependencies>

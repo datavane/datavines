@@ -211,12 +211,6 @@
 
             <dependency>
                 <groupId>io.datavines</groupId>
-                <artifactId>datavines-engine-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.datavines</groupId>
                 <artifactId>datavines-engine-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -229,13 +223,19 @@
 
             <dependency>
                 <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-local-executor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
                 <artifactId>datavines-engine-spark-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.datavines</groupId>
-                <artifactId>datavines-engine-spark-api</artifactId>
+                <artifactId>datavines-engine-spark-executor</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -247,7 +247,7 @@
 
             <dependency>
                 <groupId>io.datavines</groupId>
-                <artifactId>datavines-engine-flink-api</artifactId>
+                <artifactId>datavines-engine-flink-executor</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
