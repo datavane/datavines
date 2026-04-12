@@ -61,6 +61,7 @@
         <skip.pmd.check>false</skip.pmd.check>
         <maven.deploy.skip>false</maven.deploy.skip>
         <maven.javadoc.skip>false</maven.javadoc.skip>
+        <datavines.plugin.bundle.skip>true</datavines.plugin.bundle.skip>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <main.basedir>${project.basedir}</main.basedir>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -68,7 +69,6 @@
         <swagger.version>1.9.3</swagger.version>
         <springfox.version>2.9.2</springfox.version>
         <swagger-models.version>1.6.14</swagger-models.version>
-        <groovy.version>3.0.7</groovy.version>
         <netty.version>4.1.53.Final</netty.version>
         <guice.version>4.2.0</guice.version>
         <logback.version>1.2.3</logback.version>
@@ -120,6 +120,7 @@
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
         <maven-assembly-plugin.version>3.1.0</maven-assembly-plugin.version>
+        <properties-maven-plugin.version>1.2.1</properties-maven-plugin.version>
         <maven-release-plugin.version>2.5.3</maven-release-plugin.version>
         <maven-javadoc-plugin.version>2.10.3</maven-javadoc-plugin.version>
         <maven-source-plugin.version>2.4</maven-source-plugin.version>
@@ -713,6 +714,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${lombok.version}</version>
+            <scope>provided</scope>
             <optional>true</optional>
         </dependency>
     </dependencies>
@@ -862,6 +864,26 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-plugin-bundle</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <skipAssembly>${datavines.plugin.bundle.skip}</skipAssembly>
+                            <descriptors>
+                                <descriptor>${maven.multiModuleProjectDirectory}/build/datavines-plugin-bundle.xml</descriptor>
+                            </descriptors>
+                            <appendAssemblyId>true</appendAssemblyId>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${maven-surefire-plugin.version}</version>
                 <configuration>
@@ -874,9 +896,6 @@
         </plugins>
 
     </build>
-
-    <profiles>
-    </profiles>
 
     <repositories>
         <repository>
@@ -913,4 +932,42 @@
             </snapshots>
         </pluginRepository>
     </pluginRepositories>
+
+    <profiles>
+        <profile>
+            <id>datavines-plugin-module</id>
+            <activation>
+                <file>
+                    <exists>src/main/resources/META-INF/datavines-plugin.properties</exists>
+                </file>
+            </activation>
+            <properties>
+                <datavines.plugin.bundle.skip>false</datavines.plugin.bundle.skip>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>${properties-maven-plugin.version}</version>
+                        <executions>
+                            <execution>
+                                <id>read-plugin-descriptor</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <quiet>false</quiet>
+                                    <files>
+                                        <file>src/main/resources/META-INF/datavines-plugin.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

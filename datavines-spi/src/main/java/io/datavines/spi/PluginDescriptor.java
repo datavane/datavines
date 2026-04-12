@@ -34,6 +34,7 @@ import java.util.Properties;
  * <p>属性文件示例：
  * <pre>
  * plugin.name=mysql
+ * plugin.module=connector
  * plugin.version=8.0.33
  * plugin.spi.version=1.0.0
  * plugin.main.version.range=[1.0.0,2.0.0)
@@ -116,7 +117,8 @@ public final class PluginDescriptor {
                             name.trim(), version, moduleStr.trim(), url);
 
                     return new PluginDescriptor(
-                            name.trim(), moduleStr.trim(), version, spiVersion,
+                            name.trim(), moduleStr.trim(), version,
+                            spiVersion,
                             mainVersionRange.trim(), description.trim());
 
                 } catch (Exception e) {

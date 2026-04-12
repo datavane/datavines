@@ -17,17 +17,14 @@
 package io.datavines.server.plugin;
 
 import io.datavines.connector.api.ConnectorFactory;
+import io.datavines.engine.api.engine.EngineExecutor;
 import io.datavines.engine.config.JobConfigurationBuilder;
 import io.datavines.metric.api.ExpectedValue;
 import io.datavines.metric.api.ResultFormula;
 import io.datavines.metric.api.SqlMetric;
 import io.datavines.notification.api.spi.SlasHandlerPlugin;
+import io.datavines.spi.PluginBootstrap;
 import io.datavines.registry.api.Registry;
-import io.datavines.spi.ClasspathPluginLoader;
-import io.datavines.spi.PluginDescriptor;
-import io.datavines.spi.PluginDirectoryLoader;
-import io.datavines.spi.PluginDiscoveryBootstrap;
-import io.datavines.spi.VersionedPluginRegistry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,12 +32,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * DataVines 插件初始化器。
@@ -54,25 +48,28 @@ import java.util.Map;
  * <pre>
  * {deploy.dir}/
  * ├── plugins/
- * │   ├── mysql/
- * │   │   ├── 5.7.44/
- * │   │   │   └── datavines-connector-mysql-5.7.44.jar
- * │   │   └── 8.0.33/
- * │   │       └── datavines-connector-mysql-8.0.33.jar
- * │   └── postgresql/
- * │       └── 42.7.0/
- * │           └── datavines-connector-postgresql.jar
- * ├── libs/     (server + all built-in plugins)
+ * │   ├── connector/
+ * │   │   └── mysql/
+ * │   │       └── 1.0.0-SNAPSHOT/
+ * │   │           ├── datavines-connector-mysql-1.0.0-SNAPSHOT.jar
+ * │   │           └── mysql-connector-j-*.jar
+ * │   └── registry/
+ * │       └── mysql/
+ * │           └── 1.0.0-SNAPSHOT/
+ * │               └── datavines-registry-mysql-1.0.0-SNAPSHOT.jar
+ * ├── libs/     (server + common runtime libraries)
  * └── engine/   (spark/flink JARs for job submission)
  * </pre>
  *
- * <h3>2. Classpath 模式（IDE / 开发环境）</h3>
+ * <h3>2. Classpath 模式（测试 / 特殊开发环境）</h3>
  * <p>当 {@code plugins/} 目录不存在或为空时，退回到
  * {@link ClasspathPluginLoader}：通过 {@link java.util.ServiceLoader} 在
  * 当前 classpath 上扫描所有插件实现，并读取各 JAR 内的
  * {@code META-INF/datavines-plugin.properties} 来获取版本信息。
- * <br>此模式下，在 IntelliJ IDEA 中直接运行 DataVinesServer 时，
- * 所有插件均可被发现和加载，无需额外配置。
+ * <br>此模式要求插件实现模块也在当前 classpath 上。IntelliJ IDEA 直接运行
+ * {@code datavines-server} 时默认只有 server 依赖，通常不会包含各插件实现，
+ * 因此推荐在 IDEA 中也显式配置 {@code -Ddatavines.plugins.dir=/absolute/path/to/plugins}
+ * 使用目录模式。
  *
  * <h3>插件目录配置</h3>
  * <ul>
@@ -100,38 +97,25 @@ public final class DataVinesPluginInitializer {
     /** 默认 plugins 目录名（相对于工作目录）。 */
     private static final String DEFAULT_PLUGINS_DIR = "plugins";
 
-    /**
-     * 服务端所有 SPI 接口类型列表。
-     * {@link PluginDirectoryLoader} 将对每种类型在 plugins/{module}/ 目录中搜索实现。
-     */
-    private static final List<Class<?>> KNOWN_SERVER_SPI_TYPES = Collections.unmodifiableList(
-            Arrays.<Class<?>>asList(
-                    ConnectorFactory.class,
-                    SqlMetric.class,
-                    ExpectedValue.class,
-                    ResultFormula.class,
-                    JobConfigurationBuilder.class,
-                    SlasHandlerPlugin.class,
-                    Registry.class
-            )
-    );
-
-    /**
-     * SPI 接口到插件模块子目录名的映射。
-     * 对应 {@code plugins/{module}/} 的目录结构，与 {@code plugin.module} 字段一致。
-     */
-    private static final Map<Class<?>, String> SPI_MODULE_MAP;
-    static {
-        Map<Class<?>, String> m = new HashMap<Class<?>, String>();
-        m.put(ConnectorFactory.class,         "connector");
-        m.put(SqlMetric.class,                "metric");
-        m.put(ExpectedValue.class,            "expected-value");
-        m.put(ResultFormula.class,            "result-formula");
-        m.put(JobConfigurationBuilder.class,  "engine");
-        m.put(SlasHandlerPlugin.class,        "notification");
-        m.put(Registry.class,                 "registry");
-        SPI_MODULE_MAP = Collections.unmodifiableMap(m);
-    }
+    private static final List<PluginBootstrap.SpiRegistration<?>> REGISTRATIONS =
+            Collections.unmodifiableList(Arrays.<PluginBootstrap.SpiRegistration<?>>asList(
+                    PluginBootstrap.SpiRegistration.of(
+                            ConnectorFactory.class, "connector", ConnectorFactory::getPluginNames),
+                    PluginBootstrap.SpiRegistration.of(
+                            SqlMetric.class, "metric", SqlMetric::getPluginNames),
+                    PluginBootstrap.SpiRegistration.of(
+                            ExpectedValue.class, "expected-value", ExpectedValue::getPluginNames),
+                    PluginBootstrap.SpiRegistration.of(
+                            ResultFormula.class, "result-formula", ResultFormula::getPluginNames),
+                    PluginBootstrap.SpiRegistration.of(
+                            JobConfigurationBuilder.class, "engine", JobConfigurationBuilder::getPluginNames),
+                    PluginBootstrap.SpiRegistration.of(
+                            EngineExecutor.class, "engine", EngineExecutor::getPluginNames),
+                    PluginBootstrap.SpiRegistration.of(
+                            SlasHandlerPlugin.class, "notification", SlasHandlerPlugin::getPluginNames),
+                    PluginBootstrap.SpiRegistration.of(
+                            Registry.class, "registry", Registry::getPluginNames)
+            ));
 
     private DataVinesPluginInitializer() {}
 
@@ -145,168 +129,12 @@ public final class DataVinesPluginInitializer {
      * </ul>
      */
     public static void initialize() {
-        if (PluginDiscoveryBootstrap.isInitialized()) {
-            log.debug("PluginDiscoveryBootstrap already initialized, skipping.");
-            return;
-        }
-
-        File pluginsDir = resolvePluginsDir();
-
-        if (pluginsDir != null && pluginsDir.isDirectory() && hasVersionedSubdirs(pluginsDir)) {
-            initializeFromDirectory(pluginsDir);
-        } else {
-            logClasspathMode(pluginsDir);
-            // ClasspathPluginLoader (tier 2) in PluginDiscovery will handle loading automatically.
-            // No explicit initialization needed — it activates lazily on first PluginDiscovery call.
-        }
-    }
-
-    /**
-     * 目录模式：针对每种 SPI 类型，扫描 plugins/{module}/ 子目录，
-     * 使用 PluginDirectoryLoader 加载各版本插件并注册到 PluginDiscoveryBootstrap。
-     *
-     * <p>目录结构示例：
-     * <pre>
-     * plugins/
-     * ├── connector/
-     * │   ├── mysql/
-     * │   │   └── 1.0.0-SNAPSHOT/
-     * │   │       └── datavines-connector-mysql-1.0.0-SNAPSHOT.jar
-     * │   └── postgresql/
-     * │       └── 1.0.0-SNAPSHOT/
-     * │           └── datavines-connector-postgresql-1.0.0-SNAPSHOT.jar
-     * ├── metric/
-     * │   └── column_avg/
-     * │       └── 1.0.0-SNAPSHOT/
-     * │           └── datavines-metric-column-avg-1.0.0-SNAPSHOT.jar
-     * └── engine/
-     *     ├── flink/
-     *     │   └── 1.0.0-SNAPSHOT/
-     *     │       ├── datavines-engine-flink-api-1.0.0-SNAPSHOT.jar
-     *     │       └── datavines-engine-flink-executor-1.0.0-SNAPSHOT.jar
-     *     └── ...
-     * </pre>
-     */
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    private static void initializeFromDirectory(File pluginsDir) {
-        log.info("========================================================");
-        log.info("DataVines Plugin System - DIRECTORY MODE (production)");
-        log.info("  Plugins directory: {}", pluginsDir.getAbsolutePath());
-        log.info("========================================================");
-
-        ClassLoader spiClassLoader = DataVinesPluginInitializer.class.getClassLoader();
-
-        Map<Class<?>, VersionedPluginRegistry<?>> registries =
-                new HashMap<Class<?>, VersionedPluginRegistry<?>>();
-
-        for (Class<?> spiType : KNOWN_SERVER_SPI_TYPES) {
-            String moduleName = SPI_MODULE_MAP.get(spiType);
-            if (moduleName == null) {
-                log.warn("  No module mapping for SPI type: {}", spiType.getSimpleName());
-                continue;
-            }
-
-            File moduleDir = new File(pluginsDir, moduleName);
-            if (!moduleDir.isDirectory()) {
-                log.debug("  Module dir not found, skipping: {}", moduleDir.getAbsolutePath());
-                continue;
-            }
-
-            PluginDirectoryLoader loader = new PluginDirectoryLoader(
-                    Collections.singletonList(moduleDir.toPath()),
-                    spiClassLoader
-            );
-
-            try {
-                VersionedPluginRegistry registry = loader.load(spiType);
-                if (!registry.isEmpty()) {
-                    registries.put(spiType, registry);
-                    log.info("  [{}] Loaded {} plugin(s) for SPI: {}",
-                            moduleName, registry.supportedPluginNames().size(),
-                            spiType.getSimpleName());
-                } else {
-                    log.debug("  [{}] No plugins found for SPI: {}", moduleName,
-                            spiType.getSimpleName());
-                }
-            } catch (Exception e) {
-                log.warn("  [{}] Failed to load SPI {} from '{}': {}",
-                        moduleName, spiType.getSimpleName(),
-                        moduleDir.getAbsolutePath(), e.getMessage());
-            }
-        }
-
-        if (registries.isEmpty()) {
-            log.warn("No versioned plugins found in '{}'. Falling back to classpath mode.",
-                    pluginsDir);
-            logClasspathMode(pluginsDir);
-        } else {
-            PluginDiscoveryBootstrap.initialize(registries);
-            log.info("Plugin system initialized: {} SPI type(s) with versioned plugins.",
-                    registries.size());
-        }
-    }
-
-    /**
-     * 解析 plugins 目录。优先使用系统属性，否则使用工作目录下的默认值。
-     */
-    private static File resolvePluginsDir() {
-        String dirPath = System.getProperty(PLUGINS_DIR_PROPERTY);
-        if (dirPath != null && !dirPath.trim().isEmpty()) {
-            File dir = new File(dirPath.trim());
-            log.debug("Using plugins dir from system property '{}': {}",
-                    PLUGINS_DIR_PROPERTY, dir.getAbsolutePath());
-            return dir;
-        }
-
-        // Default: {working dir}/plugins/
-        return new File(System.getProperty("user.dir"), DEFAULT_PLUGINS_DIR);
-    }
-
-    /**
-     * 检查 plugins 目录下是否含有「版本化」的子目录。
-     *
-     * <p>新结构为 3 层：{@code plugins/{module}/{name}/{version}/}
-     * <br>旧结构（兼容）为 2 层：{@code plugins/{name}/{version}/}
-     * <br>任意一层满足即返回 true。
-     */
-    private static boolean hasVersionedSubdirs(File pluginsDir) {
-        File[] level1Dirs = pluginsDir.listFiles(File::isDirectory);
-        if (level1Dirs == null || level1Dirs.length == 0) {
-            return false;
-        }
-        for (File level1 : level1Dirs) {
-            File[] level2Dirs = level1.listFiles(File::isDirectory);
-            if (level2Dirs == null) continue;
-            for (File level2 : level2Dirs) {
-                // Check if level2 looks like a version dir (contains *.jar or has version-like name)
-                File[] level3Dirs = level2.listFiles(File::isDirectory);
-                if (level3Dirs != null && level3Dirs.length > 0) {
-                    // 3-level structure: plugins/{module}/{name}/{version}/
-                    return true;
-                }
-                // Also accept 2-level: plugins/{name}/{version}/ where level2 is version dir
-                File[] jars = level2.listFiles(f -> f.getName().endsWith(".jar"));
-                if (jars != null && jars.length > 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    private static void logClasspathMode(File pluginsDir) {
-        log.info("========================================================");
-        log.info("DataVines Plugin System - CLASSPATH MODE (IDE/development)");
-        if (pluginsDir == null || !pluginsDir.isDirectory()) {
-            log.info("  Reason: plugins directory not found at '{}'",
-                    pluginsDir != null ? pluginsDir.getAbsolutePath() : DEFAULT_PLUGINS_DIR);
-        } else {
-            log.info("  Reason: plugins directory exists but has no versioned subdirectories.");
-        }
-        log.info("  All plugins will be discovered via ServiceLoader on the classpath.");
-        log.info("  To use directory mode: create plugins/{{name}}/{{version}}/*.jar structure");
-        log.info("  Or set -D{}=/path/to/plugins", PLUGINS_DIR_PROPERTY);
-        log.info("========================================================");
+        PluginBootstrap.initialize(
+                "DataVines Plugin System",
+                PLUGINS_DIR_PROPERTY,
+                DEFAULT_PLUGINS_DIR,
+                REGISTRATIONS,
+                DataVinesPluginInitializer.class.getClassLoader());
     }
 
     /**
@@ -321,13 +149,13 @@ public final class DataVinesPluginInitializer {
                 fw.write("DataVines Versioned Plugin Directory\n");
                 fw.write("=====================================\n");
                 fw.write("Place versioned plugin JARs in subdirectories:\n\n");
-                fw.write("  plugins/{plugin-name}/{version}/*.jar\n\n");
-                fw.write("Example (two versions of MySQL connector):\n");
-                fw.write("  plugins/mysql/5.7.44/datavines-connector-mysql.jar\n");
-                fw.write("  plugins/mysql/8.0.33/datavines-connector-mysql.jar\n\n");
+                fw.write("  plugins/{plugin.module}/{plugin.name}/{plugin.version}/*.jar\n\n");
+                fw.write("Examples:\n");
+                fw.write("  plugins/connector/mysql/1.0.0-SNAPSHOT/datavines-connector-mysql-1.0.0-SNAPSHOT.jar\n");
+                fw.write("  plugins/registry/mysql/1.0.0-SNAPSHOT/datavines-registry-mysql-1.0.0-SNAPSHOT.jar\n\n");
                 fw.write("Each plugin JAR must contain META-INF/datavines-plugin.properties.\n");
                 fw.write("When populated, DataVines uses ClassLoader isolation per version.\n");
-                fw.write("When empty, all plugins are loaded from libs/ on the classpath.\n");
+                fw.write("When empty, plugins are loaded only from the application classpath.\n");
             } catch (IOException e) {
                 log.debug("Could not write plugins/README.txt: {}", e.getMessage());
             }

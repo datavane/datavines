@@ -136,8 +136,15 @@ public final class ClasspathPluginLoader {
             }
 
             for (String pluginName : pluginNames) {
-                PluginDescriptor descriptor = descriptorIndex.findDescriptor(pluginName, provider);
-                registerSafely(builder, descriptor, provider);
+                if (pluginName == null || pluginName.trim().isEmpty()) {
+                    log.warn("Provider {} returned blank plugin name, skipping",
+                            provider.getClass().getName());
+                    continue;
+                }
+
+                String normalizedName = pluginName.trim();
+                PluginDescriptor descriptor = descriptorIndex.findDescriptor(normalizedName, provider);
+                registerSafely(builder, normalizedName, descriptor, provider);
             }
         }
 
@@ -252,9 +259,11 @@ public final class ClasspathPluginLoader {
                     String spiVersion = props.getProperty("plugin.spi.version", "0.0.0");
                     String mainRange = props.getProperty("plugin.main.version.range", "");
                     String description = props.getProperty("plugin.description", "");
+                    String module = props.getProperty("plugin.module", "");
 
                     PluginDescriptor desc = PluginDescriptor.of(
-                            name.trim(), version.trim(), spiVersion.trim(),
+                            name.trim(), module.trim(), version.trim(),
+                            spiVersion.trim(),
                             mainRange.trim(), description.trim());
 
                     byName.put(name.trim(), desc);
@@ -283,6 +292,18 @@ public final class ClasspathPluginLoader {
             // 在 classpath 模式下，同名插件只有一个版本，重复是预期的
             log.debug("Skipping duplicate registration for {}: {}",
                     descriptor.getPluginId(), e.getMessage());
+        }
+    }
+
+    private <P> void registerSafely(VersionedPluginRegistry.Builder<P> builder,
+                                    String pluginName,
+                                    PluginDescriptor descriptor,
+                                    P plugin) {
+        try {
+            builder.register(pluginName, descriptor, plugin, null);
+        } catch (DuplicateProviderException e) {
+            log.debug("Skipping duplicate registration for {} using logical key '{}': {}",
+                    descriptor.getPluginId(), pluginName, e.getMessage());
         }
     }
 

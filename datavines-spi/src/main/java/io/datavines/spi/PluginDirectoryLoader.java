@@ -29,14 +29,20 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 /**
  * 从文件系统目录扫描并加载多版本插件。
  *
- * <p>目录规范：
+ * <p>目录规范。module/name/version 均以 JAR 内
+ * {@code META-INF/datavines-plugin.properties} 的 {@code plugin.module}、
+ * {@code plugin.name}、{@code plugin.version} 为准：
  * <pre>
  * {plugin.dir}/
  * ├── connector/
@@ -99,6 +105,25 @@ public final class PluginDirectoryLoader {
      * @return 包含所有已发现版本的注册表
      */
     public <P> VersionedPluginRegistry<P> load(Class<P> serviceType) {
+        return loadInternal(serviceType, null);
+    }
+
+    /**
+     * 加载支持多逻辑 key 的 SPI。
+     *
+     * <p>同一个 provider 可以通过 {@code keysExtractor} 暴露多个逻辑名称，
+     * 这些逻辑名称将被分别注册到 {@link VersionedPluginRegistry}。
+     */
+    public <P> VersionedPluginRegistry<P> loadMultiKey(
+            Class<P> serviceType, Function<P, Collection<String>> keysExtractor) {
+        if (keysExtractor == null) {
+            throw new IllegalArgumentException("keysExtractor cannot be null");
+        }
+        return loadInternal(serviceType, keysExtractor);
+    }
+
+    private <P> VersionedPluginRegistry<P> loadInternal(
+            Class<P> serviceType, Function<P, Collection<String>> keysExtractor) {
         VersionedPluginRegistry.Builder<P> builder =
                 VersionedPluginRegistry.builder(serviceType.getSimpleName());
 
@@ -106,7 +131,7 @@ public final class PluginDirectoryLoader {
         log.info("Discovered {} plugin version directories for {}", versionDirs.size(), serviceType.getSimpleName());
 
         for (Path versionDir : versionDirs) {
-            loadVersionDir(versionDir, serviceType, builder);
+            loadVersionDir(versionDir, serviceType, keysExtractor, builder);
         }
 
         return builder.build();
@@ -114,6 +139,7 @@ public final class PluginDirectoryLoader {
 
     private <P> void loadVersionDir(
             Path versionDir, Class<P> serviceType,
+            Function<P, Collection<String>> keysExtractor,
             VersionedPluginRegistry.Builder<P> builder) {
 
         List<URL> urls = collectJars(versionDir);
@@ -122,17 +148,17 @@ public final class PluginDirectoryLoader {
             return;
         }
 
-        // 从目录名推断 pluginName 和 version
+        // 从目录名推断 bundle name 和 version。逻辑插件名以 descriptor 为准。
         Path nameDir = versionDir.getParent();
         if (nameDir == null) {
             log.warn("Skipping malformed plugin version directory without parent: {}", versionDir);
             return;
         }
 
-        String inferredName = nameDir.getFileName().toString();
+        String inferredBundleName = nameDir.getFileName().toString();
         String inferredVersion = versionDir.getFileName().toString();
         String inferredModule = inferModule(versionDir);
-        String pluginId = inferredName + "@" + inferredVersion;
+        String pluginId = inferredBundleName + "@" + inferredVersion;
 
         PluginClassLoader classLoader = new PluginClassLoader(
                 pluginId, urls, spiClassLoader, spiPackages);
@@ -144,14 +170,14 @@ public final class PluginDirectoryLoader {
                 log.warn("Missing {} in plugin jars under {}. "
                         + "Using inferred metadata: name={}, version={}",
                         PluginDescriptor.DESCRIPTOR_PATH, versionDir,
-                        inferredName, inferredVersion);
+                        inferredBundleName, inferredVersion);
                 // 容错：使用推断的元数据
-                descriptor = PluginDescriptor.of(inferredName, inferredModule, inferredVersion,
+                descriptor = PluginDescriptor.of(inferredBundleName, inferredModule, inferredVersion,
                         "0.0.0", "", "");
             }
 
-            // 校验 descriptor 与目录名一致性
-            validateDescriptor(descriptor, inferredModule, inferredName, inferredVersion);
+            // 校验 descriptor 与目录结构一致性
+            validateDescriptor(descriptor, inferredModule, inferredBundleName, inferredVersion);
 
             // 宿主版本兼容性校验
             if (currentHostVersion != null && !descriptor.isCompatibleWith(currentHostVersion)) {
@@ -175,15 +201,56 @@ public final class PluginDirectoryLoader {
                     return;
                 }
 
-                if (providers.size() > 1) {
+                if (keysExtractor == null && providers.size() > 1) {
                     log.error("Found {} providers of {} in {}, expected at most 1. Skipping this directory.",
                             providers.size(), serviceType.getSimpleName(), versionDir);
                     return;
                 }
 
-                P plugin = providers.get(0);
-                log.info("  Registering {} -> {}", descriptor.getPluginId(), plugin.getClass().getName());
-                builder.register(descriptor, plugin, classLoader);
+                if (keysExtractor == null) {
+                    P plugin = providers.get(0);
+                    log.info("  Registering {} -> {}", descriptor.getPluginId(), plugin.getClass().getName());
+                    builder.register(descriptor, plugin, classLoader);
+                    return;
+                }
+
+                Map<String, P> keyedPlugins = new LinkedHashMap<String, P>();
+                for (P provider : providers) {
+                    Collection<String> keys = keysExtractor.apply(provider);
+                    if (keys == null || keys.isEmpty()) {
+                        log.warn("Provider {} returned empty keys in {}, skipping",
+                                provider.getClass().getName(), versionDir);
+                        continue;
+                    }
+
+                    for (String key : keys) {
+                        if (key == null || key.trim().isEmpty()) {
+                            log.warn("Provider {} returned blank key in {}, skipping",
+                                    provider.getClass().getName(), versionDir);
+                            continue;
+                        }
+
+                        String normalizedKey = key.trim();
+                        P previous = keyedPlugins.put(normalizedKey, provider);
+                        if (previous != null && previous != provider) {
+                            throw new DuplicateProviderException(
+                                    serviceType.getSimpleName(),
+                                    normalizedKey + "@" + descriptor.getVersion(),
+                                    previous.getClass().getName(),
+                                    provider.getClass().getName());
+                        }
+                    }
+                }
+
+                if (keyedPlugins.isEmpty()) {
+                    log.debug("No logical {} key found in {}, skipping",
+                            serviceType.getSimpleName(), versionDir);
+                    return;
+                }
+
+                log.info("  Registering {} logical key(s) from {}",
+                        keyedPlugins.size(), descriptor.getPluginId());
+                builder.registerAll(descriptor, keyedPlugins, classLoader);
             } finally {
                 ctxSwitch.close();
             }
@@ -198,7 +265,7 @@ public final class PluginDirectoryLoader {
     }
 
     /**
-     * 扫描所有 plugins/{name}/{version}/ 目录。
+     * 扫描所有 plugins/{module}/{name}/{version}/ 目录，同时兼容 plugins/{name}/{version}/。
      * 使用显式 try-with-resources 管理 DirectoryStream，避免资源泄漏。
      */
     private List<Path> scanVersionDirs() {
@@ -210,12 +277,18 @@ public final class PluginDirectoryLoader {
                 continue;
             }
 
-            // 第一层：插件名目录
-            List<Path> nameDirs = listDirectories(root);
-            for (Path nameDir : nameDirs) {
-                // 第二层：版本目录
-                List<Path> versionDirs = listDirectories(nameDir);
-                result.addAll(versionDirs);
+            // 标准结构：root/module/name/version；兼容旧结构：root/name/version。
+            List<Path> firstLevelDirs = listDirectories(root);
+            for (Path firstLevelDir : firstLevelDirs) {
+                List<Path> secondLevelDirs = listDirectories(firstLevelDir);
+                for (Path secondLevelDir : secondLevelDirs) {
+                    List<Path> thirdLevelDirs = listDirectories(secondLevelDir);
+                    if (thirdLevelDirs.isEmpty()) {
+                        result.add(secondLevelDir);
+                    } else {
+                        result.addAll(thirdLevelDirs);
+                    }
+                }
             }
         }
 
@@ -294,30 +367,35 @@ public final class PluginDirectoryLoader {
     }
 
     /**
-     * 校验描述符与目录名的一致性。
+     * 校验描述符与目录结构的一致性。
      */
     private void validateDescriptor(PluginDescriptor descriptor,
                                     String inferredModule,
-                                    String inferredName,
+                                    String inferredBundleName,
                                     String inferredVersion) {
         if (descriptor.getPluginModule() != null
                 && !descriptor.getPluginModule().isEmpty()
                 && !descriptor.getPluginModule().equals(inferredModule)) {
             log.warn("Plugin module mismatch: descriptor says '{}', directory says '{}'. "
-                            + "Using descriptor module for metadata, but directory placement should be corrected.",
+                            + "Directory placement should be corrected.",
                     descriptor.getPluginModule(), inferredModule);
         }
 
-        if (!descriptor.getPluginName().equals(inferredName)) {
+        if (descriptor.getPluginName() != null
+                && !descriptor.getPluginName().isEmpty()
+                && !descriptor.getPluginName().equals(inferredBundleName)) {
             log.warn("Plugin name mismatch: descriptor says '{}', directory says '{}'. "
-                    + "Using descriptor name.", descriptor.getPluginName(), inferredName);
+                            + "Directory placement should be corrected.",
+                    descriptor.getPluginName(), inferredBundleName);
         }
+
+        log.debug("Plugin descriptor '{}' loaded from bundle directory '{}'.",
+                descriptor.getPluginName(), inferredBundleName);
 
         String descriptorVersion = descriptor.getVersion().toString();
         if (!descriptorVersion.equals(inferredVersion)) {
-            // 允许不完全匹配（如目录 "8.0" vs descriptor "8.0.0"），记录警告
             log.warn("Plugin version mismatch: descriptor says '{}', directory says '{}'. "
-                    + "Using descriptor version.", descriptorVersion, inferredVersion);
+                    + "Directory placement should be corrected.", descriptorVersion, inferredVersion);
         }
     }
 

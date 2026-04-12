@@ -90,6 +90,36 @@ public class VersionedPluginRegistryTest {
     }
 
     @Test
+    public void testRegisterWithLogicalPluginName() {
+        PluginDescriptor descriptor = PluginDescriptor.of("local", "1.0.0");
+
+        VersionedPluginRegistry<String> registry =
+                VersionedPluginRegistry.<String>builder("TestRegistry")
+                        .register("local_profile", descriptor, "profile-builder", null)
+                        .register("local_accuracy", descriptor, "accuracy-builder", null)
+                        .build();
+
+        assertEquals("profile-builder", registry.getLatest("local_profile"));
+        assertEquals("accuracy-builder", registry.getLatest("local_accuracy"));
+        assertFalse(registry.supportsPlugin("local"));
+    }
+
+    @Test(expected = DuplicateProviderException.class)
+    public void testRegisterAllIsAtomicOnDuplicateLogicalName() {
+        PluginDescriptor descriptor = PluginDescriptor.of("local", "1.0.0");
+
+        VersionedPluginRegistry.Builder<String> builder =
+                VersionedPluginRegistry.<String>builder("TestRegistry")
+                        .register("local_profile", descriptor, "profile-builder", null);
+
+        java.util.Map<String, String> plugins = new java.util.LinkedHashMap<String, String>();
+        plugins.put("local_profile", "duplicate-profile-builder");
+        plugins.put("local_accuracy", "accuracy-builder");
+
+        builder.registerAll(descriptor, plugins, null);
+    }
+
+    @Test
     public void testSupportsPlugin() {
         VersionedPluginRegistry<String> registry =
                 VersionedPluginRegistry.<String>builder("TestRegistry")

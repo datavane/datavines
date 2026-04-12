@@ -215,32 +215,7 @@ public final class VersionedPluginRegistry<P> {
          */
         public Builder<P> register(PluginDescriptor descriptor, P plugin,
                                    PluginClassLoader classLoader) {
-            NavigableMap<PluginVersion, P> versions = map.get(descriptor.getPluginName());
-            if (versions == null) {
-                versions = new TreeMap<PluginVersion, P>();
-                map.put(descriptor.getPluginName(), versions);
-            }
-
-            P existing = versions.get(descriptor.getVersion());
-            if (existing != null) {
-                throw new DuplicateProviderException(
-                        registryName,
-                        descriptor.getPluginId(),
-                        existing.getClass().getName(),
-                        plugin.getClass().getName());
-            }
-            versions.put(descriptor.getVersion(), plugin);
-
-            if (classLoader != null) {
-                PluginClassLoader previous = classLoaders.get(descriptor.getPluginId());
-                if (previous != null) {
-                    throw new IllegalStateException(
-                            "Duplicate classloader for plugin " + descriptor.getPluginId());
-                }
-                classLoaders.put(descriptor.getPluginId(), classLoader);
-            }
-
-            return this;
+            return register(descriptor.getPluginName(), descriptor, plugin, classLoader);
         }
 
         /**
@@ -248,6 +223,76 @@ public final class VersionedPluginRegistry<P> {
          */
         public Builder<P> register(PluginDescriptor descriptor, P plugin) {
             return register(descriptor, plugin, null);
+        }
+
+        /**
+         * 以逻辑 key 注册插件。
+         *
+         * <p>逻辑 key 可以与 descriptor 中声明的 {@code plugin.name} 不同，
+         * 适用于同一 bundle 中一个 provider 暴露多个 key 的场景。
+         */
+        public Builder<P> register(String pluginName,
+                                   PluginDescriptor descriptor,
+                                   P plugin,
+                                   PluginClassLoader classLoader) {
+            Map<String, P> singleton = new LinkedHashMap<String, P>();
+            singleton.put(pluginName, plugin);
+            return registerAll(descriptor, singleton, classLoader);
+        }
+
+        /**
+         * 原子注册一组逻辑 key。
+         *
+         * <p>会先完成重复校验，再一次性写入，避免部分 key 注册成功、部分失败。
+         */
+        public Builder<P> registerAll(PluginDescriptor descriptor,
+                                      Map<String, P> keyedPlugins,
+                                      PluginClassLoader classLoader) {
+            PluginVersion version = descriptor.getVersion();
+
+            for (Map.Entry<String, P> entry : keyedPlugins.entrySet()) {
+                String pluginName = entry.getKey();
+                P plugin = entry.getValue();
+
+                NavigableMap<PluginVersion, P> versions = map.get(pluginName);
+                if (versions == null) {
+                    continue;
+                }
+                P existing = versions.get(version);
+                if (existing != null) {
+                    throw new DuplicateProviderException(
+                            registryName,
+                            pluginName + "@" + version,
+                            existing.getClass().getName(),
+                            plugin.getClass().getName());
+                }
+            }
+
+            if (classLoader != null) {
+                PluginClassLoader previous = classLoaders.get(descriptor.getPluginId());
+                if (previous != null && previous != classLoader) {
+                    throw new IllegalStateException(
+                            "Duplicate classloader for plugin " + descriptor.getPluginId());
+                }
+            }
+
+            for (Map.Entry<String, P> entry : keyedPlugins.entrySet()) {
+                String pluginName = entry.getKey();
+                P plugin = entry.getValue();
+
+                NavigableMap<PluginVersion, P> versions = map.get(pluginName);
+                if (versions == null) {
+                    versions = new TreeMap<PluginVersion, P>();
+                    map.put(pluginName, versions);
+                }
+                versions.put(version, plugin);
+            }
+
+            if (classLoader != null) {
+                classLoaders.put(descriptor.getPluginId(), classLoader);
+            }
+
+            return this;
         }
 
         public VersionedPluginRegistry<P> build() {

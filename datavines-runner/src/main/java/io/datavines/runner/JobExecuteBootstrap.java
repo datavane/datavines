@@ -24,6 +24,7 @@ import io.datavines.common.entity.job.SubmitJob;
 import io.datavines.common.enums.JobType;
 import io.datavines.common.utils.*;
 import io.datavines.engine.config.DataVinesConfigurationManager;
+import io.datavines.runner.plugin.RunnerPluginInitializer;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.HashMap;
@@ -50,6 +51,8 @@ public class JobExecuteBootstrap {
             log.info("parameter parse to submit job error");
             System.exit(1);
         }
+
+        RunnerPluginInitializer.initialize();
 
         long id = System.currentTimeMillis();
         JobExecutionInfo jobExecutionInfo = new JobExecutionInfo(
