@@ -32,6 +32,14 @@ Need: Maven 3.6.1 and later
 ```sh
 $ mvn clean package -Prelease -DskipTests
 ```
+
+## Metadata Database
+
+- The default `datavines-server` configuration uses `PostgreSQL`
+- Initialize a PostgreSQL metadata database with `scripts/sql/datavines-postgresql.sql`
+- If you want to run with `MySQL`, switch to the `mysql` Spring profile and initialize with `scripts/sql/datavines-mysql.sql`
+- The release package now contains both scripts in `${DATAVINES_HOME}/scripts/`
+
 ## Features
 
 ### Data Catalog

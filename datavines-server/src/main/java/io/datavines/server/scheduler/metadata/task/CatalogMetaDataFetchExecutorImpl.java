@@ -80,7 +80,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         this.dataSource = request.getDataSource();
 
         this.connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames)
-                
+
                 .getOrCreatePlugin(dataSource.getType());
 
         this.instanceService = SpringApplicationContext.getBean(CatalogEntityInstanceService.class);
@@ -181,8 +181,7 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         if (CollectionUtils.isNotEmpty(createDatabaseEntityList)) {
             for (String database : createDatabaseEntityList) {
                 DatabaseInfo databaseInfo = databaseInfoMap.get(database);
-                if ("sys".equals(databaseInfo.getName()) || "information_schema".equals(databaseInfo.getName()) ||
-                    "performance_schema".equals(databaseInfo.getName()) || "mysql".equals(databaseInfo.getName())) {
+                if (isSystemDatabase(dataSource.getType(), databaseInfo.getName())) {
                     continue;
                 }
 
@@ -711,5 +710,25 @@ public class CatalogMetaDataFetchExecutorImpl implements CatalogMetaDataFetchExe
         }
 
         return StringUtils.isNotEmpty(newType) && StringUtils.isNotEmpty(oldType) && !oldType.equals(newType);
+    }
+
+    private boolean isSystemDatabase(String dataSourceType, String databaseName) {
+        if (StringUtils.isEmpty(databaseName)) {
+            return true;
+        }
+
+        String normalizedDataSourceType = StringUtils.isEmpty(dataSourceType) ? "" : dataSourceType.toLowerCase();
+        String normalizedDatabaseName = databaseName.toLowerCase();
+
+        if ("postgresql".equals(normalizedDataSourceType) || "postgres".equals(normalizedDataSourceType)) {
+            return "postgres".equals(normalizedDatabaseName)
+                    || "template0".equals(normalizedDatabaseName)
+                    || "template1".equals(normalizedDatabaseName);
+        }
+
+        return "sys".equals(normalizedDatabaseName)
+                || "information_schema".equals(normalizedDatabaseName)
+                || "performance_schema".equals(normalizedDatabaseName)
+                || "mysql".equals(normalizedDatabaseName);
     }
 }

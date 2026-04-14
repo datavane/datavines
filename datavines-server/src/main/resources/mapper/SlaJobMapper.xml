@@ -63,7 +63,7 @@
                     ON dsj.job_id = dj.id
         <where>
             <if test="searchVal != null">
-                LOWER(dj.`name`) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
+                LOWER(dj.name) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
             </if>
         </where>
         ORDER BY dsj.update_time DESC

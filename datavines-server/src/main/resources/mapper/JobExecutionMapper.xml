@@ -82,7 +82,7 @@
     </sql>
 
     <sql id="basic_sql_2">
-        select DATE_FORMAT(create_time, '%Y-%m-%d') AS create_date, status  from dv_job_execution
+        select TO_CHAR(create_time, 'YYYY-MM-DD') AS create_date, status from dv_job_execution
         <where>
             <if test="metricType != null">
                 and metric_type = #{metricType}
@@ -113,7 +113,7 @@
         from (<include refid="basic_sql"/>) p
         <where>
             <if test="searchVal != null">
-                LOWER(p.`name`) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
+                LOWER(p.name) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
             </if>
             <if test="schemaSearch != null and schemaSearch != ''">
                 AND LOWER(p.schema_name) LIKE CONCAT(CONCAT('%', LOWER(#{schemaSearch})), '%')
@@ -130,7 +130,7 @@
     </select>
 
     <select id="getJobExecutionAggPie" resultType="io.datavines.server.api.dto.vo.JobExecutionAggItem">
-        select p.status as `name`, count(1) as `value` from (<include refid="basic_sql_1"/>) p GROUP BY p.status
+        select p.status as name, count(1) as value from (<include refid="basic_sql_1"/>) p GROUP BY p.status
     </select>
 
     <select id="getJobExecutionTrendBar" resultType="io.datavines.server.api.dto.vo.JobExecutionTrendBarItem">
@@ -140,8 +140,8 @@
     <select id="getJobExecutionStat" resultType="io.datavines.server.api.dto.vo.JobExecutionStat">
         select p.job_id,
                count(1) as total_count,
-               sum(if(status = 6, 1, 0)) as fail_count,
-               sum(if(status = 7, 1, 0)) as success_count,
+               sum(case when status = 6 then 1 else 0 end) as fail_count,
+               sum(case when status = 7 then 1 else 0 end) as success_count,
                max(start_time) as last_job_execution_time,
                min(start_time) as first_job_execution_time
         from dv_job_execution p

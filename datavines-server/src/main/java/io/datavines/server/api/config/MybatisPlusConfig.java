@@ -19,16 +19,32 @@ package io.datavines.server.api.config;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import javax.sql.DataSource;
 
 @Configuration
 public class MybatisPlusConfig {
 
     @Bean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    public MybatisPlusInterceptor mybatisPlusInterceptor(DataSource dataSource) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(DbType.MYSQL));
+        interceptor.addInnerInterceptor(new PaginationInnerInterceptor(resolveDbType(dataSource)));
         return interceptor;
+    }
+
+    private DbType resolveDbType(DataSource dataSource) {
+        if (dataSource instanceof HikariDataSource) {
+            HikariDataSource hikariDataSource = (HikariDataSource) dataSource;
+            String jdbcUrl = hikariDataSource.getJdbcUrl();
+            String driverClassName = hikariDataSource.getDriverClassName();
+            if ((jdbcUrl != null && jdbcUrl.contains("postgresql"))
+                    || (driverClassName != null && driverClassName.contains("postgresql"))) {
+                return DbType.POSTGRE_SQL;
+            }
+        }
+        return DbType.MYSQL;
     }
 }
