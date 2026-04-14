@@ -16,12 +16,16 @@
  */
 package io.datavines.spi.classloader;
 
+import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 插件隔离 ClassLoader，每个 (pluginName + version) 独享一个实例。
@@ -30,11 +34,12 @@ import java.util.List;
  * <ol>
  *   <li>先检查已加载缓存</li>
  *   <li>SPI 白名单包 → 强制从 {@code spiClassLoader} 加载，确保接口 Class 对象唯一</li>
- *   <li>其他 → 从插件自身 URL 集合加载（父为 Extension ClassLoader，避免宿主实现类泄漏）</li>
+ *   <li>其他 → 优先从插件自身 URL 集合加载；本地不存在时再回退到宿主 ClassLoader</li>
  * </ol>
  *
- * <p>SPI 包白名单保证：无论插件 JAR 中是否打包了相同类，关键接口始终来自同一个 ClassLoader，
- * 避免 {@code ClassCastException} 等跨 ClassLoader 类型不兼容问题。
+ * <p>SPI 包白名单保证：无论插件 JAR 中是否打包了相同类，关键接口与共享注解始终来自同一个
+ * ClassLoader，避免 {@code ClassCastException}、Jackson 注解失效等跨 ClassLoader
+ * 类型不兼容问题。非白名单类走 plugin-first，可让插件私有依赖按版本隔离。
  */
 public final class PluginClassLoader extends URLClassLoader {
 
@@ -82,10 +87,9 @@ public final class PluginClassLoader extends URLClassLoader {
      */
     public PluginClassLoader(String pluginId, List<URL> urls,
                              ClassLoader spiClassLoader, List<String> spiPackages) {
-        // 父为 spiClassLoader（即宿主 AppClassLoader），使插件可访问 libs/ 中的服务器类和共享依赖。
-        // SPI 及共享 API 包通过白名单机制强制委托给 spiClassLoader，保证跨 ClassLoader 的类型唯一。
-        // 如需完全隔离，可将父改为 ClassLoader.getSystemClassLoader().getParent()，
-        // 但届时每个插件目录必须自包含所有非 SPI 依赖（包括 datavines-connector-jdbc 等）。
+        // 父仍为 spiClassLoader，使插件在本地缺失非 SPI 类时可以回退到宿主 libs/ 中的共享依赖。
+        // 真正的查找顺序由 loadClass/getResource/getResources 控制，而不是 URLClassLoader 默认的
+        // parent-first 语义：SPI 白名单始终走父加载器，其他类/资源先查插件自身，再回退宿主。
         super(urls.toArray(new URL[0]), spiClassLoader);
         this.pluginId = pluginId;
         this.spiClassLoader = spiClassLoader;
@@ -121,8 +125,12 @@ public final class PluginClassLoader extends URLClassLoader {
                 }
             }
 
-            // 3. 插件自身的类
-            return super.loadClass(name, resolve);
+            // 3. 其他类：plugin-first；本地不存在再回退到宿主
+            try {
+                return resolveIfNeeded(findClass(name), resolve);
+            } catch (ClassNotFoundException ignored) {
+                return resolveIfNeeded(super.loadClass(name, false), resolve);
+            }
         }
     }
 
@@ -131,7 +139,23 @@ public final class PluginClassLoader extends URLClassLoader {
         if (isSpiResource(name)) {
             return spiClassLoader.getResource(name);
         }
-        return super.getResource(name);
+        URL local = findResource(name);
+        if (local != null) {
+            return local;
+        }
+        return spiClassLoader.getResource(name);
+    }
+
+    @Override
+    public Enumeration<URL> getResources(String name) throws IOException {
+        if (isSpiResource(name)) {
+            return spiClassLoader.getResources(name);
+        }
+
+        Set<URL> resources = new LinkedHashSet<URL>();
+        appendResources(resources, findResources(name));
+        appendResources(resources, spiClassLoader.getResources(name));
+        return Collections.enumeration(resources);
     }
 
     /**
@@ -167,6 +191,12 @@ public final class PluginClassLoader extends URLClassLoader {
     private boolean existsLocally(String name) {
         String path = name.replace('.', '/') + ".class";
         return findResource(path) != null;
+    }
+
+    private void appendResources(Set<URL> target, Enumeration<URL> resources) {
+        while (resources.hasMoreElements()) {
+            target.add(resources.nextElement());
+        }
     }
 
     private Class<?> resolveIfNeeded(Class<?> clazz, boolean resolve) {
