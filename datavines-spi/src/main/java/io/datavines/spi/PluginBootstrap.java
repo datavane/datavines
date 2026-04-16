@@ -28,21 +28,7 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * 通用插件系统启动器。
- *
- * <p>对调用方而言，只需提供：
- * <ul>
- *   <li>插件目录配置</li>
- *   <li>待加载的 SPI 注册规范</li>
- * </ul>
- *
- * <p>启动器负责：
- * <ol>
- *   <li>解析 plugins 目录</li>
- *   <li>判断是否进入目录模式</li>
- *   <li>按模块扫描并构建 {@link VersionedPluginRegistry}</li>
- *   <li>统一注入 {@link PluginDiscoveryBootstrap}</li>
- * </ol>
+ * Bootstraps plugin discovery from either the plugins directory or the classpath.
  */
 public final class PluginBootstrap {
 

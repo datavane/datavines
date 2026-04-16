@@ -23,20 +23,7 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * 版本约束表达式，用于匹配 {@link PluginVersion}。
- *
- * <p>支持的语法：
- * <ul>
- *   <li>{@code "8.0.33"} — 精确匹配</li>
- *   <li>{@code ">=8.0.0"} — 大于等于</li>
- *   <li>{@code ">8.0.0"} — 严格大于</li>
- *   <li>{@code "<=9.0.0"} — 小于等于</li>
- *   <li>{@code "<9.0.0"} — 严格小于</li>
- *   <li>{@code ">=8.0.0 <9.0.0"} — 范围（空格分隔多个条件，AND 语义）</li>
- *   <li>{@code "*"} 或 {@code "latest"} — 任意版本</li>
- * </ul>
- *
- * <p>也支持 Maven 风格的范围表达式：{@code "[1.0.0,2.0.0)"} 表示 {@code >=1.0.0 <2.0.0}。
+ * Parses and evaluates version constraints against {@link PluginVersion}.
  */
 public final class VersionConstraint {
 
@@ -51,13 +38,6 @@ public final class VersionConstraint {
         this.expression = expression;
     }
 
-    /**
-     * 解析版本约束表达式。
-     *
-     * @param expression 约束表达式
-     * @return 解析后的 VersionConstraint
-     * @throws IllegalArgumentException 表达式格式非法
-     */
     public static VersionConstraint parse(String expression) {
         if (expression == null || expression.trim().isEmpty()) {
             throw new IllegalArgumentException("Version constraint expression must not be null or empty");
@@ -65,17 +45,14 @@ public final class VersionConstraint {
 
         String trimmed = expression.trim();
 
-        // 通配符
         if ("*".equals(trimmed) || "latest".equalsIgnoreCase(trimmed)) {
             return ANY;
         }
 
-        // Maven 风格范围：[1.0.0,2.0.0) 或 (1.0.0,2.0.0]
         if (isMavenRange(trimmed)) {
             return parseMavenRange(trimmed);
         }
 
-        // 空格分隔的多条件
         String[] parts = trimmed.split("\\s+");
         List<Condition> conditions = new ArrayList<Condition>();
         for (String part : parts) {
@@ -85,9 +62,6 @@ public final class VersionConstraint {
         return new VersionConstraint(conditions, trimmed);
     }
 
-    /**
-     * 检查给定版本是否满足此约束。
-     */
     public boolean matches(PluginVersion version) {
         if (conditions.isEmpty()) {
             return true; // ANY
@@ -100,12 +74,6 @@ public final class VersionConstraint {
         return true;
     }
 
-    /**
-     * 从满足约束的版本集合中选出最新的。
-     *
-     * @param candidates 候选版本集合
-     * @return 满足约束的最新版本，或空
-     */
     public PluginVersion selectLatest(Collection<PluginVersion> candidates) {
         PluginVersion best = null;
         for (PluginVersion v : candidates) {
@@ -122,8 +90,6 @@ public final class VersionConstraint {
     public String toString() {
         return expression;
     }
-
-    // ── Maven 范围解析 ──────────────────────────────────────────
 
     private static boolean isMavenRange(String expr) {
         return (expr.startsWith("[") || expr.startsWith("("))
@@ -158,8 +124,6 @@ public final class VersionConstraint {
         return new VersionConstraint(conditions, expr);
     }
 
-    // ── 单条件解析 ──────────────────────────────────────────────
-
     private static Condition parseCondition(String part) {
         if (part.startsWith(">=")) {
             return new Condition(Operator.GTE, PluginVersion.of(part.substring(2).trim()));
@@ -172,12 +136,9 @@ public final class VersionConstraint {
         } else if (part.startsWith("=")) {
             return new Condition(Operator.EQ, PluginVersion.of(part.substring(1).trim()));
         } else {
-            // 无操作符 → 精确匹配
             return new Condition(Operator.EQ, PluginVersion.of(part.trim()));
         }
     }
-
-    // ── 内部类 ──────────────────────────────────────────────────
 
     private enum Operator {
         EQ, GT, GTE, LT, LTE

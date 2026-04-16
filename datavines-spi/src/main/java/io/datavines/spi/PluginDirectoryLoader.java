@@ -38,29 +38,10 @@ import java.util.Map;
 import java.util.function.Function;
 
 /**
- * 从文件系统目录扫描并加载多版本插件。
+ * Loads plugins from versioned directories.
  *
- * <p>目录规范。module/name/version 均以 JAR 内
- * {@code META-INF/datavines-plugin.properties} 的 {@code plugin.module}、
- * {@code plugin.name}、{@code plugin.version} 为准：
- * <pre>
- * {plugin.dir}/
- * ├── connector/
- * │   ├── mysql/
- * │   │   ├── 5.7.44/
- * │   │   │   ├── datavines-connector-mysql-5.7.44.jar
- * │   │   │   └── mysql-connector-j-5.1.49.jar
- * │   │   └── 8.0.33/
- * │   │       ├── datavines-connector-mysql-8.0.33.jar
- * │   │       └── mysql-connector-j-8.0.33.jar
- * │   └── postgresql/
- * │       └── 42.7.0/
- * │           └── datavines-connector-postgresql.jar
- * </pre>
- *
- * <p>扫描逻辑：标准结构为三层目录 {@code plugins/{module}/{name}/{version}/}，
- * 同时兼容旧的两层目录 {@code plugins/{name}/{version}/}。
- * 每个版本目录创建独立的 {@link PluginClassLoader}，实现类加载隔离。
+ * <p>The canonical layout is {@code plugins/{module}/{name}/{version}/}, but the
+ * legacy {@code plugins/{name}/{version}/} layout is still accepted.
  */
 public final class PluginDirectoryLoader {
 
@@ -71,25 +52,11 @@ public final class PluginDirectoryLoader {
     private final List<String> spiPackages;
     private final PluginVersion currentHostVersion;
 
-    /**
-     * 使用默认配置构造。
-     *
-     * @param pluginRootDirs 插件根目录列表
-     * @param spiClassLoader SPI 接口所在的 ClassLoader
-     */
     public PluginDirectoryLoader(List<Path> pluginRootDirs, ClassLoader spiClassLoader) {
         this(pluginRootDirs, spiClassLoader,
                 PluginClassLoader.DEFAULT_SPI_PACKAGES, null);
     }
 
-    /**
-     * 完整参数构造。
-     *
-     * @param pluginRootDirs     插件根目录列表
-     * @param spiClassLoader     SPI 接口所在的 ClassLoader
-     * @param spiPackages        SPI 白名单包前缀列表
-     * @param currentHostVersion 当前宿主版本（用于兼容性校验，null 表示跳过校验）
-     */
     public PluginDirectoryLoader(List<Path> pluginRootDirs, ClassLoader spiClassLoader,
                                  List<String> spiPackages, PluginVersion currentHostVersion) {
         this.pluginRootDirs = Collections.unmodifiableList(new ArrayList<Path>(pluginRootDirs));
@@ -98,21 +65,12 @@ public final class PluginDirectoryLoader {
         this.currentHostVersion = currentHostVersion;
     }
 
-    /**
-     * 加载某个 SPI 接口的所有版本插件，返回 {@link VersionedPluginRegistry}。
-     *
-     * @param serviceType SPI 接口（如 ConnectorFactory.class）
-     * @return 包含所有已发现版本的注册表
-     */
     public <P> VersionedPluginRegistry<P> load(Class<P> serviceType) {
         return loadInternal(serviceType, null);
     }
 
     /**
-     * 加载支持多逻辑 key 的 SPI。
-     *
-     * <p>同一个 provider 可以通过 {@code keysExtractor} 暴露多个逻辑名称，
-     * 这些逻辑名称将被分别注册到 {@link VersionedPluginRegistry}。
+     * Loads an SPI where one provider may expose multiple logical keys.
      */
     public <P> VersionedPluginRegistry<P> loadMultiKey(
             Class<P> serviceType, Function<P, Collection<String>> keysExtractor) {
@@ -148,7 +106,7 @@ public final class PluginDirectoryLoader {
             return;
         }
 
-        // 从目录名推断 bundle name 和 version。逻辑插件名以 descriptor 为准。
+        // Directory names provide fallback metadata. Logical keys always come from the descriptor/provider.
         Path nameDir = versionDir.getParent();
         if (nameDir == null) {
             log.warn("Skipping malformed plugin version directory without parent: {}", versionDir);
@@ -164,22 +122,18 @@ public final class PluginDirectoryLoader {
                 pluginId, urls, spiClassLoader, spiPackages);
 
         try {
-            // 从 JAR 内读取 descriptor
             PluginDescriptor descriptor = PluginDescriptor.load(classLoader);
             if (descriptor == null) {
                 log.warn("Missing {} in plugin jars under {}. "
                         + "Using inferred metadata: name={}, version={}",
                         PluginDescriptor.DESCRIPTOR_PATH, versionDir,
                         inferredBundleName, inferredVersion);
-                // 容错：使用推断的元数据
                 descriptor = PluginDescriptor.of(inferredBundleName, inferredModule, inferredVersion,
                         "0.0.0", "", "");
             }
 
-            // 校验 descriptor 与目录结构一致性
             validateDescriptor(descriptor, inferredModule, inferredBundleName, inferredVersion);
 
-            // 宿主版本兼容性校验
             if (currentHostVersion != null && !descriptor.isCompatibleWith(currentHostVersion)) {
                 log.warn("Plugin {} is not compatible with host version {}. "
                         + "Declared range: {}. Skipping.",
@@ -196,7 +150,6 @@ public final class PluginDirectoryLoader {
                 List<P> providers = ServiceLoaderUtils.loadAll(serviceType, classLoader);
 
                 if (providers.isEmpty()) {
-                    // 此目录不包含该 SPI 类型的实现，正常跳过
                     log.debug("No {} provider found in {}, skipping", serviceType.getSimpleName(), versionDir);
                     return;
                 }
@@ -265,8 +218,7 @@ public final class PluginDirectoryLoader {
     }
 
     /**
-     * 扫描所有 plugins/{module}/{name}/{version}/ 目录，同时兼容 plugins/{name}/{version}/。
-     * 使用显式 try-with-resources 管理 DirectoryStream，避免资源泄漏。
+     * Scans plugin version directories under all configured roots.
      */
     private List<Path> scanVersionDirs() {
         List<Path> result = new ArrayList<Path>();
@@ -277,7 +229,6 @@ public final class PluginDirectoryLoader {
                 continue;
             }
 
-            // 标准结构：root/module/name/version；兼容旧结构：root/name/version。
             List<Path> firstLevelDirs = listDirectories(root);
             for (Path firstLevelDir : firstLevelDirs) {
                 List<Path> secondLevelDirs = listDirectories(firstLevelDir);
@@ -296,10 +247,6 @@ public final class PluginDirectoryLoader {
         return result;
     }
 
-    /**
-     * 列出指定目录下的所有子目录（不递归）。
-     * 使用 DirectoryStream + try-with-resources 确保资源正确关闭。
-     */
     private List<Path> listDirectories(Path parent) {
         List<Path> dirs = new ArrayList<Path>();
         DirectoryStream<Path> stream = null;
@@ -325,7 +272,7 @@ public final class PluginDirectoryLoader {
     }
 
     /**
-     * 收集目录下所有 .jar 文件的 URL。
+     * Collects all JAR URLs from a plugin version directory.
      */
     private List<URL> collectJars(Path dir) {
         List<URL> urls = new ArrayList<URL>();
@@ -367,7 +314,7 @@ public final class PluginDirectoryLoader {
     }
 
     /**
-     * 校验描述符与目录结构的一致性。
+     * Ensures descriptor metadata matches the directory layout being loaded.
      */
     private void validateDescriptor(PluginDescriptor descriptor,
                                     String inferredModule,

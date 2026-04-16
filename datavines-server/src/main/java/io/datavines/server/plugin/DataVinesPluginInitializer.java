@@ -37,64 +37,17 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * DataVines 插件初始化器。
- *
- * <p>支持两种加载模式，在启动时自动选择：
- *
- * <h3>1. 目录模式（生产环境）</h3>
- * <p>当 {@code plugins/} 目录存在且包含版本化子目录时，使用
- * {@link PluginDirectoryLoader} + {@link PluginDiscoveryBootstrap}，
- * 实现 ClassLoader 隔离，支持多版本同一插件并存。
- * <pre>
- * {deploy.dir}/
- * ├── plugins/
- * │   ├── connector/
- * │   │   └── mysql/
- * │   │       └── 1.0.0-SNAPSHOT/
- * │   │           ├── datavines-connector-mysql-1.0.0-SNAPSHOT.jar
- * │   │           └── mysql-connector-j-*.jar
- * │   └── registry/
- * │       └── mysql/
- * │           └── 1.0.0-SNAPSHOT/
- * │               └── datavines-registry-mysql-1.0.0-SNAPSHOT.jar
- * ├── libs/     (server + common runtime libraries)
- * └── engine/   (spark/flink JARs for job submission)
- * </pre>
- *
- * <h3>2. Classpath 模式（测试 / 特殊开发环境）</h3>
- * <p>当 {@code plugins/} 目录不存在或为空时，退回到
- * {@link ClasspathPluginLoader}：通过 {@link java.util.ServiceLoader} 在
- * 当前 classpath 上扫描所有插件实现，并读取各 JAR 内的
- * {@code META-INF/datavines-plugin.properties} 来获取版本信息。
- * <br>此模式要求插件实现模块也在当前 classpath 上。IntelliJ IDEA 直接运行
- * {@code datavines-server} 时默认只有 server 依赖，通常不会包含各插件实现，
- * 因此推荐在 IDEA 中也显式配置 {@code -Ddatavines.plugins.dir=/absolute/path/to/plugins}
- * 使用目录模式。
- *
- * <h3>插件目录配置</h3>
- * <ul>
- *   <li>System property {@code datavines.plugins.dir}：覆盖默认路径</li>
- *   <li>默认：工作目录下的 {@code plugins/} 子目录</li>
- * </ul>
- *
- * <h3>使用方式</h3>
- * <pre>{@code
- * // 在 DataVinesServer.initializeAndStart() 的最开始调用
- * DataVinesPluginInitializer.initialize();
- * }</pre>
+ * Plugin bootstrap entrypoint for the server process.
  */
 public final class DataVinesPluginInitializer {
 
     private static final Logger log = LoggerFactory.getLogger(DataVinesPluginInitializer.class);
 
     /**
-     * System property 用于覆盖 plugins 目录路径。
-     * 可在 IDEA Run Configuration 的 VM Options 中设置：
-     * {@code -Ddatavines.plugins.dir=/absolute/path/to/plugins}
+     * Overrides the default plugins directory.
      */
     public static final String PLUGINS_DIR_PROPERTY = "datavines.plugins.dir";
 
-    /** 默认 plugins 目录名（相对于工作目录）。 */
     private static final String DEFAULT_PLUGINS_DIR = "plugins";
 
     private static final List<PluginBootstrap.SpiRegistration<?>> REGISTRATIONS =
@@ -119,15 +72,6 @@ public final class DataVinesPluginInitializer {
 
     private DataVinesPluginInitializer() {}
 
-    /**
-     * 初始化插件系统。应在任何 {@link io.datavines.spi.PluginDiscovery} 调用之前执行。
-     *
-     * <p>自动选择加载模式：
-     * <ul>
-     *   <li>plugins 目录存在且含有版本化子目录 → 目录模式（生产）</li>
-     *   <li>plugins 目录不存在或为空 → classpath 模式（IDE/开发）</li>
-     * </ul>
-     */
     public static void initialize() {
         PluginBootstrap.initialize(
                 "DataVines Plugin System",
@@ -138,8 +82,7 @@ public final class DataVinesPluginInitializer {
     }
 
     /**
-     * 在生产部署目录下创建 plugins 占位说明文件（如果目录不存在则创建）。
-     * 在 dist 解包后调用一次，方便运维理解目录用途。
+     * Writes a short README into an empty deployment plugins directory.
      */
     public static void createPluginsDirIfMissing(File deployDir) {
         File pluginsDir = new File(deployDir, DEFAULT_PLUGINS_DIR);

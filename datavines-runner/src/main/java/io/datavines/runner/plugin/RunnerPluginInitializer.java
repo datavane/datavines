@@ -30,10 +30,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Runner 进程专用插件初始化器。
- *
- * <p>Runner 没有依赖 server 模块，因此需要在本模块中声明所需的 SPI 注册表。
- * 启动逻辑仍复用 {@link PluginBootstrap}，确保目录模式语义与 server 一致。
+ * Plugin bootstrap entrypoint for the runner process.
  */
 public final class RunnerPluginInitializer {
 

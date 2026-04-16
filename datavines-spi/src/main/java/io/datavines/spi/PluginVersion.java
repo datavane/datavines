@@ -21,24 +21,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 语义化版本：MAJOR.MINOR.PATCH[-qualifier]
- *
- * <p>实现 {@link Comparable}，比较顺序：MAJOR → MINOR → PATCH → qualifier（无 qualifier 优先于有 qualifier）。
- * 可安全用作 {@link java.util.TreeMap} 的 Key。
- *
- * <p>示例：
- * <pre>{@code
- * PluginVersion v = PluginVersion.of("8.0.33");
- * PluginVersion v2 = PluginVersion.of("8.0.33-beta1");
- * v.compareTo(v2); // > 0 （无 qualifier 视为正式版，排在 qualifier 之后）
- * }</pre>
+ * Semantic version in the form {@code MAJOR.MINOR[.PATCH][-qualifier]}.
  */
 public final class PluginVersion implements Comparable<PluginVersion> {
 
-    /**
-     * 支持的版本格式：MAJOR.MINOR.PATCH[-qualifier]
-     * 其中 MAJOR 和 MINOR 必须，PATCH 可选（默认为 0），qualifier 可选。
-     */
     private static final Pattern VERSION_PATTERN =
             Pattern.compile("^(\\d+)\\.(\\d+)(?:\\.(\\d+))?(?:-(.+))?$");
 
@@ -57,13 +43,6 @@ public final class PluginVersion implements Comparable<PluginVersion> {
         this.qualifier = qualifier;
     }
 
-    /**
-     * 从字符串解析版本号。
-     *
-     * @param version 版本字符串，如 "8.0.33"、"8.0"、"1.0.0-SNAPSHOT"
-     * @return 解析后的 PluginVersion
-     * @throws IllegalArgumentException 格式不合法
-     */
     public static PluginVersion of(String version) {
         if (version == null || version.trim().isEmpty()) {
             throw new IllegalArgumentException("Version string must not be null or empty");
@@ -100,9 +79,6 @@ public final class PluginVersion implements Comparable<PluginVersion> {
         return qualifier != null;
     }
 
-    /**
-     * 检查是否满足给定的版本约束。
-     */
     public boolean satisfies(VersionConstraint constraint) {
         return constraint.matches(this);
     }
@@ -121,12 +97,12 @@ public final class PluginVersion implements Comparable<PluginVersion> {
         if (cmp != 0) {
             return cmp;
         }
-        // 无 qualifier（正式版）> 有 qualifier（预发布版）
+        // A release sorts after its pre-release variants.
         if (this.qualifier == null && other.qualifier == null) {
             return 0;
         }
         if (this.qualifier == null) {
-            return 1; // 正式版排在预发布版之后（更新）
+            return 1;
         }
         if (other.qualifier == null) {
             return -1;

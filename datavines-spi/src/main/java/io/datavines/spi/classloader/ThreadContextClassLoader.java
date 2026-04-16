@@ -17,20 +17,7 @@
 package io.datavines.spi.classloader;
 
 /**
- * 临时切换线程上下文 ClassLoader 的工具类。
- *
- * <p>使用 try-with-resources 模式自动还原原始 ClassLoader，
- * 避免因异常导致 ClassLoader 泄漏。
- *
- * <p>使用示例：
- * <pre>{@code
- * try (ThreadContextClassLoader ignored = new ThreadContextClassLoader(pluginClassLoader)) {
- *     ServiceLoader<ConnectorFactory> loader =
- *         ServiceLoader.load(ConnectorFactory.class, pluginClassLoader);
- *     // ...
- * }
- * // 此处 ClassLoader 已自动还原
- * }</pre>
+ * Temporarily swaps the thread context classloader and restores it on close.
  */
 public final class ThreadContextClassLoader implements AutoCloseable {
 

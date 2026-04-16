@@ -26,20 +26,7 @@ import java.util.Enumeration;
 import java.util.Properties;
 
 /**
- * 插件描述符，从 {@code META-INF/datavines-plugin.properties} 加载。
- *
- * <p>描述符声明了插件的名称、版本、SPI 版本兼容性等元数据。
- * 每个插件 JAR 应包含一份描述符文件。
- *
- * <p>属性文件示例：
- * <pre>
- * plugin.name=mysql
- * plugin.module=connector
- * plugin.version=8.0.33
- * plugin.spi.version=1.0.0
- * plugin.main.version.range=[1.0.0,2.0.0)
- * plugin.description=MySQL connector based on mysql-connector-j 8.0
- * </pre>
+ * Parsed contents of {@code META-INF/datavines-plugin.properties}.
  */
 public final class PluginDescriptor {
 
@@ -72,15 +59,6 @@ public final class PluginDescriptor {
         this.description = description;
     }
 
-    /**
-     * 从 ClassLoader 中加载插件描述符。
-     *
-     * <p>扫描 ClassLoader 可见的所有 {@value DESCRIPTOR_PATH} 资源，
-     * 返回第一个成功解析的描述符。
-     *
-     * @param classLoader 插件的 ClassLoader
-     * @return 解析的描述符，若不存在则返回 null
-     */
     public static PluginDescriptor load(ClassLoader classLoader) {
         try {
             Enumeration<URL> resources = classLoader.getResources(DESCRIPTOR_PATH);
@@ -131,18 +109,12 @@ public final class PluginDescriptor {
         return null;
     }
 
-    /**
-     * 手动构建描述符（用于测试或编程式注册）。
-     */
     public static PluginDescriptor of(String pluginName, String version) {
         return new PluginDescriptor(
                 pluginName, "", PluginVersion.of(version),
                 PluginVersion.ZERO, "", "");
     }
 
-    /**
-     * 手动构建描述符（完整参数，含模块）。
-     */
     public static PluginDescriptor of(String pluginName, String pluginModule, String version,
                                       String spiVersion, String mainVersionRange,
                                       String description) {
@@ -154,9 +126,6 @@ public final class PluginDescriptor {
                 description != null ? description : "");
     }
 
-    /**
-     * 手动构建描述符（无模块，兼容旧代码）。
-     */
     public static PluginDescriptor of(String pluginName, String version,
                                       String spiVersion, String mainVersionRange,
                                       String description) {
@@ -167,10 +136,6 @@ public final class PluginDescriptor {
         return pluginName;
     }
 
-    /**
-     * 返回插件所属模块，如 "connector"、"metric"、"engine"。
-     * 对应 {@code datavines-plugin.properties} 中的 {@code plugin.module} 字段。
-     */
     public String getPluginModule() {
         return pluginModule;
     }
@@ -183,9 +148,6 @@ public final class PluginDescriptor {
         return spiVersion;
     }
 
-    /**
-     * 返回插件唯一标识：{name}@{version}，如 "mysql@8.0.33"。
-     */
     public String getPluginId() {
         return pluginName + "@" + version;
     }
@@ -198,12 +160,6 @@ public final class PluginDescriptor {
         return description;
     }
 
-    /**
-     * 检查此插件是否与指定的宿主版本兼容。
-     *
-     * @param hostVersion 宿主（DataVines）版本
-     * @return 如果未声明版本范围，返回 true；否则按约束匹配
-     */
     public boolean isCompatibleWith(PluginVersion hostVersion) {
         if (mainVersionRange == null || mainVersionRange.isEmpty()) {
             return true;

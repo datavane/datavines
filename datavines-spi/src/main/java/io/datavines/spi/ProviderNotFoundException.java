@@ -19,7 +19,7 @@ package io.datavines.spi;
 import java.util.Set;
 
 /**
- * 找不到指定 Key 对应的 Provider 时抛出。
+ * Raised when a registry lookup cannot find a provider for the requested key.
  */
 public class ProviderNotFoundException extends RuntimeException {
 

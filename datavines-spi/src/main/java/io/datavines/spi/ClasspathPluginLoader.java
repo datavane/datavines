@@ -33,34 +33,9 @@ import java.util.Properties;
 import java.util.function.Function;
 
 /**
- * 从当前 classpath 扫描并加载多版本插件（用于 IDE/开发模式）。
+ * Loads plugins from the application classpath.
  *
- * <p>在 IDE（如 IntelliJ IDEA）中运行时，所有插件模块都在同一个 ClassLoader 上，
- * 不支持真正的 ClassLoader 隔离。但仍然可以通过读取各插件的
- * {@code META-INF/datavines-plugin.properties} 来构建 {@link VersionedPluginRegistry}，
- * 获得版本感知能力。
- *
- * <p>加载流程：
- * <ol>
- *   <li>使用 ServiceLoader 发现所有插件实现</li>
- *   <li>扫描 classpath 上所有 datavines-plugin.properties 文件，构建插件名→描述符索引</li>
- *   <li>对每个实现类，通过 keyExtractor 提取插件名，匹配描述符</li>
- *   <li>注册到 VersionedPluginRegistry</li>
- *   <li>无描述符的插件使用默认版本 "0.0.0"</li>
- * </ol>
- *
- * <p>使用示例：
- * <pre>{@code
- * ClasspathPluginLoader loader = new ClasspathPluginLoader();
- *
- * // 单 key 插件
- * VersionedPluginRegistry<ConnectorFactory> registry =
- *     loader.load(ConnectorFactory.class, ConnectorFactory::getPluginName);
- *
- * // 多 key 插件
- * VersionedPluginRegistry<ExpectedValue> registry =
- *     loader.loadMultiKey(ExpectedValue.class, ExpectedValue::getPluginNames);
- * }</pre>
+ * <p>This mode keeps version metadata but does not provide classloader isolation.
  */
 public final class ClasspathPluginLoader {
 
@@ -78,13 +53,6 @@ public final class ClasspathPluginLoader {
         this.classLoader = classLoader;
     }
 
-    /**
-     * 从 classpath 加载单 key 插件。
-     *
-     * @param serviceType  SPI 接口
-     * @param keyExtractor 从插件实例提取名称的函数
-     * @return VersionedPluginRegistry
-     */
     public <P> VersionedPluginRegistry<P> load(Class<P> serviceType, Function<P, String> keyExtractor) {
         DescriptorIndex descriptorIndex = scanDescriptors();
         List<P> providers = ServiceLoaderUtils.loadAll(serviceType, classLoader);
@@ -112,13 +80,6 @@ public final class ClasspathPluginLoader {
         return registry;
     }
 
-    /**
-     * 从 classpath 加载多 key 插件（同一个实例注册多个名称）。
-     *
-     * @param serviceType   SPI 接口
-     * @param keysExtractor 从插件实例提取多个名称的函数
-     * @return VersionedPluginRegistry
-     */
     public <P> VersionedPluginRegistry<P> loadMultiKey(Class<P> serviceType,
                                                         Function<P, Collection<String>> keysExtractor) {
         DescriptorIndex descriptorIndex = scanDescriptors();
@@ -155,16 +116,7 @@ public final class ClasspathPluginLoader {
     }
 
     /**
-     * 描述符索引，支持双重匹配策略：
-     * <ol>
-     *   <li>按 plugin.name 精确匹配（适合单 key 插件）</li>
-     *   <li>按类来源 URL 匹配（适合多 key 插件，同一模块注册多个名称）</li>
-     * </ol>
-     *
-     * <p>在 IDE 模式下，provider 类来自 target/classes/ 目录，描述符 URL 类似：
-     * {@code file:/path/to/module/target/classes/META-INF/datavines-plugin.properties}。
-     * provider 的 CodeSource URL 类似：{@code file:/path/to/module/target/classes/}。
-     * 当 descriptor URL 以 CodeSource URL 为前缀时，即表示来自同一模块。
+     * Matches providers to descriptors by logical name first, then by class origin.
      */
     static final class DescriptorIndex {
         private final Map<String, PluginDescriptor> byName;
@@ -176,18 +128,12 @@ public final class ClasspathPluginLoader {
             this.byUrlPrefix = byUrlPrefix;
         }
 
-        /**
-         * 查找匹配的描述符。优先按名称匹配，其次按类来源 URL 匹配。
-         * 都找不到则创建默认描述符。
-         */
         <P> PluginDescriptor findDescriptor(String pluginName, P provider) {
-            // 1. 按 plugin.name 精确匹配
             PluginDescriptor descriptor = byName.get(pluginName);
             if (descriptor != null) {
                 return descriptor;
             }
 
-            // 2. 按类来源 URL 匹配（同一模块的不同 plugin name）
             descriptor = findByClassOrigin(provider);
             if (descriptor != null) {
                 log.debug("Matched plugin '{}' to descriptor {} by class origin",
@@ -195,7 +141,6 @@ public final class ClasspathPluginLoader {
                 return descriptor;
             }
 
-            // 3. 回退：使用默认版本
             log.debug("No descriptor found for plugin '{}' (class: {}), using default version {}",
                     pluginName, provider.getClass().getName(), DEFAULT_VERSION);
             return PluginDescriptor.of(pluginName, DEFAULT_VERSION);
@@ -231,9 +176,6 @@ public final class ClasspathPluginLoader {
         }
     }
 
-    /**
-     * 扫描 classpath 上所有 datavines-plugin.properties，构建双索引。
-     */
     private DescriptorIndex scanDescriptors() {
         Map<String, PluginDescriptor> byName = new LinkedHashMap<String, PluginDescriptor>();
         Map<String, PluginDescriptor> byUrlPrefix = new LinkedHashMap<String, PluginDescriptor>();
@@ -281,15 +223,11 @@ public final class ClasspathPluginLoader {
         return new DescriptorIndex(byName, byUrlPrefix);
     }
 
-    /**
-     * 安全注册，捕获重复版本异常（在 classpath 模式下可能因为同名插件导致）。
-     */
     private <P> void registerSafely(VersionedPluginRegistry.Builder<P> builder,
                                      PluginDescriptor descriptor, P plugin) {
         try {
             builder.register(descriptor, plugin, null);
         } catch (DuplicateProviderException e) {
-            // 在 classpath 模式下，同名插件只有一个版本，重复是预期的
             log.debug("Skipping duplicate registration for {}: {}",
                     descriptor.getPluginId(), e.getMessage());
         }

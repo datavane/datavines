@@ -22,13 +22,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 /**
- * 唯一型扩展的统一入口。
- *
- * <p>内部组合 {@link KeyedRegistry} 和 {@link CachingFactory}，
- * 适用于"一个 Key 对应一个 Provider"的场景。
- *
- * @param <K> Key 类型
- * @param <P> Provider 类型（在 datavines 中通常 P 就是最终实例类型）
+ * Convenience wrapper around {@link KeyedRegistry} plus {@link CachingFactory}.
  */
 public final class PluginManager<K, P> {
 
@@ -40,14 +34,6 @@ public final class PluginManager<K, P> {
         this.factory = factory;
     }
 
-    /**
-     * 从 ServiceLoader 加载并构建 PluginManager。
-     *
-     * @param providerType   SPI 接口类型
-     * @param keyExtractor   从实例中提取 Key 的函数
-     * @param instanceCreator 创建新实例的函数（从注册表中的 Provider 创建）
-     * @param managerName    管理器名称（用于日志和异常）
-     */
     public static <K, P> PluginManager<K, P> load(
             Class<P> providerType,
             Function<P, K> keyExtractor,
@@ -59,31 +45,20 @@ public final class PluginManager<K, P> {
         return new PluginManager<>(registry, factory);
     }
 
-    /**
-     * 简化版本：Provider 即 Instance（T = P），缓存 Provider 自身。
-     */
     public static <K, P> PluginManager<K, P> loadSelfManaged(
             Class<P> providerType,
             Function<P, K> keyExtractor,
             String managerName) {
 
         KeyedRegistry<K, P> registry = KeyedRegistry.load(providerType, keyExtractor, managerName);
-        // 缓存模式：直接返回注册表中的 Provider 实例
         CachingFactory<K, P> factory = new CachingFactory<>(registry::get);
         return new PluginManager<>(registry, factory);
     }
 
-    /**
-     * 获取缓存实例（单例模式）。
-     */
     public P get(K key) {
         return factory.get(key);
     }
 
-    /**
-     * 创建新实例，不走缓存。
-     * 通过反射创建新实例（用于需要每次新建的场景）。
-     */
     public P createNew(K key) {
         P provider = registry.get(key);
         try {

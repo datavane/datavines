@@ -31,12 +31,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
- * 唯一型注册表：一个 Key 有且仅有一个 Provider。
- *
- * <p>初始化完成后不可变，天然线程安全。
- *
- * @param <K> Key 类型
- * @param <P> Provider 类型
+ * Immutable registry where each key maps to exactly one provider.
  */
 public final class KeyedRegistry<K, P> {
 
@@ -50,23 +45,12 @@ public final class KeyedRegistry<K, P> {
         this.registryName = registryName;
     }
 
-    /**
-     * 从 ServiceLoader 加载所有 Provider 并构建注册表。
-     *
-     * @param providerType   Provider 的 SPI 接口类型
-     * @param keyExtractor   从 Provider 中提取 Key 的函数
-     * @return 不可变的注册表
-     * @throws DuplicateProviderException 同一个 Key 被多个 Provider 声明
-     */
     public static <K, P> KeyedRegistry<K, P> load(
             Class<P> providerType,
             Function<P, K> keyExtractor) {
         return load(providerType, keyExtractor, providerType.getSimpleName());
     }
 
-    /**
-     * 从 ServiceLoader 加载，指定注册表名称（用于日志和异常信息）。
-     */
     public static <K, P> KeyedRegistry<K, P> load(
             Class<P> providerType,
             Function<P, K> keyExtractor,
@@ -74,9 +58,6 @@ public final class KeyedRegistry<K, P> {
         return from(ServiceLoaderUtils.loadAll(providerType), keyExtractor, registryName);
     }
 
-    /**
-     * 从显式 Provider 列表构建注册表（测试和手动组装场景）。
-     */
     @SafeVarargs
     public static <K, P> KeyedRegistry<K, P> of(
             Function<P, K> keyExtractor,
@@ -84,15 +65,6 @@ public final class KeyedRegistry<K, P> {
         return from(Arrays.asList(providers), keyExtractor, "test");
     }
 
-    /**
-     * 从可迭代的 Provider 集合构建注册表。
-     *
-     * @param providers      Provider 集合
-     * @param keyExtractor   Key 提取函数
-     * @param registryName   注册表名称（用于日志和异常信息）
-     * @return 不可变的注册表
-     * @throws DuplicateProviderException 同一个 Key 被多个 Provider 声明
-     */
     public static <K, P> KeyedRegistry<K, P> from(
             Iterable<P> providers,
             Function<P, K> keyExtractor,
@@ -124,10 +96,6 @@ public final class KeyedRegistry<K, P> {
         return new KeyedRegistry<>(map, registryName);
     }
 
-    /**
-     * 从 ServiceLoader 加载，每个 Provider 可以注册多个 Key。
-     * 适用于同一个类注册多个 engine-prefixed 名称的场景。
-     */
     public static <K, P> KeyedRegistry<K, P> loadMultiKey(
             Class<P> providerType,
             Function<P, Collection<K>> keysExtractor,
@@ -135,9 +103,6 @@ public final class KeyedRegistry<K, P> {
         return fromMultiKey(ServiceLoaderUtils.loadAll(providerType), keysExtractor, registryName);
     }
 
-    /**
-     * 从 Provider 集合构建注册表，每个 Provider 注册多个 Key。
-     */
     public static <K, P> KeyedRegistry<K, P> fromMultiKey(
             Iterable<P> providers,
             Function<P, Collection<K>> keysExtractor,
@@ -177,11 +142,6 @@ public final class KeyedRegistry<K, P> {
         return new KeyedRegistry<>(map, registryName);
     }
 
-    /**
-     * 获取指定 Key 对应的 Provider。
-     *
-     * @throws ProviderNotFoundException 如果 Key 不存在
-     */
     public P get(K key) {
         P provider = providers.get(key);
         if (provider == null) {
@@ -190,9 +150,6 @@ public final class KeyedRegistry<K, P> {
         return provider;
     }
 
-    /**
-     * 查找指定 Key 对应的 Provider，不存在时返回 null。
-     */
     public P find(K key) {
         return providers.get(key);
     }
@@ -205,23 +162,14 @@ public final class KeyedRegistry<K, P> {
         return providers.keySet();
     }
 
-    /**
-     * 返回所有已支持的 Key。
-     */
     public Set<K> getSupportedKeys() {
         return keys();
     }
 
-    /**
-     * 返回所有已注册 Provider。
-     */
     public Collection<P> providers() {
         return providers.values();
     }
 
-    /**
-     * 返回 Key 到 Provider 的只读映射。
-     */
     public Map<K, P> asMap() {
         return providers;
     }
