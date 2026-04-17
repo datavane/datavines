@@ -23,6 +23,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +39,11 @@ public final class PluginDiscovery<T> {
     private final Class<T> type;
     private final KeyedRegistry<String, T> registry;
     private final CachingFactory<String, T> singletonFactory;
+    /**
+     * -- GETTER --
+     *  Exposes the versioned facade when this discovery is backed by a versioned registry.
+     */
+    @Getter
     private final VersionedPluginDiscovery<T> versionedDiscovery; // nullable
 
     private PluginDiscovery(Class<T> type, KeyedRegistry<String, T> registry) {
@@ -59,29 +65,8 @@ public final class PluginDiscovery<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> PluginDiscovery<T> getPluginDiscovery(Class<T> type, Function<T, String> keyExtractor) {
-        return (PluginDiscovery<T>) DISCOVERIES.computeIfAbsent(type,
-            k -> {
-                VersionedPluginRegistry<T> bootstrapRegistry = PluginDiscoveryBootstrap.getRegistry(type);
-                if (bootstrapRegistry != null && !bootstrapRegistry.isEmpty()) {
-                    log.info("Using versioned registry for {} (bootstrap/directory mode)", type.getSimpleName());
-                    VersionedPluginDiscovery<T> vd = VersionedPluginDiscovery.of(bootstrapRegistry);
-                    return new PluginDiscovery<>(type, vd);
-                }
-                try {
-                    ClasspathPluginLoader classpathLoader = new ClasspathPluginLoader();
-                    VersionedPluginRegistry<T> classpathRegistry = classpathLoader.load(type, keyExtractor);
-                    if (!classpathRegistry.isEmpty()) {
-                        log.info("Using versioned registry for {} (classpath/IDE mode)", type.getSimpleName());
-                        VersionedPluginDiscovery<T> vd = VersionedPluginDiscovery.of(classpathRegistry);
-                        return new PluginDiscovery<>(type, vd);
-                    }
-                } catch (Exception e) {
-                    log.debug("ClasspathPluginLoader failed for {}, falling back to legacy mode: {}",
-                            type.getSimpleName(), e.getMessage());
-                }
-                KeyedRegistry<String, T> reg = KeyedRegistry.load(type, keyExtractor, type.getSimpleName());
-                return new PluginDiscovery<>(type, reg);
-            });
+        return (PluginDiscovery<T>) DISCOVERIES.compute(type,
+            (k, existing) -> resolveSingleKeyDiscovery(type, keyExtractor, existing));
     }
 
     /**
@@ -89,29 +74,8 @@ public final class PluginDiscovery<T> {
      */
     @SuppressWarnings("unchecked")
     public static <T> PluginDiscovery<T> getMultiKeyPluginDiscovery(Class<T> type, Function<T, Collection<String>> keysExtractor) {
-        return (PluginDiscovery<T>) DISCOVERIES.computeIfAbsent(type,
-            k -> {
-                VersionedPluginRegistry<T> bootstrapRegistry = PluginDiscoveryBootstrap.getRegistry(type);
-                if (bootstrapRegistry != null && !bootstrapRegistry.isEmpty()) {
-                    log.info("Using versioned registry for {} (bootstrap/directory mode)", type.getSimpleName());
-                    VersionedPluginDiscovery<T> vd = VersionedPluginDiscovery.of(bootstrapRegistry);
-                    return new PluginDiscovery<>(type, vd);
-                }
-                try {
-                    ClasspathPluginLoader classpathLoader = new ClasspathPluginLoader();
-                    VersionedPluginRegistry<T> classpathRegistry = classpathLoader.loadMultiKey(type, keysExtractor);
-                    if (!classpathRegistry.isEmpty()) {
-                        log.info("Using versioned registry for {} (classpath/IDE mode)", type.getSimpleName());
-                        VersionedPluginDiscovery<T> vd = VersionedPluginDiscovery.of(classpathRegistry);
-                        return new PluginDiscovery<>(type, vd);
-                    }
-                } catch (Exception e) {
-                    log.debug("ClasspathPluginLoader failed for {}, falling back to legacy mode: {}",
-                            type.getSimpleName(), e.getMessage());
-                }
-                KeyedRegistry<String, T> reg = KeyedRegistry.loadMultiKey(type, keysExtractor, type.getSimpleName());
-                return new PluginDiscovery<>(type, reg);
-            });
+        return (PluginDiscovery<T>) DISCOVERIES.compute(type,
+            (k, existing) -> resolveMultiKeyDiscovery(type, keysExtractor, existing));
     }
 
     public T getOrCreatePlugin(String name) {
@@ -201,16 +165,83 @@ public final class PluginDiscovery<T> {
     }
 
     /**
-     * Exposes the versioned facade when this discovery is backed by a versioned registry.
-     */
-    public VersionedPluginDiscovery<T> getVersionedDiscovery() {
-        return versionedDiscovery;
-    }
-
-    /**
      * Test-only reset hook for one SPI type.
      */
     public static <T> void resetPluginDiscovery(Class<T> type) {
         DISCOVERIES.remove(type);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> PluginDiscovery<T> resolveSingleKeyDiscovery(
+            Class<T> type,
+            Function<T, String> keyExtractor,
+            PluginDiscovery<?> existingRaw) {
+        PluginDiscovery<T> existing = (PluginDiscovery<T>) existingRaw;
+        PluginDiscovery<T> versioned = createBootstrapDiscovery(type, existing);
+        if (versioned != null) {
+            return versioned;
+        }
+        if (existing != null) {
+            return existing;
+        }
+
+        try {
+            ClasspathPluginLoader classpathLoader = new ClasspathPluginLoader();
+            VersionedPluginRegistry<T> classpathRegistry = classpathLoader.load(type, keyExtractor);
+            if (!classpathRegistry.isEmpty()) {
+                log.info("Using versioned registry for {} (classpath/IDE mode)", type.getSimpleName());
+                return new PluginDiscovery<>(type, VersionedPluginDiscovery.of(classpathRegistry));
+            }
+        } catch (Exception e) {
+            log.debug("ClasspathPluginLoader failed for {}, falling back to legacy mode: {}",
+                    type.getSimpleName(), e.getMessage());
+        }
+
+        KeyedRegistry<String, T> reg = KeyedRegistry.load(type, keyExtractor, type.getSimpleName());
+        return new PluginDiscovery<>(type, reg);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> PluginDiscovery<T> resolveMultiKeyDiscovery(
+            Class<T> type,
+            Function<T, Collection<String>> keysExtractor,
+            PluginDiscovery<?> existingRaw) {
+        PluginDiscovery<T> existing = (PluginDiscovery<T>) existingRaw;
+        PluginDiscovery<T> versioned = createBootstrapDiscovery(type, existing);
+        if (versioned != null) {
+            return versioned;
+        }
+        if (existing != null) {
+            return existing;
+        }
+
+        try {
+            ClasspathPluginLoader classpathLoader = new ClasspathPluginLoader();
+            VersionedPluginRegistry<T> classpathRegistry = classpathLoader.loadMultiKey(type, keysExtractor);
+            if (!classpathRegistry.isEmpty()) {
+                log.info("Using versioned registry for {} (classpath/IDE mode)", type.getSimpleName());
+                return new PluginDiscovery<>(type, VersionedPluginDiscovery.of(classpathRegistry));
+            }
+        } catch (Exception e) {
+            log.debug("ClasspathPluginLoader failed for {}, falling back to legacy mode: {}",
+                    type.getSimpleName(), e.getMessage());
+        }
+
+        KeyedRegistry<String, T> reg = KeyedRegistry.loadMultiKey(type, keysExtractor, type.getSimpleName());
+        return new PluginDiscovery<>(type, reg);
+    }
+
+    private static <T> PluginDiscovery<T> createBootstrapDiscovery(Class<T> type, PluginDiscovery<T> existing) {
+        VersionedPluginRegistry<T> bootstrapRegistry = PluginDiscoveryBootstrap.getRegistry(type);
+        if (bootstrapRegistry == null || bootstrapRegistry.isEmpty()) {
+            return null;
+        }
+        if (existing != null
+                && existing.versionedDiscovery != null
+                && existing.versionedDiscovery.getRegistry() == bootstrapRegistry) {
+            return existing;
+        }
+        log.info("Using versioned registry for {} (bootstrap/directory mode)", type.getSimpleName());
+        return new PluginDiscovery<>(type, VersionedPluginDiscovery.of(bootstrapRegistry));
     }
 }

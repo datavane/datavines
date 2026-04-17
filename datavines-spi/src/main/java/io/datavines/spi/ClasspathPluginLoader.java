@@ -30,6 +30,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.ArrayList;
 import java.util.function.Function;
 
 /**
@@ -119,31 +120,51 @@ public final class ClasspathPluginLoader {
      * Matches providers to descriptors by logical name first, then by class origin.
      */
     static final class DescriptorIndex {
-        private final Map<String, PluginDescriptor> byName;
+        private final Map<String, List<PluginDescriptor>> byName;
         private final Map<String, PluginDescriptor> byUrlPrefix;
 
-        DescriptorIndex(Map<String, PluginDescriptor> byName,
+        DescriptorIndex(Map<String, List<PluginDescriptor>> byName,
                         Map<String, PluginDescriptor> byUrlPrefix) {
             this.byName = byName;
             this.byUrlPrefix = byUrlPrefix;
         }
 
         <P> PluginDescriptor findDescriptor(String pluginName, P provider) {
-            PluginDescriptor descriptor = byName.get(pluginName);
-            if (descriptor != null) {
-                return descriptor;
+            List<PluginDescriptor> namedDescriptors = byName.get(pluginName);
+            if (namedDescriptors != null && namedDescriptors.size() == 1) {
+                return namedDescriptors.get(0);
             }
 
-            descriptor = findByClassOrigin(provider);
+            PluginDescriptor descriptor = findByClassOrigin(provider);
             if (descriptor != null) {
                 log.debug("Matched plugin '{}' to descriptor {} by class origin",
                         pluginName, descriptor.getPluginId());
                 return descriptor;
             }
 
+            if (namedDescriptors != null && !namedDescriptors.isEmpty()) {
+                PluginDescriptor latest = selectLatest(namedDescriptors);
+                if (namedDescriptors.size() > 1) {
+                    log.warn("Multiple descriptors found for plugin '{}', using latest version {} in classpath mode",
+                            pluginName, latest.getPluginId());
+                }
+                return latest;
+            }
+
             log.debug("No descriptor found for plugin '{}' (class: {}), using default version {}",
                     pluginName, provider.getClass().getName(), DEFAULT_VERSION);
             return PluginDescriptor.of(pluginName, DEFAULT_VERSION);
+        }
+
+        private PluginDescriptor selectLatest(List<PluginDescriptor> descriptors) {
+            PluginDescriptor latest = descriptors.get(0);
+            for (int i = 1; i < descriptors.size(); i++) {
+                PluginDescriptor candidate = descriptors.get(i);
+                if (candidate.getVersion().compareTo(latest.getVersion()) > 0) {
+                    latest = candidate;
+                }
+            }
+            return latest;
         }
 
         private <P> PluginDescriptor findByClassOrigin(P provider) {
@@ -177,7 +198,7 @@ public final class ClasspathPluginLoader {
     }
 
     private DescriptorIndex scanDescriptors() {
-        Map<String, PluginDescriptor> byName = new LinkedHashMap<String, PluginDescriptor>();
+        Map<String, List<PluginDescriptor>> byName = new LinkedHashMap<String, List<PluginDescriptor>>();
         Map<String, PluginDescriptor> byUrlPrefix = new LinkedHashMap<String, PluginDescriptor>();
         try {
             Enumeration<URL> resources = classLoader.getResources(PluginDescriptor.DESCRIPTOR_PATH);
@@ -208,7 +229,12 @@ public final class ClasspathPluginLoader {
                             spiVersion.trim(),
                             mainRange.trim(), description.trim());
 
-                    byName.put(name.trim(), desc);
+                    List<PluginDescriptor> descriptors = byName.get(name.trim());
+                    if (descriptors == null) {
+                        descriptors = new ArrayList<PluginDescriptor>();
+                        byName.put(name.trim(), descriptors);
+                    }
+                    descriptors.add(desc);
                     byUrlPrefix.put(url.toString(), desc);
                     log.debug("Scanned descriptor: {} from {}", desc.getPluginId(), url);
 

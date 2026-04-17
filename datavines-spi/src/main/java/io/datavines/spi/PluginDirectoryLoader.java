@@ -51,18 +51,33 @@ public final class PluginDirectoryLoader {
     private final ClassLoader spiClassLoader;
     private final List<String> spiPackages;
     private final PluginVersion currentHostVersion;
+    private final String expectedModuleName;
 
     public PluginDirectoryLoader(List<Path> pluginRootDirs, ClassLoader spiClassLoader) {
         this(pluginRootDirs, spiClassLoader,
-                PluginClassLoader.DEFAULT_SPI_PACKAGES, null);
+                PluginClassLoader.DEFAULT_SPI_PACKAGES, null, null);
+    }
+
+    public PluginDirectoryLoader(List<Path> pluginRootDirs,
+                                 ClassLoader spiClassLoader,
+                                 String expectedModuleName) {
+        this(pluginRootDirs, spiClassLoader,
+                PluginClassLoader.DEFAULT_SPI_PACKAGES, null, expectedModuleName);
     }
 
     public PluginDirectoryLoader(List<Path> pluginRootDirs, ClassLoader spiClassLoader,
                                  List<String> spiPackages, PluginVersion currentHostVersion) {
+        this(pluginRootDirs, spiClassLoader, spiPackages, currentHostVersion, null);
+    }
+
+    public PluginDirectoryLoader(List<Path> pluginRootDirs, ClassLoader spiClassLoader,
+                                 List<String> spiPackages, PluginVersion currentHostVersion,
+                                 String expectedModuleName) {
         this.pluginRootDirs = Collections.unmodifiableList(new ArrayList<Path>(pluginRootDirs));
         this.spiClassLoader = spiClassLoader;
         this.spiPackages = Collections.unmodifiableList(new ArrayList<String>(spiPackages));
         this.currentHostVersion = currentHostVersion;
+        this.expectedModuleName = expectedModuleName;
     }
 
     public <P> VersionedPluginRegistry<P> load(Class<P> serviceType) {
@@ -120,6 +135,7 @@ public final class PluginDirectoryLoader {
 
         PluginClassLoader classLoader = new PluginClassLoader(
                 pluginId, urls, spiClassLoader, spiPackages);
+        boolean keepClassLoader = false;
 
         try {
             PluginDescriptor descriptor = PluginDescriptor.load(classLoader);
@@ -139,7 +155,6 @@ public final class PluginDirectoryLoader {
                         + "Declared range: {}. Skipping.",
                         descriptor.getPluginId(), currentHostVersion,
                         descriptor.getMainVersionRange());
-                closeQuietly(classLoader);
                 return;
             }
 
@@ -164,6 +179,7 @@ public final class PluginDirectoryLoader {
                     P plugin = providers.get(0);
                     log.info("  Registering {} -> {}", descriptor.getPluginId(), plugin.getClass().getName());
                     builder.register(descriptor, plugin, classLoader);
+                    keepClassLoader = true;
                     return;
                 }
 
@@ -204,16 +220,19 @@ public final class PluginDirectoryLoader {
                 log.info("  Registering {} logical key(s) from {}",
                         keyedPlugins.size(), descriptor.getPluginId());
                 builder.registerAll(descriptor, keyedPlugins, classLoader);
+                keepClassLoader = true;
             } finally {
                 ctxSwitch.close();
             }
 
         } catch (DuplicateProviderException e) {
             log.error("Duplicate plugin detected in {}: {}", versionDir, e.getMessage());
-            closeQuietly(classLoader);
         } catch (Exception e) {
             log.error("Failed to load plugin from {}: {}", versionDir, e.getMessage(), e);
-            closeQuietly(classLoader);
+        } finally {
+            if (!keepClassLoader) {
+                closeQuietly(classLoader);
+            }
         }
     }
 
@@ -347,6 +366,10 @@ public final class PluginDirectoryLoader {
     }
 
     private String inferModule(Path versionDir) {
+        if (expectedModuleName != null && !expectedModuleName.trim().isEmpty()) {
+            return expectedModuleName;
+        }
+
         for (Path root : pluginRootDirs) {
             if (!versionDir.startsWith(root)) {
                 continue;

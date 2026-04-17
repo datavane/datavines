@@ -20,7 +20,10 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -66,8 +69,8 @@ public class ClasspathPluginLoaderTest {
     @Test
     public void testNameMatchReturnsDescriptor() {
         PluginDescriptor desc = PluginDescriptor.of("single-plugin", "1.0.0");
-        Map<String, PluginDescriptor> byName = new LinkedHashMap<String, PluginDescriptor>();
-        byName.put("single-plugin", desc);
+        Map<String, List<PluginDescriptor>> byName = new LinkedHashMap<String, List<PluginDescriptor>>();
+        byName.put("single-plugin", Collections.singletonList(desc));
         Map<String, PluginDescriptor> byUrl = new LinkedHashMap<String, PluginDescriptor>();
 
         ClasspathPluginLoader.DescriptorIndex index =
@@ -84,7 +87,7 @@ public class ClasspathPluginLoaderTest {
     @Test
     public void testMissingDescriptorCreatesDefault() {
         // No descriptors registered at all
-        Map<String, PluginDescriptor> byName = new LinkedHashMap<String, PluginDescriptor>();
+        Map<String, List<PluginDescriptor>> byName = new LinkedHashMap<String, List<PluginDescriptor>>();
         Map<String, PluginDescriptor> byUrl = new LinkedHashMap<String, PluginDescriptor>();
         ClasspathPluginLoader.DescriptorIndex index =
                 new ClasspathPluginLoader.DescriptorIndex(byName, byUrl);
@@ -118,7 +121,7 @@ public class ClasspathPluginLoaderTest {
 
         // Build a descriptor URL that starts with classOrigin
         PluginDescriptor desc = PluginDescriptor.of("module-config", "1.0.0");
-        Map<String, PluginDescriptor> byName = new LinkedHashMap<String, PluginDescriptor>();
+        Map<String, List<PluginDescriptor>> byName = new LinkedHashMap<String, List<PluginDescriptor>>();
         // Intentionally NOT adding "engine_task_a" or "engine_task_b" — they won't name-match
         Map<String, PluginDescriptor> byUrl = new LinkedHashMap<String, PluginDescriptor>();
         // descriptor URL = classOrigin + "META-INF/datavines-plugin.properties"
@@ -151,8 +154,8 @@ public class ClasspathPluginLoaderTest {
         PluginDescriptor nameDesc = PluginDescriptor.of("multi_key_a", "2.0.0");
         PluginDescriptor originDesc = PluginDescriptor.of("module-config", "1.0.0");
 
-        Map<String, PluginDescriptor> byName = new LinkedHashMap<String, PluginDescriptor>();
-        byName.put("multi_key_a", nameDesc);
+        Map<String, List<PluginDescriptor>> byName = new LinkedHashMap<String, List<PluginDescriptor>>();
+        byName.put("multi_key_a", Collections.singletonList(nameDesc));
 
         Map<String, PluginDescriptor> byUrl = new LinkedHashMap<String, PluginDescriptor>();
         byUrl.put(classOrigin + "META-INF/datavines-plugin.properties", originDesc);
@@ -174,6 +177,51 @@ public class ClasspathPluginLoaderTest {
     }
 
     @Test
+    public void testDuplicatePluginNamesUseOriginMatch() {
+        SingleKeyPlugin plugin = new SingleKeyPlugin();
+        String classOrigin = getCodeSourceUrl(plugin.getClass());
+        if (classOrigin == null) {
+            return;
+        }
+
+        PluginDescriptor v1 = PluginDescriptor.of("single-plugin", "1.0.0");
+        PluginDescriptor v2 = PluginDescriptor.of("single-plugin", "2.0.0");
+
+        Map<String, List<PluginDescriptor>> byName = new LinkedHashMap<String, List<PluginDescriptor>>();
+        byName.put("single-plugin", Arrays.asList(v1, v2));
+
+        Map<String, PluginDescriptor> byUrl = new LinkedHashMap<String, PluginDescriptor>();
+        byUrl.put(classOrigin + "META-INF/datavines-plugin.properties", v1);
+
+        ClasspathPluginLoader.DescriptorIndex index =
+                new ClasspathPluginLoader.DescriptorIndex(byName, byUrl);
+
+        PluginDescriptor found = index.findDescriptor("single-plugin", plugin);
+        assertNotNull(found);
+        assertEquals(PluginVersion.of("1.0.0"), found.getVersion());
+    }
+
+    @Test
+    public void testDuplicatePluginNamesWithoutOriginUseLatestVersion() {
+        SingleKeyPlugin plugin = new SingleKeyPlugin();
+
+        PluginDescriptor v1 = PluginDescriptor.of("single-plugin", "1.0.0");
+        PluginDescriptor v2 = PluginDescriptor.of("single-plugin", "2.0.0");
+
+        Map<String, List<PluginDescriptor>> byName = new LinkedHashMap<String, List<PluginDescriptor>>();
+        byName.put("single-plugin", Arrays.asList(v1, v2));
+
+        Map<String, PluginDescriptor> byUrl = new LinkedHashMap<String, PluginDescriptor>();
+
+        ClasspathPluginLoader.DescriptorIndex index =
+                new ClasspathPluginLoader.DescriptorIndex(byName, byUrl);
+
+        PluginDescriptor found = index.findDescriptor("single-plugin", plugin);
+        assertNotNull(found);
+        assertEquals(PluginVersion.of("2.0.0"), found.getVersion());
+    }
+
+    @Test
     public void testPluginDiscoveryClasspathModeDoesNotThrow() {
         // Verify that PluginDiscovery.getMultiKeyPluginDiscovery does not throw
         // when no bootstrap is initialized (simulates IDEA/classpath mode).
@@ -191,6 +239,35 @@ public class ClasspathPluginLoaderTest {
         assertNotNull(discovery.getSupportedPlugins());
 
         PluginDiscovery.resetPluginDiscovery(FakeSpi.class);
+    }
+
+    @Test
+    public void testPluginDiscoveryUpgradesToBootstrapRegistry() {
+        PluginDiscovery.resetPluginDiscovery(FakeSpi.class);
+        PluginDiscoveryBootstrap.reset();
+
+        PluginDiscovery<FakeSpi> initial = PluginDiscovery.getPluginDiscovery(
+                FakeSpi.class,
+                FakeSpi::getPluginName);
+        assertNotNull(initial);
+
+        VersionedPluginRegistry<FakeSpi> registry =
+                VersionedPluginRegistry.<FakeSpi>builder("FakeSpi")
+                        .register(PluginDescriptor.of("single-plugin", "3.0.0"), new SingleKeyPlugin())
+                        .build();
+
+        Map<Class<?>, VersionedPluginRegistry<?>> registries = new HashMap<Class<?>, VersionedPluginRegistry<?>>();
+        registries.put(FakeSpi.class, registry);
+        PluginDiscoveryBootstrap.initialize(registries);
+
+        PluginDiscovery<FakeSpi> upgraded = PluginDiscovery.getPluginDiscovery(
+                FakeSpi.class,
+                FakeSpi::getPluginName);
+        assertNotNull(upgraded.getVersionedDiscovery());
+        assertTrue(upgraded.hasPlugin("single-plugin", "3.0.0"));
+
+        PluginDiscovery.resetPluginDiscovery(FakeSpi.class);
+        PluginDiscoveryBootstrap.reset();
     }
 
     // ---------------------------------------------------------------------------

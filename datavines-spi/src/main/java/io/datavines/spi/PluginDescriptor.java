@@ -16,6 +16,7 @@
  */
 package io.datavines.spi;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,6 +29,7 @@ import java.util.Properties;
 /**
  * Parsed contents of {@code META-INF/datavines-plugin.properties}.
  */
+@Getter
 public final class PluginDescriptor {
 
     private static final Logger log = LoggerFactory.getLogger(PluginDescriptor.class);
@@ -132,32 +134,8 @@ public final class PluginDescriptor {
         return of(pluginName, "", version, spiVersion, mainVersionRange, description);
     }
 
-    public String getPluginName() {
-        return pluginName;
-    }
-
-    public String getPluginModule() {
-        return pluginModule;
-    }
-
-    public PluginVersion getVersion() {
-        return version;
-    }
-
-    public PluginVersion getSpiVersion() {
-        return spiVersion;
-    }
-
     public String getPluginId() {
         return pluginName + "@" + version;
-    }
-
-    public String getMainVersionRange() {
-        return mainVersionRange;
-    }
-
-    public String getDescription() {
-        return description;
     }
 
     public boolean isCompatibleWith(PluginVersion hostVersion) {

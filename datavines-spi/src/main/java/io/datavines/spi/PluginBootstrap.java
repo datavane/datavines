@@ -16,6 +16,7 @@
  */
 package io.datavines.spi;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +49,7 @@ public final class PluginBootstrap {
         }
 
         File pluginsDir = resolvePluginsDir(pluginsDirProperty, defaultPluginsDir);
-        if (pluginsDir != null && pluginsDir.isDirectory() && hasVersionedSubdirs(pluginsDir)) {
+        if (pluginsDir.isDirectory() && hasVersionedSubdirs(pluginsDir)) {
             initializeFromDirectory(bootstrapName, pluginsDir, registrations, spiClassLoader);
         } else {
             logClasspathMode(bootstrapName, pluginsDir, pluginsDirProperty, defaultPluginsDir);
@@ -75,7 +76,9 @@ public final class PluginBootstrap {
             }
 
             PluginDirectoryLoader loader = new PluginDirectoryLoader(
-                    Collections.singletonList(moduleDir.toPath()), spiClassLoader);
+                    Collections.singletonList(moduleDir.toPath()),
+                    spiClassLoader,
+                    registration.getModuleName());
 
             try {
                 VersionedPluginRegistry<?> registry = registration.load(loader);
@@ -166,7 +169,9 @@ public final class PluginBootstrap {
     }
 
     public static final class SpiRegistration<P> {
+        @Getter
         private final Class<P> spiType;
+        @Getter
         private final String moduleName;
         private final Function<P, Collection<String>> keysExtractor;
 
@@ -188,12 +193,5 @@ public final class PluginBootstrap {
             return loader.loadMultiKey(spiType, keysExtractor);
         }
 
-        public Class<P> getSpiType() {
-            return spiType;
-        }
-
-        public String getModuleName() {
-            return moduleName;
-        }
     }
 }
