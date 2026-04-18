@@ -51,14 +51,6 @@
         </fileSet>
 
         <fileSet>
-            <directory>${basedir}/../datavines-server/target/datavines-server-${project.version}</directory>
-            <includes>
-                <include>**/*.*</include>
-            </includes>
-            <outputDirectory>.</outputDirectory>
-        </fileSet>
-
-        <fileSet>
             <directory>${basedir}/../bin</directory>
             <includes>
                 <include>datavines-daemon.sh</include>
@@ -83,9 +75,43 @@
             </includes>
             <outputDirectory>./scripts</outputDirectory>
         </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/../datavines-engine/datavines-engine-plugins/datavines-engine-spark/datavines-engine-spark-core/target</directory>
+            <includes>
+                <include>datavines-engine-spark-core-${project.version}.jar</include>
+            </includes>
+            <outputDirectory>libs</outputDirectory>
+        </fileSet>
+
+        <fileSet>
+            <directory>${basedir}/../datavines-engine/datavines-engine-plugins/datavines-engine-flink/datavines-engine-flink-core/target</directory>
+            <includes>
+                <include>datavines-engine-flink-core-${project.version}.jar</include>
+            </includes>
+            <outputDirectory>libs</outputDirectory>
+        </fileSet>
+
     </fileSets>
 
     <dependencySets>
+
+        <!-- plugins/ — unpack plugin zip artifacts into the runtime plugin root.
+             A plugin zip owns only descriptor-defined {plugin.module}/{plugin.name}/{plugin.version};
+             the distribution owns the top-level plugins/ directory. -->
+        <dependencySet>
+            <outputDirectory>plugins</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <unpack>true</unpack>
+            <scope>provided</scope>
+            <includes>
+                <include>io.datavines:*:zip:plugin</include>
+            </includes>
+        </dependencySet>
+
+        <!-- libs/ — transitive runtime JARs loaded by the server AppClassLoader.
+             Plugin implementations are loaded from plugins/ and must not be
+             duplicated here. -->
         <dependencySet>
             <outputDirectory>libs</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
@@ -95,9 +121,12 @@
             </excludes>
         </dependencySet>
 
+        <!-- engine/spark — JARs uploaded to the Spark cluster for remote job execution.
+             SparkEngineExecutor constructs the job JAR list from this directory. -->
         <dependencySet>
-            <outputDirectory>plugins/spark</outputDirectory>
-            <useProjectArtifact>true</useProjectArtifact>
+            <outputDirectory>engine/spark</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
                 <include>io.datavines:datavines-common</include>
                 <include>io.datavines:datavines-engine-core</include>
@@ -115,9 +144,11 @@
             </includes>
         </dependencySet>
 
+        <!-- engine/flink — JARs uploaded to the Flink cluster for remote job execution. -->
         <dependencySet>
-            <outputDirectory>plugins/flink</outputDirectory>
-            <useProjectArtifact>true</useProjectArtifact>
+            <outputDirectory>engine/flink</outputDirectory>
+            <useProjectArtifact>false</useProjectArtifact>
+            <useTransitiveFiltering>true</useTransitiveFiltering>
             <includes>
                 <include>io.datavines:datavines-common</include>
                 <include>io.datavines:datavines-engine-core</include>
@@ -138,6 +169,7 @@
                 <include>com.fasterxml.jackson.datatype:jackson-datatype-jsr310</include>
             </includes>
         </dependencySet>
+
     </dependencySets>
 
 </assembly>

@@ -30,11 +30,4 @@
 
     <artifactId>datavines-connector-jdbc</artifactId>
 
-    <dependencies>
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-connector-api</artifactId>
-        </dependency>
-    </dependencies>
-
 </project>

@@ -96,8 +96,8 @@ public class SparkEngineExecutor extends AbstractYarnEngineExecutor {
         sparkParameters.setMainJar(basePath + File.separator + configurations.getString("data.quality.jar.name"));
 
         String pluginDir = basePath.endsWith("libs") ?
-                basePath.replace("libs","plugins") + File.separator + "spark":
-                basePath + File.separator + "plugins" + File.separator + "spark";
+                basePath.replace("libs","engine") + File.separator + "spark":
+                basePath + File.separator + "engine" + File.separator + "spark";
 
         logger.info("spark engine plugin dir : {}", pluginDir);
 

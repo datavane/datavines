@@ -37,19 +37,19 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-metric-result-formula-all</artifactId>
+            <artifactId>datavines-metric-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-metric-all</artifactId>
+            <artifactId>datavines-connector-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-metric-expected-all</artifactId>
+            <artifactId>datavines-engine-core</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -61,41 +61,7 @@
 
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-spark-executor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-livy-executor</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-spark-config</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-local-executor</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-log4j12</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-engine-local-config</artifactId>
+            <artifactId>datavines-engine-executor</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -110,31 +76,19 @@
         </dependency>
         <dependency>
             <groupId>io.datavines</groupId>
-            <artifactId>datavines-notification-plugin-email</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-notification-plugin-lark</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-notification-plugin-dingtalk</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>io.datavines</groupId>
-            <artifactId>datavines-notification-plugin-wecombot</artifactId>
+            <artifactId>datavines-notification-api</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-notification-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-spi</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

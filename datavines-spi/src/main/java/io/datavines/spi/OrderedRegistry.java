@@ -27,11 +27,7 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 /**
- * 列表型注册表：多个 Provider 共存，按优先级排序。
- *
- * <p>初始化完成后不可变，天然线程安全。
- *
- * @param <P> Provider 类型
+ * Immutable ordered list of providers.
  */
 public final class OrderedRegistry<P> {
 
@@ -43,26 +39,17 @@ public final class OrderedRegistry<P> {
         this.providers = Collections.unmodifiableList(providers);
     }
 
-    /**
-     * 从 ServiceLoader 加载并按指定比较器排序。
-     */
     public static <P> OrderedRegistry<P> load(
             Class<P> providerType,
             Comparator<P> ordering) {
         return from(ServiceLoaderUtils.loadAll(providerType), ordering, providerType.getSimpleName());
     }
 
-    /**
-     * 从显式列表构建（测试场景）。
-     */
     @SafeVarargs
     public static <P> OrderedRegistry<P> of(Comparator<P> ordering, P... providers) {
         return from(Arrays.asList(providers), ordering, "test");
     }
 
-    /**
-     * 从可迭代集合构建。
-     */
     public static <P> OrderedRegistry<P> from(
             Iterable<P> providers,
             Comparator<P> ordering,
@@ -80,9 +67,6 @@ public final class OrderedRegistry<P> {
         return new OrderedRegistry<>(sorted);
     }
 
-    /**
-     * 获取所有 Provider（按优先级排序）。
-     */
     public List<P> getAll() {
         return providers;
     }

@@ -30,6 +30,7 @@
 
     <artifactId>datavines-metric-result-formula-plugins</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>datavines-metric-result-formula-all</module>
         <module>datavines-metric-result-formula-diff</module>
@@ -44,6 +45,7 @@
             <groupId>io.datavines</groupId>
             <artifactId>datavines-metric-api</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

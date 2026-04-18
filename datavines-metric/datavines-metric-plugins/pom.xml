@@ -29,6 +29,7 @@
 
     <artifactId>datavines-metric-plugins</artifactId>
     <packaging>pom</packaging>
+
     <modules>
         <module>datavines-metric-all</module>
         <module>datavines-metric-base</module>
@@ -66,12 +67,14 @@
             <groupId>io.datavines</groupId>
             <artifactId>datavines-metric-api</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>io.datavines</groupId>
             <artifactId>datavines-connector-api</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

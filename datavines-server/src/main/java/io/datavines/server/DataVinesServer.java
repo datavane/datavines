@@ -32,6 +32,7 @@ import io.datavines.server.dqc.coordinator.cache.JobExecuteManager;
 import io.datavines.server.dqc.coordinator.failover.JobExecutionFailover;
 import io.datavines.server.dqc.coordinator.runner.JobScheduler;
 import io.datavines.server.registry.RegistryHolder;
+import io.datavines.server.plugin.DataVinesPluginInitializer;
 import io.datavines.server.utils.SpringApplicationContext;
 import io.datavines.spi.PluginDiscovery;
 import org.slf4j.Logger;
@@ -73,6 +74,11 @@ public class DataVinesServer {
 
     @PostConstruct
     private void initializeAndStart() throws Exception {
+        // Must be first: initialize plugin system before any PluginDiscovery call.
+        // - Production: scans plugins/ dir → ClassLoader-isolated versioned loading
+        // - IDE/classpath: auto-detected, uses ServiceLoader on current classpath
+        DataVinesPluginInitializer.initialize();
+
         logger.info("Datavines server start");
 
         initCommonProperties();

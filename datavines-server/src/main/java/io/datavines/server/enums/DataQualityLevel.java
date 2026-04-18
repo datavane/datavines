@@ -17,7 +17,6 @@
 package io.datavines.server.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
-import io.datavines.connector.plugin.DatabendExecutor;
 
 import java.math.BigDecimal;
 

@@ -17,7 +17,7 @@
 package io.datavines.spi;
 
 /**
- * 同一个 Key 被多个 Provider 声明时抛出。
+ * Raised when multiple providers register the same logical key.
  */
 public class DuplicateProviderException extends RuntimeException {
 

@@ -37,4 +37,71 @@
         <module>datavines-engine-local</module>
         <module>datavines-engine-livy</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-common</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-spi</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-connector-api</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-metric-api</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-core</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-executor</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-config</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-spark-core</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-flink-core</artifactId>
+                <version>${project.version}</version>
+                <scope>provided</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

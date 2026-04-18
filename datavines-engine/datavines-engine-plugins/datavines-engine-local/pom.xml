@@ -35,4 +35,46 @@
         <module>datavines-engine-local-executor</module>
     </modules>
 
+    <dependencies>
+        <!-- Host-provided APIs shared by local engine plugins. -->
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-common</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-connector-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-spi</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-engine-executor</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>io.datavines</groupId>
+            <artifactId>datavines-connector-all</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
 </project>
