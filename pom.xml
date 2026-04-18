@@ -92,6 +92,8 @@
         <javax-validation.version>2.0.1.Final</javax-validation.version>
         <jsqlparser.version>4.9</jsqlparser.version>
         <jjwt.version>0.9.1</jjwt.version>
+        <jaxb.api.version>2.3.1</jaxb.api.version>
+        <jaxb.runtime.version>2.3.1</jaxb.runtime.version>
         <jbcrypt.version>0.3m</jbcrypt.version>
         <curator.version>4.3.0</curator.version>
         <zookeeper.version>3.4.14</zookeeper.version>
@@ -405,6 +407,18 @@
                 <groupId>io.jsonwebtoken</groupId>
                 <artifactId>jjwt</artifactId>
                 <version>${jjwt.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>javax.xml.bind</groupId>
+                <artifactId>jaxb-api</artifactId>
+                <version>${jaxb.api.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.glassfish.jaxb</groupId>
+                <artifactId>jaxb-runtime</artifactId>
+                <version>${jaxb.runtime.version}</version>
             </dependency>
 
             <dependency>
