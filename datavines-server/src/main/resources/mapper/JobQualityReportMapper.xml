@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+
+    Licensed to the Apache Software Foundation (ASF) under one or more
+    contributor license agreements.  See the NOTICE file distributed with
+    this work for additional information regarding copyright ownership.
+    The ASF licenses this file to You under the Apache License, Version 2.0
+    (the "License"); you may not use this file except in compliance with
+    the License.  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.datavines.server.repository.mapper.JobQualityReportMapper">
+
+    <sql id="columns">
+        id,
+        datasource_id,
+        entity_level,
+        database_name,
+        table_name,
+        column_name,
+        score,
+        report_date,
+        create_time,
+        update_time
+    </sql>
+
+    <sql id="baseCondition">
+        <where>
+            datasource_id = #{datasourceId}
+            and entity_level = #{entityLevel}
+            <if test="schemaName != null and schemaName != ''">
+                and database_name = #{schemaName}
+            </if>
+            <if test="tableName != null and tableName != ''">
+                and table_name = #{tableName}
+            </if>
+        </where>
+    </sql>
+
+    <sql id="reportDateEqCondition">
+        <choose>
+            <when test="_databaseId == 'postgresql'">
+                and report_date = CAST(#{reportDate} AS date)
+            </when>
+            <otherwise>
+                and report_date = #{reportDate}
+            </otherwise>
+        </choose>
+    </sql>
+
+    <sql id="reportDateBetweenCondition">
+        <choose>
+            <when test="_databaseId == 'postgresql'">
+                and report_date between CAST(#{startDate} AS date) and CAST(#{endDate} AS date)
+            </when>
+            <otherwise>
+                and report_date between #{startDate} and #{endDate}
+            </otherwise>
+        </choose>
+    </sql>
+
+    <select id="listScoreByCondition" resultType="io.datavines.server.repository.entity.JobQualityReport">
+        select <include refid="columns"/>
+        from dv_job_quality_report
+        <where>
+            datasource_id = #{datasourceId}
+            and entity_level = #{entityLevel}
+            <if test="schemaName != null and schemaName != ''">
+                and database_name = #{schemaName}
+            </if>
+            <if test="tableName != null and tableName != ''">
+                and table_name = #{tableName}
+            </if>
+            <include refid="reportDateEqCondition"/>
+        </where>
+    </select>
+
+    <select id="listScoreTrendByCondition" resultType="io.datavines.server.repository.entity.JobQualityReport">
+        select <include refid="columns"/>
+        from dv_job_quality_report
+        <where>
+            datasource_id = #{datasourceId}
+            and entity_level = #{entityLevel}
+            <if test="schemaName != null and schemaName != ''">
+                and database_name = #{schemaName}
+            </if>
+            <if test="tableName != null and tableName != ''">
+                and table_name = #{tableName}
+            </if>
+            <include refid="reportDateBetweenCondition"/>
+        </where>
+        order by report_date asc
+    </select>
+
+    <select id="getQualityReportPage" resultType="io.datavines.server.repository.entity.JobQualityReport">
+        select <include refid="columns"/>
+        from dv_job_quality_report
+        <where>
+            datasource_id = #{datasourceId}
+            <if test="schemaName != null and schemaName != ''">
+                and database_name = #{schemaName}
+            </if>
+            <if test="tableName != null and tableName != ''">
+                and table_name = #{tableName}
+            </if>
+            and entity_level = #{entityLevel}
+            <include refid="reportDateEqCondition"/>
+        </where>
+    </select>
+</mapper>
