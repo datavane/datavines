@@ -367,7 +367,6 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
         }
         startDateStr += " 00:00:00";
         endDateStr += " 23:59:59";
-
         List<JobExecutionAggItem> items =
                 baseMapper.getJobExecutionAggPie(dashboardParam.getDatasourceId(), dashboardParam.getMetricType(),
                         dashboardParam.getSchemaName(), dashboardParam.getTableName(), dashboardParam.getColumnName(),

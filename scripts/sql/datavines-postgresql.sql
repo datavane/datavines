@@ -383,7 +383,7 @@ CREATE TABLE dv_common_task_schedule (
   param text,
   datasource_id bigint NOT NULL,
   cron_expression varchar(255) DEFAULT NULL,
-  status smallint DEFAULT NULL,
+  status boolean DEFAULT NULL,
   start_time timestamp DEFAULT NULL,
   end_time timestamp DEFAULT NULL,
   create_by bigint NOT NULL,
@@ -663,7 +663,7 @@ CREATE TABLE dv_job_schedule (
   param text,
   job_id bigint NOT NULL,
   cron_expression varchar(255) DEFAULT NULL,
-  status smallint DEFAULT NULL,
+  status boolean DEFAULT NULL,
   start_time timestamp DEFAULT NULL,
   end_time timestamp DEFAULT NULL,
   create_by bigint NOT NULL,
@@ -889,4 +889,3 @@ INSERT INTO dv_config VALUES ('31', '-1', 'data.quality.flink.jar.name', '/libs/
 INSERT INTO dv_user (id, username, password, email, phone, admin) VALUES ('1', 'admin', '$2a$10$9ZcicUYFl/.knBi9SE53U.Nml8bfNeArxr35HQshxXzimbA6Ipgqq', 'admin@gmail.com', NULL, '0');
 INSERT INTO dv_workspace (id, name, create_by, update_by) VALUES ('1', 'admin''s default', '1', '1');
 INSERT INTO dv_user_workspace (id, user_id, workspace_id, role_id,create_by,update_by) VALUES ('1', '1', '1', '1','1', '1');
-

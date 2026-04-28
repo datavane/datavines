@@ -39,14 +39,14 @@ public interface JobExecutionMapper extends BaseMapper<JobExecution>  {
     IPage<JobExecutionVO> getJobExecutionPage(Page<JobExecutionVO> page,
                                               @Param("searchVal") String searchVal,
                                               @Param("jobId") Long jobId,
-                                              @Param("datasourceId") Long datasourceId,
-                                              @Param("status") Integer status,
-                                              @Param("metricType") String metricType, @Param("schemaName") String schemaName,
-                                              @Param("tableName") String tableName, @Param("columnName") String columnName,
-                                              @Param("startTime") String startTime, @Param("endTime") String endTime,
-                                              @Param("schemaSearch") String schemaSearch,
-                                              @Param("tableSearch") String tableSearch,
-                                              @Param("columnSearch") String columnSearch);
+                                               @Param("datasourceId") Long datasourceId,
+                                               @Param("status") Integer status,
+                                               @Param("metricType") String metricType, @Param("schemaName") String schemaName,
+                                               @Param("tableName") String tableName, @Param("columnName") String columnName,
+                                               @Param("startTime") String startTime, @Param("endTime") String endTime,
+                                               @Param("schemaSearch") String schemaSearch,
+                                               @Param("tableSearch") String tableSearch,
+                                               @Param("columnSearch") String columnSearch);
 
     List<JobExecutionAggItem> getJobExecutionAggPie(@Param("datasourceId") Long datasourceId,
                                                     @Param("metricType") String metricType, @Param("schemaName") String schemaName,
