@@ -25,7 +25,7 @@
     </sql>
 
     <select id="getEntityMetricPage" resultType="io.datavines.server.api.dto.vo.catalog.CatalogEntityMetricVO">
-        select job.id as id, job.name as name, 'active' as status, job.update_time from `dv_job` job join (<include refid="basic_sql"/>) rel on job.id = rel.metric_job_id
+        select job.id as id, job.name as name, 'active' as status, job.update_time from dv_job job join (<include refid="basic_sql"/>) rel on job.id = rel.metric_job_id
         order by job.update_time desc
 
     </select>
@@ -33,7 +33,7 @@
 
     <select id="getEntityIssuePage" resultType="io.datavines.server.api.dto.vo.catalog.CatalogEntityIssueVO">
         select issue.id as id,ir.job_name as metric_name, issue.title as title, issue.content as content, issue.status as status,issue.update_time as update_time  from dv_issue issue join
-        (select jir.issue_id as issue_id, job2.job_name as job_name from (select job.id as job_id, job.name as job_name from `dv_job` job join (<include refid="basic_sql"/>) rel on job.id = rel.metric_job_id) job2 join dv_job_issue_rel jir on job2.job_id = jir.job_id) ir
+        (select jir.issue_id as issue_id, job2.job_name as job_name from (select job.id as job_id, job.name as job_name from dv_job job join (<include refid="basic_sql"/>) rel on job.id = rel.metric_job_id) job2 join dv_job_issue_rel jir on job2.job_id = jir.job_id) ir
         on issue.id = ir.issue_id
         order by issue.update_time desc
     </select>

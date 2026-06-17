@@ -16,7 +16,7 @@
 # limitations under the License.
 #
 
-usage="Usage: datavines-daemon.sh (start|start_container|start_with_jmx|stop|restart_with_jmx|status) <''|mysql>"
+usage="Usage: datavines-daemon.sh (start|start_container|start_with_jmx|stop|restart_with_jmx|status) <''|postgres|mysql>"
 
 # if no args specified, show usage
 if [ $# -le 0 ]; then
@@ -32,12 +32,12 @@ shift
 springProfileActive=
 
 if [ -n "$profile" ]; then
-	if [ "$profile" = "mysql" ]; then
-	  springProfileActive="-Dspring.profiles.active=mysql"
-	else
-	  echo "Error: No profile named \`$profile' was found."
-	  exit 1
-	fi
+    if [ "$profile" = "postgres" ] || [ "$profile" = "mysql" ]; then
+      springProfileActive="-Dspring.profiles.active=$profile"
+    else
+      echo "Error: No profile named \`$profile' was found."
+      exit 1
+    fi
 fi
 
 echo "Begin $startStop DataVinesServer $profile......"

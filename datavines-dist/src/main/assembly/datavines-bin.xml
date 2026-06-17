@@ -80,6 +80,7 @@
             <directory>${basedir}/../scripts/sql</directory>
             <includes>
                 <include>datavines-mysql.sql</include>
+                <include>datavines-postgresql.sql</include>
             </includes>
             <outputDirectory>./scripts</outputDirectory>
         </fileSet>

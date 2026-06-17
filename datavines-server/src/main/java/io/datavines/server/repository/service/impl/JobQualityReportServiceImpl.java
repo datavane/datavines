@@ -225,12 +225,10 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
     @Override
     public JobQualityReportScore getScoreByCondition(JobQualityReportDashboardParam dashboardParam) {
 
-        LambdaQueryWrapper<JobQualityReport> queryWrapper = new LambdaQueryWrapper<>();
         if (dashboardParam == null) {
             throw new DataVinesException("param can not be null");
         }
 
-        queryWrapper.eq(JobQualityReport::getDatasourceId, dashboardParam.getDatasourceId());
         String entityLevel = DATASOURCE;
 
         if (StringUtils.isNotEmpty(dashboardParam.getSchemaName())) {
@@ -243,29 +241,31 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
 
         switch (entityLevel) {
             case DATASOURCE:
-                queryWrapper.eq(JobQualityReport::getEntityLevel, DATASOURCE);
+                entityLevel = DATASOURCE;
                 break;
             case DATABASE:
-                queryWrapper.eq(JobQualityReport::getEntityLevel, DATABASE);
-                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()), JobQualityReport::getDatabaseName, dashboardParam.getSchemaName());
+                entityLevel = DATABASE;
                 break;
             case TABLE:
-                queryWrapper.eq(JobQualityReport::getEntityLevel, TABLE);
-                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()), JobQualityReport::getDatabaseName, dashboardParam.getSchemaName());
-                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getTableName()), JobQualityReport::getTableName, dashboardParam.getTableName());
+                entityLevel = TABLE;
                 break;
             default:
                 break;
         }
 
+        String reportDate;
         if (StringUtils.isEmpty(dashboardParam.getReportDate())) {
-            String yesterday = DateUtils.format(DateUtils.addDays(DateUtils.getCurrentDate(),-1),DateUtils.YYYY_MM_DD);
-            queryWrapper.eq(JobQualityReport::getReportDate, yesterday);
+            reportDate = DateUtils.format(DateUtils.addDays(DateUtils.getCurrentDate(),-1),DateUtils.YYYY_MM_DD);
         } else {
-            queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getReportDate()), JobQualityReport::getReportDate, dashboardParam.getReportDate());
+            reportDate = dashboardParam.getReportDate();
         }
 
-        List<JobQualityReport> jobQualityReports = jobQualityReportMapper.selectList(queryWrapper);
+        List<JobQualityReport> jobQualityReports = jobQualityReportMapper.listScoreByCondition(
+                dashboardParam.getDatasourceId(),
+                entityLevel,
+                dashboardParam.getSchemaName(),
+                dashboardParam.getTableName(),
+                reportDate);
         if (CollectionUtils.isEmpty(jobQualityReports)) {
             return null;
         }
@@ -312,9 +312,6 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
             currentDate = currentDate.plusDays(1);
         }
 
-        LambdaQueryWrapper<JobQualityReport> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(JobQualityReport::getDatasourceId, dashboardParam.getDatasourceId());
-
         String entityLevel = DATASOURCE;
 
         if (StringUtils.isNotEmpty(dashboardParam.getSchemaName())) {
@@ -327,24 +324,25 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
 
         switch (entityLevel) {
             case DATASOURCE:
-                queryWrapper.eq(JobQualityReport::getEntityLevel, DATASOURCE);
+                entityLevel = DATASOURCE;
                 break;
             case DATABASE:
-                queryWrapper.eq(JobQualityReport::getEntityLevel, DATABASE);
-                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()), JobQualityReport::getDatabaseName, dashboardParam.getSchemaName());
+                entityLevel = DATABASE;
                 break;
             case TABLE:
-                queryWrapper.eq(JobQualityReport::getEntityLevel, TABLE);
-                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()), JobQualityReport::getDatabaseName, dashboardParam.getSchemaName());
-                queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getTableName()), JobQualityReport::getTableName, dashboardParam.getTableName());
+                entityLevel = TABLE;
                 break;
             default:
                 break;
         }
 
-        queryWrapper.between(JobQualityReport::getReportDate, startDateStr, endDateStr);
-        queryWrapper.orderByAsc(JobQualityReport::getReportDate);
-        List<JobQualityReport> reportList = list(queryWrapper);
+        List<JobQualityReport> reportList = jobQualityReportMapper.listScoreTrendByCondition(
+                dashboardParam.getDatasourceId(),
+                entityLevel,
+                dashboardParam.getSchemaName(),
+                dashboardParam.getTableName(),
+                startDateStr,
+                endDateStr);
 
         Map<String, BigDecimal> date2Score = new HashMap<>();
         if (CollectionUtils.isNotEmpty(reportList)) {
@@ -375,24 +373,27 @@ public class JobQualityReportServiceImpl extends ServiceImpl<JobQualityReportMap
     @Override
     public IPage<JobQualityReportVO> getQualityReportPage(JobQualityReportDashboardParam dashboardParam) {
         Page<JobQualityReport> page = new Page<>(dashboardParam.getPageNumber(), dashboardParam.getPageSize());
-        LambdaQueryWrapper<JobQualityReport> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(JobQualityReport::getDatasourceId, dashboardParam.getDatasourceId());
-        queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getSchemaName()),JobQualityReport::getDatabaseName,dashboardParam.getSchemaName());
-        queryWrapper.eq(StringUtils.isNotEmpty(dashboardParam.getTableName()),JobQualityReport::getTableName,dashboardParam.getTableName());
+        String reportDate;
         if (StringUtils.isEmpty(dashboardParam.getReportDate())) {
-            String yesterday = DateUtils.format(DateUtils.addDays(DateUtils.getCurrentDate(),-1),DateUtils.YYYY_MM_DD);
-            queryWrapper.eq(JobQualityReport::getReportDate, yesterday);
+            reportDate = DateUtils.format(DateUtils.addDays(DateUtils.getCurrentDate(),-1),DateUtils.YYYY_MM_DD);
         } else {
-            queryWrapper.eq(JobQualityReport::getReportDate, dashboardParam.getReportDate());
+            reportDate = dashboardParam.getReportDate();
         }
 
+        String entityLevel;
         if (StringUtils.isNotEmpty(dashboardParam.getTableName())) {
-            queryWrapper.eq(JobQualityReport::getEntityLevel, COLUMN);
+            entityLevel = COLUMN;
         } else {
-            queryWrapper.eq(JobQualityReport::getEntityLevel, TABLE);
+            entityLevel = TABLE;
         }
 
-        return page(page, queryWrapper).convert(jobQualityReport -> {
+        return jobQualityReportMapper.getQualityReportPage(
+                page,
+                dashboardParam.getDatasourceId(),
+                dashboardParam.getSchemaName(),
+                dashboardParam.getTableName(),
+                reportDate,
+                entityLevel).convert(jobQualityReport -> {
             JobQualityReportVO jobQualityReportVO = new JobQualityReportVO();
             BeanUtils.copyProperties(jobQualityReport, jobQualityReportVO);
             return jobQualityReportVO;

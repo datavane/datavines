@@ -37,13 +37,13 @@
         </where>
     </sql>
 
-    <select id="getErrorDataStoragePage" resultType="io.datavines.server.api.dto.vo.ErrorDataStorageVO">
+        <select id="getErrorDataStoragePage" resultType="io.datavines.server.api.dto.vo.ErrorDataStorageVO">
         select p.id, p.name, p.type, p.param, p.workspace_id, u.username as updater, p.update_time
         from (<include refid="basic_sql"/>) p
-        left join `dv_user` u on u.id = p.update_by
+        left join dv_user u on u.id = p.update_by
         <where>
             <if test="searchVal != null">
-                LOWER(p.`name`) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
+                LOWER(p.name) LIKE CONCAT(CONCAT('%', LOWER(#{searchVal})), '%')
             </if>
         </where>
     </select>
