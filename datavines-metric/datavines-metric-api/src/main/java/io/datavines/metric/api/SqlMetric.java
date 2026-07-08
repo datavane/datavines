@@ -25,6 +25,8 @@ import io.datavines.common.config.CheckResult;
 import io.datavines.common.entity.ExecuteSql;
 import io.datavines.common.enums.DataVinesDataType;
 
+import static io.datavines.common.ConfigConstants.ACTUAL_AGGREGATE_SQL;
+
 public interface SqlMetric {
 
     String getName();
@@ -114,5 +116,13 @@ public interface SqlMetric {
 
     default boolean isCustomSql() {
         return false;
+    }
+
+    default String getTableDiscoverySql(Map<String, String> inputParameter) {
+        return inputParameter.get(ACTUAL_AGGREGATE_SQL);
+    }
+
+    default void setTableDiscoverySql(Map<String, String> inputParameter, String sql) {
+        inputParameter.put(ACTUAL_AGGREGATE_SQL, sql);
     }
 }

@@ -128,11 +128,26 @@ public class CustomCountSql implements SqlMetric {
 
         inputParameter.put(ACTUAL_TABLE, inputParameter.get(TABLE));
 
-        // Auto-generate aggregate SQL by wrapping user's error data SQL with COUNT(*)
-        String actualAggregateSql = "SELECT COUNT(*) as actual_value_" + uniqueKey
-                + " FROM (" + invalidateItemsSql + ") dv_custom_count_tmp";
+        String actualAggregateSql = "select count(1) as actual_value_" + uniqueKey + " from ${invalidate_items_table}";
 
-        return new ExecuteSql(actualAggregateSql, inputParameter.get(TABLE));
+        return new ExecuteSql(actualAggregateSql, "invalidate_count_" + uniqueKey);
+    }
+
+    @Override
+    public ExecuteSql getDirectActualValue(Map<String, String> inputParameter) {
+        if (StringUtils.isEmpty(invalidateItemsSql)) {
+            throw new IllegalStateException("invalidate_items_sql is not configured or empty");
+        }
+
+        String uniqueKey = inputParameter.get(METRIC_UNIQUE_KEY);
+        if (StringUtils.isEmpty(uniqueKey)) {
+            throw new IllegalStateException("metric_unique_key is missing in input parameters");
+        }
+
+        String actualAggregateSql = "select count(1) as actual_value_" + uniqueKey
+                + " from ( " + invalidateItemsSql + " ) t";
+
+        return new ExecuteSql(actualAggregateSql, "invalidate_count_" + uniqueKey);
     }
 
     @Override
@@ -143,5 +158,16 @@ public class CustomCountSql implements SqlMetric {
     @Override
     public boolean isCustomSql() {
         return true;
+    }
+
+    @Override
+    public String getTableDiscoverySql(Map<String, String> inputParameter) {
+        return inputParameter.get(INVALIDATE_ITEMS_SQL);
+    }
+
+    @Override
+    public void setTableDiscoverySql(Map<String, String> inputParameter, String sql) {
+        inputParameter.put(INVALIDATE_ITEMS_SQL, sql);
+        this.invalidateItemsSql = sql;
     }
 }

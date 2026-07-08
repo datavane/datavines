@@ -394,7 +394,11 @@ public class JobServiceImpl extends ServiceImpl<JobMapper, Job> implements JobSe
         }
 
         if (StringUtils.isEmpty(table)) {
-            List<String> tables = SqlUtils.extractTablesFromSelect((String) jobParameter.getMetricParameter().get(ACTUAL_AGGREGATE_SQL));
+            SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames)
+                    .getOrCreatePlugin(jobParameter.getMetricType());
+            Map<String, String> metricParameter = new HashMap<>();
+            jobParameter.getMetricParameter().forEach((key, value) -> metricParameter.put(key, String.valueOf(value)));
+            List<String> tables = SqlUtils.extractTablesFromSelect(sqlMetric.getTableDiscoverySql(metricParameter));
             if (CollectionUtils.isEmpty(tables)) {
                 throw new DataVinesException("custom sql must have table");
             }

@@ -102,7 +102,7 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                             
                             .getNewPlugin(metricType);
                     if (sqlMetric.isCustomSql()) {
-                        List<String> tables = SqlUtils.extractTablesFromSelect(metricInputParameter.get(ACTUAL_AGGREGATE_SQL));
+                        List<String> tables = SqlUtils.extractTablesFromSelect(sqlMetric.getTableDiscoverySql(metricInputParameter));
                         if (CollectionUtils.isEmpty(tables)) {
                             throw new DataVinesException("custom sql must have table");
                         }
@@ -164,13 +164,13 @@ public abstract class BaseSparkConfigurationBuilder extends BaseJobConfiguration
                             sourceConnectorSet.add(connectorUUID);
                         }
 
-                        if (StringUtils.isNotEmpty(metricInputParameter.get(ACTUAL_AGGREGATE_SQL))) {
-                            String sql = metricInputParameter.get(ACTUAL_AGGREGATE_SQL);
+                        if (StringUtils.isNotEmpty(sqlMetric.getTableDiscoverySql(metricInputParameter))) {
+                            String sql = sqlMetric.getTableDiscoverySql(metricInputParameter);
                             for (Map.Entry<String, String> entry : table2OutputTable.entrySet()) {
                                 sql = sql.replaceAll(entry.getKey(), entry.getValue());
                             }
 
-                            metricInputParameter.put(ACTUAL_AGGREGATE_SQL, sql);
+                            sqlMetric.setTableDiscoverySql(metricInputParameter, sql);
                         }
                     } else {
                         ConnectorParameter connectorParameter = jobExecutionParameter.getConnectorParameter();
