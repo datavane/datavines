@@ -147,13 +147,19 @@ export const useAddErrorManage = (options: ModalProps) => {
                     type,
                     dataSourceParam: JSON.stringify(rest),
                 });
-                if (res) {
-                    message.success('Success!');
+                // 后端返回 ResultMap: { code, msg, data }
+                if (res?.data === true) {
+                    message.success(intl.formatMessage({ id: 'test_link_success' }));
                     setIsSuccessTest(true);
                 } else {
-                    message.error(intl.formatMessage({ id: 'test_link_fail' }));
+                    // 显示后端返回的详细错误信息
+                    const errorMsg = res?.msg || intl.formatMessage({ id: 'test_link_fail' });
+                    message.error(errorMsg);
                 }
             } catch (error: any) {
+                // 显示异常中的错误信息
+                const errorMsg = error?.msg || intl.formatMessage({ id: 'test_link_fail' });
+                message.error(errorMsg);
             } finally {
                 setLoading(false);
             }

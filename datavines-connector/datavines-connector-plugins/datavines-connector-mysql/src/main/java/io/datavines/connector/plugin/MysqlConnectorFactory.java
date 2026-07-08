@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.*;
 
 public class MysqlConnectorFactory extends AbstractJdbcConnectorFactory {
@@ -48,5 +49,15 @@ public class MysqlConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public MetricScript getMetricScript() {
         return new MysqlMetricScript();
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.mysql);
+    }
+
+    @Override
+    public String getPluginName() {
+        return "mysql";
     }
 }

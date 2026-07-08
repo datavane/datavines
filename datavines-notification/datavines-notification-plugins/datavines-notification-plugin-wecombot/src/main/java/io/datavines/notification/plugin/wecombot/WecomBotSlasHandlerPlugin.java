@@ -94,4 +94,9 @@ public class WecomBotSlasHandlerPlugin implements SlasHandlerPlugin {
         }
         return result;
     }
+
+    @Override
+    public String getPluginName() {
+        return "wecombot";
+    }
 }

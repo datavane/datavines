@@ -16,14 +16,19 @@
  */
 package io.datavines.metric.api;
 
-import io.datavines.spi.SPI;
-
 import java.math.BigDecimal;
+import java.util.Collection;
+import java.util.Collections;
 
-@SPI
 public interface ResultFormula {
 
     String getName();
+
+    String getPluginName();
+
+    default Collection<String> getPluginNames() {
+        return Collections.singletonList(getPluginName());
+    }
 
     String getZhName();
 

@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.*;
 
 public class OracleConnectorFactory extends AbstractJdbcConnectorFactory{
@@ -53,5 +54,15 @@ public class OracleConnectorFactory extends AbstractJdbcConnectorFactory{
     @Override
     public MetricScript getMetricScript() {
         return new OracleMetricScript();
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.oracle);
+    }
+
+    @Override
+    public String getPluginName() {
+        return "oracle";
     }
 }

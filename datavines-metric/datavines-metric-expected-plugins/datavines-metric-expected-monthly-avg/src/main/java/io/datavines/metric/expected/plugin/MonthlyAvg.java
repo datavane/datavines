@@ -71,4 +71,9 @@ public class MonthlyAvg extends AbstractExpectedValue {
     public void prepare(Map<String, String> config) {
 
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("flink_monthly_avg", "livy_monthly_avg", "local_monthly_avg", "spark_monthly_avg");
+    }
 }

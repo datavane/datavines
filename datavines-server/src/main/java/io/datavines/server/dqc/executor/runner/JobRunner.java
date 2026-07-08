@@ -25,7 +25,7 @@ import io.datavines.common.utils.LoggerUtils;
 import io.datavines.engine.api.engine.EngineExecutor;
 import io.datavines.server.dqc.command.JobExecuteResponseCommand;
 import io.datavines.server.dqc.coordinator.cache.JobExecutionResponseProcessor;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,8 +59,8 @@ public class JobRunner implements Runnable {
             Logger taskLogger = LoggerFactory.getLogger(taskLoggerName);
             Thread.currentThread().setName(taskLoggerName);
 
-            engineExecutor = PluginLoader
-                    .getPluginLoader(EngineExecutor.class)
+            engineExecutor = PluginDiscovery.getMultiKeyPluginDiscovery(EngineExecutor.class, EngineExecutor::getPluginNames)
+                    
                     .getNewPlugin(jobExecutionRequest.getEngineType());
 
             engineExecutor.init(jobExecutionRequest, taskLogger, configurations);

@@ -44,7 +44,7 @@ import io.datavines.server.repository.mapper.JobExecutionResultMapper;
 import io.datavines.server.repository.service.*;
 import io.datavines.server.repository.entity.Command;
 import io.datavines.server.repository.mapper.JobExecutionMapper;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -241,19 +241,19 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 
     private void checkJobExecutionParameter(JobExecutionParameter jobExecutionParameter, String engineType) throws DataVinesServerException {
 //        String metricType = jobExecutionParameter.getMetricType();
-//        Set<String> metricPluginSet = PluginLoader.getPluginLoader(SqlMetric.class).getSupportedPlugins();
+//        Set<String> metricPluginSet = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getSupportedPlugins();
 //        if (!metricPluginSet.contains(metricType)) {
 //            throw new DataVinesServerException(String.format("%s metric does not supported", metricType));
 //        }
 //
-//        SqlMetric sqlMetric = PluginLoader.getPluginLoader(SqlMetric.class).getOrCreatePlugin(metricType);
+//        SqlMetric sqlMetric = PluginDiscovery.getMultiKeyPluginDiscovery(SqlMetric.class, SqlMetric::getPluginNames).getOrCreatePlugin(metricType);
 //        CheckResult checkResult = sqlMetric.validateConfig(jobExecutionParameter.getMetricParameter());
 //        if (checkResult== null || !checkResult.isSuccess()) {
 //            throw new DataVinesServerException(checkResult== null? "check error": checkResult.getMsg());
 //        }
 //
 //        String configBuilder = engineType + "_" + sqlMetric.getType().getDescription();
-//        Set<String> configBuilderPluginSet = PluginLoader.getPluginLoader(JobConfigurationBuilder.class).getSupportedPlugins();
+//        Set<String> configBuilderPluginSet = PluginDiscovery.getMultiKeyPluginDiscovery(JobConfigurationBuilder.class, JobConfigurationBuilder::getPluginNames).getSupportedPlugins();
 //        if (!configBuilderPluginSet.contains(configBuilder)) {
 //            throw new DataVinesServerException(String.format("%s engine does not supported %s metric", engineType, metricType));
 //        }
@@ -262,13 +262,13 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 //        if (connectorParameter != null) {
 //            String connectorType = connectorParameter.getType();
 //            Set<String> connectorFactoryPluginSet =
-//                    PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
+//                    PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getSupportedPlugins();
 //            if (!connectorFactoryPluginSet.contains(connectorType)) {
 //                throw new DataVinesServerException(String.format("%s connector does not supported", connectorType));
 //            }
 //
 //            if (LOCAL.equals(engineType)) {
-//                ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(connectorType);
+//                ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(connectorType);
 //                if (!JDBC.equals(connectorFactory.getCategory())) {
 //                    throw new DataVinesServerException(String.format("jdbc engine does not supported %s connector", connectorType));
 //                }
@@ -278,13 +278,13 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 //        }
 //
 //        String expectedMetric = jobExecutionParameter.getExpectedType();
-//        Set<String> expectedValuePluginSet = PluginLoader.getPluginLoader(ExpectedValue.class).getSupportedPlugins();
+//        Set<String> expectedValuePluginSet = PluginDiscovery.getMultiKeyPluginDiscovery(ExpectedValue.class, ExpectedValue::getPluginNames).getSupportedPlugins();
 //        if (!expectedValuePluginSet.contains(expectedMetric)) {
 //            throw new DataVinesServerException(String.format("%s expected value does not supported", metricType));
 //        }
 //
 //        String resultFormula = jobExecutionParameter.getResultFormula();
-//        Set<String> resultFormulaPluginSet = PluginLoader.getPluginLoader(ResultFormula.class).getSupportedPlugins();
+//        Set<String> resultFormulaPluginSet = PluginDiscovery.getMultiKeyPluginDiscovery(ResultFormula.class, ResultFormula::getPluginNames).getSupportedPlugins();
 //        if (!resultFormulaPluginSet.contains(resultFormula)) {
 //            throw new DataVinesServerException(String.format("%s result formula does not supported", metricType));
 //        }
@@ -324,7 +324,7 @@ public class JobExecutionServiceImpl extends ServiceImpl<JobExecutionMapper, Job
 
         executionResults.forEach(result -> {
             ResultFormula resultFormula =
-                    PluginLoader.getPluginLoader(ResultFormula.class).getOrCreatePlugin(result.getResultFormula());
+                    PluginDiscovery.getMultiKeyPluginDiscovery(ResultFormula.class, ResultFormula::getPluginNames).getOrCreatePlugin(result.getResultFormula());
             MetricExecutionDashBoard executionDashBoard = new MetricExecutionDashBoard();
             executionDashBoard.setValue(resultFormula.getResult(result.getActualValue(), Objects.isNull(result.getExpectedValue()) ? BigDecimal.valueOf(0) : result.getExpectedValue()));
             executionDashBoard.setType(resultFormula.getType().getDescription());

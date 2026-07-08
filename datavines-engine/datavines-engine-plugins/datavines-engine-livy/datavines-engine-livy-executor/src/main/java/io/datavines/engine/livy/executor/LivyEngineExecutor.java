@@ -233,4 +233,9 @@ public class LivyEngineExecutor extends AbstractLivyEngineExecutor {
             parameters.setProxyUser(proxyUser);
         }
     }
+
+    @Override
+    public String getPluginName() {
+        return "livy";
+    }
 }

@@ -26,7 +26,7 @@ import io.datavines.server.repository.entity.JobExecution;
 import io.datavines.server.repository.mapper.JobExecutionMapper;
 import io.datavines.server.repository.service.DataSourceService;
 import io.datavines.server.repository.service.JobExecutionErrorDataService;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +66,7 @@ public class JobExecutionErrorDataServiceImpl implements JobExecutionErrorDataSe
         }
 
         ConnectorFactory connectorFactory =
-                PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorageType);
+                PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(errorDataStorageType);
 
         ExecuteRequestParam param = new ExecuteRequestParam();
         param.setType(errorDataStorageType);

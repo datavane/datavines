@@ -79,4 +79,9 @@ public class ColumnDistinct extends BaseSingleTableColumn {
     public List<DataVinesDataType> suitableType() {
         return Arrays.asList(DataVinesDataType.NUMERIC_TYPE, DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
     }
+
+    @Override
+    public String getPluginName() {
+        return "column_distinct";
+    }
 }

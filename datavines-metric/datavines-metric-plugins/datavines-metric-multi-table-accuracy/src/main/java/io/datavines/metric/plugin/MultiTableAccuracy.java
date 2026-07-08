@@ -133,4 +133,9 @@ public class MultiTableAccuracy implements SqlMetric {
     public List<DataVinesDataType> suitableType() {
         return Collections.emptyList();
     }
+
+    @Override
+    public String getPluginName() {
+        return "multi_table_accuracy";
+    }
 }

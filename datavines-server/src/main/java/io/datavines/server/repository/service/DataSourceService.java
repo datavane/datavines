@@ -18,11 +18,10 @@ package io.datavines.server.repository.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
-import io.datavines.server.api.dto.bo.datasource.ExecuteRequest;
+import io.datavines.server.api.dto.bo.datasource.*;
 import io.datavines.common.exception.DataVinesException;
+import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.TestConnectionRequestParam;
-import io.datavines.server.api.dto.bo.datasource.DataSourceCreate;
-import io.datavines.server.api.dto.bo.datasource.DataSourceUpdate;
 import io.datavines.server.api.dto.vo.DataSourceVO;
 import io.datavines.server.repository.entity.DataSource;
 import io.datavines.core.exception.DataVinesServerException;
@@ -31,7 +30,7 @@ import java.util.List;
 
 public interface DataSourceService extends IService<DataSource> {
 
-    boolean testConnect(TestConnectionRequestParam connectionParam);
+    ConnectorResponse testConnect(TestConnectionRequestParam connectionParam);
 
     long insert(DataSourceCreate dataSource);
 
@@ -56,4 +55,6 @@ public interface DataSourceService extends IService<DataSource> {
     String getConfigJson(String type);
 
     List<DataSource> listByWorkSpaceIdAndType(long workspaceId,String type);
+
+    List<DataSourceInfo> listByInfo(DataSourceKeyProperties dataSourceKeyProperties);
 }

@@ -59,4 +59,9 @@ public class None implements ExpectedValue {
     public void prepare(Map<String, String> config) {
 
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Arrays.asList("flink_none", "local_none");
+    }
 }

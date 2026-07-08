@@ -95,6 +95,10 @@ public class ConfigConstants {
     public static final String URL = "url";
     public static final String HOST = "host";
     public static final String PORT = "port";
+
+    // odps
+    public static final String ENDPOINT = "endpoint";
+
     public static final String CATALOG = "catalog";
     public static final String PROPERTIES = "properties";
     public static final String TYPE = "type";

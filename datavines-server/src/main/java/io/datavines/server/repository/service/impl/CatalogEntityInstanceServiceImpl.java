@@ -16,6 +16,7 @@
  */
 package io.datavines.server.repository.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -92,6 +93,44 @@ public class CatalogEntityInstanceServiceImpl
     @Override
     public CatalogEntityInstance getByTypeAndFQN(String type, String fqn) {
         return baseMapper.selectOne(new QueryWrapper<CatalogEntityInstance>().lambda().eq(CatalogEntityInstance::getType, type).eq(CatalogEntityInstance::getFullyQualifiedName, fqn));
+    }
+
+    @Override
+    public CatalogEntityInstance getByUUID(String uuid) {
+        return baseMapper.selectOne(new QueryWrapper<CatalogEntityInstance>().lambda().eq(CatalogEntityInstance::getUuid, uuid));
+    }
+
+    @Override
+    public CatalogEntityInstance getParent(String uuid) {
+        CatalogEntityRel parentEntityRel = entityRelService.getOne(new LambdaQueryWrapper<CatalogEntityRel>()
+                .eq(CatalogEntityRel::getEntity2Uuid, uuid)
+                .eq(CatalogEntityRel::getType, EntityRelType.CHILD.getDescription()), false);
+
+        CatalogEntityInstance parentEntity = null;
+        if (parentEntityRel == null) {
+            return parentEntity;
+        }
+
+        parentEntity = getByUUID(parentEntityRel.getEntity1Uuid());
+        return parentEntity;
+    }
+
+    @Override
+    public List<CatalogEntityInstance> getChildren(String uuid) {
+        List<CatalogEntityRel> childEntityRelList = entityRelService.list(new LambdaQueryWrapper<CatalogEntityRel>()
+                .eq(CatalogEntityRel::getEntity1Uuid, uuid)
+                .eq(CatalogEntityRel::getType, EntityRelType.CHILD.getDescription()));
+        List<CatalogEntityInstance> childEntityList = new ArrayList<>();
+        if (CollectionUtils.isEmpty(childEntityRelList)) {
+            return childEntityList;
+        }
+
+        for (CatalogEntityRel childEntityRel : childEntityRelList) {
+            CatalogEntityInstance childEntity = getByUUID(childEntityRel.getEntity2Uuid());
+            childEntityList.add(childEntity);
+        }
+
+        return childEntityList;
     }
 
     @Override
@@ -418,7 +457,7 @@ public class CatalogEntityInstanceServiceImpl
             return tableProfileVO;
         }
         String latestDate = tableRecords.getDatetime();
-        Double records = Double.valueOf((String)tableRecords.getValue());
+        double records = Double.parseDouble((String) tableRecords.getValue());
         List<CatalogEntityInstance> columnList = getCatalogEntityInstances(uuid);
         if (CollectionUtils.isEmpty(columnList)) {
             return tableProfileVO;
@@ -459,19 +498,19 @@ public class CatalogEntityInstanceServiceImpl
                 switch (metricName) {
                     case "column_null":
                         columnBaseProfileVO.setNullCount(entityProfile.getActualValue());
-                        columnBaseProfileVO.setNullPercentage(String.format("%.2f",(Double.valueOf(entityProfile.getActualValue()) / records * 100)) +"%");
+                        columnBaseProfileVO.setNullPercentage(String.format("%.2f",(Double.parseDouble(entityProfile.getActualValue()) / records * 100)) +"%");
                         break;
                     case "column_not_null":
                         columnBaseProfileVO.setNotNullCount(entityProfile.getActualValue());
-                        columnBaseProfileVO.setNotNullPercentage(String.format("%.2f",(Double.valueOf(entityProfile.getActualValue()) / records * 100)) +"%");
+                        columnBaseProfileVO.setNotNullPercentage(String.format("%.2f",(Double.parseDouble(entityProfile.getActualValue()) / records * 100)) +"%");
                         break;
                     case "column_unique":
                         columnBaseProfileVO.setUniqueCount(entityProfile.getActualValue());
-                        columnBaseProfileVO.setUniquePercentage(String.format("%.2f",(Double.valueOf(entityProfile.getActualValue()) / records * 100)) +"%");
+                        columnBaseProfileVO.setUniquePercentage(String.format("%.2f",(Double.parseDouble(entityProfile.getActualValue()) / records * 100)) +"%");
                         break;
                     case "column_distinct":
                         columnBaseProfileVO.setDistinctCount(entityProfile.getActualValue());
-                        columnBaseProfileVO.setDistinctPercentage(String.format("%.2f",(Double.valueOf(entityProfile.getActualValue()) / records * 100)) +"%");
+                        columnBaseProfileVO.setDistinctPercentage(String.format("%.2f",(Double.parseDouble(entityProfile.getActualValue()) / records * 100)) +"%");
                         break;
                     default:
                         break;
@@ -793,9 +832,8 @@ public class CatalogEntityInstanceServiceImpl
     @Override
     public IPage<CatalogEntityIssueVO> getEntityIssueList(String uuid, Integer pageNumber, Integer pageSize) {
         Page<CatalogEntityIssueVO> page = new Page<>(pageNumber, pageSize);
-        IPage<CatalogEntityIssueVO> entityMetricPage = catalogEntityMetricJobRelService.getEntityIssuePage(page, uuid);
 
-        return entityMetricPage;
+        return catalogEntityMetricJobRelService.getEntityIssuePage(page, uuid);
     }
 
     @Override
@@ -865,10 +903,10 @@ public class CatalogEntityInstanceServiceImpl
                 baseJobParameter.setExpectedType("fix_value");
                 jobParameters.add(baseJobParameter);
             } else {
-                throw new DataVinesServerException(Status.CATALOG_PROFILE_INSTANCE_FQN_ERROR, fqn);
+                throw new DataVinesServerException(Status.CATALOG_INSTANCE_FQN_ERROR, fqn);
             }
         } else {
-            throw new DataVinesServerException(Status.CATALOG_PROFILE_INSTANCE_FQN_ERROR, fqn);
+            throw new DataVinesServerException(Status.CATALOG_INSTANCE_FQN_ERROR, fqn);
         }
 
         List<String> columns = new ArrayList<>();
@@ -938,7 +976,7 @@ public class CatalogEntityInstanceServiceImpl
                     .eq(CatalogEntityMetricJobRel::getEntityUuid, uuid)
                     .eq(CatalogEntityMetricJobRel::getMetricJobId, jobId)
                     .eq(CatalogEntityMetricJobRel::getMetricJobType, DATA_PROFILE.getDescription()));
-            if (listRel.size() >= 1) {
+            if (!listRel.isEmpty()) {
                 catalogEntityMetricJobRelService.remove(new QueryWrapper<CatalogEntityMetricJobRel>().lambda()
                         .eq(CatalogEntityMetricJobRel::getEntityUuid, uuid)
                         .eq(CatalogEntityMetricJobRel::getMetricJobId, jobId)

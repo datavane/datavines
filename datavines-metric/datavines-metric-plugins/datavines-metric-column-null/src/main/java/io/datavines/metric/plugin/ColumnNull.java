@@ -74,4 +74,9 @@ public class ColumnNull extends BaseSingleTableColumnNotUseView {
     public MetricDirectionType getDirectionType() {
         return MetricDirectionType.NEGATIVE;
     }
+
+    @Override
+    public String getPluginName() {
+        return "column_null";
+    }
 }

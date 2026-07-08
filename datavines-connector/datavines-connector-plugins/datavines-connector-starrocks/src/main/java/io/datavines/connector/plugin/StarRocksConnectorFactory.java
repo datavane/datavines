@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.*;
 
 public class StarRocksConnectorFactory extends AbstractJdbcConnectorFactory {
@@ -43,5 +44,15 @@ public class StarRocksConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public ConfigBuilder getConfigBuilder() {
         return new StarRocksConfigBuilder();
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.mysql);
+    }
+
+    @Override
+    public String getPluginName() {
+        return "starrocks";
     }
 }

@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.*;
 
 public class DatabendConnectorFactory extends AbstractJdbcConnectorFactory {
@@ -43,5 +44,15 @@ public class DatabendConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public ConfigBuilder getConfigBuilder() {
         return new DatabendConfigBuilder();
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.mysql);
+    }
+
+    @Override
+    public String getPluginName() {
+        return "databend";
     }
 }

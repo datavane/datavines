@@ -16,12 +16,12 @@
  */
 package io.datavines.metric.api;
 
-import io.datavines.spi.SPI;
-
+import java.util.Collection;
 import java.util.Map;
 
-@SPI
 public interface ExpectedValue {
+
+    Collection<String> getPluginNames();
 
     /**
      * get value name

@@ -84,4 +84,9 @@ public class ColumnMaxLength extends BaseSingleTableColumn {
     public List<DataVinesDataType> suitableType() {
         return Arrays.asList(DataVinesDataType.STRING_TYPE, DataVinesDataType.DATE_TIME_TYPE);
     }
+
+    @Override
+    public String getPluginName() {
+        return "column_max_length";
+    }
 }

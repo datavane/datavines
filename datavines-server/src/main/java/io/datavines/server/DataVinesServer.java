@@ -33,7 +33,7 @@ import io.datavines.server.dqc.coordinator.failover.JobExecutionFailover;
 import io.datavines.server.dqc.coordinator.runner.JobScheduler;
 import io.datavines.server.registry.RegistryHolder;
 import io.datavines.server.utils.SpringApplicationContext;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +89,8 @@ public class DataVinesServer {
 
         jobExecutionFailover = new JobExecutionFailover(jobExecuteManager);
 
-        Registry registry = PluginLoader
-                .getPluginLoader(Registry.class)
+        Registry registry = PluginDiscovery.getMultiKeyPluginDiscovery(Registry.class, Registry::getPluginNames)
+                
                 .getOrCreatePlugin(CommonPropertyUtils
                         .getString(CommonPropertyUtils.REGISTRY_TYPE, CommonPropertyUtils.REGISTRY_TYPE_DEFAULT));
         registry.init(CommonPropertyUtils.getProperties());

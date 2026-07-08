@@ -28,7 +28,7 @@ const Login = () => {
             try {
                 setLoading(true);
                 const res = await $http.post('/login', values, { showWholeData: true });
-                shareData.sessionSet(DV_STORAGE_LOGIN, {
+                shareData.storageSet(DV_STORAGE_LOGIN, {
                     ...(res.data),
                     token: res.token,
                 });

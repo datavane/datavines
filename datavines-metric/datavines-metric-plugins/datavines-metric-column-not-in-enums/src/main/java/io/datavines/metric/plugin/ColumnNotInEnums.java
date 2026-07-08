@@ -79,4 +79,9 @@ public class ColumnNotInEnums extends BaseSingleTableColumnNotUseView {
         return MetricDirectionType.NEGATIVE;
     }
 
+
+    @Override
+    public String getPluginName() {
+        return "column_not_in_enums";
+    }
 }

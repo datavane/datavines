@@ -51,4 +51,9 @@ public class LocalDataProfileMetricBuilder extends BaseLocalConfigurationBuilder
 
         configuration.setSinkParameters(sinkConfigs);
     }
+
+    @Override
+    public java.util.Collection<String> getPluginNames() {
+        return java.util.Collections.singletonList("local_data_profile");
+    }
 }

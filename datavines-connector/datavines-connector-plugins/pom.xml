@@ -50,6 +50,7 @@
         <module>datavines-connector-oracle</module>
         <module>datavines-connector-spark</module>
         <module>datavines-connector-flink</module>
+        <module>datavines-connector-maxcompute</module>
     </modules>
 
 

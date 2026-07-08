@@ -31,13 +31,8 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>datavines-engine-local-api</module>
         <module>datavines-engine-local-config</module>
         <module>datavines-engine-local-executor</module>
-        <module>datavines-engine-local-core</module>
-        <module>datavines-engine-local-transform</module>
-        <module>datavines-engine-local-connector-jdbc</module>
-        <module>datavines-engine-local-connector-file</module>
     </modules>
 
 </project>

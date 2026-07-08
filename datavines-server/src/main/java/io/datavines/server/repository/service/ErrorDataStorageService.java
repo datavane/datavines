@@ -19,6 +19,7 @@ package io.datavines.server.repository.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.TestConnectionRequestParam;
 import io.datavines.core.exception.DataVinesServerException;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageCreate;
@@ -31,7 +32,7 @@ import java.util.List;
 
 public interface ErrorDataStorageService extends IService<ErrorDataStorage> {
 
-    boolean testConnect(TestConnectionRequestParam connectionParam);
+    ConnectorResponse testConnect(TestConnectionRequestParam connectionParam);
 
     long create(ErrorDataStorageCreate tenantCreate) throws DataVinesServerException;
 

@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.*;
 
 public class PostgreSqlConnectorFactory extends AbstractJdbcConnectorFactory {
@@ -53,5 +54,15 @@ public class PostgreSqlConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public MetricScript getMetricScript() {
         return new PostgreSqlMetricScript();
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.postgresql);
+    }
+
+    @Override
+    public String getPluginName() {
+        return "postgresql";
     }
 }

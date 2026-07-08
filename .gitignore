@@ -35,3 +35,4 @@ Chart.lock
 yarn.lock
 package-lock.json
 datavines-server/src/main/resources/static
+design/

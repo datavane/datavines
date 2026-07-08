@@ -16,17 +16,20 @@
  */
 package io.datavines.server.api.controller;
 
+import io.datavines.common.param.ConnectorResponse;
 import io.datavines.common.param.TestConnectionRequestParam;
+import io.datavines.common.utils.StringUtils;
 import io.datavines.connector.api.ConnectorFactory;
 import io.datavines.core.aop.RefreshToken;
 import io.datavines.core.constant.DataVinesConstants;
+import io.datavines.core.entity.ResultMap;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageCreate;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStoragePageParam;
 import io.datavines.server.api.dto.bo.storage.ErrorDataStorageUpdate;
 import io.datavines.server.api.dto.vo.ErrorDataStorageVO;
 import io.datavines.server.api.dto.vo.Item;
 import io.datavines.server.repository.service.ErrorDataStorageService;
-import io.datavines.spi.PluginLoader;
+import io.datavines.spi.PluginDiscovery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +55,30 @@ public class ErrorDataStorageController {
     @ApiOperation(value = "test error data storage")
     @PostMapping(value = "/test", consumes = MediaType.APPLICATION_JSON_VALUE)
     public Object testConnection(@Valid @RequestBody TestConnectionRequestParam param)  {
-        return errorDataStorageService.testConnect(param);
+        ConnectorResponse response = errorDataStorageService.testConnect(param);
+
+        ResultMap resultMap = new ResultMap();
+
+        if (response == null) {
+            return resultMap.fail().message("Connector response is null");
+        }
+
+        boolean isSuccess = response.getStatus() != null
+                && response.getStatus().isSuccess()
+                && Boolean.TRUE.equals(response.getResult());
+
+        if (isSuccess) {
+            return resultMap.success()
+                    .message("Connection test succeeded")
+                    .payload(true);
+        } else {
+            String errorMsg = StringUtils.isEmpty(response.getErrorMsg())
+                    ? "Connection failed"
+                    : response.getErrorMsg();
+            return resultMap.fail()
+                    .message(errorMsg)
+                    .payload(false);
+        }
     }
 
     @ApiOperation(value = "create error data storage")
@@ -94,10 +120,10 @@ public class ErrorDataStorageController {
     @ApiOperation(value = "get error data storage type list")
     @GetMapping(value = "/type/list")
     public Object getErrorDataStorageTypeList() {
-        Set<String> errorDataStorageList = PluginLoader.getPluginLoader(ConnectorFactory.class).getSupportedPlugins();
+        Set<String> errorDataStorageList = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getSupportedPlugins();
         List<Item> items = new ArrayList<>();
         for (String errorDataStorage : errorDataStorageList) {
-            ConnectorFactory connectorFactory = PluginLoader.getPluginLoader(ConnectorFactory.class).getOrCreatePlugin(errorDataStorage);
+            ConnectorFactory connectorFactory = PluginDiscovery.getMultiKeyPluginDiscovery(ConnectorFactory.class, ConnectorFactory::getPluginNames).getOrCreatePlugin(errorDataStorage);
             if (connectorFactory  == null) {
                 continue;
             }

@@ -66,4 +66,9 @@ public class DiffPercentage implements ResultFormula {
     public ResultFormulaType getType() {
         return ResultFormulaType.PERCENTAGE;
     }
+
+    @Override
+    public String getPluginName() {
+        return "diff-percentage";
+    }
 }

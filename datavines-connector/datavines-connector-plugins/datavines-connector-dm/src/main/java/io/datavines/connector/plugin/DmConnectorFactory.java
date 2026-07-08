@@ -16,6 +16,7 @@
  */
 package io.datavines.connector.plugin;
 
+import com.alibaba.druid.DbType;
 import io.datavines.connector.api.*;
 
 public class DmConnectorFactory extends AbstractJdbcConnectorFactory {
@@ -43,5 +44,15 @@ public class DmConnectorFactory extends AbstractJdbcConnectorFactory {
     @Override
     public ConfigBuilder getConfigBuilder() {
         return new DmConfigBuilder();
+    }
+
+    @Override
+    public StatementParser getStatementParser() {
+        return new DefaultStatementParser(DbType.dm);
+    }
+
+    @Override
+    public String getPluginName() {
+        return "dm";
     }
 }

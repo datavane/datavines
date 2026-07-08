@@ -115,6 +115,7 @@
         <orai18n.version>12.1.0.2.0</orai18n.version>
         <jmx_prometheus_javaagent.version>0.20.0</jmx_prometheus_javaagent.version>
         <kerb.version>2.0.1</kerb.version>
+        <odps.jdbc.version>3.8.6</odps.jdbc.version>
 
         <license-maven-plugin.version>3.0</license-maven-plugin.version>
         <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
@@ -209,12 +210,6 @@
 
             <dependency>
                 <groupId>io.datavines</groupId>
-                <artifactId>datavines-engine-api</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>io.datavines</groupId>
                 <artifactId>datavines-engine-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -227,13 +222,19 @@
 
             <dependency>
                 <groupId>io.datavines</groupId>
+                <artifactId>datavines-engine-local-executor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>io.datavines</groupId>
                 <artifactId>datavines-engine-spark-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>io.datavines</groupId>
-                <artifactId>datavines-engine-spark-api</artifactId>
+                <artifactId>datavines-engine-spark-executor</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -245,7 +246,7 @@
 
             <dependency>
                 <groupId>io.datavines</groupId>
-                <artifactId>datavines-engine-flink-api</artifactId>
+                <artifactId>datavines-engine-flink-executor</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -696,6 +697,12 @@
                 <groupId>org.apache.kerby</groupId>
                 <artifactId>kerb-util</artifactId>
                 <version>${kerb.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.aliyun.odps</groupId>
+                <artifactId>odps-jdbc</artifactId>
+                <version>${odps.jdbc.version}</version>
+                <classifier>jar-with-dependencies</classifier>
             </dependency>
         </dependencies>
     </dependencyManagement>

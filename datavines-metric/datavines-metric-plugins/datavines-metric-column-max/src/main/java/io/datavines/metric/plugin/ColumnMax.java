@@ -85,4 +85,9 @@ public class ColumnMax extends BaseSingleTableColumn {
         return Collections.singletonList(DataVinesDataType.NUMERIC_TYPE);
     }
 
+
+    @Override
+    public String getPluginName() {
+        return "column_max";
+    }
 }

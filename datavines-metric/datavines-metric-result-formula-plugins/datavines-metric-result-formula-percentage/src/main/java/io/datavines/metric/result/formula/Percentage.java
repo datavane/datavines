@@ -75,4 +75,9 @@ public class Percentage implements ResultFormula {
         return ResultFormulaType.PERCENTAGE;
     }
 
+
+    @Override
+    public String getPluginName() {
+        return "percentage";
+    }
 }

@@ -206,9 +206,12 @@ public abstract class JdbcConnector implements Connector, IJdbcDataSourceInfo {
             return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(result).build();
         } catch (SQLException e) {
             logger.error("test connect error, param is {} :", JSONUtils.toJsonString(param), e);
+            return ConnectorResponse.builder()
+                    .status(ConnectorResponse.Status.ERROR)
+                    .result(false)
+                    .errorMsg(e.getMessage())
+                    .build();
         }
-
-        return ConnectorResponse.builder().status(ConnectorResponse.Status.SUCCESS).result(false).build();
     }
 
     private List<String> getPrimaryKeys(String catalog, String schema, String tableName, DatabaseMetaData metaData) {

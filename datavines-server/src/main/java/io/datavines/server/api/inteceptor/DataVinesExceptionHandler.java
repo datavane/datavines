@@ -16,12 +16,14 @@
  */
 package io.datavines.server.api.inteceptor;
 
+import io.datavines.core.constant.DataVinesConstants;
 import io.datavines.core.entity.ResultMap;
 import io.datavines.core.enums.Status;
 import io.datavines.core.utils.TokenManager;
 import io.datavines.core.exception.DataVinesServerException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -58,10 +60,12 @@ public class DataVinesExceptionHandler {
             return ResponseEntity.ok(new ResultMap().fail(Status.PLEASE_LOGIN.getCode()).message(Status.PLEASE_LOGIN.getMsg()));
         }
 
-        if (!Objects.isNull(status) ) {
+        if (!Objects.isNull(status)) {
             resultMap.fail(status.getCode());
+        } else {
+            resultMap.fail();
         }
-        resultMap.failAndRefreshToken(request);
+        tryRefreshToken(request, resultMap);
         resultMap.message(e.getMessage());
         return ResponseEntity.ok(resultMap);
     }
@@ -70,7 +74,8 @@ public class DataVinesExceptionHandler {
     public ResponseEntity<ResultMap> constraintViolationExceptionHandler(Exception e, HttpServletRequest request) {
         log.error("ConstraintViolationException:", e);
         ResultMap resultMap = new ResultMap(tokenManager);
-        resultMap.failAndRefreshToken(request);
+        resultMap.fail();
+        tryRefreshToken(request, resultMap);
         resultMap.message(buildValidFailMessage((ConstraintViolationException) e));
         return ResponseEntity.ok(resultMap);
     }
@@ -79,7 +84,8 @@ public class DataVinesExceptionHandler {
     public ResponseEntity<ResultMap> methodArgumentNotValidExceptionHandler(Exception e, HttpServletRequest request) {
         log.error("MethodArgumentNotValidException:", e);
         ResultMap resultMap = new ResultMap(tokenManager);
-        resultMap.failAndRefreshToken(request);
+        resultMap.fail();
+        tryRefreshToken(request, resultMap);
         String message = buildValidFailMessage((MethodArgumentNotValidException) e);
         resultMap.message(message);
         return ResponseEntity.ok(resultMap);
@@ -89,9 +95,27 @@ public class DataVinesExceptionHandler {
     public ResponseEntity<ResultMap> commonExceptionHandler(Exception e, HttpServletRequest request) {
         log.error("Exception:", e);
         ResultMap resultMap = new ResultMap(tokenManager);
-        resultMap.failAndRefreshToken(request);
+        resultMap.fail();
+        tryRefreshToken(request, resultMap);
         resultMap.message(e.getMessage());
         return ResponseEntity.ok(resultMap);
+    }
+
+    private void tryRefreshToken(HttpServletRequest request, ResultMap resultMap) {
+        try {
+            String token = request.getHeader(DataVinesConstants.TOKEN_HEADER_STRING);
+            if (StringUtils.isEmpty(token)) {
+                token = (String) request.getAttribute(DataVinesConstants.TOKEN_HEADER_STRING);
+                if (StringUtils.isEmpty(token)) {
+                    token = request.getParameter(DataVinesConstants.TOKEN_HEADER_STRING);
+                }
+            }
+            if (StringUtils.isNotEmpty(token) && tokenManager != null) {
+                resultMap.put("token", tokenManager.refreshToken(token));
+            }
+        } catch (Exception ex) {
+            log.debug("Token refresh skipped: {}", ex.getMessage());
+        }
     }
 
     private String buildValidFailMessage(ConstraintViolationException violationException) {

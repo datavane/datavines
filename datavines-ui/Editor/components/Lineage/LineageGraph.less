@@ -1,0 +1,227 @@
+@lineage-bg: #f8f9fc;
+@lineage-border: #e8ecf1;
+@lineage-dot: #dde1e9;
+@lineage-radius: 10px;
+@lineage-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+@lineage-font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+
+.lineage-wrapper {
+    font-family: @lineage-font;
+
+    // Ant Design Spin adds wrapper divs — ensure they fill available space
+    .ant-spin-nested-loading,
+    .ant-spin-container {
+        height: 100%;
+    }
+}
+
+.lineage-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: #fff;
+    border: 1px solid @lineage-border;
+    border-radius: @lineage-radius @lineage-radius 0 0;
+    gap: 8px;
+    flex-wrap: wrap;
+
+    .toolbar-left, .toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+}
+
+.lineage-graph-container {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 430px);
+    min-height: 380px;
+    background-color: @lineage-bg;
+    background-image: radial-gradient(@lineage-dot 1px, transparent 1px);
+    background-size: 20px 20px;
+    border: 1px solid @lineage-border;
+    border-top: none;
+    border-radius: 0 0 @lineage-radius @lineage-radius;
+    overflow: hidden;
+
+    .lineage-canvas {
+        width: 100%;
+        height: 100%;
+    }
+
+    // Zoom controls — bottom-right pill
+    .lineage-zoom-controls {
+        position: absolute;
+        right: 16px;
+        bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 1px;
+        background: #fff;
+        border-radius: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        border: 1px solid @lineage-border;
+        padding: 2px;
+        z-index: 10;
+
+        .ant-btn {
+            width: 30px;
+            height: 30px;
+            min-width: 30px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            color: #6e7191;
+            font-size: 13px;
+            border-radius: 50%;
+            transition: all 0.2s;
+
+            &:hover {
+                background: #f0f2f5;
+                color: #1a1a2e;
+            }
+        }
+
+        .zoom-divider {
+            width: 1px;
+            height: 18px;
+            background: @lineage-border;
+            margin: 0 2px;
+        }
+    }
+
+    // Legend — bottom-left
+    .lineage-legend {
+        position: absolute;
+        left: 16px;
+        bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(6px);
+        border-radius: 8px;
+        padding: 6px 14px;
+        border: 1px solid @lineage-border;
+        z-index: 10;
+        font-size: 11px;
+        color: #6e7191;
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+
+            .legend-dot {
+                width: 10px;
+                height: 10px;
+                border-radius: 3px;
+            }
+        }
+    }
+
+    // Minimap override — no CSS Modules, classes are global
+    .g6-minimap-container {
+        position: absolute !important;
+        right: 16px;
+        top: 16px;
+        background: rgba(255, 255, 255, 0.92);
+        backdrop-filter: blur(6px);
+        border: 1px solid @lineage-border;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: @lineage-shadow;
+    }
+}
+
+.lineage-empty-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 430px);
+    min-height: 320px;
+    background-color: @lineage-bg;
+    background-image: radial-gradient(@lineage-dot 1px, transparent 1px);
+    background-size: 20px 20px;
+    border: 1px solid @lineage-border;
+    border-top: none;
+    border-radius: 0 0 @lineage-radius @lineage-radius;
+
+    .ant-empty-description {
+        color: #6e7191;
+    }
+}
+
+.lineage-loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: calc(100vh - 380px);
+    min-height: 420px;
+}
+
+.lineage-error-container {
+    padding: 16px;
+}
+
+// Drawer enhancements
+.lineage-drawer {
+    .drawer-section {
+        margin-bottom: 20px;
+
+        .drawer-section-title {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+    }
+
+    .drawer-fqn {
+        font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        font-size: 12px;
+        background: #f5f6fa;
+        padding: 8px 12px;
+        border-radius: 6px;
+        word-break: break-all;
+        color: #374151;
+        line-height: 1.5;
+    }
+
+    .drawer-sql-block {
+        margin-top: 8px;
+        padding: 12px 14px;
+        background: #1e1e2e;
+        border-radius: 8px;
+        font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+        font-size: 12px;
+        color: #cdd6f4;
+        max-height: 220px;
+        overflow: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        line-height: 1.6;
+    }
+
+    .col-mapping-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 0;
+
+        .col-mapping-arrow {
+            color: #9ca3af;
+            flex-shrink: 0;
+        }
+    }
+}

@@ -16,22 +16,12 @@
  */
 package io.datavines.engine.core.config;
 
-import io.datavines.common.config.Config;
 import io.datavines.common.config.ConfigRuntimeException;
 import io.datavines.common.config.DataVinesJobConfig;
 import io.datavines.common.config.EnvConfig;
-import io.datavines.engine.api.component.Component;
-import io.datavines.engine.api.env.RuntimeEnvironment;
 import io.datavines.engine.core.utils.JsonUtils;
-import io.datavines.spi.PluginLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static io.datavines.engine.api.EngineConstants.PLUGIN_TYPE;
-import static io.datavines.engine.api.EngineConstants.TYPE;
 
 public class ConfigParser {
 
@@ -43,13 +33,10 @@ public class ConfigParser {
 
     private final EnvConfig envConfig;
 
-    private final RuntimeEnvironment env;
-
     public ConfigParser(String configFile){
         this.configFile = configFile;
         this.config = load();
         this.envConfig = config.getEnvConfig();
-        this.env = createRuntimeEnvironment();
     }
 
     private DataVinesJobConfig load() {
@@ -67,60 +54,11 @@ public class ConfigParser {
         return config;
     }
 
-    private RuntimeEnvironment createRuntimeEnvironment() {
-        RuntimeEnvironment env = PluginLoader
-                .getPluginLoader(RuntimeEnvironment.class)
-                .getNewPlugin(envConfig.getEngine());
-        Config config = new Config(envConfig.getConfig());
-        config.put(TYPE, envConfig.getType());
-        env.setConfig(config);
-        env.prepare();
-        return env;
+    public DataVinesJobConfig getConfig() {
+        return config;
     }
 
-    public RuntimeEnvironment getRuntimeEnvironment() {
-        return env;
-    }
-
-    public List<Component> getSourcePlugins() {
-        List<Component> sourcePluginList = new ArrayList<>();
-        config.getSourceParameters().forEach(sourceConfig -> {
-            String pluginName = String.format("%s-%s-%s-source", envConfig.getEngine(), envConfig.getType(), sourceConfig.getPlugin());
-            Component component = PluginLoader
-                    .getPluginLoader(Component.class)
-                    .getNewPlugin(pluginName);
-            sourceConfig.getConfig().put(PLUGIN_TYPE, sourceConfig.getType());
-            component.setConfig(new Config(sourceConfig.getConfig()));
-            sourcePluginList.add(component);
-        });
-        return sourcePluginList;
-    }
-
-    public List<Component> getSinkPlugins() {
-        List<Component> sinkPluginList = new ArrayList<>();
-        config.getSinkParameters().forEach(sinkConfig -> {
-            String pluginName = String.format("%s-%s-%s-sink", envConfig.getEngine(), envConfig.getType(), sinkConfig.getPlugin());
-            Component component = PluginLoader
-                    .getPluginLoader(Component.class)
-                    .getNewPlugin(pluginName);
-            sinkConfig.getConfig().put(PLUGIN_TYPE, sinkConfig.getType());
-            component.setConfig(new Config(sinkConfig.getConfig()));
-            sinkPluginList.add(component);
-        });
-        return sinkPluginList;
-    }
-
-    public List<Component> getTransformPlugins() {
-        List<Component> transformPluginList = new ArrayList<>();
-        config.getTransformParameters().forEach(transformConfig -> {
-            String pluginName = String.format("%s-%s-%s-transform", envConfig.getEngine(), envConfig.getType(), transformConfig.getPlugin());
-            Component component = PluginLoader
-                    .getPluginLoader(Component.class)
-                    .getNewPlugin(pluginName);
-            transformConfig.getConfig().put(PLUGIN_TYPE, transformConfig.getType());
-            component.setConfig(new Config(transformConfig.getConfig()));
-            transformPluginList.add(component);
-        });
-        return transformPluginList;
+    public EnvConfig getEnvConfig() {
+        return envConfig;
     }
 }

@@ -32,7 +32,7 @@ function App() {
                     <Route key="/main" path="/main">
                         <Main />
                     </Route>
-                    <Redirect from="/" to={shareData.sessionGet(DV_STORAGE_LOGIN)? '/main' : '/login'} />
+                    <Redirect from="/" to={shareData.storageGet(DV_STORAGE_LOGIN)? '/main' : '/login'} />
                 </Switch>
             </Suspense>
         </Router>

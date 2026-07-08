@@ -123,4 +123,9 @@ public class TableRowCount extends BaseSingleTable {
 
         return result;
     }
+
+    @Override
+    public String getPluginName() {
+        return "table_row_count";
+    }
 }
