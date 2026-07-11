@@ -78,6 +78,7 @@ export default {
     editor_dv_search_table: '请输入表名',
     editor_dv_search_column: '请输入列名',
     editor_dv_metric_name: '名称',
+    invalidate_items_sql_placeholder: '如: SELECT * FROM users WHERE age < 0',
 
     dashboard_execution: '运行概况',
     dashboard_quality_report: '质量报告',

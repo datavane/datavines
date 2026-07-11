@@ -38,6 +38,7 @@ public class ConfigConstants {
     public static final String ACTUAL_NAME = "actual_name";
     public static final String ACTUAL_EXECUTE_SQL = "actual_execute_sql";
     public static final String ACTUAL_AGGREGATE_SQL = "actual_aggregate_sql";
+    public static final String INVALIDATE_ITEMS_SQL = "invalidate_items_sql";
     public static final String ACTUAL_CUSTOM_SQL = "actual_custom_sql";
     public static final String EXPECTED_NAME = "expected_name";
     public static final String EXPECTED_TYPE = "expected_type";

@@ -33,6 +33,7 @@
         <module>datavines-metric-all</module>
         <module>datavines-metric-base</module>
         <module>datavines-metric-custom-aggregate-sql</module>
+        <module>datavines-metric-custom-count-sql</module>
         <module>datavines-metric-multi-table-accuracy</module>
         <module>datavines-metric-table-freshness</module>
         <module>datavines-metric-table-row-count</module>

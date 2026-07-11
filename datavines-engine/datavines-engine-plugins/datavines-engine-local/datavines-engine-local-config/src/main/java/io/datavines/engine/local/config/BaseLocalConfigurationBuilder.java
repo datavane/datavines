@@ -73,7 +73,7 @@ public abstract class BaseLocalConfigurationBuilder extends BaseJobConfiguration
                                 
                                 .getNewPlugin(connectorParameter.getType());
 
-                        List<String> tables = SqlUtils.extractTablesFromSelect(metricInputParameter.get(ACTUAL_AGGREGATE_SQL));
+                        List<String> tables = SqlUtils.extractTablesFromSelect(sqlMetric.getTableDiscoverySql(metricInputParameter));
                         if (CollectionUtils.isEmpty(tables)) {
                             throw new DataVinesException("custom sql must have table");
                         }

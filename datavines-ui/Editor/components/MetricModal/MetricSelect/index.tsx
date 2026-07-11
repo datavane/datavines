@@ -153,16 +153,43 @@ const Index = ({
         );
     };
 
-    const dynamicRender = (item: dynamicConfigItem) => (
-        <Form.Item
-            {...layoutItem}
-            label={item.label}
-            name={item.key}
-            rules={[...requiredRules]}
-        >
-            <Input style={{ width: '100%' }} autoComplete="off" />
-        </Form.Item>
-    );
+    // SQL field keys whitelist for TextArea rendering
+    const SQL_FIELD_KEYS = ['actual_aggregate_sql', 'invalidate_items_sql', 'actual_execute_sql', 'expected_execute_sql', 'actual_custom_sql'];
+
+    const dynamicRender = (item: dynamicConfigItem) => {
+        // Use whitelist first, then fallback to pattern matching for unknown SQL fields
+        const isSqlField = SQL_FIELD_KEYS.includes(item.key) || item.key.toLowerCase().endsWith('_sql');
+        if (isSqlField) {
+            const placeholderId = `${item.key}_placeholder` as any;
+            const placeholderText = intl.formatMessage({ id: placeholderId, defaultMessage: '' });
+            const defaultPlaceholder = `${intl.formatMessage({ id: 'dv_metric_input' })} SQL`;
+            return (
+                <Form.Item
+                    {...layoutItem}
+                    label={item.label}
+                    name={item.key}
+                    rules={[...requiredRules]}
+                >
+                    <Input.TextArea
+                        style={{ width: '100%' }}
+                        autoComplete="off"
+                        rows={4}
+                        placeholder={placeholderText || defaultPlaceholder}
+                    />
+                </Form.Item>
+            );
+        }
+        return (
+            <Form.Item
+                {...layoutItem}
+                label={item.label}
+                name={item.key}
+                rules={[...requiredRules]}
+            >
+                <Input style={{ width: '100%' }} autoComplete="off" />
+            </Form.Item>
+        );
+    };
     return (
         <Title title={intl.formatMessage({ id: 'dv_metric_config' })}>
             <div>

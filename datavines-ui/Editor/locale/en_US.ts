@@ -78,6 +78,7 @@ export default {
     editor_dv_search_table: 'please enter table',
     editor_dv_search_column: 'please enter column',
     editor_dv_metric_name: 'name',
+    invalidate_items_sql_placeholder: 'e.g. SELECT * FROM users WHERE age < 0',
 
     dashboard_execution: 'Execution Dashboard',
     dashboard_quality_report: 'Quality Report Dashboard',
