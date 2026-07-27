@@ -93,7 +93,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
         request.setAttribute(DataVinesConstants.LOGIN_USER, user);
 
-        if (!tokeManager.validateToken(token, username, tokeManager.getPassword(token))) {
+        if (!tokeManager.validateToken(token, username, user.getPassword())) {
             throw new DataVinesServerException(Status.INVALID_TOKEN, token);
         }
 
