@@ -91,8 +91,17 @@ public abstract class BaseFlinkConfigurationBuilder extends BaseJobConfiguration
                             if (tableArray.length == 1) {
                                 metricInputParameter.put(TABLE, tableArray[0]);
                             } else {
-                                metricInputParameter.put(DATABASE, tableArray[0]);
-                                metricInputParameter.put(TABLE, tableArray[1]);
+                                String connectorSchema = connectorParameter.getParameters().get(SCHEMA) != null ?
+                                    (String)connectorParameter.getParameters().get(SCHEMA) : null;
+                                if (connectorSchema != null && connectorSchema.equals(tableArray[0])) {
+                                    // When the table name from SQL already includes the schema prefix
+                                    // (e.g., "schema.table"), and it matches the configured schema,
+                                    // treat it as schema.table, not database.table
+                                    metricInputParameter.put(TABLE, tableArray[1]);
+                                } else {
+                                    metricInputParameter.put(DATABASE, tableArray[0]);
+                                    metricInputParameter.put(TABLE, tableArray[1]);
+                                }
                             }
 
                             SourceConfig sourceConfig = new SourceConfig();
